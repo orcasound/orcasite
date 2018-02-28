@@ -23,4 +23,9 @@ defmodule OrcasiteWeb.Router do
   # scope "/api", OrcasiteWeb do
   #   pipe_through :api
   # end
+  
+  forward "/graphql", Absinthe.Plug, schema: OrcasiteWeb.Schema
+  # For the GraphiQL interactive interface, a must-have for happy frontend devs.
+  forward "/graphiql", Absinthe.Plug.GraphiQL, schema: OrcasiteWeb.Schema, interface: :simple
+
 end
