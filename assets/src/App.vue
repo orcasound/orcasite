@@ -2,7 +2,6 @@
   <div id="app">
     <video id="video"
            width="640"
-           poster="//shaka-player-demo.appspot.com/assets/poster.jpg"
            controls autoplay>
     </video>
   </div>
@@ -44,6 +43,7 @@ export default {
       }
     },
     initPlayer: function () {
+      this.fetchTimestamp();
       // Create a Player instance.
       var video = document.getElementById('video');
       var player = new shaka.Player(video);
