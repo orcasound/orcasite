@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <h1>{{ timestamp }}</h1>
+    <h3><a v-bind:href="manifestUri">{{ manifestUri }}</a></h3>
+    <h3><a v-bind:href="awsConsoleUri">{{ awsConsoleUri }}</a></h3>
     <video id="video"
            width="640"
            controls autoplay>
@@ -9,13 +12,13 @@
 
 <script>
 import gql from 'graphql-tag'
-import shaka from 'shaka-player'
+import { shaka } from 'shaka-player/dist/shaka-player.compiled.debug'
 export default {
   name: 'app',
   data () {
     return {
       msg: 'Welcome to Your Vue.js & Phoenix & GraphQL App',
-      timestamp: "",
+      timestamp: '',
       timestampURI: 'https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/latest.txt'
     }
   },
@@ -26,6 +29,9 @@ export default {
   computed: {
     manifestUri: function () {
       return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/dash/${this.timestamp}/live.mpd`;
+    },
+    awsConsoleUri: function () {
+      return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/dash/${this.timestamp}/`;
     }
   },
   methods: {
@@ -40,42 +46,76 @@ export default {
       } else {
         // This browser does not have the minimum set of APIs we need.
         console.error('Browser not supported!');
+        // TODO: Falback to HLS
       }
     },
     initPlayer: function () {
-      this.fetchTimestamp();
       // Create a Player instance.
       var video = document.getElementById('video');
       var player = new shaka.Player(video);
 
       // Attach player to the window to make it easy to access in the JS console.
       window.player = player;
+      this.player = player;
 
       // Listen for error events.
       player.addEventListener('error', this.onErrorEvent);
 
+      player.configure({
+        manifest: {
+          retryParameters: {
+            timeout: 60000,
+            baseDelay: 1000,
+            maxAttempts: 5
+          }
+        },
+        streaming: {
+          bufferBehind: 300,
+          bufferingGoal: 300,
+          rebufferingGoal: 5,
+          retryParameters: {
+            timeout: 60000,
+            baseDelay: 1000,
+            maxAttempts: 30
+          }
+        }
+      });
+
+      this.fetchTimestamp();
+      setInterval(this.fetchTimestamp, 10000);
+    },
+    loadManifest: function () {
       // Try to load a manifest.
       // This is an asynchronous process.
-      player.load(this.manifestUri).then(function() {
+      this.player.load(this.manifestUri).then(function() {
         // This runs if the asynchronous load is successful.
         console.log('The video has now been loaded!');
-      }).catch(onError);  // onError is executed if the asynchronous load fails.
+      }).catch(this.onLoadError);  // onLoadError is executed if the asynchronous load fails.
     },
     onErrorEvent: function (event) {
       // Extract the shaka.util.Error object from the event.
       this.onError(event.detail);
     },
+    onLoadError: function (error) {
+      this.onError(error);
+      setTimeout(this.loadManifest, 5000);
+    },
     onError: function (error) {
       // Log the error.
-      console.error('Error code', error.code, 'object', error);
+      console.error('Error code', error.code, 'object', error);      
     },
     fetchTimestamp: function () {
       var xhr = new XMLHttpRequest()
       var self = this
       xhr.open('GET', this.timestampURI)
       xhr.onload = function () {
-        self.timestamp = xhr.responseText.trim();
-        console.log(self.timestamp);
+        var timestamp = xhr.responseText.trim();
+        console.log("Latest timestamp: " + timestamp);
+        if (timestamp != self.timestamp) {
+          self.timestamp = timestamp;
+          console.log("New stream instance: " + self.manifestUri)
+          self.loadManifest();
+        }
       }
       xhr.send()
     }
