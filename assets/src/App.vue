@@ -2,17 +2,17 @@
   <div id="app">
     <h1>{{ timestamp }}</h1>
     <h3><a v-bind:href="manifestUri">{{ manifestUri }}</a></h3>
+    <h3><a v-bind:href="hlsUri">{{ hlsUri }}</a></h3>
     <h3><a v-bind:href="awsConsoleUri">{{ awsConsoleUri }}</a></h3>
-    <video id="video"
-           width="640"
+    <audio id="audio"
            controls autoplay>
-    </video>
+    </audio>
   </div>
 </template>
 
 <script>
 import gql from 'graphql-tag'
-import { shaka } from 'shaka-player/dist/shaka-player.compiled.debug'
+import Hls from 'hls.js'
 export default {
   name: 'app',
   data () {
@@ -30,79 +30,44 @@ export default {
     manifestUri: function () {
       return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/dash/${this.timestamp}/live.mpd`;
     },
+    hlsUri: function () {
+      return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/hls/${this.timestamp}/live.m3u8`;
+    },
     awsConsoleUri: function () {
       return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/dash/${this.timestamp}/`;
     }
   },
   methods: {
     initApp: function () {
-      // Install built-in polyfills to patch browser incompatibilities.
-      shaka.polyfill.installAll();
-
-      // Check to see if the browser supports the basic APIs Shaka needs.
-      if (shaka.Player.isBrowserSupported()) {
+      // Check to see if the browser supports hls
+      if (Hls.isSupported()) {
         // Everything looks good!
         this.initPlayer();
       } else {
         // This browser does not have the minimum set of APIs we need.
         console.error('Browser not supported!');
-        // TODO: Falback to HLS
       }
     },
     initPlayer: function () {
       // Create a Player instance.
-      var video = document.getElementById('video');
-      var player = new shaka.Player(video);
+      var audio = document.getElementById('audio');
+
+      var hls = new Hls();
+
 
       // Attach player to the window to make it easy to access in the JS console.
-      window.player = player;
-      this.player = player;
-
-      // Listen for error events.
-      player.addEventListener('error', this.onErrorEvent);
-
-      player.configure({
-        manifest: {
-          retryParameters: {
-            timeout: 60000,
-            baseDelay: 1000,
-            maxAttempts: 5
-          }
-        },
-        streaming: {
-          bufferBehind: 300,
-          bufferingGoal: 300,
-          rebufferingGoal: 5,
-          retryParameters: {
-            timeout: 60000,
-            baseDelay: 1000,
-            maxAttempts: 30
-          }
-        }
-      });
+      window.hls = hls;
+      this.hls = hls;
 
       this.fetchTimestamp();
       setInterval(this.fetchTimestamp, 10000);
     },
     loadManifest: function () {
-      // Try to load a manifest.
-      // This is an asynchronous process.
-      this.player.load(this.manifestUri).then(function() {
-        // This runs if the asynchronous load is successful.
-        console.log('The video has now been loaded!');
-      }).catch(this.onLoadError);  // onLoadError is executed if the asynchronous load fails.
-    },
-    onErrorEvent: function (event) {
-      // Extract the shaka.util.Error object from the event.
-      this.onError(event.detail);
-    },
-    onLoadError: function (error) {
-      this.onError(error);
-      setTimeout(this.loadManifest, 5000);
-    },
-    onError: function (error) {
-      // Log the error.
-      console.error('Error code', error.code, 'object', error);      
+      hls.loadSource(this.hlsUri);
+      hls.attachMedia(audio);
+      hls.on(Hls.Events.MANIFEST_PARSED,function() {
+        audio.play();
+      });
     },
     fetchTimestamp: function () {
       var xhr = new XMLHttpRequest()
@@ -113,7 +78,7 @@ export default {
         console.log("Latest timestamp: " + timestamp);
         if (timestamp != self.timestamp) {
           self.timestamp = timestamp;
-          console.log("New stream instance: " + self.manifestUri)
+          console.log("New stream instance: " + self.hlsUri)
           self.loadManifest();
         }
       }
@@ -144,6 +109,10 @@ export default {
 }
 h1, h2 {
   font-weight: normal;
+}
+audio {
+  width: 400px;
+  margin-top: 20px;
 }
 ul {
   list-style-type: none;
