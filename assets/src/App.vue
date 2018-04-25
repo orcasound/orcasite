@@ -40,13 +40,7 @@ export default {
   methods: {
     initApp: function () {
       // Check to see if the browser supports hls
-      if (Hls.isSupported()) {
-        // Everything looks good!
-        this.initPlayer();
-      } else {
-        // This browser does not have the minimum set of APIs we need.
-        console.error('Browser not supported!');
-      }
+      this.initPlayer();
     },
     initPlayer: function () {
       // Create a Player instance.
