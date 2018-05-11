@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <h1>{{ timestamp }}</h1>
-    <h3><a v-bind:href="manifestUri">{{ manifestUri }}</a></h3>
     <h3><a v-bind:href="hlsUri">{{ hlsUri }}</a></h3>
     <h3><a v-bind:href="awsConsoleUri">{{ awsConsoleUri }}</a></h3>
     <audio id="audio"
@@ -27,14 +26,14 @@ export default {
     console.log(this);
   },
   computed: {
-    manifestUri: function () {
+    dashUri: function () {
       return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/dash/${this.timestamp}/live.mpd`;
     },
     hlsUri: function () {
       return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/hls/${this.timestamp}/live.m3u8`;
     },
     awsConsoleUri: function () {
-      return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/dash/${this.timestamp}/`;
+      return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/hls/${this.timestamp}/`;
     }
   },
   methods: {
@@ -59,6 +58,7 @@ export default {
     loadManifest: function () {
       hls.loadSource(this.hlsUri);
       hls.attachMedia(audio);
+      hls.config.liveSyncDurationCount = 5;
       hls.on(Hls.Events.MANIFEST_PARSED,function() {
         audio.play();
       });
