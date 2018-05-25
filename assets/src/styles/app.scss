@@ -1,0 +1,10 @@
+@import "variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~font-awesome/scss/font-awesome";
+
+.page-loader {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}

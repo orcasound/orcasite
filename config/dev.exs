@@ -12,7 +12,7 @@ config :orcasite, OrcasiteWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    node: ["node_modules/webpack/bin/webpack.js", "--watch", "--colors",
+    npm: ["run", "watch",
     cd: Path.expand("../assets", __DIR__)
   ]]
 

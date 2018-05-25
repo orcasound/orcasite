@@ -1,108 +1,169 @@
-var path = require('path')
-var webpack = require('webpack')
+// Taken from
+// https://medium.com/@kimlindholm/adding-webpack-3-to-phoenix-e6633dbc2bc4
+// TODO: Find out if we need to add popper.js for bootstrap, a la: https://blog.danivovich.com/2017/08/30/webpack-phoenix/
+/*
+ * Modules
+ **/
+const path = require("path");
+const webpack = require("webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const autoprefixer = require("autoprefixer");
 
-module.exports = {
-  entry: './src/app.js',
-  output: {
-    path: path.resolve(__dirname, '../priv/static/js'),
-    publicPath: '/dist/',
-    filename: 'app.js'
-  },
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'vue-style-loader',
-          'css-loader'
-        ],
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
-          'sass-loader'
-        ],
-      },
-      {
-        test: /\.sass$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
-          'sass-loader?indentedSyntax'
-        ],
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-            // the "scss" and "sass" values for the lang attribute to the right configs here.
-            // other preprocessors should work out of the box, no loader config like this necessary.
-            'scss': [
-              'vue-style-loader',
-              'css-loader',
-              'sass-loader'
-            ],
-            'sass': [
-              'vue-style-loader',
-              'css-loader',
-              'sass-loader?indentedSyntax'
-            ]
-          }
-          // other vue-loader options go here
-        }
-      },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]?[hash]'
-        }
-      }
-    ]
-  },
-  resolve: {
-    alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+
+/*
+ * Configuration
+ **/
+module.exports = (env) => {
+  const isDev = !(env && env.prod);
+  const devtool = isDev ? "eval" : "source-map";
+
+  return {
+    devtool: devtool,
+
+    context: __dirname,
+
+    entry: {
+      app: [
+        "src/app.js",
+        "src/styles/app.scss"
+      ]
     },
-    extensions: ['*', '.js', '.vue', '.json']
-  },
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true,
-    overlay: true
-  },
-  performance: {
-    hints: false
-  },
-  devtool: '#eval-source-map'
-}
 
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
+    output: {
+      path: path.resolve(__dirname, "../priv/static"),
+      filename: 'js/[name].js',
+      publicPath: 'http://localhost:8080/'
+    },
+
+    devServer: {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
       }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
+    },
+
+    module: {
+      rules: [
+        {
+          test: /\.(jsx?)$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader"
+          }
+        },
+
+        {
+          test: /\.(gif|png|jpe?g|svg)$/i,
+          exclude: /node_modules/,
+          use: [
+            'file-loader?name=images/[name].[ext]',
+            {
+              loader: 'image-webpack-loader',
+              options: {
+                query: {
+                  mozjpeg: {
+                    progressive: true,
+                  },
+                  gifsicle: {
+                    interlaced: true,
+                  },
+                  optipng: {
+                    optimizationLevel: 7,
+                  },
+                  pngquant: {
+                    quality: '65-90',
+                    speed: 4
+                  }
+                }
+              }
+            }
+          ]
+        },
+
+        {
+          test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+          exclude: /node_modules/,
+          query: { name: "fonts/[hash].[ext]" },
+          loader: "file-loader",
+        },
+
+        {
+          test: /\.(css|scss)$/,
+          exclude: /node_modules/,
+          use: [
+            'css-hot-loader',
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'postcss-loader',
+            {
+              loader: 'sass-loader',
+              options: {
+                includePaths: [
+                  path.resolve('node_modules/bootstrap/scss')
+                ],
+                sourceMap: isDev
+              }
+            }
+          ]
+        }
+      ]
+    },
+
+    resolve: {
+      modules: ["node_modules", __dirname],
+      extensions: [".js", ".json", ".jsx", ".css", ".scss"],
+      alias: {
+        components: path.resolve(__dirname, 'src/components/'),
+        images: path.resolve(__dirname, 'src/images/'),
+        mutations: path.resolve(__dirname, 'src/mutations/'),
+        queries: path.resolve(__dirname, 'src/queries/'),
+        styles: path.resolve(__dirname, 'src/styles/'),
+        utils: path.resolve(__dirname, 'src/utils/'),
+
       }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ])
-}
+    },
+
+    plugins: isDev ? [
+      new MiniCssExtractPlugin({
+        filename: "css/[name].css",
+        allChunks: true
+      }),
+      new CopyWebpackPlugin([{
+        from: "./static",
+        to: path.resolve(__dirname, "../priv/static")
+      },
+      {
+        context: './node_modules/font-awesome/fonts',
+        from: '*',
+        to: './fonts'
+      }])
+    ] : [
+      new MiniCssExtractPlugin({
+        filename: "css/[name].css",
+        allChunks: true
+      }),
+
+      new CopyWebpackPlugin([{
+        from: "./static",
+        to: path.resolve(__dirname, "../priv/static")
+      }]),
+
+      new webpack.optimize.UglifyJsPlugin({
+        sourceMap: true,
+        beautify: false,
+        comments: false,
+        extractComments: false,
+        compress: {
+          warnings: false,
+          drop_console: true
+        },
+        mangle: {
+          except: ['$'],
+          screw_ie8 : true,
+          keep_fnames: true,
+        }
+      })
+    ]
+  };
+
+};

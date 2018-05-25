@@ -8,11 +8,13 @@
     <meta name="author" content="">
 
     <title>Hello Orcasite!</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <%= {:safe, css_link_tag()} %>
   </head>
 
   <body>
     <%= render @view_module, @view_template, assigns %>
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <div id="root"></div>
+
+    <%= {:safe, js_script_tag()} %>
   </body>
 </html>
