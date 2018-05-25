@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 
 import Hls from 'hls.js'
 
+import MediaElement from './MediaElement';
+
 import 'styles/player.scss'
 
 export default class Player extends Component {
@@ -18,16 +20,6 @@ export default class Player extends Component {
     return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/hls/${this.state.timestamp}/`
   }
 
-  reloadSource() {
-    var hlsUri = this.getHlsUri()
-    hls.loadSource(hlsUri);
-      hls.attachMedia(audio);
-      hls.config.liveSyncDurationCount = 5;
-      hls.on(Hls.Events.MANIFEST_PARSED,function() {
-        audio.play();
-      });
-  }
-
   fetchTimestamp = () => {
     const timestampURI = 'https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/latest.txt'
 
@@ -39,7 +31,6 @@ export default class Player extends Component {
       if (timestamp != this.state.timestamp) {
         this.setState({timestamp: timestamp})
         console.log("New stream instance: " + this.getHlsUri())
-        this.reloadSource()
       }
     }
     xhr.send()
@@ -64,14 +55,35 @@ export default class Player extends Component {
     var hlsUri = this.getHlsUri()
     var awsConsoleUri = this.getAwsConsoleUri()
 
+    const
+      sources = [
+        {src: hlsUri, type: 'application/vnd.apple.mpegurl'}
+      ],
+      config = {},
+      tracks = {}
+    ;
+
     return (
       <div className="player">
         <h1>{this.state.timestamp}</h1>
         <h3><a href={hlsUri}>{hlsUri}</a></h3>
         <h3><a href={awsConsoleUri}>{awsConsoleUri}</a></h3>
-        <audio id="audio"
-             controls autoPlay>
-        </audio>
+        <div className="d-flex justify-content-center mt-4">
+          <MediaElement
+           key={hlsUri}
+           id="player1"
+           mediaType="audio"
+           preload="auto"
+           controls
+           width="640"
+           height="360"
+           poster=""
+           autoplay
+           sources={JSON.stringify(sources)}
+           options={JSON.stringify(config)}
+           tracks={JSON.stringify(tracks)}
+          />
+        </div>
       </div>
     )
   }
