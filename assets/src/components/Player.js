@@ -65,7 +65,7 @@ export default class Player extends Component {
     var awsConsoleUri = this.getAwsConsoleUri()
 
     return (
-      <div class="player">
+      <div className="player">
         <h1>{this.state.timestamp}</h1>
         <h3><a href={hlsUri}>{hlsUri}</a></h3>
         <h3><a href={awsConsoleUri}>{awsConsoleUri}</a></h3>
