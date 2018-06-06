@@ -47,7 +47,10 @@ export default class Player extends Component {
       sources = [
         {src: hlsUri, type: 'application/vnd.apple.mpegurl'}
       ],
-      config = {},
+      config = {
+        hls: {
+          debug: true
+        }},
       tracks = {}
     ;
 
