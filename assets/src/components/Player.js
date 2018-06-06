@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
 
-import Hls from 'hls.js'
-
 import MediaElement from './MediaElement';
-
 import 'styles/player.scss'
 
 export default class Player extends Component {
@@ -12,12 +9,12 @@ export default class Player extends Component {
     timestamp: ''
   }
 
-  getHlsUri() {
-    return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/hls/${this.state.timestamp}/live.m3u8`
+  getHlsUri(timestamp) {
+    return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/hls/${timestamp}/live.m3u8`
   }
 
-  getAwsConsoleUri() {
-    return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/hls/${this.state.timestamp}/`
+  getAwsConsoleUri(timestamp) {
+    return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/hls/${timestamp}/`
   }
 
   fetchTimestamp = () => {
@@ -37,23 +34,14 @@ export default class Player extends Component {
   }
 
   componentDidMount() {
-    // Create a Player instance.
-    var audio = document.getElementById('audio')
-
-    var hls = new Hls()
-
-
-    // Attach player to the window to make it easy to access in the JS console.
-    window.hls = hls
-    this.hls = hls
-
     this.fetchTimestamp()
     setInterval(this.fetchTimestamp, 10000)
   }
 
-  render() {   
-    var hlsUri = this.getHlsUri()
-    var awsConsoleUri = this.getAwsConsoleUri()
+  render() {  
+    var timestamp = this.state.timestamp
+    var hlsUri = this.getHlsUri(timestamp)
+    var awsConsoleUri = this.getAwsConsoleUri(timestamp)
 
     const
       sources = [
