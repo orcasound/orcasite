@@ -11,6 +11,7 @@ const Root = (props) => {
     <BrowserRouter>
       <Switch>
         <Route exact path="/" component={Home} />
+        <Route path="/:nodeName" component={Home} />
       </Switch>
     </BrowserRouter>
   )

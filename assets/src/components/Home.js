@@ -9,9 +9,12 @@ import 'styles/home.scss'
 
 export default class Home extends Component {
   render() {
+    var {nodeName} = this.props.match.params
+    nodeName = nodeName || "rpi_seattle"
+
     return (
       <div className="home">
-        <Player />
+        <Player nodeName={nodeName} />
       </div>
     )
   }

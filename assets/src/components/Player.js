@@ -9,25 +9,28 @@ export default class Player extends Component {
     timestamp: ''
   }
 
-  getHlsUri(timestamp) {
-    return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/hls/${timestamp}/live.m3u8`
+  getHlsUri(timestamp, nodeName) {
+    return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${nodeName}/hls/${timestamp}/live.m3u8`
   }
 
-  getAwsConsoleUri(timestamp) {
-    return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/rpi_seattle/hls/${timestamp}/`
+  getAwsConsoleUri(timestamp, nodeName) {
+    return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/${nodeName}/hls/${timestamp}/`
   }
 
   fetchTimestamp = () => {
-    const timestampURI = 'https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/rpi_seattle/latest.txt'
+    const nodeName = this.props.nodeName
+    const timestampURI = `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${nodeName}/latest.txt`
 
     var xhr = new XMLHttpRequest()
     xhr.open('GET', timestampURI)
     xhr.onload = () => {
-      var timestamp = xhr.responseText.trim()
-      console.log("Latest timestamp: " + timestamp)
-      if (timestamp != this.state.timestamp) {
-        this.setState({timestamp: timestamp})
-        console.log("New stream instance: " + this.getHlsUri())
+      if (xhr.status === 200){
+        var timestamp = xhr.responseText.trim()
+        console.log("Latest timestamp: " + timestamp)
+        if (timestamp != this.state.timestamp) {
+          this.setState({timestamp: timestamp})
+          console.log("New stream instance: " + this.getHlsUri(timestamp, nodeName))
+        }
       }
     }
     xhr.send()
@@ -40,8 +43,9 @@ export default class Player extends Component {
 
   render() {  
     var timestamp = this.state.timestamp
-    var hlsUri = this.getHlsUri(timestamp)
-    var awsConsoleUri = this.getAwsConsoleUri(timestamp)
+    const nodeName = this.props.nodeName
+    var hlsUri = this.getHlsUri(timestamp, nodeName)
+    var awsConsoleUri = this.getAwsConsoleUri(timestamp, nodeName)
 
     const
       sources = [
