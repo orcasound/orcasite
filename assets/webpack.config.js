@@ -82,14 +82,14 @@ module.exports = (env) => {
 
         {
           test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-          exclude: /node_modules/,
+          //exclude: /node_modules/,
           query: { name: "fonts/[hash].[ext]" },
           loader: "file-loader",
         },
 
         {
           test: /\.(css|scss)$/,
-          exclude: /node_modules/,
+          //exclude: /node_modules/,
           use: [
             'css-hot-loader',
             MiniCssExtractPlugin.loader,
@@ -105,6 +105,14 @@ module.exports = (env) => {
               }
             }
           ]
+        },
+
+        {
+          test: /\.swf$/,
+          loader: 'file-loader',
+          query: {
+              name: 'static/media/[name].[ext]'
+          }
         }
       ]
     },
