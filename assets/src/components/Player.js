@@ -74,7 +74,7 @@ export default class Player extends Component {
           </div>
           <div className="row">
             <div className="col-sm">
-              <a href=''>Provide your feedback via this Google form</a>.
+              <a href="https://goo.gl/forms/hLbgpnR2w9bmWt902">Provide your feedback via this Google form</a>.
             </div>
           </div>
           <div className="row justify-content-lg-center mt-4">
