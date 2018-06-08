@@ -7,6 +7,8 @@ import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import 'mediaelement/build/mediaelement-flash-video.swf';
 
+import 'styles/mediaElement.scss'
+
 export default class MediaElement extends Component {
 
   state = {}
