@@ -60,24 +60,52 @@ export default class Player extends Component {
 
     return (
       <div className="player">
-        <h1>{this.state.timestamp}</h1>
-        <h3><a href={hlsUri}>{hlsUri}</a></h3>
-        <h3><a href={awsConsoleUri}>{awsConsoleUri}</a></h3>
-        <div className="d-flex justify-content-center mt-4">
-          <MediaElement
-           key={hlsUri}
-           id="player1"
-           mediaType="audio"
-           preload="auto"
-           controls
-           width="640"
-           height="360"
-           poster=""
-           autoplay
-           sources={JSON.stringify(sources)}
-           options={JSON.stringify(config)}
-           tracks={JSON.stringify(tracks)}
-          />
+        <div className="container">
+          <div className="row">
+            <div className="col-sm">
+              <h1>Orcasound App Beta</h1>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-sm">
+              Please help us test playback performance on as many combinations of
+              devices, operating systems, and browsers as possible.
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-sm">
+              <a href=''>Provide your feedback via this Google form</a>.
+            </div>
+          </div>
+          <div className="row justify-content-lg-center mt-4">
+            <MediaElement
+             key={hlsUri}
+             id="player1"
+             mediaType="audio"
+             preload="auto"
+             controls
+             width="640"
+             height="360"
+             poster=""
+             autoplay
+             sources={JSON.stringify(sources)}
+             options={JSON.stringify(config)}
+             tracks={JSON.stringify(tracks)}
+            />
+          </div>
+          <div className="debug-info row p-6 alert alert-primary">
+            <div className="col-sm">
+              <div className="row">
+                <div className="col-sm">
+                  <h6>Debug links (for developers)</h6>
+                </div>
+              </div>
+              <div><small>{this.state.timestamp}</small></div>
+              <div><small><a className="alert-link" href={hlsUri}>{hlsUri}</a></small></div>
+              <div><small><a className="alert-link" href={awsConsoleUri}>{awsConsoleUri}</a></small></div>
+            </div>
+          </div>
+          
         </div>
       </div>
     )
