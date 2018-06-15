@@ -14,8 +14,8 @@ const autoprefixer = require("autoprefixer");
 /*
  * Configuration
  **/
-module.exports = (env) => {
-  const isDev = !(env && env.prod);
+module.exports = (env, argv) => {
+  const isDev = !(env && env.prod) && argv.mode !== 'production';
   const devtool = isDev ? "eval" : "source-map";
 
   return {
@@ -82,14 +82,13 @@ module.exports = (env) => {
 
         {
           test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-          //exclude: /node_modules/,
+          exclude: /node_modules\/(?!(mediaelement)\/).*/,
           query: { name: "fonts/[hash].[ext]" },
           loader: "file-loader",
         },
-
         {
           test: /\.(css|scss)$/,
-          //exclude: /node_modules/,
+          exclude: /node_modules\/(?!(mediaelement)\/).*/,
           use: [
             'css-hot-loader',
             MiniCssExtractPlugin.loader,
@@ -131,7 +130,7 @@ module.exports = (env) => {
       }
     },
 
-    plugins: isDev ? [
+    plugins: [
       new MiniCssExtractPlugin({
         filename: "css/[name].css",
         allChunks: true
@@ -145,32 +144,6 @@ module.exports = (env) => {
         from: '*',
         to: './fonts'
       }])
-    ] : [
-      new MiniCssExtractPlugin({
-        filename: "css/[name].css",
-        allChunks: true
-      }),
-
-      new CopyWebpackPlugin([{
-        from: "./static",
-        to: path.resolve(__dirname, "../priv/static")
-      }]),
-
-      new webpack.optimize.UglifyJsPlugin({
-        sourceMap: true,
-        beautify: false,
-        comments: false,
-        extractComments: false,
-        compress: {
-          warnings: false,
-          drop_console: true
-        },
-        mangle: {
-          except: ['$'],
-          screw_ie8 : true,
-          keep_fnames: true,
-        }
-      })
     ]
   };
 

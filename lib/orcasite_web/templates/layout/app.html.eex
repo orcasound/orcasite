@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hello Orcasite!</title>
+    <title>OrcaSound - Listen for whales</title>
     <%= {:safe, css_link_tag()} %>
   </head>
 

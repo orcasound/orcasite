@@ -28,7 +28,7 @@ config :orcasite, Orcasite.Repo,
   ssl: true
 
 # Do not print debug messages in production
-config :logger, level: :info
+config :logger, level: :info, format: {Orcasite.Logger, :format}
 
 # ## SSL Support
 #
