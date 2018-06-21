@@ -16,7 +16,7 @@ const autoprefixer = require("autoprefixer");
  **/
 module.exports = (env, argv) => {
   const isDev = !(env && env.prod) && argv.mode !== 'production';
-  const devtool = isDev ? "eval" : "source-map";
+  const devtool = isDev ? "eval" : false;
 
   return {
     devtool: devtool,
