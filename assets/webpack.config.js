@@ -17,6 +17,7 @@ const autoprefixer = require("autoprefixer");
 module.exports = (env, argv) => {
   const isDev = !(env && env.prod) && argv.mode !== 'production';
   const devtool = isDev ? "eval" : false;
+  const config = require(path.join(__dirname, 'src', 'config', argv.mode))
 
   return {
     devtool: devtool,
@@ -135,6 +136,14 @@ module.exports = (env, argv) => {
         filename: "css/[name].css",
         allChunks: true
       }),
+      new webpack.DefinePlugin({
+        ENV: JSON.stringify(config),
+        'process.env': {
+          // defaults the environment to development if not specified
+          NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+        },
+      }),
+
       new CopyWebpackPlugin([{
         from: "./static",
         to: path.resolve(__dirname, "../priv/static")
