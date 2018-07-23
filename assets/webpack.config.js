@@ -89,7 +89,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.(css|scss)$/,
-          exclude: /node_modules\/(?!(mediaelement)\/).*/,
+          exclude: /node_modules\/(?!(mediaelement|video.js)\/).*/,
           use: [
             'css-hot-loader',
             MiniCssExtractPlugin.loader,
@@ -122,6 +122,7 @@ module.exports = (env, argv) => {
       extensions: [".js", ".json", ".jsx", ".css", ".scss"],
       alias: {
         components: path.resolve(__dirname, 'src/components/'),
+        contexts: path.resolve(__dirname, 'src/contexts/'),
         images: path.resolve(__dirname, 'src/images/'),
         mutations: path.resolve(__dirname, 'src/mutations/'),
         queries: path.resolve(__dirname, 'src/queries/'),
@@ -147,11 +148,6 @@ module.exports = (env, argv) => {
       new CopyWebpackPlugin([{
         from: "./static",
         to: path.resolve(__dirname, "../priv/static")
-      },
-      {
-        context: './node_modules/font-awesome/fonts',
-        from: '*',
-        to: './fonts'
       }])
     ]
   };

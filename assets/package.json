@@ -8,15 +8,17 @@
     "deploy": "MIX_ENV=prod webpack --mode production --env.prod --optimize-minimize"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.1",
+    "@fortawesome/free-solid-svg-icons": "^5.1.1",
+    "@fortawesome/react-fontawesome": "^0.1.0",
     "apollo-boost": "^0.1.10",
+    "autoprefixer": "^9.0.1",
     "bootstrap": "^4.1.2",
     "flv.js": "^1.4.2",
-    "font-awesome": "^4.7.0",
-    "formik": "^0.11.11",
+    "formik": "^1.0.1",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
     "hls.js": "^0.9.1",
-    "humanize-plus": "^1.8.2",
     "jquery": "^3.3.1",
     "mediaelement": "^4.2.9",
     "phoenix": "file:../deps/phoenix",
@@ -26,7 +28,10 @@
     "react-apollo": "^2.1.9",
     "react-dom": "^16.4.1",
     "react-router-dom": "^4.3.1",
-    "yup": "^0.24.1"
+    "video.js": "^7.0.5",
+    "videojs-contrib-hls": "^5.14.1",
+    "videojs-flash": "^2.1.1",
+    "yup": "^0.26.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -37,19 +42,19 @@
     "babel-preset-stage-2": "^6.24.1",
     "copy-webpack-plugin": "^4.5.2",
     "css-hot-loader": "^1.4.0",
-    "css-loader": "^0.28.11",
+    "css-loader": "^1.0.0",
     "file-loader": "^1.1.6",
     "image-webpack-loader": "^4.3.1",
     "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.2",
-    "postcss": "^6.0.23",
+    "postcss": "^7.0.1",
     "postcss-loader": "^2.1.6",
     "react-hot-loader": "^4.3.3",
     "sass-loader": "^7.0.3",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    "webpack": "^4.16.1",
+    "webpack": "^4.16.2",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.5"
   }
 }
