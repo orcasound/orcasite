@@ -11,8 +11,16 @@ import FeedPage from './FeedPage'
 import 'styles/home.scss'
 
 export default class Home extends Component {
+  feeds = [
+    {name: 'Seattle', slug: 'seattle', node: 'rpi_seattle'},
+    {name: 'Neah Bay', slug: 'neah-bay', node: 'neah-bay'},
+    {name: 'Port Townsend', slug: 'port-townsend', node: 'port-townsend'},
+    {name: 'Lime Kiln', slug: 'lime-kiln', node: 'lime-kiln'}
+  ]
+
   state = {
-    currentFeed: 'rpi_seattle',
+    currentFeed: this.feeds[0],
+    feeds: this.feeds
   }
 
   componentDidMount() {
@@ -21,16 +29,20 @@ export default class Home extends Component {
 
   changeFeed = currentFeed => this.setState({currentFeed})
 
+  findFeed = feedSlug => this.state.feeds.find(feed => feed.slug === feedSlug)
+
   render() {
-    var {nodeName} = this.props.match.params
+    const {feeds} = this.state
+    const {feedSlug} = this.props.match.params
+    const feed = this.findFeed(feedSlug)
 
     return (
       <div className="home">
         <Header />
-        <FeedList />
+        <FeedList feeds={feeds} />
         <div className="content">
-          {nodeName && (
-            <FeedPage nodeName={nodeName} onChangeFeed={this.changeFeed} />
+          {feed && (
+            <FeedPage feed={feed} onChangeFeed={this.changeFeed} />
           )}
           <p>
             Please help us test playback performance on as many combinations of

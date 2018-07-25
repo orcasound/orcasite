@@ -1,20 +1,22 @@
 import React, {Component} from 'react'
 
-import {string, func} from 'prop-types'
+import {func} from 'prop-types'
+
+import {feedType} from 'types/feedType'
 
 export default class FeedPage extends Component {
   static propTypes = {
-    nodeName: string,
+    feed: feedType,
     onChangeFeed: func
-
   }
   render() {
+    const {feed} = this.props
     return (
       <div className="feed-page mb-3">
-        <h1>{this.props.nodeName} node</h1>
+        <h1>{feed.name} node</h1>
 
-        <button className="btn btn-primary" onClick={() => this.props.onChangeFeed(this.props.nodeName)}>
-          Listen to {this.props.nodeName}
+        <button className="btn btn-primary" onClick={() => this.props.onChangeFeed(feed)}>
+          Listen to {feed.name}
         </button>
       </div>
     )

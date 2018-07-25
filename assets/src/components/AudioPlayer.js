@@ -1,12 +1,19 @@
 import React, {Component} from 'react'
+import {Link} from 'react-router-dom'
+
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
 
 import MediaStreamer from './MediaStreamer'
 
+import {feedType} from 'types/feedType'
+
 import 'styles/audio_player.scss'
 
 export default class AudioPlayer extends Component {
+  static propTypes = {
+    feed: feedType
+  }
   state = {
     timestamp: '',
     isLoading: true,
@@ -50,8 +57,8 @@ export default class AudioPlayer extends Component {
   }
 
   componentDidMount() {
-    this.fetchTimestamp(this.props.currentFeed)
-    setInterval(() => this.fetchTimestamp(this.props.currentFeed), 10000)
+    this.fetchTimestamp(this.props.currentFeed.node)
+    setInterval(() => this.fetchTimestamp(this.props.currentFeed.node), 10000)
   }
 
   setControls = controls => this.setState({...controls})
@@ -67,7 +74,9 @@ export default class AudioPlayer extends Component {
           className="mr-3"
           onClick={playPause}
         />
-        Current feed: {currentFeed}
+        <Link to={currentFeed.slug} className="text-light">
+          {currentFeed.name}
+        </Link>
         {hlsURI && (
           <MediaStreamer src={hlsURI}
             onReady={this.setControls}

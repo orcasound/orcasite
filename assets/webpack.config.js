@@ -127,6 +127,7 @@ module.exports = (env, argv) => {
         mutations: path.resolve(__dirname, 'src/mutations/'),
         queries: path.resolve(__dirname, 'src/queries/'),
         styles: path.resolve(__dirname, 'src/styles/'),
+        types: path.resolve(__dirname, 'src/types/'),
         utils: path.resolve(__dirname, 'src/utils/'),
 
       }
