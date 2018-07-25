@@ -56,8 +56,7 @@ export default class MediaStreamer extends Component {
   controls = {play: this.play, pause: this.pause, playPause: this.playPause}
 
   render() {
-    // const { src } = this.props
-    const src = ENV.example_playlist_uri
+    const { src } = this.props
 
     return (
       <video ref={node => (this.videoNode = node)} className="video-js" autoPlay controls >

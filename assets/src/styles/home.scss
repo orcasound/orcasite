@@ -1,6 +1,28 @@
+@import 'variables';
+
 .home {
   display: grid;
   height: 100vh;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto fit-content(150px) 1fr auto;
   grid-template-columns: 100%;
+  grid-template-areas:
+    'header'
+    'feed-list'
+    'content'
+    'audio-player';
+
+  @media (min-width: #{map-get($grid-breakpoints, md)}) {
+    grid-template-columns: fit-content(150px) 1fr;
+    grid-template-rows: auto 1fr auto;
+
+    grid-template-areas:
+      'header       header'
+      'feed-list    content'
+      'audio-player audio-player'
+  }
+
+  .content {
+    overflow-y: scroll;
+    padding: 50px;
+  }
 }

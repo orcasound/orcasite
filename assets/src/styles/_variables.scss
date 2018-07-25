@@ -2,19 +2,22 @@ $fa-font-path: "/fonts";
 $body-bg: #fff;
 
 // Palette
-$color-1: #1abc9c;
-$color-2: #2966c0;
-// $color-3: #FF7A23;
-// $color-4: #FFAE23;
-// $color-5: #F6223F;
+$color-1: #20B7A6;
+$accent: #6698AC;
+$highlight: #826AB0;
+$dark: #011C28;
+$light: #f4f4f0;
 
-// Taken from http://colormind.io/bootstrap/
 $primary:    $color-1;
 $secondary:  #999999;
 $success:    rgb(62, 180, 103);
 $info:       rgb(19, 21, 28);
 $warning:    rgb(187, 163, 47);
 $danger:     rgb(244, 67, 54);
+
+$box-shadow-color: rgba(0,0,0,0.25);
+$bottom-box-shadow: 0 2px 2px $box-shadow-color;
+$top-box-shadow: 0 -2px 2px $box-shadow-color;
 
 $grid-breakpoints: (
   xs: 0,

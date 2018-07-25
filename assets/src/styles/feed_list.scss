@@ -1,0 +1,45 @@
+@import "variables";
+$spacing: 7px;
+
+.feed-list {
+  grid-area: feed-list;
+  list-style: none;
+  display: flex;
+  background-color: $light;
+  width: 100%;
+  overflow-x: auto;
+  padding: $spacing;
+  margin: 0px;
+
+  @media (min-width: #{map-get($grid-breakpoints, md)}) {
+    flex-direction: column;
+  }
+
+  .feed-item {
+    color: $light;
+    background-color: $accent;
+    width: 150px;
+    height: 100px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+
+    &.feed-item:not(:last-of-type) {
+      margin-right: $spacing;
+
+      @media (min-width: #{map-get($grid-breakpoints, md)}) {
+        margin-right: 0;
+        margin-bottom: $spacing;
+      }
+    }
+
+    a {
+      color: $light;
+      height: 100%;
+      width: 100%;
+    }
+
+  }
+}

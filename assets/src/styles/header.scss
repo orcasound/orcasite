@@ -1,0 +1,12 @@
+@import "variables";
+
+.header {
+  grid-area: header;
+  padding: 10px;
+  background-color: $dark;
+  // box-shadow: $bottom-box-shadow;
+  .logo {
+    font-size: 2em;
+    color: $light;
+  }
+}

@@ -60,7 +60,7 @@ export default class AudioPlayer extends Component {
     const {currentFeed} = this.props
     const {hlsURI, playPause} = this.state
     return (
-      <div className="audio-player">
+      <div className="audio-player text-light">
         <FontAwesomeIcon
           size="3x"
           {...this.playIconOpts(this.state)}

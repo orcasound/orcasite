@@ -1,4 +1,10 @@
+@import "variables";
+
 .audio-player {
+  grid-area: audio-player;
+  padding: 10px;
+  background-color: $dark;
+  // box-shadow: $top-box-shadow;
   .video-js {
     display: none;
   }
