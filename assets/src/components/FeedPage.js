@@ -1,6 +1,13 @@
 import React, {Component} from 'react'
 
+import {string, func} from 'prop-types'
+
 export default class FeedPage extends Component {
+  static propTypes = {
+    nodeName: string,
+    onChangeFeed: func
+
+  }
   render() {
     return (
       <div className="feed-page mb-3">

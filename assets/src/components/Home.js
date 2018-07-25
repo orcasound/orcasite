@@ -3,8 +3,6 @@ import React, {Component} from 'react'
 import {gql} from 'apollo-boost'
 import {Query} from 'react-apollo'
 
-import {FeedContext} from 'contexts/feed-context'
-
 import AudioPlayer from './AudioPlayer'
 import Header from './Header'
 import FeedList from './FeedList'
