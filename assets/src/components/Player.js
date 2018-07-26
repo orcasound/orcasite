@@ -1,24 +1,49 @@
 import React, {Component} from 'react'
+import {Link} from 'react-router-dom'
 
-import MediaElement from './MediaElement'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
+
+import MediaStreamer from './MediaStreamer'
+
+import {feedType} from 'types/feedType'
+
 import 'styles/player.scss'
 
-export default class Player extends Component {
+export default class AudioPlayer extends Component {
+  static propTypes = {
+    feed: feedType,
+  }
   state = {
     timestamp: '',
+    isLoading: true,
+    isPlaying: false,
+    play: () => {},
+    pause: () => {},
+    playPause: () => {},
   }
 
-  getHlsUri(timestamp, nodeName) {
-    return `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${nodeName}/hls/${timestamp}/live.m3u8`
+  playIconOpts = ({isLoading, isPlaying}) => {
+    if (isLoading) return {icon: faSpinner, pulse: true}
+    if (isPlaying) return {icon: faPause}
+    return {icon: faPlay}
   }
 
-  getAwsConsoleUri(timestamp, nodeName) {
-    return `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/${nodeName}/hls/${timestamp}/`
-  }
+  debugLinks = (hlsUri, awsConsoleUri) => (
+    <div className="ml-auto">
+      <a href={hlsUri} className="mx-2" target="_blank">HLS</a>
+      <a href={awsConsoleUri} className="mx-2" target="_blank">AWS</a>
+    </div>
+  )
 
-  fetchTimestamp = () => {
-    const nodeName = this.props.nodeName
-    const timestampURI = `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${nodeName}/latest.txt`
+  getHlsUri = (timestamp, feed) =>
+    `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${feed}/hls/${timestamp}/live.m3u8`
+
+  getAwsConsoleUri = (timestamp, nodeName) =>
+    `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/${nodeName}/hls/${timestamp}/`
+
+  fetchTimestamp = feed => {
+    const timestampURI = `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
     xhr.open('GET', timestampURI)
@@ -27,10 +52,13 @@ export default class Player extends Component {
         const timestamp = xhr.responseText.trim()
         if (ENV.development) console.log('Latest timestamp: ' + timestamp)
         if (timestamp != this.state.timestamp) {
-          this.setState({timestamp: timestamp})
+          this.setState({
+            timestamp: timestamp,
+            hlsURI: this.getHlsUri(timestamp, feed),
+          })
           if (ENV.development)
             console.log(
-              'New stream instance: ' + this.getHlsUri(timestamp, nodeName),
+              'New stream instance: ' + this.getHlsUri(timestamp, feed),
             )
         }
       }
@@ -39,71 +67,42 @@ export default class Player extends Component {
   }
 
   componentDidMount() {
-    this.fetchTimestamp()
-    setInterval(this.fetchTimestamp, 10000)
+    this.fetchTimestamp(this.props.currentFeed.node)
+    setInterval(() => this.fetchTimestamp(this.props.currentFeed.node), 10000)
   }
 
+  setControls = controls => this.setState({...controls})
+
   render() {
-    const timestamp = this.state.timestamp
-    const nodeName = this.props.nodeName
-    const hlsUri = this.getHlsUri(timestamp, nodeName)
-    const awsConsoleUri = this.getAwsConsoleUri(timestamp, nodeName)
+    const {currentFeed} = this.props
+    const {hlsURI, playPause} = this.state
 
-    const sources = [{src: hlsUri, type: 'application/vnd.apple.mpegurl'}]
-    const config = {hls: {debug: ENV.development}}
-    const tracks = {}
-
+    const awsConsoleUri = this.getAwsConsoleUri(
+      this.state.timestamp,
+      currentFeed.node,
+    )
     return (
-      <div className="player">
-        <div className="container">
-          <div className="row justify-content-lg-center mt-4 player-element">
-            <MediaElement
-              key={hlsUri}
-              id="player1"
-              mediaType="audio"
-              preload="auto"
-              controls
-              width="640"
-              height="360"
-              poster=""
-              autoplay
-              sources={JSON.stringify(sources)}
-              options={JSON.stringify(config)}
-              tracks={JSON.stringify(tracks)}
-            />
-          </div>
-          {ENV.development && this.debugLinks(hlsUri, awsConsoleUri)}
-        </div>
+      <div className="audio-player text-light d-flex align-items-center justify-content-start">
+        <FontAwesomeIcon
+          size="3x"
+          {...this.playIconOpts(this.state)}
+          className="mr-3"
+          onClick={playPause}
+        />
+        <Link to={currentFeed.slug} className="text-light">
+          {currentFeed.name}
+        </Link>
+        {hlsURI && (
+          <MediaStreamer
+            src={hlsURI}
+            onReady={this.setControls}
+            onLoading={() => this.setState({isLoading: true})}
+            onPlaying={() => this.setState({isLoading: false, isPlaying: true})}
+            onPaused={() => this.setState({isLoading: false, isPlaying: false})}
+          />
+        )}
+        {ENV.development && this.debugLinks(hlsURI, awsConsoleUri)}
       </div>
     )
   }
-
-  debugLinks = (hlsUri, awsConsoleUri) => (
-    <div className="debug-info row p-6 alert alert-primary">
-      <div className="col-sm">
-        <div className="row">
-          <div className="col-sm">
-            <h6>Debug links (for developers)</h6>
-          </div>
-        </div>
-        <div>
-          <small>{this.state.timestamp}</small>
-        </div>
-        <div>
-          <small>
-            <a className="alert-link" href={hlsUri}>
-              {hlsUri}
-            </a>
-          </small>
-        </div>
-        <div>
-          <small>
-            <a className="alert-link" href={awsConsoleUri}>
-              {awsConsoleUri}
-            </a>
-          </small>
-        </div>
-      </div>
-    </div>
-  )
 }

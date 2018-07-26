@@ -1,24 +1,11 @@
 @import "variables";
 
-.player {
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-
-  h1, h2 {
-    font-weight: normal;
-  }
-
-  audio {
-    width: 400px;
-    margin-top: 20px;
-  }
-
-  a {
-    color: #42b983;
-  }
-
-  .debug-info {
-    margin-top: 50px;
+.audio-player {
+  grid-area: audio-player;
+  padding: 10px;
+  background-color: $dark;
+  // box-shadow: $top-box-shadow;
+  .video-js {
+    display: none;
   }
 }

@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import {gql} from 'apollo-boost'
 import {Query} from 'react-apollo'
 
-import AudioPlayer from './AudioPlayer'
+import Player from './Player'
 import Header from './Header'
 import FeedList from './FeedList'
 import FeedPage from './FeedPage'
@@ -13,9 +13,6 @@ import 'styles/home.scss'
 export default class Home extends Component {
   feeds = [
     {name: 'Seattle', slug: 'seattle', node: 'rpi_seattle'},
-    {name: 'Neah Bay', slug: 'neah-bay', node: 'neah-bay'},
-    {name: 'Port Townsend', slug: 'port-townsend', node: 'port-townsend'},
-    {name: 'Lime Kiln', slug: 'lime-kiln', node: 'lime-kiln'}
   ]
 
   state = {
@@ -55,8 +52,9 @@ export default class Home extends Component {
           </p>
         </div>
 
-        <AudioPlayer currentFeed={this.state.currentFeed} />
+        <Player currentFeed={this.state.currentFeed} />
       </div>
     )
   }
+
 }

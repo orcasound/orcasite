@@ -83,13 +83,13 @@ module.exports = (env, argv) => {
 
         {
           test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-          exclude: /node_modules\/(?!(mediaelement)\/).*/,
+          exclude: /node_modules/,
           query: { name: "fonts/[hash].[ext]" },
           loader: "file-loader",
         },
         {
           test: /\.(css|scss)$/,
-          exclude: /node_modules\/(?!(mediaelement|video.js)\/).*/,
+          exclude: /node_modules\/(?!(video.js)\/).*/,
           use: [
             'css-hot-loader',
             MiniCssExtractPlugin.loader,
