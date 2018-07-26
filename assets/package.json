@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run watch",
     "watch": "MIX_ENV=dev webpack-dev-server --mode development --inline --hot --stdin --colors --public localhost:8080",
-    "deploy": "MIX_ENV=prod webpack --mode production --env.prod --optimize-minimize"
+    "deploy": "MIX_ENV=prod webpack --mode production --env.prod"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.1",
