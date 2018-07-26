@@ -20,7 +20,6 @@
     "graphql-tag": "^2.9.2",
     "hls.js": "^0.9.1",
     "jquery": "^3.3.1",
-    "mediaelement": "^4.2.9",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "popper.js": "^1.14.1",

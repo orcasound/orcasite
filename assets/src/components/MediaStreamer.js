@@ -4,15 +4,14 @@ import 'videojs-flash'
 import 'videojs-contrib-hls'
 import videojs from 'video.js'
 
-// import 'video.js/dist/video-js.css'
 
 export default class MediaStreamer extends Component {
   componentDidMount() {
-    // instantiate Video.js
-    this.player = videojs(this.videoNode)
-
-    window.player = this.player
-    window.videojs = videojs
+    this.player = videojs(this.videoNode, {
+      hls: {
+        liveSyncDurationCount: 12 // segments
+      }
+    })
 
     this.player.ready(() => {
       this.props.onReady(this.controls)
@@ -59,7 +58,7 @@ export default class MediaStreamer extends Component {
     const { src } = this.props
 
     return (
-      <video ref={node => (this.videoNode = node)} className="video-js" autoPlay controls >
+      <video ref={node => (this.videoNode = node)} className="video-js" >
         <source src={src} type="application/x-mpegURL" />
       </video>
     )
