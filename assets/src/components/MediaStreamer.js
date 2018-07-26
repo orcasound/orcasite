@@ -1,16 +1,25 @@
 import React, {Component} from 'react'
 
-import 'videojs-flash'
 import 'videojs-contrib-hls'
 import videojs from 'video.js'
 
-
 export default class MediaStreamer extends Component {
   componentDidMount() {
+
+    this.player = videojs(this.videoNode, {
+      sources: [{
+        src: this.props.src,
+        type: 'application/x-mpegurl'
+      }]
+    })
     this.player = videojs(this.videoNode, {
       hls: {
-        liveSyncDurationCount: 12 // segments
-      }
+        liveSyncDurationCount: 12, //segments
+      },
+      sources: [{
+        src: this.props.src,
+        type: 'application/x-mpegurl'
+      }]
     })
 
     this.player.ready(() => {
@@ -18,7 +27,7 @@ export default class MediaStreamer extends Component {
       this.player.play()
     })
 
-    this.player.on('playing', (e) => {
+    this.player.on('playing', e => {
       this.props.onPlaying()
     })
 
@@ -29,11 +38,8 @@ export default class MediaStreamer extends Component {
     this.player.on('waiting', () => {
       this.props.onLoading()
     })
-
-
   }
 
-  // destroy player on unmount
   componentWillUnmount() {
     if (this.player) {
       this.player.dispose()
@@ -41,26 +47,30 @@ export default class MediaStreamer extends Component {
   }
 
   play = () => {
-    this.player.play()
+    if (this.player) {
+      this.player.play()
+    }
   }
 
   pause = () => {
-    this.player.pause()
+    if (this.player) {
+      this.player.pause()
+    }
   }
 
   playPause = () => {
-    this.player.paused() ? this.play() : this.pause()
+    if (this.player) {
+      this.player.paused() ? this.play() : this.pause()
+    }
   }
 
   controls = {play: this.play, pause: this.pause, playPause: this.playPause}
 
   render() {
-    const { src } = this.props
+    const {src} = this.props
 
     return (
-      <video ref={node => (this.videoNode = node)} className="video-js" >
-        <source src={src} type="application/x-mpegURL" />
-      </video>
+      <video ref={node => {this.videoNode = node}} className="video-js" />
     )
   }
 }

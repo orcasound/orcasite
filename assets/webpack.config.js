@@ -10,13 +10,17 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const autoprefixer = require("autoprefixer");
 
-
 /*
  * Configuration
  **/
 module.exports = (env, argv) => {
   const isDev = !(env && env.prod) && argv.mode !== 'production';
-  const devtool = isDev ? "eval" : false;
+  // Turned off uglifying due to minimization of webworker inlining not having 'window' defined
+  // See:
+  // https://github.com/videojs/videojs-contrib-hls/issues/600
+  // https://github.com/video-dev/hls.js/issues/187
+  // const devtool = isDev ? "eval" : false;
+  const devtool = "eval";
 
   return {
     devtool: devtool,
