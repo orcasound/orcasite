@@ -5,16 +5,16 @@ import videojs from 'video.js'
 
 export default class MediaStreamer extends Component {
   componentDidMount() {
-
     this.player = videojs(this.videoNode, {
-      sources: [{
-        src: this.props.src,
-        type: 'application/x-mpegurl'
-      }]
-    })
-    this.player = videojs(this.videoNode, {
-      hls: {
-        liveSyncDurationCount: 12, //segments
+      html5: {
+        hls: {
+          liveSyncDurationCount: 12
+        },
+      },
+      flash: {
+        hls: {
+          liveSyncDurationCount: 12
+        },
       },
       sources: [{
         src: this.props.src,
