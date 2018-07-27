@@ -8,7 +8,6 @@ import {faGithub} from '@fortawesome/free-brands-svg-icons'
 import 'styles/header.scss'
 export default class Header extends Component {
   render() {
-      console.log(faGithub)
     return (
       <header className="header d-flex justify-content-between align-items-center">
         <Link to="/" className="logo">
