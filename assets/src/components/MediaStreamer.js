@@ -19,6 +19,7 @@ export default class MediaStreamer extends Component {
 
     this.player.ready(() => {
       this.props.onReady(this.controls)
+      this.player.play()
       this.player.tech().one('progress', (e) => {
         this.seekToLive(INITIAL_REWIND_AMOUNT)
       })
@@ -30,7 +31,7 @@ export default class MediaStreamer extends Component {
       this.latencyUpdateInterval = setInterval(() => {
         this.props.onLatencyUpdate(this.getLatency(), this.player.currentTime())
       }, 1000);
-      this.player.play()
+      
     })
 
     this.player.on('playing', e => {
