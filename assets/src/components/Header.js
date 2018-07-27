@@ -13,13 +13,13 @@ export default class Header extends Component {
         <Link to="/" className="logo">
           Orcasound
         </Link>
-        <Link
-          to="https://github.com/orcasound"
+        <a
+          href="https://github.com/orcasound"
           target="_blank"
           className="btn btn-outline-primary">
           <FontAwesomeIcon icon={faGithub} className="mr-2" />
           Github
-        </Link>
+        </a>
       </header>
     )
   }
