@@ -18,6 +18,11 @@ export default class AudioPlayer extends Component {
     timestamp: '',
     isLoading: true,
     isPlaying: false,
+    debugInfo: {
+      playerTime: 0,
+      latencyHistory: [0],
+    },
+    
     play: () => {},
     pause: () => {},
     playPause: () => {},
@@ -29,12 +34,22 @@ export default class AudioPlayer extends Component {
     return {icon: faPlay}
   }
 
-  debugLinks = (hlsUri, awsConsoleUri) => (
+  debugInfo = (hlsUri, awsConsoleUri) => (
     <div className="ml-auto">
+      <span className="mr-2" title="Stream Latency">{Math.round(this.getStreamLatency())}</span>
+      <span className="mr-2" title="Total Latency">{Math.round(this.getTotalLatency())}</span>
       <a href={hlsUri} className="mx-2" target="_blank">HLS</a>
       <a href={awsConsoleUri} className="mx-2" target="_blank">AWS</a>
     </div>
   )
+
+  getStreamLatency = () => {
+    return this.state.debugInfo.latencyHistory[this.state.debugInfo.latencyHistory.length - 1]
+  }
+
+  getTotalLatency = () => {
+    return Math.floor(Date.now() / 1000) - (+this.state.timestamp + this.state.debugInfo.playerTime)
+  }
 
   getHlsUri = (timestamp, feed) =>
     `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${feed}/hls/${timestamp}/live.m3u8`
@@ -99,9 +114,13 @@ export default class AudioPlayer extends Component {
             onLoading={() => this.setState({isLoading: true})}
             onPlaying={() => this.setState({isLoading: false, isPlaying: true})}
             onPaused={() => this.setState({isLoading: false, isPlaying: false})}
+            onLatencyUpdate={(newestLatency, playerTime) => this.setState({ debugInfo: {
+              playerTime: playerTime,
+              latencyHistory: this.state.debugInfo.latencyHistory.concat(newestLatency) }
+            })}
           />
         )}
-        {ENV.development && this.debugLinks(hlsURI, awsConsoleUri)}
+        {this.debugInfo(hlsURI, awsConsoleUri)}
       </div>
     )
   }
