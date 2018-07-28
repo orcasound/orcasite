@@ -12,7 +12,7 @@ import 'styles/home.scss'
 
 export default class Home extends Component {
   feeds = [
-    {name: 'Seattle', slug: 'seattle', node: 'rpi_seattle'},
+    {name: 'Orcasound Lab (Haro Strait)', slug: 'seattle', node: 'rpi_seattle'},
   ]
 
   state = {
