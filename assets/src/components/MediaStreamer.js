@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 
-import 'videojs-contrib-hls'
 import videojs from 'video.js'
 
 export default class MediaStreamer extends Component {
@@ -8,7 +7,7 @@ export default class MediaStreamer extends Component {
 
     const MAX_LATENCY = 300;
     const INITIAL_REWIND_AMOUNT = 90;
-    const RETRY_REWIND_AMOUNT = 15;
+    const RETRY_REWIND_AMOUNT = 30;
 
     this.player = videojs(this.videoNode, {
       sources: [{
@@ -21,7 +20,9 @@ export default class MediaStreamer extends Component {
       this.props.onReady(this.controls)
       this.player.play()
       this.player.tech().one('progress', (e) => {
-        this.seekToLive(INITIAL_REWIND_AMOUNT)
+        // TODO: This seems to break if the first segment loads with no errors
+        // Diabled for now
+        //this.seekToLive(INITIAL_REWIND_AMOUNT)
       })
       this.player.tech().on('retryplaylist', (e) => {
         if (this.getLatency() < MAX_LATENCY) {
