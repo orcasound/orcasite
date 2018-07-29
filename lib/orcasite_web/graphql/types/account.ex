@@ -1,4 +1,4 @@
-defmodule OrcasiteWeb.Schema.AccountTypes do
+defmodule OrcasiteWeb.Types.Account do
   use Absinthe.Schema.Notation
 
   @desc "A user"

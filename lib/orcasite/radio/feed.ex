@@ -1,4 +1,4 @@
-defmodule Orcasite.Listening.Feed do
+defmodule Orcasite.Radio.Feed do
   use Ecto.Schema
   import Ecto.Changeset
 
