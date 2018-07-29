@@ -44,7 +44,9 @@ defmodule Orcasite.Mixfile do
       {:absinthe, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
       {:poison, "~> 3.1.0"}, # JSON parser, works with Absinthe out of the box
-      {:logfmt, "~> 3.0"}
+      {:logfmt, "~> 3.0"},
+      {:geo_postgis, "~> 2.0"},
+      {:jason, "~> 1.1"}
     ]
   end
 
@@ -58,7 +60,7 @@ defmodule Orcasite.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      "test": ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

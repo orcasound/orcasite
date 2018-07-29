@@ -16,4 +16,5 @@ config :orcasite, Orcasite.Repo,
   password: "postgres",
   database: "orcasite_test",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  types: Orcasite.PostgresTypes

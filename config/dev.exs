@@ -58,4 +58,5 @@ config :orcasite, Orcasite.Repo,
   password: "postgres",
   database: "orcasite_dev",
   hostname: "localhost",
-  pool_size: 10
+  pool_size: 10,
+  types: Orcasite.PostgresTypes
