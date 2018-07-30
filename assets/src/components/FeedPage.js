@@ -21,6 +21,10 @@ export default class FeedPage extends Component {
             return <Loader />
           }
 
+          if (error) {
+            return <div>Couldn't find feed for {slug}</div>
+          }
+
           const {feed} = data
           const [lat, long] = feed.locationPoint.coordinates
           return (
