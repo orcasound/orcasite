@@ -18,7 +18,7 @@ export default class MediaStreamer extends Component {
 
     this.player.ready(() => {
       this.props.onReady(this.controls)
-      this.player.play()
+      // this.player.play()
       this.player.tech().one('progress', (e) => {
         // TODO: This seems to break if the first segment loads with no errors
         // Diabled for now
@@ -32,7 +32,7 @@ export default class MediaStreamer extends Component {
       this.latencyUpdateInterval = setInterval(() => {
         this.props.onLatencyUpdate(this.getLatency(), this.player.currentTime())
       }, 1000);
-      
+
     })
 
     this.player.on('playing', e => {

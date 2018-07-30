@@ -6,8 +6,9 @@ defmodule OrcasiteWeb.Types.Feed do
 
   object :feed do
     field :id, :id
-    field :location_name, :string
+    field :name, :string
     field :node_name, :string
+    field :slug, :string
     field :location_point, :json do
       resolve fn %{location_point: point}, _, _  ->
         Geo.JSON.encode(point)

@@ -6,7 +6,7 @@ defmodule Orcasite.Repo.Migrations.CreateFeeds do
     create table(:feeds) do
       add :name, :string
       add :node_name, :string
-      add :location_name, :string
+      add :slug, :string
 
       timestamps()
     end

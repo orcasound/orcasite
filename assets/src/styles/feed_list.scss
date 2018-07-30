@@ -1,5 +1,25 @@
 @import "variables";
 $spacing: 7px;
+$feed-item-height: 100px;
+$feed-item-width: 150px;
+$ripple-color: $accent;
+$ripple-alpha: 0.7;
+
+@keyframes ripple {
+  0%
+  {
+    box-shadow:
+    0 0 0 0 rgba($ripple-color, $ripple-alpha),
+    0 0 0 10px rgba($ripple-color, $ripple-alpha),
+    0 0 0 30px rgba($ripple-color, $ripple-alpha),
+    0 0 0 60px rgba($ripple-color, $ripple-alpha);
+  }
+
+  100%
+  {
+    box-shadow: 0 0 0 10px rgba($ripple-color, $ripple-alpha), 0 0 0 30px rgba($ripple-color, $ripple-alpha), 0 0 0 60px rgba($ripple-color, $ripple-alpha), 0 0 0 90px rgba($ripple-color, 0);
+  }
+}
 
 .feed-list {
   grid-area: feed-list;
@@ -10,9 +30,12 @@ $spacing: 7px;
   overflow-x: auto;
   padding: $spacing;
   margin: 0px;
+  min-height: $feed-item-height + 2 * $spacing;
+  min-width: $feed-item-width + 2 * $spacing;
 
   @media (min-width: #{map-get($grid-breakpoints, md)}) {
     flex-direction: column;
+    height: 100%;
   }
 
   .feed-item {
@@ -25,6 +48,7 @@ $spacing: 7px;
     justify-content: center;
     align-items: center;
     border-radius: 3px;
+    overflow: hidden;
 
     &.feed-item:not(:last-of-type) {
       margin-right: $spacing;
@@ -33,6 +57,19 @@ $spacing: 7px;
         margin-right: 0;
         margin-bottom: $spacing;
       }
+    }
+
+    &.loading {
+      background-color: #ccc;
+    }
+
+    .loader {
+      border-radius: 50px;
+      background-color: $ripple-color;
+      height: 20px;
+      width: 20px;
+      -webkit-animation: ripple 1s linear infinite;
+      animation: ripple 1s linear infinite;
     }
 
     a {

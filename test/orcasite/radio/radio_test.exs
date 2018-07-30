@@ -6,9 +6,9 @@ defmodule Orcasite.RadioTest do
   describe "feeds" do
     alias Orcasite.Radio.Feed
 
-    @valid_attrs %{location_name: "some location_name", name: "some name", node_name: "some node_name"}
-    @update_attrs %{location_name: "some updated location_name", name: "some updated name", node_name: "some updated node_name"}
-    @invalid_attrs %{location_name: nil, name: nil, node_name: nil}
+    @valid_attrs %{slug: "some slug", name: "some name", node_name: "some node_name"}
+    @update_attrs %{slug: "some updated slug", name: "some updated name", node_name: "some updated node_name"}
+    @invalid_attrs %{slug: nil, name: nil, node_name: nil}
 
     def feed_fixture(attrs \\ %{}) do
       {:ok, feed} =
@@ -31,7 +31,7 @@ defmodule Orcasite.RadioTest do
 
     test "create_feed/1 with valid data creates a feed" do
       assert {:ok, %Feed{} = feed} = Radio.create_feed(@valid_attrs)
-      assert feed.location_name == "some location_name"
+      assert feed.slug == "some slug"
       assert feed.name == "some name"
       assert feed.node_name == "some node_name"
     end
@@ -44,7 +44,7 @@ defmodule Orcasite.RadioTest do
       feed = feed_fixture()
       assert {:ok, feed} = Radio.update_feed(feed, @update_attrs)
       assert %Feed{} = feed
-      assert feed.location_name == "some updated location_name"
+      assert feed.slug == "some updated slug"
       assert feed.name == "some updated name"
       assert feed.node_name == "some updated node_name"
     end
