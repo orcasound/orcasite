@@ -19,8 +19,7 @@ module.exports = (env, argv) => {
   // See:
   // https://github.com/videojs/videojs-contrib-hls/issues/600
   // https://github.com/video-dev/hls.js/issues/187
-  // const devtool = isDev ? "eval" : false;
-  const devtool = "eval";
+  const devtool = isDev ? "eval-source-map" : "eval";
 
   return {
     devtool: devtool,

@@ -1,6 +1,3 @@
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-
 export const AUTH_TOKEN = 'auth_token'
 
 export const getToken = () => {

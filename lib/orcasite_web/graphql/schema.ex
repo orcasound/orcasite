@@ -8,6 +8,11 @@ defmodule OrcasiteWeb.Schema do
 
   query do
     field :feeds, list_of(:feed), resolve: &Resolvers.Feed.index/2
+    field :feed, :feed do
+      arg :slug, :string
+
+      resolve &Resolvers.Feed.show/2
+    end
   end
 
 end

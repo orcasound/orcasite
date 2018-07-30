@@ -10,14 +10,12 @@ $ripple-alpha: 0.7;
   {
     box-shadow:
     0 0 0 0 rgba($ripple-color, $ripple-alpha),
-    0 0 0 10px rgba($ripple-color, $ripple-alpha),
-    0 0 0 30px rgba($ripple-color, $ripple-alpha),
-    0 0 0 60px rgba($ripple-color, $ripple-alpha);
   }
 
   100%
   {
-    box-shadow: 0 0 0 10px rgba($ripple-color, $ripple-alpha), 0 0 0 30px rgba($ripple-color, $ripple-alpha), 0 0 0 60px rgba($ripple-color, $ripple-alpha), 0 0 0 90px rgba($ripple-color, 0);
+    box-shadow:
+    0 0 0 90px rgba($ripple-color, 0);
   }
 }
 
@@ -63,7 +61,7 @@ $ripple-alpha: 0.7;
       background-color: #ccc;
     }
 
-    .loader {
+    .feed-item-loader {
       border-radius: 50px;
       background-color: $ripple-color;
       height: 20px;

@@ -13,8 +13,8 @@ export const LIST_FEEDS = gql`
 `
 
 export const GET_FEED = gql`
-{
-  feed(id: $id) {
+query feed($slug: String!) {
+  feed(slug: $slug) {
     id
     name
     slug

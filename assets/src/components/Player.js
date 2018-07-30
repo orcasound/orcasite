@@ -7,25 +7,51 @@ import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
 import MediaStreamer from './MediaStreamer'
 
 import {feedType} from 'types/feedType'
+import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
 
 import 'styles/player.scss'
 
-export default class AudioPlayer extends Component {
+export default class Player extends Component {
   static propTypes = {
     feed: feedType,
   }
-  state = {
-    timestamp: '',
-    isLoading: true,
-    isPlaying: false,
-    debugInfo: {
-      playerTime: 0,
-      latencyHistory: [0],
-    },
-    
-    play: () => {},
-    pause: () => {},
-    playPause: () => {},
+
+  constructor(props) {
+    super(props)
+
+    const currentFeed = this.props.currentFeed || getCurrentFeed() || {}
+
+    this.state = {
+      currentFeed,
+      timestamp: '',
+      isLoading: true,
+      isPlaying: false,
+      debugInfo: {
+        playerTime: 0,
+        latencyHistory: [0],
+      },
+      play: () => {},
+      pause: () => {},
+      playPause: () => {},
+    }
+  }
+
+  isEmpty = object => Object.keys(object).length === 0
+
+  componentDidMount() {
+    this.fetchTimestamp(this.state.currentFeed.nodeName)
+    setInterval(
+      () => this.fetchTimestamp(this.state.currentFeed.nodeName),
+      10000,
+    )
+  }
+
+  componentDidUpdate(prevProps) {
+    const {currentFeed} = this.props
+    if (currentFeed !== prevProps.currentFeed) {
+      storeCurrentFeed(currentFeed)
+      this.setState({currentFeed})
+    }
   }
 
   playIconOpts = ({isLoading, isPlaying}) => {
@@ -36,19 +62,32 @@ export default class AudioPlayer extends Component {
 
   debugInfo = (hlsUri, awsConsoleUri) => (
     <div className="ml-auto">
-      <span className="mr-2" title="Stream Latency">{Math.round(this.getStreamLatency())}</span>
-      <span className="mr-2" title="Total Latency">{Math.round(this.getTotalLatency())}</span>
-      <a href={hlsUri} className="mx-2" target="_blank">HLS</a>
-      <a href={awsConsoleUri} className="mx-2" target="_blank">AWS</a>
+      <span className="mr-2" title="Stream Latency">
+        {Math.round(this.getStreamLatency())}
+      </span>
+      <span className="mr-2" title="Total Latency">
+        {Math.round(this.getTotalLatency())}
+      </span>
+      <a href={hlsUri} className="mx-2" target="_blank">
+        HLS
+      </a>
+      <a href={awsConsoleUri} className="mx-2" target="_blank">
+        AWS
+      </a>
     </div>
   )
 
   getStreamLatency = () => {
-    return this.state.debugInfo.latencyHistory[this.state.debugInfo.latencyHistory.length - 1]
+    return this.state.debugInfo.latencyHistory[
+      this.state.debugInfo.latencyHistory.length - 1
+    ]
   }
 
   getTotalLatency = () => {
-    return Math.floor(Date.now() / 1000) - (+this.state.timestamp + this.state.debugInfo.playerTime)
+    return (
+      Math.floor(Date.now() / 1000) -
+      (+this.state.timestamp + this.state.debugInfo.playerTime)
+    )
   }
 
   getHlsUri = (timestamp, feed) =>
@@ -81,47 +120,58 @@ export default class AudioPlayer extends Component {
     xhr.send()
   }
 
-  componentDidMount() {
-    this.fetchTimestamp(this.props.currentFeed.node)
-    setInterval(() => this.fetchTimestamp(this.props.currentFeed.node), 10000)
-  }
-
   setControls = controls => this.setState({...controls})
 
   render() {
-    const {currentFeed} = this.props
-    const {hlsURI, playPause} = this.state
+    const {hlsURI, playPause, currentFeed} = this.state
 
     const awsConsoleUri = this.getAwsConsoleUri(
       this.state.timestamp,
-      currentFeed.node,
+      currentFeed.nodeName,
     )
-    return (
-      <div className="audio-player text-light d-flex align-items-center justify-content-start">
-        <FontAwesomeIcon
-          size="3x"
-          {...this.playIconOpts(this.state)}
-          className="mr-3"
-          onClick={playPause}
-        />
-        <Link to={currentFeed.slug} className="text-light">
-          {currentFeed.name}
-        </Link>
-        {hlsURI && (
-          <MediaStreamer
-            src={hlsURI}
-            onReady={this.setControls}
-            onLoading={() => this.setState({isLoading: true})}
-            onPlaying={() => this.setState({isLoading: false, isPlaying: true})}
-            onPaused={() => this.setState({isLoading: false, isPlaying: false})}
-            onLatencyUpdate={(newestLatency, playerTime) => this.setState({ debugInfo: {
-              playerTime: playerTime,
-              latencyHistory: this.state.debugInfo.latencyHistory.concat(newestLatency) }
-            })}
+
+    if (currentFeed && Object.keys(currentFeed).length !== 0) {
+      return (
+        <div className="audio-player text-light d-flex align-items-center justify-content-start">
+          <FontAwesomeIcon
+            size="3x"
+            {...this.playIconOpts(this.state)}
+            className="mr-3"
+            onClick={playPause}
           />
-        )}
-        {this.debugInfo(hlsURI, awsConsoleUri)}
-      </div>
-    )
+          {currentFeed.slug && (
+            <Link to={currentFeed.slug} className="text-light">
+              {currentFeed.name}
+            </Link>
+          )}
+          {hlsURI && (
+            <MediaStreamer
+              src={hlsURI}
+              onReady={this.setControls}
+              onLoading={() => this.setState({isLoading: true})}
+              onPlaying={() =>
+                this.setState({isLoading: false, isPlaying: true})
+              }
+              onPaused={() =>
+                this.setState({isLoading: false, isPlaying: false})
+              }
+              onLatencyUpdate={(newestLatency, playerTime) =>
+                this.setState({
+                  debugInfo: {
+                    playerTime: playerTime,
+                    latencyHistory: this.state.debugInfo.latencyHistory.concat(
+                      newestLatency,
+                    ),
+                  },
+                })
+              }
+            />
+          )}
+          {this.debugInfo(hlsURI, awsConsoleUri)}
+        </div>
+      )
+    }
+
+    return <div />
   }
 }

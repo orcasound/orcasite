@@ -1,24 +1,42 @@
 import React, {Component} from 'react'
+import {Query} from 'react-apollo'
 
-import {func} from 'prop-types'
+import {string, func} from 'prop-types'
 
-import {feedType} from 'types/feedType'
+import {GET_FEED} from 'queries/feeds'
+
+import Loader from 'components/Loader'
 
 export default class FeedPage extends Component {
   static propTypes = {
-    feed: feedType,
-    onChangeFeed: func
+    feedSlug: string.isRequired,
+    onChangeFeed: func,
   }
   render() {
-    const {feed} = this.props
+    const {feedSlug: slug} = this.props
     return (
-      <div className="feed-page mb-3">
-        <h1>{feed.name} node</h1>
+      <Query query={GET_FEED} variables={{slug}}>
+        {({data, loading, error}) => {
+          if (loading) {
+            return <Loader />
+          }
 
-        <button className="btn btn-primary" onClick={() => this.props.onChangeFeed(feed)}>
-          Listen to {feed.name}
-        </button>
-      </div>
+          const {feed} = data
+          const [lat, long] = feed.locationPoint.coordinates
+          return (
+            <div className="feed-page mb-3">
+              <h1>{feed.name} node</h1>
+              <p>Located at: {lat}, {long}</p>
+
+              <button
+                className="btn btn-primary"
+                onClick={() => this.props.onChangeFeed(feed)}>
+                Listen to {feed.name}
+              </button>
+            </div>
+          )
+        }}
+      </Query>
     )
   }
 }

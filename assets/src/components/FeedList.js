@@ -4,9 +4,6 @@ import {Query} from 'react-apollo'
 
 import 'styles/feed_list.scss'
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
-
 import {LIST_FEEDS} from 'queries/feeds'
 
 export default class FeedList extends Component {
@@ -18,7 +15,7 @@ export default class FeedList extends Component {
             return (
               <ul className="feed-list">
                 <li className="feed-item loading">
-                  <div className="loader"></div>
+                  <div className="feed-item-loader"></div>
                 </li>
               </ul>
             )
