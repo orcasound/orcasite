@@ -21,16 +21,25 @@ export default class FeedPage extends Component {
             return <Loader />
           }
 
-          if (error) {
-            return <div>Couldn't find feed for {slug}</div>
+          const {feed} = data
+
+          if (error || !feed) {
+            return <h4 className="mb-4">Couldn't find feed for {slug}</h4>
           }
 
-          const {feed} = data
-          const [lat, long] = feed.locationPoint.coordinates
+          const {
+            locationPoint: {coordinates: [lat, long] = []},
+          } = feed
+
           return (
             <div className="feed-page mb-3">
               <h1>{feed.name} node</h1>
-              <p>Located at: {lat}, {long}</p>
+              {lat &&
+                long && (
+                  <p>
+                    Located at: {lat}, {long}
+                  </p>
+                )}
 
               <button
                 className="btn btn-primary"
