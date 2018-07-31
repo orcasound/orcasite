@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
 
 import MediaStreamer from './MediaStreamer'
+import DetectButton from './DetectButton'
 
 import {feedType} from 'types/feedType'
 import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
@@ -120,13 +121,17 @@ export default class Player extends Component {
     xhr.send()
   }
 
+  getCurrentTime = () => {
+    console.log("This is where we should return player time")
+  }
+
   setControls = controls => this.setState({...controls})
 
   render() {
-    const {hlsURI, playPause, currentFeed} = this.state
+    const {hlsURI, playPause, currentFeed, timestamp} = this.state
 
     const awsConsoleUri = this.getAwsConsoleUri(
-      this.state.timestamp,
+      timestamp,
       currentFeed.nodeName,
     )
 
@@ -168,6 +173,7 @@ export default class Player extends Component {
             />
           )}
           {this.debugInfo(hlsURI, awsConsoleUri)}
+          <DetectButton feed={currentFeed} getPlayerTime={this.getPlayerTime} timestamp={timestamp}/>
         </div>
       )
     }
