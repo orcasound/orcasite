@@ -15,7 +15,7 @@ defmodule Orcasite.Radio.Detection do
   @doc false
   def changeset(detection, attrs) do
     detection
-    |> cast(attrs, [:playlist_timestamp, :time, :source_ip])
-    |> validate_required([:playlist_timestamp, :time, :source_ip])
+    |> cast(attrs, [:feed_id, :playlist_timestamp, :time, :source_ip])
+    |> validate_required([:feed_id, :playlist_timestamp, :time, :source_ip])
   end
 end

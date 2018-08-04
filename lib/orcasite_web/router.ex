@@ -13,14 +13,21 @@ defmodule OrcasiteWeb.Router do
     plug :accepts, ["json"]
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", OrcasiteWeb do
-  #   pipe_through :api
-  # end
+  pipeline :graphql do
+    plug OrcasiteWeb.Context
+  end
 
-  forward "/graphql", Absinthe.Plug, schema: OrcasiteWeb.Schema, json_codec: Jason
+  scope "/graphql" do
+    pipe_through :graphql
+
+    forward "/", Absinthe.Plug, schema: OrcasiteWeb.Schema, json_codec: Jason
+  end
+
   # For the GraphiQL interactive interface, a must-have for happy frontend devs.
-  forward "/graphiql", Absinthe.Plug.GraphiQL, schema: OrcasiteWeb.Schema, interface: :simple, json_codec: Jason
+  scope "/graphiql" do
+    pipe_through :graphql
+    forward "/", Absinthe.Plug.GraphiQL, schema: OrcasiteWeb.Schema, interface: :simple, json_codec: Jason
+  end
 
   scope "/", OrcasiteWeb do
     pipe_through :browser # Use the default browser stack

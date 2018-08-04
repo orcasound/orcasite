@@ -1,0 +1,20 @@
+@import "variables";
+
+.detect-button {
+  background-color: $accent;
+  color: $light;
+  cursor: pointer;
+  padding: 25px;
+  font-size: 1.4em;
+  user-select: none;
+
+  &:hover {
+    background-color: darken($accent, 5%);
+  }
+
+  &.disabled {
+    opacity: 0.9;
+    background-color: $secondary;
+    cursor: default;
+  }
+}

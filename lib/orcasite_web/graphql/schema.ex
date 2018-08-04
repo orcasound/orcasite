@@ -21,7 +21,11 @@ defmodule OrcasiteWeb.Schema do
   mutation do
     @desc "Submit an orca sound detection"
     field :submit_detection, :detection do
-      resolve &Resolvers.Detection.submit/3
+      arg :feed_id, :id
+      arg :playlist_timestamp, :string
+      arg :time, :datetime
+
+      resolve &Resolvers.Detection.submit/2
     end
   end
 

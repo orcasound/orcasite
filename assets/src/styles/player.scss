@@ -1,11 +1,29 @@
 @import "variables";
 
-.audio-player {
-  grid-area: audio-player;
-  padding: 10px;
+.player {
+  grid-area: player;
   background-color: $dark;
-  // box-shadow: $top-box-shadow;
+  overflow: hidden;
+  justify-content: start;
+  align-items: center;
+
   .video-js {
     display: none;
   }
+
+  display: grid;
+  grid-template-rows: 1fr auto;
+  grid-template-columns: fit-content(100px) auto 1fr;
+
+  .detect-button {
+    grid-column: 1/-1;
+  }
+
+  @media (min-width: #{map-get($grid-breakpoints, sm)}) {
+    .detect-button {
+      grid-column: -1;
+      grid-row: 1;
+    }
+  }
+
 }

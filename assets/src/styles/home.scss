@@ -9,7 +9,7 @@
     'header'
     'feed-list'
     'content'
-    'audio-player';
+    'player';
 
   @media (min-width: #{map-get($grid-breakpoints, md)}) {
     grid-template-columns: fit-content(150px) 1fr;
@@ -18,7 +18,7 @@
     grid-template-areas:
       'header       header'
       'feed-list    content'
-      'audio-player audio-player'
+      'player       player'
   }
 
   .content {

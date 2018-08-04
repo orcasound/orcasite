@@ -142,6 +142,10 @@ export default class Player extends Component {
 
   getPlayerTime = () => {
     console.log("This is where we should return player time")
+    if (ENV.development) {
+      console.log("dev")
+      return new Date()
+    }
   }
 
   setControls = controls => this.setState({...controls})
@@ -156,15 +160,15 @@ export default class Player extends Component {
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
-        <div className="audio-player text-light d-flex align-items-center justify-content-start">
+        <div className="player text-light">
           <FontAwesomeIcon
             size="3x"
             {...this.playIconOpts(this.state)}
-            className="mr-3"
+            className="m-3"
             onClick={playPause}
           />
           {currentFeed.slug && (
-            <Link to={currentFeed.slug} className="text-light">
+            <Link to={currentFeed.slug} className="text-light my-3">
               {currentFeed.name}
             </Link>
           )}
@@ -192,11 +196,11 @@ export default class Player extends Component {
             />
           )}
           {this.debugInfo(hlsURI, awsConsoleUri)}
-          <DetectButton feed={currentFeed} getPlayerTime={this.getPlayerTime} timestamp={timestamp}/>
+          <DetectButton feed={currentFeed} getPlayerTime={this.getPlayerTime} timestamp={timestamp} classNames='align-self-stretch'/>
         </div>
       )
     }
 
-    return <div />
+    return <div className="player" />
   }
 }
