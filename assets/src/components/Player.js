@@ -27,6 +27,7 @@ export default class Player extends Component {
       timestamp: '',
       isLoading: true,
       isPlaying: false,
+      intervalId: null,
       debugInfo: {
         playerTime: 0,
         latencyHistory: [0],
@@ -39,19 +40,37 @@ export default class Player extends Component {
 
   isEmpty = object => Object.keys(object).length === 0
 
+  startTimestampFetcher = () => {
+    var {currentFeed, intervalId} = this.state
+
+    if (intervalId) {
+      clearInterval(intervalId)
+    }
+    if (currentFeed && Object.keys(currentFeed).length > 0) {
+      this.fetchTimestamp(currentFeed.nodeName)
+      intervalId = setInterval(
+        () => this.fetchTimestamp(currentFeed.nodeName),
+        10000,
+      )
+
+      this.setState({intervalId})
+    }
+  }
+
   componentDidMount() {
-    this.fetchTimestamp(this.state.currentFeed.nodeName)
-    setInterval(
-      () => this.fetchTimestamp(this.state.currentFeed.nodeName),
-      10000,
-    )
+    this.startTimestampFetcher()
+  }
+
+  componentWillUnmount() {
+    const {intervalId} = this.state
+    clearInterval(intervalId)
   }
 
   componentDidUpdate(prevProps) {
     const {currentFeed} = this.props
     if (currentFeed !== prevProps.currentFeed) {
       storeCurrentFeed(currentFeed)
-      this.setState({currentFeed})
+      this.setState({currentFeed}, this.startTimestampFetcher)
     }
   }
 
