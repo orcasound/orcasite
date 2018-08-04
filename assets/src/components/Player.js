@@ -121,7 +121,7 @@ export default class Player extends Component {
     xhr.send()
   }
 
-  getCurrentTime = () => {
+  getPlayerTime = () => {
     console.log("This is where we should return player time")
   }
 
