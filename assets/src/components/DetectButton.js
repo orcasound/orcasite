@@ -34,7 +34,7 @@ export default class DetectButton extends Component {
           return (
             <div className={`detect-button d-flex justify-content-center align-items-center border-left border-dark ${this.props.classNames} ${isPlaying ? '' : 'disabled'}`} onClick={() => { this.onDetect(submitDetection)}}>
               <div className="text-nowrap">
-                {this.whale()} Activity!
+                {this.whale()} Activity
               </div>
             </div>
           )
