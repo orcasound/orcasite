@@ -9,7 +9,15 @@ export default class MediaStreamer extends Component {
     const INITIAL_REWIND_AMOUNT = 90;
     const RETRY_REWIND_AMOUNT = 30;
 
-    this.player = videojs(this.videoNode, {
+    var options = {
+      hls: {
+        overrideNative: true
+      }
+    };
+
+    this.player = videojs(this.audioNode, {
+      flash: options,
+      html5: options,
       sources: [{
         src: this.props.src,
         type: 'application/x-mpegurl'
@@ -18,12 +26,7 @@ export default class MediaStreamer extends Component {
 
     this.player.ready(() => {
       this.props.onReady(this.controls)
-      // this.player.play()
-      this.player.tech().one('progress', (e) => {
-        // TODO: This seems to break if the first segment loads with no errors
-        // Diabled for now
-        //this.seekToLive(INITIAL_REWIND_AMOUNT)
-      })
+      this.player.play()
       this.player.tech().on('retryplaylist', (e) => {
         if (this.getLatency() < MAX_LATENCY) {
           this.rewind(RETRY_REWIND_AMOUNT)
@@ -75,7 +78,7 @@ export default class MediaStreamer extends Component {
   }
 
   seekToLive = (secondsFromLive = 30) => {
-    if (this.player) {
+    if (this.player && (this.player.readyState() > 0)) {
       this.player.currentTime(this.player.seekable().end(0) - secondsFromLive)
     }
   }
@@ -102,7 +105,7 @@ export default class MediaStreamer extends Component {
     const {src} = this.props
 
     return (
-      <video ref={node => {this.videoNode = node}} className="video-js" />
+      <audio ref={node => {this.audioNode = node}} className="video-js" />
     )
   }
 }
