@@ -40,6 +40,22 @@ defmodule Orcasite.Radio do
     Feed.changeset(feed, %{})
   end
 
+  def verify_can_submit_detection(
+        feed_id,
+        source_ip,
+        timeout_seconds
+      ) do
+    Detection
+    |> select(fragment("count(*) = 0"))
+    |> where(source_ip: ^source_ip, feed_id: ^feed_id)
+    |> where([d], d.inserted_at > ago(^timeout_seconds, "second"))
+    |> Repo.one()
+    |> case do
+      true -> :ok
+      false -> {:error, :recently_submitted}
+    end
+  end
+
   def list_detections do
     Repo.all(Detection)
   end

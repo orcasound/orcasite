@@ -2,7 +2,11 @@ defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.Radio
 
   def submit(
-        %{feed_id: _feed_id, playlist_timestamp: _playlist_timestamp, player_offset: _player_offset} = detection_attrs,
+        %{
+          feed_id: feed_id,
+          playlist_timestamp: _playlist_timestamp,
+          player_offset: _player_offset
+        } = detection_attrs,
         %{context: %{remote_ip: remote_ip}}
       ) do
     # Store new detection
@@ -11,12 +15,16 @@ defmodule OrcasiteWeb.Resolvers.Detection do
       |> :inet_parse.ntoa()
       |> to_string()
 
-    detection_attrs
-    |> Map.put(:source_ip, source_ip)
-    |> Radio.create_detection()
-    |> case do
-      {:ok, detection} -> {:ok, detection}
-      {:error, _} -> {:error, :invalid}
+    with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, 10) do
+      detection_attrs
+      |> Map.put(:source_ip, source_ip)
+      |> Radio.create_detection()
+      |> case do
+        {:ok, detection} -> {:ok, detection}
+        {:error, _} -> {:error, :invalid}
+      end
+    else
+      error -> error
     end
   end
 
