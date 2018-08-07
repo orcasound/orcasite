@@ -3,9 +3,14 @@
 .player {
   grid-area: player;
   background-color: $dark;
+  color: $light;
   overflow: hidden;
   justify-content: start;
   align-items: center;
+
+  .clickable {
+    cursor: pointer;
+  }
 
   .video-js {
     display: none;
@@ -13,7 +18,7 @@
 
   display: grid;
   grid-template-rows: 1fr auto;
-  grid-template-columns: fit-content(100px) auto 1fr;
+  grid-template-columns: minmax(80px, auto) auto 1fr;
 
   .detect-button {
     grid-column: 1/-1;

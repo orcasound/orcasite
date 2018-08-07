@@ -35,6 +35,7 @@ export default class Player extends Component {
       play: () => {},
       pause: () => {},
       playPause: () => {},
+      getPlayerTime: () => {}
     }
   }
 
@@ -140,18 +141,10 @@ export default class Player extends Component {
     xhr.send()
   }
 
-  getPlayerTime = () => {
-    console.log("This is where we should return player time")
-    if (ENV.development) {
-      console.log("dev")
-      return new Date()
-    }
-  }
-
-  setControls = controls => this.setState({...controls})
+  setControls = controls => this.setState({isLoading: false, ...controls})
 
   render() {
-    const {hlsURI, playPause, currentFeed, timestamp} = this.state
+    const {hlsURI, playPause, currentFeed, timestamp, isLoading, isPlaying, getPlayerTime} = this.state
 
     const awsConsoleUri = this.getAwsConsoleUri(
       timestamp,
@@ -160,11 +153,11 @@ export default class Player extends Component {
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
-        <div className="player text-light">
+        <div className="player">
           <FontAwesomeIcon
             size="3x"
             {...this.playIconOpts(this.state)}
-            className="m-3"
+            className={`m-3 ${isLoading ? '' : 'clickable'}`}
             onClick={playPause}
           />
           {currentFeed.slug && (
@@ -196,7 +189,7 @@ export default class Player extends Component {
             />
           )}
           {this.debugInfo(hlsURI, awsConsoleUri)}
-          <DetectButton feed={currentFeed} getPlayerTime={this.getPlayerTime} timestamp={timestamp} classNames='align-self-stretch'/>
+          <DetectButton isPlaying={isPlaying} feed={currentFeed} getPlayerTime={getPlayerTime} timestamp={timestamp} classNames='align-self-stretch'/>
         </div>
       )
     }

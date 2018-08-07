@@ -9,7 +9,7 @@ defmodule OrcasiteWeb.Types.Detection do
     field :feed, :feed
     field :playlist_timestamp, :integer
     field :source_ip, :string
-    field :time, :datetime
+    field :player_offset, :decimal
 
   end
 end

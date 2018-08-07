@@ -1,15 +1,18 @@
 @import "variables";
 
 .detect-button {
-  background-color: $accent;
+  $button-color: $accent;
+  background-color: $button-color;
   color: $light;
   cursor: pointer;
   padding: 25px;
   font-size: 1.4em;
   user-select: none;
 
+  transition: all 0.3s ease-out;
+
   &:hover {
-    background-color: darken($accent, 5%);
+    background-color: darken($button-color, 5%);
   }
 
   &.disabled {

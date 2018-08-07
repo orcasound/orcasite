@@ -2,7 +2,7 @@ defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.Radio
 
   def submit(
-        %{feed_id: _feed_id, playlist_timestamp: _playlist_timestamp, time: _time} = detection_attrs,
+        %{feed_id: _feed_id, playlist_timestamp: _playlist_timestamp, player_offset: _player_offset} = detection_attrs,
         %{context: %{remote_ip: remote_ip}}
       ) do
     # Store new detection

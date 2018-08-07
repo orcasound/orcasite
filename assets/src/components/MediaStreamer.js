@@ -74,6 +74,12 @@ export default class MediaStreamer extends Component {
     }
   }
 
+  getPlayerTime = () => {
+    if (this.player) {
+      return this.player.currentTime()
+    }
+  }
+
   seekToLive = (secondsFromLive = 30) => {
     if (this.player) {
       this.player.currentTime(this.player.seekable().end(0) - secondsFromLive)
@@ -96,7 +102,7 @@ export default class MediaStreamer extends Component {
     }
   }
 
-  controls = {play: this.play, pause: this.pause, playPause: this.playPause}
+  controls = {play: this.play, pause: this.pause, playPause: this.playPause, getPlayerTime: this.getPlayerTime}
 
   render() {
     const {src} = this.props

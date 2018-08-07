@@ -4,7 +4,7 @@ defmodule Orcasite.Repo.Migrations.CreateDetections do
   def change do
     create table(:detections) do
       add :playlist_timestamp, :integer
-      add :time, :utc_datetime
+      add :player_offset, :decimal
       add :source_ip, :string
       add :feed_id, references(:feeds, on_delete: :nothing)
 

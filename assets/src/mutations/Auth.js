@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 
 export const logoutMutation = gql`
-  mutation LogoutCurrentUser {
+  mutation logoutCurrentUser {
     logout {
       id
     }

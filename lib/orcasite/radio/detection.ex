@@ -6,7 +6,7 @@ defmodule Orcasite.Radio.Detection do
   schema "detections" do
     field :source_ip, :string
     field :playlist_timestamp, :integer
-    field :time, :utc_datetime
+    field :player_offset, :decimal
     field :feed_id, :id
 
     timestamps()
@@ -15,7 +15,7 @@ defmodule Orcasite.Radio.Detection do
   @doc false
   def changeset(detection, attrs) do
     detection
-    |> cast(attrs, [:feed_id, :playlist_timestamp, :time, :source_ip])
-    |> validate_required([:feed_id, :playlist_timestamp, :time, :source_ip])
+    |> cast(attrs, [:feed_id, :playlist_timestamp, :player_offset, :source_ip])
+    |> validate_required([:feed_id, :playlist_timestamp, :player_offset, :source_ip])
   end
 end

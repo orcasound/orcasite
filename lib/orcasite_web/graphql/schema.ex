@@ -23,7 +23,7 @@ defmodule OrcasiteWeb.Schema do
     field :submit_detection, :detection do
       arg :feed_id, :id
       arg :playlist_timestamp, :string
-      arg :time, :datetime
+      arg :player_offset, :decimal
 
       resolve &Resolvers.Detection.submit/2
     end
