@@ -15,17 +15,20 @@ defmodule OrcasiteWeb.Resolvers.Detection do
       |> :inet_parse.ntoa()
       |> to_string()
 
-    with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, 10) do
-      detection_attrs
-      |> Map.put(:source_ip, source_ip)
-      |> Radio.create_detection()
-      |> case do
-        {:ok, detection} -> {:ok, detection}
-        {:error, _} -> {:error, :invalid}
-      end
-    else
-      error -> error
-    end
+    :timer.sleep(3000)
+
+    # with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, 10) do
+    #   detection_attrs
+    #   |> Map.put(:source_ip, source_ip)
+    #   |> Radio.create_detection()
+    #   |> case do
+    #     {:ok, detection} -> {:ok, detection}
+    #     {:error, _} -> {:error, :invalid}
+    #   end
+    # else
+    #   error -> error
+    # end
+    {:error, :nyi}
   end
 
   def submit(_, _), do: {:error, :invalid}
