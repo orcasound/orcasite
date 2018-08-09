@@ -24,6 +24,10 @@
     background-color: darken($button-color, 5%);
   }
 
+  @media (max-width: #{map-get($grid-breakpoints, sm)}) {
+    padding: 10px 0;
+  }
+
   &.disabled {
     opacity: 0.9;
     background-color: $secondary;

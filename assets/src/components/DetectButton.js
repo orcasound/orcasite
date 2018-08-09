@@ -151,7 +151,7 @@ export default class DetectButton extends Component {
         {(submitDetection, {data}) => {
           return (
             <div
-              className={`detect-button p-0 p-sm-1 ${
+              className={`detect-button ${
                 this.props.classNames
               } ${this.buttonColor(this.state, this.props)}`}
               onClick={() => {

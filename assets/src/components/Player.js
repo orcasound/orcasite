@@ -199,7 +199,6 @@ export default class Player extends Component {
             feed={currentFeed}
             getPlayerTime={getPlayerTime}
             timestamp={timestamp}
-            classNames="align-self-stretch"
           />
         </div>
       )

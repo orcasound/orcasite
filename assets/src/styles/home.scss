@@ -11,7 +11,7 @@
     'content'
     'player';
 
-  @media (min-width: #{map-get($grid-breakpoints, md)}) {
+  @media (min-width: #{map-get($grid-breakpoints, sm)}) {
     grid-template-columns: fit-content(150px) 1fr;
     grid-template-rows: auto 1fr auto;
 
