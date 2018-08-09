@@ -18,11 +18,15 @@
     grid-template-areas:
       'header       header'
       'feed-list    content'
-      'player       player'
+      'player       player';
+
+    .content {
+      padding: 50px;
+    }
   }
 
   .content {
     overflow-y: scroll;
-    padding: 50px;
+    padding: 10px;
   }
 }

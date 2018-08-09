@@ -47,13 +47,12 @@ export default class DetectButton extends Component {
 
     const playerOffset = getPlayerTime()
     if (
-      //   feedId &&
-      //   playlistTimestamp &&
-      //   playerOffset &&
-      showDefault
-      //   isPlaying
+      feedId &&
+      playlistTimestamp &&
+      playerOffset &&
+      showDefault &&
+      isPlaying
     ) {
-      // Get current player time
       this.setState({showSubmitting: true, showDefault: false}, () => {
         submitDetection({
           variables: {feedId, playlistTimestamp, playerOffset},
@@ -152,7 +151,7 @@ export default class DetectButton extends Component {
         {(submitDetection, {data}) => {
           return (
             <div
-              className={`detect-button border-left border-dark ${
+              className={`detect-button p-0 p-sm-1 ${
                 this.props.classNames
               } ${this.buttonColor(this.state, this.props)}`}
               onClick={() => {
