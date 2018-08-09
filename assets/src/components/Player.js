@@ -195,7 +195,7 @@ export default class Player extends Component {
           )}
           {this.debugInfo(hlsURI, awsConsoleUri)}
           <DetectButton
-            isPlaying={true}
+            isPlaying={isPlaying}
             feed={currentFeed}
             getPlayerTime={getPlayerTime}
             timestamp={timestamp}
