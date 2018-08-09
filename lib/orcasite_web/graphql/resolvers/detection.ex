@@ -15,7 +15,7 @@ defmodule OrcasiteWeb.Resolvers.Detection do
       |> :inet_parse.ntoa()
       |> to_string()
 
-    with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, lockout_seconds() do
+    with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, lockout_seconds()) do
       detection_attrs
       |> Map.put(:source_ip, source_ip)
       |> Radio.create_detection()
