@@ -15,21 +15,37 @@ defmodule OrcasiteWeb.Resolvers.Detection do
       |> :inet_parse.ntoa()
       |> to_string()
 
-    :timer.sleep(3000)
+    with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, lockout_seconds() do
+      detection_attrs
+      |> Map.put(:source_ip, source_ip)
+      |> Radio.create_detection()
+      |> case do
+        {:ok, detection} ->
+          {:ok,
+           %{
+             detection: detection,
+             lockout_initial: lockout_seconds(),
+             lockout_remaining: lockout_seconds()
+           }}
 
-    # with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, 10) do
-    #   detection_attrs
-    #   |> Map.put(:source_ip, source_ip)
-    #   |> Radio.create_detection()
-    #   |> case do
-    #     {:ok, detection} -> {:ok, detection}
-    #     {:error, _} -> {:error, :invalid}
-    #   end
-    # else
-    #   error -> error
-    # end
-    {:error, :nyi}
+        {:error, _} ->
+          {:error, :invalid}
+      end
+    else
+      {:error, %{lockout_remaining: lockout_remaining}} ->
+        {:error,
+         %{
+           message: "lockout",
+           details: %{lockout_remaining: lockout_remaining, lockout_initial: lockout_seconds()}
+         }}
+
+      error ->
+        error
+    end
   end
 
   def submit(_, _), do: {:error, :invalid}
+
+  # TODO: Define this as an env var
+  defp lockout_seconds(), do: 10
 end

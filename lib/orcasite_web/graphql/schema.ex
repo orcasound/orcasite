@@ -20,7 +20,7 @@ defmodule OrcasiteWeb.Schema do
 
   mutation do
     @desc "Submit an orca sound detection"
-    field :submit_detection, :detection do
+    field :submit_detection, :detection_with_lockout do
       arg :feed_id, :id
       arg :playlist_timestamp, :string
       arg :player_offset, :decimal

@@ -43,16 +43,22 @@ defmodule Orcasite.Radio do
   def verify_can_submit_detection(
         feed_id,
         source_ip,
-        timeout_seconds
+        lockout_seconds
       ) do
     Detection
-    |> select(fragment("count(*) = 0"))
     |> where(source_ip: ^source_ip, feed_id: ^feed_id)
-    |> where([d], d.inserted_at > ago(^timeout_seconds, "second"))
+    |> where([d], d.inserted_at > ago(^lockout_seconds, "second"))
+    |> order_by(desc: :inserted_at)
+    |> limit(1)
     |> Repo.one()
     |> case do
-      true -> :ok
-      false -> {:error, :recently_submitted}
+      %Detection{inserted_at: inserted_at} ->
+        diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), inserted_at)
+        remaining = lockout_seconds - diff
+        {:error, %{lockout_remaining: remaining}}
+
+      _ ->
+        :ok
     end
   end
 

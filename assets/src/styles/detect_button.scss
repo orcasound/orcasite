@@ -1,15 +1,24 @@
 @import "variables";
 
 .detect-button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   $button-color: $accent;
   background-color: $button-color;
   color: $light;
   cursor: pointer;
-  padding: 25px;
   font-size: 1.4em;
   user-select: none;
+  min-width: 200px;
+  min-height: 100%;
 
-  transition: all 0.3s ease-out;
+  .button-text {
+    text-align: center;
+  }
+
+  transition: all 0.5s ease-out;
 
   &:hover {
     background-color: darken($button-color, 5%);
@@ -19,5 +28,23 @@
     opacity: 0.9;
     background-color: $secondary;
     cursor: default;
+  }
+
+  &.success {
+    background-color: $success;
+    cursor: default;
+  }
+
+  &.error {
+    background-color: $danger;
+    cursor: default;
+  }
+
+  .lockout-progress {
+    position: absolute;
+    bottom: 0;
+    height: 5px;
+    background-color: $light;
+    transition: width 0.5 linear;
   }
 }

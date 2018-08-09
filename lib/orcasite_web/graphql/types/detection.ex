@@ -10,6 +10,11 @@ defmodule OrcasiteWeb.Types.Detection do
     field :playlist_timestamp, :integer
     field :source_ip, :string
     field :player_offset, :decimal
+  end
 
+  object :detection_with_lockout do
+    field :detection, :detection
+    field :lockout_initial, :float
+    field :lockout_remaining, :float
   end
 end

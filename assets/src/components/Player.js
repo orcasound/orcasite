@@ -35,7 +35,7 @@ export default class Player extends Component {
       play: () => {},
       pause: () => {},
       playPause: () => {},
-      getPlayerTime: () => {}
+      getPlayerTime: () => {},
     }
   }
 
@@ -144,12 +144,17 @@ export default class Player extends Component {
   setControls = controls => this.setState({isLoading: false, ...controls})
 
   render() {
-    const {hlsURI, playPause, currentFeed, timestamp, isLoading, isPlaying, getPlayerTime} = this.state
-
-    const awsConsoleUri = this.getAwsConsoleUri(
+    const {
+      hlsURI,
+      playPause,
+      currentFeed,
       timestamp,
-      currentFeed.nodeName,
-    )
+      isLoading,
+      isPlaying,
+      getPlayerTime,
+    } = this.state
+
+    const awsConsoleUri = this.getAwsConsoleUri(timestamp, currentFeed.nodeName)
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
@@ -189,7 +194,13 @@ export default class Player extends Component {
             />
           )}
           {this.debugInfo(hlsURI, awsConsoleUri)}
-          <DetectButton isPlaying={isPlaying} feed={currentFeed} getPlayerTime={getPlayerTime} timestamp={timestamp} classNames='align-self-stretch'/>
+          <DetectButton
+            isPlaying={true}
+            feed={currentFeed}
+            getPlayerTime={getPlayerTime}
+            timestamp={timestamp}
+            classNames="align-self-stretch"
+          />
         </div>
       )
     }
