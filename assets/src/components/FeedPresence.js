@@ -63,9 +63,9 @@ export default class FeedPresence extends Component {
   render() {
     const {listenerCount} = this.state
     return (
-      <div className={`feed-presence ${this.props.className}`}>
+      <div className={`feed-presence text-nowrap ${this.props.className}`}>
         {listenerCount}
-        <FontAwesomeIcon icon={faUser} className="ml-2" />
+        {listenerCount && <FontAwesomeIcon icon={faUser} className="ml-2" />}
       </div>
     )
   }
