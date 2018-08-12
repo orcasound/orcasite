@@ -83,7 +83,7 @@ export default class Player extends Component {
   }
 
   debugInfo = (hlsUri, awsConsoleUri) => (
-    <div className="ml-auto">
+    <div className="">
       <span className="mr-2" title="Stream Latency">
         {Math.round(this.getStreamLatency())}
       </span>
@@ -194,8 +194,10 @@ export default class Player extends Component {
               }
             />
           )}
-          {this.debugInfo(hlsURI, awsConsoleUri)}
-          <FeedPresence feed={currentFeed} className="ml-2" />
+          <div className="ml-auto d-flex pr-2">
+            {this.debugInfo(hlsURI, awsConsoleUri)}
+            <FeedPresence feed={currentFeed} className="ml-2" />
+          </div>
           <DetectButton
             isPlaying={isPlaying}
             feed={currentFeed}
