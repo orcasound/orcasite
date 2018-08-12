@@ -6,6 +6,7 @@ import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
 
 import MediaStreamer from './MediaStreamer'
 import DetectButton from './DetectButton'
+import FeedPresence from './FeedPresence'
 
 import {feedType} from 'types/feedType'
 import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
@@ -194,6 +195,7 @@ export default class Player extends Component {
             />
           )}
           {this.debugInfo(hlsURI, awsConsoleUri)}
+          <FeedPresence feed={currentFeed} className="ml-2" />
           <DetectButton
             isPlaying={isPlaying}
             feed={currentFeed}
