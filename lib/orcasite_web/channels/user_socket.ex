@@ -2,7 +2,7 @@ defmodule OrcasiteWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", OrcasiteWeb.RoomChannel
+  channel "feed:*", OrcasiteWeb.FeedChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket,

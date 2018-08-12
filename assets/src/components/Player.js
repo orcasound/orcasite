@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
 
 import MediaStreamer from './MediaStreamer'
+import FeedPresence from './FeedPresence'
 
 import {feedType} from 'types/feedType'
 import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
@@ -166,6 +167,7 @@ export default class Player extends Component {
           {hlsURI && (
             <MediaStreamer
               src={hlsURI}
+              autoPlay={!ENV.development}
               onReady={this.setControls}
               onLoading={() => this.setState({isLoading: true})}
               onPlaying={() =>
@@ -187,6 +189,7 @@ export default class Player extends Component {
             />
           )}
           {this.debugInfo(hlsURI, awsConsoleUri)}
+          <FeedPresence feed={currentFeed} className="ml-2" />
         </div>
       )
     }

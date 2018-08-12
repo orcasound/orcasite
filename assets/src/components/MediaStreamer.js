@@ -26,7 +26,9 @@ export default class MediaStreamer extends Component {
 
     this.player.ready(() => {
       this.props.onReady(this.controls)
-      this.player.play()
+      if (this.props.autoPlay) {
+        this.player.play()
+      }
       this.player.tech().on('retryplaylist', (e) => {
         if (this.getLatency() < MAX_LATENCY) {
           this.rewind(RETRY_REWIND_AMOUNT)
