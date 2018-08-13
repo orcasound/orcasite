@@ -3,7 +3,7 @@ defmodule OrcasiteWeb.FeedChannel do
   alias OrcasiteWeb.Presence
 
   def join("feed:" <> feed_id, _params, socket) do
-    send(self, :after_join)
+    send(self(), :after_join)
     {:ok, assign(socket, :feed_id, feed_id)}
   end
 
