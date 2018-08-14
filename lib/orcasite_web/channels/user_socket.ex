@@ -2,11 +2,15 @@ defmodule OrcasiteWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "feed:*", OrcasiteWeb.FeedChannel
+  channel("feed:*", OrcasiteWeb.FeedChannel)
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket,
-    timeout: 45_000, check_origin: check_origin_opt()
+  transport(:websocket, Phoenix.Transports.WebSocket,
+    timeout: 45_000,
+    check_origin:
+      Application.get_env(:orcasite, :env) != :prod || Application.fetch_env!(:oracasite, :site_urls)
+  )
+
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
@@ -35,12 +39,4 @@ defmodule OrcasiteWeb.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil
-
-  defp check_origin_opt do
-    case Application.get_env(:orcasite, :env) do
-      :prod -> Application.get_env(:oracasite, :site_urls)
-      _ ->  true
-    end
-
-  end
 end
