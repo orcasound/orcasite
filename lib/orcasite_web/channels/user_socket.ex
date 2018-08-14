@@ -8,7 +8,8 @@ defmodule OrcasiteWeb.UserSocket do
   transport(:websocket, Phoenix.Transports.WebSocket,
     timeout: 45_000,
     check_origin:
-      Application.get_env(:orcasite, :env) != :prod || Application.fetch_env!(:oracasite, :site_urls)
+      Application.get_env(:orcasite, :env) != :prod ||
+        Map.fetch!(System.get_env(), "URLS") |> String.split(" ")
   )
 
   # transport :longpoll, Phoenix.Transports.LongPoll
