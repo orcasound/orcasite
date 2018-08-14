@@ -15,7 +15,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :orcasite, OrcasiteWeb.Endpoint,
   load_from_system_env: true,
-  url: [scheme: "http", host: "orcasite.herokuapp.com", port: 443],
+  url: [scheme: "http", host: Map.fetch!(System.get_env(), "HOST_URL"), port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
 
@@ -29,8 +29,6 @@ config :orcasite, Orcasite.Repo,
 
 # Do not print debug messages in production
 config :logger, level: :info, format: {Orcasite.Logger, :format}
-
-config :orcasite, :site_urls, Map.fetch!(System.get_env(), "URLS") |> String.split(' ')
 
 # ## SSL Support
 #
