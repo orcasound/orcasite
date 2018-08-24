@@ -57,3 +57,13 @@ Orcasite.Radio.create_feed(attrs)
 Finally, in another terminal, run the server with
 
 `iex -S mix phx.server`
+
+
+## Deployment
+
+For the moment, this app is running in a heroku instance with `mix phx.server`. To access the console, run:
+
+`heroku run POOL_SIZE=2 iex -S mix`
+
+The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
+
