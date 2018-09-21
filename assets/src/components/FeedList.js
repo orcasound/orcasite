@@ -27,7 +27,7 @@ export default class FeedList extends Component {
               {feeds.map((feed, i) => (
                 <li key={i} className="feed-item">
                   <Link
-                    to={feed.slug}
+                    to={`/${feed.slug}`}
                     className="d-flex align-items-center justify-content-center text-center">
                     <span>{feed.name}</span>
                   </Link>
