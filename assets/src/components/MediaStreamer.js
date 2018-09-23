@@ -105,7 +105,7 @@ export default class MediaStreamer extends Component {
     const {src} = this.props
 
     return (
-      <audio ref={node => {this.audioNode = node}} className="video-js" />
+      <audio id='audio_element' ref={node => {this.audioNode = node}} className="video-js" />
     )
   }
 }

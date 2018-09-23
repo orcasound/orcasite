@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
 
 import MediaStreamer from './MediaStreamer'
+import Spectrogram from './Spectrogram'
 
 import {feedType} from 'types/feedType'
 import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
@@ -60,6 +61,12 @@ export default class Player extends Component {
     this.startTimestampFetcher()
   }
 
+  test(){
+
+    spec = this.spectrogram('viewport')
+    navigator.getUserMedia({audio: true}, spec.gotStream, function() { console.log("error"); })
+  }
+
   componentWillUnmount() {
     const {intervalId} = this.state
     clearInterval(intervalId)
@@ -93,6 +100,7 @@ export default class Player extends Component {
       <a href={awsConsoleUri} className="mx-2" target="_blank">
         AWS
       </a>
+
     </div>
   )
 
@@ -163,6 +171,7 @@ export default class Player extends Component {
               {currentFeed.name}
             </Link>
           )}
+
           {hlsURI && (
             <MediaStreamer
               src={hlsURI}
@@ -186,7 +195,10 @@ export default class Player extends Component {
               }
             />
           )}
+          {document.getElementsByTagName('audio')[0] && (<Spectrogram componentId='viewport' audioElement={document.getElementsByTagName('audio')[0]}
+            src={hlsURI}/>)}
           {this.debugInfo(hlsURI, awsConsoleUri)}
+
         </div>
       )
     }
