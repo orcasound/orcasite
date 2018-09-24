@@ -126,13 +126,13 @@ export default class Player extends Component {
     xhr.onload = () => {
       if (xhr.status === 200) {
         const timestamp = xhr.responseText.trim()
-        if (ENV.development) console.log('Latest timestamp: ' + timestamp)
+        if (ENV.DEVELOPMENT) console.log('Latest timestamp: ' + timestamp)
         if (timestamp != this.state.timestamp) {
           this.setState({
             timestamp: timestamp,
             hlsURI: this.getHlsUri(timestamp, feed),
           })
-          if (ENV.development)
+          if (ENV.DEVELOPMENT)
             console.log(
               'New stream instance: ' + this.getHlsUri(timestamp, feed),
             )
@@ -198,12 +198,14 @@ export default class Player extends Component {
             {this.debugInfo(hlsURI, awsConsoleUri)}
             <FeedPresence feed={currentFeed} className="ml-2" />
           </div>
-          <DetectButton
-            isPlaying={isPlaying}
-            feed={currentFeed}
-            getPlayerTime={getPlayerTime}
-            timestamp={timestamp}
-          />
+          {ENV.FEATURE_ACTIVITY_BUTTON && (
+            <DetectButton
+              isPlaying={isPlaying}
+              feed={currentFeed}
+              getPlayerTime={getPlayerTime}
+              timestamp={timestamp}
+            />
+          )}
         </div>
       )
     }

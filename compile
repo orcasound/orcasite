@@ -1,4 +1,4 @@
 # For use with https://elements.heroku.com/buildpacks/gjaldon/heroku-buildpack-phoenix-static
-cd $phoenix_dir
-npm --prefix ./assets run deploy
-mix "${phoenix_ex}.digest" #use the ${phoenix_ex} variable instead of hardcoding phx or phoenix
+cd "$phoenix_dir"
+npm --prefix "$assets_path" run deploy
+mix "${phoenix_ex}.digest" # use the ${phoenix_ex} variable instead of hardcoding phx or phoenix
