@@ -143,7 +143,7 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         ENV: {
           DEVELOPMENT: isDev,
-          FEATURE_ACTIVITY_BUTTON: process.env.FEATURE_ACTIVITY_BUTTON
+          FEATURE_ACTIVITY_BUTTON: (process.env.FEATURE_ACTIVITY_BUTTON || isDev)
         },
         'process.env': {
           // defaults the environment to development if not specified
