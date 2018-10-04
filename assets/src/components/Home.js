@@ -14,7 +14,7 @@ export default class Home extends Component {
   state = {}
 
   componentDidMount() {
-    if (["beta", "dev", "staging"].index(ENV.ENV_NAME) >= 0) {
+    if (["beta", "dev", "staging"].indexOf(ENV.ENV_NAME) >= 0) {
       document.title = `Orcasound ${ENV.ENV_NAME}`
     } else {
       document.title = `Orcasound`
