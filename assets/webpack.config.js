@@ -143,6 +143,7 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         ENV: {
           DEVELOPMENT: isDev,
+          S3_BUCKET: (process.env.S3_BUCKET || 'dev-streaming-orcasound-net'),
           FEATURE_ACTIVITY_BUTTON: (process.env.FEATURE_ACTIVITY_BUTTON || isDev)
         },
         'process.env': {

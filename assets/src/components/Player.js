@@ -113,13 +113,13 @@ export default class Player extends Component {
   }
 
   getHlsUri = (timestamp, feed) =>
-    `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${feed}/hls/${timestamp}/live.m3u8`
+    `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/hls/${timestamp}/live.m3u8`
 
   getAwsConsoleUri = (timestamp, nodeName) =>
-    `https://s3.console.aws.amazon.com/s3/buckets/dev-streaming-orcasound-net/${nodeName}/hls/${timestamp}/`
+    `https://s3.console.aws.amazon.com/s3/buckets/${ENV.S3_BUCKET}/${nodeName}/hls/${timestamp}/`
 
   fetchTimestamp = feed => {
-    const timestampURI = `https://s3-us-west-2.amazonaws.com/dev-streaming-orcasound-net/${feed}/latest.txt`
+    const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
     xhr.open('GET', timestampURI)
