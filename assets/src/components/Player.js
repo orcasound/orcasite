@@ -112,11 +112,11 @@ export default class Player extends Component {
     )
   }
 
-  getHlsUri = (timestamp, feed) =>
-    `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/hls/${timestamp}/live.m3u8`
+  getHlsUri = (timestamp, feed, bucket) =>
+    `https://s3-us-west-2.amazonaws.com/${bucket}/${feed}/hls/${timestamp}/live.m3u8`
 
-  getAwsConsoleUri = (timestamp, nodeName) =>
-    `https://s3.console.aws.amazon.com/s3/buckets/${ENV.S3_BUCKET}/${nodeName}/hls/${timestamp}/`
+  getAwsConsoleUri = (timestamp, nodeName, bucket) =>
+    `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
 
   fetchTimestamp = feed => {
     const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
@@ -134,7 +134,7 @@ export default class Player extends Component {
           })
           if (ENV.DEVELOPMENT)
             console.log(
-              'New stream instance: ' + this.getHlsUri(timestamp, feed),
+              'New stream instance: ' + this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
             )
         }
       }
@@ -155,7 +155,7 @@ export default class Player extends Component {
       getPlayerTime,
     } = this.state
 
-    const awsConsoleUri = this.getAwsConsoleUri(timestamp, currentFeed.nodeName)
+    const awsConsoleUri = this.getAwsConsoleUri(timestamp, currentFeed.nodeName, ENV.S3_BUCKET)
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
