@@ -14,7 +14,11 @@ export default class Home extends Component {
   state = {}
 
   componentDidMount() {
-    document.title = 'Orcasound Beta'
+    if (["beta", "dev", "staging"].index(ENV.ENV_NAME) >= 0) {
+      document.title = `Orcasound ${ENV.ENV_NAME}`
+    } else {
+      document.title = `Orcasound`
+    }
   }
 
   changeFeed = currentFeed => this.setState({currentFeed})
