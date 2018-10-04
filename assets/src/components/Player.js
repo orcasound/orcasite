@@ -195,7 +195,7 @@ export default class Player extends Component {
             />
           )}
           <div className="ml-auto d-flex pr-3">
-            {this.debugInfo(hlsURI, awsConsoleUri)}
+            {ENV.SHOW_PLAYER_DEBUG_INFO && this.debugInfo(hlsURI, awsConsoleUri)}
             <FeedPresence feed={currentFeed} className="ml-2" />
           </div>
           {ENV.FEATURE_ACTIVITY_BUTTON && (
