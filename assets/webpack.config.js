@@ -145,7 +145,7 @@ module.exports = (env, argv) => {
           DEVELOPMENT: isDev,
           S3_BUCKET: JSON.stringify(process.env.S3_BUCKET || 'dev-streaming-orcasound-net'),
           SHOW_PLAYER_DEBUG_INFO: (process.env.SHOW_PLAYER_DEBUG_INFO || isDev),
-          ENV_NAME: (JSON.stringify(process.env.ENV_NAME) || ""),
+          ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
           FEATURE_ACTIVITY_BUTTON: (process.env.FEATURE_ACTIVITY_BUTTON || isDev)
         },
         'process.env': {
