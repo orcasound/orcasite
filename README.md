@@ -58,6 +58,10 @@ Finally, in another terminal, run the server with
 
 `iex -S mix phx.server`
 
+You should now be able to see the page when visiting
+
+`http://localhost:4000`
+
 
 ## Deployment
 

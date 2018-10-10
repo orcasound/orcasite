@@ -27,9 +27,12 @@ export default class FeedPage extends Component {
             return <h4 className="mb-4">Couldn't find feed for {slug}</h4>
           }
 
-          const {
-            locationPoint: {coordinates: [lat, long] = []},
-          } = feed
+          let lat, long
+          if (feed.locationPoint && feed.locationPoint.coordinates) {
+            const {
+              locationPoint: {coordinates: [lat, long] = []},
+            } = feed
+          }
 
           return (
             <div className="feed-page mb-3">

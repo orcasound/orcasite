@@ -15,7 +15,7 @@ defmodule Orcasite.Radio.Feed do
   def changeset(feed, attrs) do
     feed
     |> cast(attrs, [:name, :node_name, :slug, :location_point])
-    |> validate_required([:name, :node_name, :slug, :location_point])
+    |> validate_required([:name, :node_name, :slug])
   end
 
   def latlong_to_geo(lat, long) when is_float(lat) and is_float(long),
