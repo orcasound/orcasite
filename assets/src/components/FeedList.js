@@ -11,7 +11,7 @@ export default class FeedList extends Component {
     return (
       <Query query={LIST_FEEDS}>
         {({data, loading, error}) => {
-          if (loading) {
+          if (loading || error) {
             return (
               <ul className="feed-list">
                 <li className="feed-item loading">
