@@ -49,7 +49,7 @@ For the moment, there is only one feed to listen to. To create the feed in the d
 In the console, run:
 
 ```
-attrs = %{location_point: Geo.WKT.decode!("SRID=4326;POINT(47.60621 -122.33207)"), name: "Orcasound Lab (Haro Strait)", node_name: "rpi_seattle", slug: "orcasound-lab"}
+attrs = %{location_point: Geo.WKT.decode!("SRID=4326;POINT(47.60621 -122.33207)"), name: "Orcasound Lab (Haro Strait)", node_name: "rpi_orcasound_lab", slug: "orcasound-lab"}
 
 Orcasite.Radio.create_feed(attrs)
 ```

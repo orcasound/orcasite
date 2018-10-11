@@ -130,7 +130,7 @@ export default class Player extends Component {
         if (timestamp != this.state.timestamp) {
           this.setState({
             timestamp: timestamp,
-            hlsURI: this.getHlsUri(timestamp, feed),
+            hlsURI: this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
           })
           if (ENV.DEVELOPMENT)
             console.log(
