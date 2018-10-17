@@ -66,6 +66,7 @@ export default class Player extends Component {
   componentWillUnmount() {
     const {intervalId} = this.state
     clearInterval(intervalId)
+    if (this.state.timestampXhr) this.state.timestampXhr.abort()
   }
 
   componentDidUpdate(prevProps) {
@@ -119,9 +120,12 @@ export default class Player extends Component {
     `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
 
   fetchTimestamp = feed => {
-    const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
+    const timestampURI = `https://s3-us-west-2.amazonaws.com/${
+      ENV.S3_BUCKET
+    }/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
+    this.setState({timestampXhr: xhr})
     xhr.open('GET', timestampURI)
     xhr.onload = () => {
       if (xhr.status === 200) {
@@ -134,7 +138,8 @@ export default class Player extends Component {
           })
           if (ENV.DEVELOPMENT)
             console.log(
-              'New stream instance: ' + this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
+              'New stream instance: ' +
+                this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
             )
         }
       }
@@ -155,7 +160,11 @@ export default class Player extends Component {
       getPlayerTime,
     } = this.state
 
-    const awsConsoleUri = this.getAwsConsoleUri(timestamp, currentFeed.nodeName, ENV.S3_BUCKET)
+    const awsConsoleUri = this.getAwsConsoleUri(
+      timestamp,
+      currentFeed.nodeName,
+      ENV.S3_BUCKET,
+    )
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
@@ -196,7 +205,8 @@ export default class Player extends Component {
             />
           )}
           <div className="ml-auto d-flex pr-3">
-            {ENV.SHOW_PLAYER_DEBUG_INFO && this.debugInfo(hlsURI, awsConsoleUri)}
+            {ENV.SHOW_PLAYER_DEBUG_INFO &&
+              this.debugInfo(hlsURI, awsConsoleUri)}
             <FeedPresence feed={currentFeed} className="ml-2" />
           </div>
           {ENV.FEATURE_ACTIVITY_BUTTON && (
