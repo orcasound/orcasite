@@ -4,37 +4,52 @@ import videojs from 'video.js'
 
 export default class MediaStreamer extends Component {
   componentDidMount() {
+    this.setupPlayer()
+  }
 
-    const MAX_LATENCY = 300;
-    const INITIAL_REWIND_AMOUNT = 90;
-    const RETRY_REWIND_AMOUNT = 30;
+  componentWillUnmount() {
+    clearInterval(this.latencyUpdateInterval)
+    if (this.player) {
+      this.player.dispose()
+    }
+  }
+
+  setupPlayer = () => {
+    clearInterval(this.latencyUpdateInterval)
+    if (this.player) {
+      this.player.dispose()
+    }
+    const MAX_LATENCY = 300
+    const INITIAL_REWIND_AMOUNT = 90
+    const RETRY_REWIND_AMOUNT = 30
 
     var options = {
       hls: {
-        overrideNative: true
-      }
-    };
+        overrideNative: true,
+      },
+    }
 
     this.player = videojs(this.audioNode, {
       flash: options,
       html5: options,
-      sources: [{
-        src: this.props.src,
-        type: 'application/x-mpegurl'
-      }]
+      sources: [
+        {
+          src: this.props.src,
+          type: 'application/x-mpegurl',
+        },
+      ],
     })
 
     this.player.ready(() => {
       this.props.onReady(this.controls)
-      this.player.tech().on('retryplaylist', (e) => {
+      this.player.tech().on('retryplaylist', e => {
         if (this.getLatency() < MAX_LATENCY) {
           this.rewind(RETRY_REWIND_AMOUNT)
         }
       })
       this.latencyUpdateInterval = setInterval(() => {
         this.props.onLatencyUpdate(this.getLatency(), this.player.currentTime())
-      }, 1000);
-
+      }, 1000)
     })
 
     this.player.on('playing', e => {
@@ -48,14 +63,6 @@ export default class MediaStreamer extends Component {
     this.player.on('waiting', () => {
       this.props.onLoading()
     })
-
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.latencyUpdateInterval);
-    if (this.player) {
-      this.player.dispose()
-    }
   }
 
   play = () => {
@@ -83,12 +90,12 @@ export default class MediaStreamer extends Component {
   }
 
   seekToLive = (secondsFromLive = 30) => {
-    if (this.player && (this.player.readyState() > 0)) {
+    if (this.player && this.player.readyState() > 0) {
       this.player.currentTime(this.player.seekable().end(0) - secondsFromLive)
     }
   }
 
-  rewind = (seconds) => {
+  rewind = seconds => {
     if (this.player) {
       this.player.currentTime(this.player.currentTime() - seconds)
     }
@@ -96,21 +103,28 @@ export default class MediaStreamer extends Component {
 
   getLatency = () => {
     if (this.player) {
-      if (this.player.seekable().length > 0)
-      {
+      if (this.player.seekable().length > 0) {
         return this.player.seekable().end(0) - this.player.currentTime()
-      }
-      else return 0
+      } else return 0
     }
   }
 
-  controls = {play: this.play, pause: this.pause, playPause: this.playPause, getPlayerTime: this.getPlayerTime}
+  controls = {
+    play: this.play,
+    pause: this.pause,
+    playPause: this.playPause,
+    getPlayerTime: this.getPlayerTime,
+  }
 
   render() {
-    const {src} = this.props
-
     return (
-      <audio ref={node => {this.audioNode = node}} className="video-js" playsInline />
+      <audio
+        ref={node => {
+          this.audioNode = node
+        }}
+        className="video-js"
+        playsInline
+      />
     )
   }
 }
