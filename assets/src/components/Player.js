@@ -66,7 +66,6 @@ export default class Player extends Component {
   componentWillUnmount() {
     const {intervalId} = this.state
     clearInterval(intervalId)
-    if (this.state.timestampXhr) this.state.timestampXhr.abort()
   }
 
   componentDidUpdate(prevProps) {
@@ -125,7 +124,6 @@ export default class Player extends Component {
     }/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
-    this.setState({timestampXhr: xhr})
     xhr.open('GET', timestampURI)
     xhr.onload = () => {
       if (xhr.status === 200) {
