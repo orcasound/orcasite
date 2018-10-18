@@ -180,7 +180,6 @@ export default class Player extends Component {
           )}
           {hlsURI && (
             <MediaStreamer
-              key={hlsURI}
               src={hlsURI}
               onReady={this.setControls}
               onLoading={() => this.setState({isLoading: true})}

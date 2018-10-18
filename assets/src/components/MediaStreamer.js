@@ -9,6 +9,7 @@ export default class MediaStreamer extends Component {
 
   componentWillUnmount() {
     clearInterval(this.latencyUpdateInterval)
+    this.pause()
     if (this.player) {
       this.player.dispose()
     }
