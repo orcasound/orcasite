@@ -45,7 +45,7 @@ export default class Home extends Component {
           </p>
         </div>
 
-        <Player currentFeed={this.state.currentFeed} key={this.state.currentFeed.nodeName}/>
+        <Player currentFeed={this.state.currentFeed} key={this.state.currentFeed && this.state.currentFeed.nodeName}/>
       </div>
     )
   }

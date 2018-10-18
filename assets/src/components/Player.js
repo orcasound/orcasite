@@ -10,6 +10,7 @@ import FeedPresence from './FeedPresence'
 
 import {feedType} from 'types/feedType'
 import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
+import classNames from 'classnames'
 
 import 'styles/player.scss'
 
@@ -170,7 +171,7 @@ export default class Player extends Component {
           <FontAwesomeIcon
             size="3x"
             {...this.playIconOpts(this.state)}
-            className={`m-3 ${isLoading ? '' : 'clickable'}`}
+            className={classNames('m-3', {clickable: !isLoading})}
             onClick={playPause}
           />
           {currentFeed.slug && (
