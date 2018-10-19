@@ -21,7 +21,7 @@ export default class Home extends Component {
     }
   }
 
-  changeFeed = currentFeed => this.setState({currentFeed})
+  changeFeed = currentFeed => this.setState({currentFeed, autoplay: true})
 
   render() {
     const {feedSlug} = this.props.match.params
@@ -45,7 +45,7 @@ export default class Home extends Component {
           </p>
         </div>
 
-        <Player currentFeed={this.state.currentFeed} key={this.state.currentFeed && this.state.currentFeed.nodeName}/>
+        <Player currentFeed={this.state.currentFeed} key={this.state.currentFeed && this.state.currentFeed.nodeName} autoplay={this.state.autoplay}/>
       </div>
     )
   }

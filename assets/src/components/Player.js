@@ -182,6 +182,7 @@ export default class Player extends Component {
           {hlsURI && (
             <MediaStreamer
               src={hlsURI}
+              autoplay={this.props.autoplay}
               onReady={this.setControls}
               onLoading={() => this.setState({isLoading: true})}
               onPlaying={() =>

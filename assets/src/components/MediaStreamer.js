@@ -31,6 +31,7 @@ export default class MediaStreamer extends Component {
     }
 
     this.player = videojs(this.audioNode, {
+      autoplay: this.props.autoplay,
       flash: options,
       html5: options,
       sources: [
