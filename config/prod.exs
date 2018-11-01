@@ -30,6 +30,7 @@ config :orcasite, Orcasite.Repo,
 # Do not print debug messages in production
 config :logger, level: :info, format: {Orcasite.Logger, :format}
 
+config :orcasite, :orcasite_s3_url, Map.fetch!(System.get_env(), "ORCASITE_S3_URL")
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

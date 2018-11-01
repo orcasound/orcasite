@@ -20,6 +20,7 @@ query feed($slug: String!) {
     slug
     nodeName
     locationPoint
+    introHtml
   }
 }
 `

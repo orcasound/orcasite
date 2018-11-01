@@ -12,6 +12,7 @@ export default class FeedPage extends Component {
     feedSlug: string.isRequired,
     onChangeFeed: func,
   }
+
   render() {
     const {feedSlug: slug} = this.props
     return (
@@ -34,6 +35,8 @@ export default class FeedPage extends Component {
             } = feed
           }
 
+          const {introHtml} = feed
+
           return (
             <div className="feed-page mb-4">
               <h1 className="my-4">{feed.name}</h1>
@@ -50,15 +53,7 @@ export default class FeedPage extends Component {
                 Listen to {feed.name}
               </button>
 
-              <p>
-                Please help us test playback performance on as many combinations
-                of devices, operating system, and browsers as possible.
-              </p>
-              <p>
-                <a href="https://goo.gl/forms/tgi4zoEDOFf5zQRJ3">
-                  Provide your feedback via this Google form.
-                </a>
-              </p>
+              {introHtml && <div dangerouslySetInnerHTML={{__html: introHtml}} />}
             </div>
           )
         }}
