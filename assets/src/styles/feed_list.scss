@@ -31,7 +31,7 @@ $ripple-alpha: 0.7;
   min-height: $feed-item-height + 2 * $spacing;
   min-width: $feed-item-width + 2 * $spacing;
 
-  @media (min-width: #{map-get($grid-breakpoints, md)}) {
+  @media (min-width: #{map-get($grid-breakpoints, sm)}) {
     flex-direction: column;
     height: 100%;
   }
@@ -51,7 +51,7 @@ $ripple-alpha: 0.7;
     &.feed-item:not(:last-of-type) {
       margin-right: $spacing;
 
-      @media (min-width: #{map-get($grid-breakpoints, md)}) {
+      @media (min-width: #{map-get($grid-breakpoints, sm)}) {
         margin-right: 0;
         margin-bottom: $spacing;
       }

@@ -35,8 +35,8 @@ export default class FeedPage extends Component {
           }
 
           return (
-            <div className="feed-page mb-3">
-              <h1>{feed.name} node</h1>
+            <div className="feed-page mb-4">
+              <h1 className="my-4">{feed.name}</h1>
               {lat &&
                 long && (
                   <p>
@@ -45,7 +45,7 @@ export default class FeedPage extends Component {
                 )}
 
               <button
-                className="btn btn-primary"
+                className="btn btn-primary mb-3"
                 onClick={() => this.props.onChangeFeed(feed)}>
                 Listen to {feed.name}
               </button>
