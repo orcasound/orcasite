@@ -49,6 +49,16 @@ export default class FeedPage extends Component {
                 onClick={() => this.props.onChangeFeed(feed)}>
                 Listen to {feed.name}
               </button>
+
+              <p>
+                Please help us test playback performance on as many combinations
+                of devices, operating system, and browsers as possible.
+              </p>
+              <p>
+                <a href="https://goo.gl/forms/tgi4zoEDOFf5zQRJ3">
+                  Provide your feedback via this Google form.
+                </a>
+              </p>
             </div>
           )
         }}

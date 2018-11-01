@@ -24,7 +24,7 @@ export default class FeedList extends Component {
           const {feeds} = data
           return (
             <ul className="feed-list">
-              {feeds.map((feed, i) => (
+              {feeds.slice().reverse().map((feed, i) => (
                 <li key={i} className="feed-item">
                   <Link
                     to={`/${feed.slug}`}
