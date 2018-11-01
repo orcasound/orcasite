@@ -47,6 +47,14 @@ $ripple-alpha: 0.7;
     align-items: center;
     border-radius: 3px;
     overflow: hidden;
+    text-shadow: 0 0 1px rgba(0,0,0,0.5);
+    position: relative;
+    .overlay {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(0,0,0,0.3);
+    }
 
     &.feed-item:not(:last-of-type) {
       margin-right: $spacing;
@@ -71,6 +79,7 @@ $ripple-alpha: 0.7;
     }
 
     a {
+      z-index: 1;
       color: $light;
       height: 100%;
       width: 100%;

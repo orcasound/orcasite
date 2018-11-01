@@ -15,7 +15,7 @@ export default class FeedList extends Component {
             return (
               <ul className="feed-list">
                 <li className="feed-item loading">
-                  <div className="feed-item-loader"></div>
+                  <div className="feed-item-loader" />
                 </li>
               </ul>
             )
@@ -24,15 +24,26 @@ export default class FeedList extends Component {
           const {feeds} = data
           return (
             <ul className="feed-list">
-              {feeds.slice().reverse().map((feed, i) => (
-                <li key={i} className="feed-item">
-                  <Link
-                    to={`/${feed.slug}`}
-                    className="d-flex align-items-center justify-content-center text-center">
-                    <span>{feed.name}</span>
-                  </Link>
-                </li>
-              ))}
+              {feeds
+                .slice()
+                .reverse()
+                .map((feed, i) => (
+                  <li
+                    key={i}
+                    className="feed-item"
+                    style={{
+                      backgroundImage: `url(${feed.thumbUrl})`,
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                    }}>
+                    <div className="overlay" />
+                    <Link
+                      to={`/${feed.slug}`}
+                      className="d-flex align-items-center justify-content-center text-center">
+                      <span>{feed.name}</span>
+                    </Link>
+                  </li>
+                ))}
             </ul>
           )
         }}

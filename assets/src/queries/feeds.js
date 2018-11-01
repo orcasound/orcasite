@@ -7,7 +7,7 @@ export const LIST_FEEDS = gql`
     name
     slug
     nodeName
-    locationPoint
+    thumbUrl
   }
 }
 `
@@ -21,6 +21,7 @@ query feed($slug: String!) {
     nodeName
     locationPoint
     introHtml
+    thumbUrl
   }
 }
 `
