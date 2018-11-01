@@ -46,9 +46,7 @@ export default class Player extends Component {
   startTimestampFetcher = () => {
     var {currentFeed, intervalId} = this.state
 
-    if (intervalId) {
-      clearInterval(intervalId)
-    }
+    this.clearInterval()
     if (currentFeed && Object.keys(currentFeed).length > 0) {
       this.fetchTimestamp(currentFeed.nodeName)
       intervalId = setInterval(
@@ -65,16 +63,22 @@ export default class Player extends Component {
   }
 
   componentWillUnmount() {
-    const {intervalId} = this.state
-    clearInterval(intervalId)
+    this.clearInterval()
   }
 
   componentDidUpdate(prevProps) {
     const {currentFeed} = this.props
     if (currentFeed !== prevProps.currentFeed) {
       storeCurrentFeed(currentFeed)
+      this.clearInterval()
       this.setState({currentFeed}, this.startTimestampFetcher)
     }
+  }
+
+  clearInterval = () => {
+    const {intervalId, currentXhr} = this.state
+    if (currentXhr) currentXhr.abort()
+    if (intervalId) clearInterval(intervalId)
   }
 
   playIconOpts = ({isLoading, isPlaying}) => {
@@ -125,6 +129,7 @@ export default class Player extends Component {
     }/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
+    this.setState({currentXhr: xhr})
     xhr.open('GET', timestampURI)
     xhr.onload = () => {
       if (xhr.status === 200) {
