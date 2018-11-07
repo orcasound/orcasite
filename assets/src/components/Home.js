@@ -37,23 +37,39 @@ export default class Home extends Component {
           {!feedSlug && (
             <div className="home-content">
               <h1 className="my-4">Orcasound</h1>
+
               <p>
-                Listen to live underwater sound in orca habitat! Choose a
-                location on the left (or above on mobile), then select the green
-                listen button. The control bar on the bottom lets you pause/play
-                and see how many are listening for whales with you.
+                Listen to live underwater sound in orca habitat! If you're lucky
+                you'll hear orcas, but mostly you'll hear ships...
+              </p>
+              <p>
+                Choose a location and then select the green listen button. The
+                control bar at the bottom lets you pause/play and shows how many
+                people are listening for whales with you.{' '}
               </p>
               <p>
                 While you listen, you can also{' '}
-                <a href="http://www.orcasound.net/learn/">
+                <a href="http://www.orcasound.net/learn/" target="_blank">
                   learn more about orca sounds
-                </a>.
+                </a>. If you need some more inspiration, here is five minutes of
+                J & K pod orcas calling, whistling, and clicking:
               </p>
+
+              <audio controls>
+                <source
+                  src="http://www.orcasound.net/data/product/SRKW/greatest-hits/orcasite-4min-sample.ogg"
+                  type="audio/ogg"
+                />
+                <source
+                  src="http://www.orcasound.net/data/product/SRKW/greatest-hits/orcasite-4min-sample.mp3"
+                  type="audio/mpeg"
+                />
+              </audio>
               <p>
                 Launched in November, 2018, the Orcasound app makes it easy for
                 everyone to listen for whales. We welcome feedback about your
                 listening experience via this{' '}
-                <a href="https://goo.gl/forms/tgi4zoEDOFf5zQRJ3">
+                <a href="https://goo.gl/forms/tgi4zoEDOFf5zQRJ3" target="_blank">
                   user experience survey
                 </a>. If you have trouble, try reloading the site after clearing
                 your browser's cache.
