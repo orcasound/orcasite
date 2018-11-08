@@ -121,7 +121,7 @@ module.exports = (env, argv) => {
 
     resolve: {
       modules: ["node_modules", __dirname],
-      extensions: [".js", ".json", ".jsx", ".css", ".scss"],
+      extensions: [".mjs", ".js", ".json", ".jsx", ".css", ".scss"],
       alias: {
         components: path.resolve(__dirname, 'src/components/'),
         contexts: path.resolve(__dirname, 'src/contexts/'),
