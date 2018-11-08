@@ -13,7 +13,7 @@ export default class FeedPresence extends Component {
   }
 
   state = {
-    listenerCount: null
+    listenerCount: 0
   }
 
   componentDidMount() {
@@ -55,8 +55,8 @@ export default class FeedPresence extends Component {
     const {listenerCount} = this.state
     return (
       <div className={`feed-presence text-nowrap ${this.props.className}`}>
-        {listenerCount}
-        {listenerCount && <FontAwesomeIcon icon={faUser} className="ml-2" />}
+        {listenerCount > 0 && listenerCount}
+        {listenerCount > 0 && <FontAwesomeIcon icon={faUser} className="ml-2" />}
       </div>
     )
   }
