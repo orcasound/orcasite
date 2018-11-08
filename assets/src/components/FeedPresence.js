@@ -13,7 +13,7 @@ export default class FeedPresence extends Component {
   }
 
   state = {
-    presences: {},
+    listenerCount: null
   }
 
   componentDidMount() {
@@ -32,18 +32,9 @@ export default class FeedPresence extends Component {
     }
 
     this.setState({channel: socket.channel(`feed:${feed_id}`, {})}, () => {
-      var presences = {}
       let channel = this.state.channel
-      channel.on('presence_state', state => {
-        presences = Presence.syncState(presences, state)
-        this.setListeners(presences)
-      })
-
-      channel.on('presence_diff', diff => {
-        presences = Presence.syncDiff(presences, diff)
-        this.setListeners(presences)
-      })
-
+      let presence = new Presence(channel)
+      presence.onSync(() => this.setListeners(presence))
       channel.join()
     })
   }
@@ -54,9 +45,9 @@ export default class FeedPresence extends Component {
     }
   }
 
-  setListeners(presences) {
+  setListeners({state}) {
     const {id} = this.props.feed
-    const listenerCount = presences[id] ? presences[id].metas.length : 0
+    const listenerCount = state[id] ? state[id].metas.length : 0
     this.setState({listenerCount})
   }
 

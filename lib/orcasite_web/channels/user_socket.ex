@@ -4,16 +4,6 @@ defmodule OrcasiteWeb.UserSocket do
   ## Channels
   channel("feed:*", OrcasiteWeb.FeedChannel)
 
-  ## Transports
-  transport(:websocket, Phoenix.Transports.WebSocket,
-    timeout: 45_000,
-    check_origin:
-      Application.get_env(:orcasite, :env) != :prod ||
-        Map.fetch!(System.get_env(), "URLS") |> String.split(" ")
-  )
-
-  # transport :longpoll, Phoenix.Transports.LongPoll
-
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
   # verification, you can put default assigns into

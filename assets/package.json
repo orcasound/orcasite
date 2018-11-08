@@ -43,7 +43,7 @@
     "css-hot-loader": "^1.4.1",
     "css-loader": "^1.0.0",
     "file-loader": "^1.1.6",
-    "image-webpack-loader": "^4.4.0",
+    "image-webpack-loader": "^4.5.0",
     "mini-css-extract-plugin": "^0.4.1",
     "node-sass": "^4.9.2",
     "postcss": "^7.0.1",
@@ -54,6 +54,6 @@
     "url-loader": "^1.0.1",
     "webpack": "^4.16.3",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5"
+    "webpack-dev-server": "^3.1.10"
   }
 }

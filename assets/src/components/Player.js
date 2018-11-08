@@ -23,6 +23,7 @@ export default class Player extends Component {
     super(props)
 
     const currentFeed = this.props.currentFeed || getCurrentFeed() || {}
+    storeCurrentFeed(currentFeed)
 
     this.state = {
       currentFeed,
@@ -64,15 +65,6 @@ export default class Player extends Component {
 
   componentWillUnmount() {
     this.clearInterval()
-  }
-
-  componentDidUpdate(prevProps) {
-    const {currentFeed} = this.props
-    if (currentFeed !== prevProps.currentFeed) {
-      storeCurrentFeed(currentFeed)
-      this.clearInterval()
-      this.setState({currentFeed}, this.startTimestampFetcher)
-    }
   }
 
   clearInterval = () => {
