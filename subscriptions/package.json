@@ -1,0 +1,16 @@
+{
+  "name": "subscriptions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.1",
+    "hapi": "^17.7.0",
+    "request": "^2.88.0"
+  }
+}
