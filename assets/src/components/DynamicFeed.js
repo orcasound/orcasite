@@ -17,7 +17,11 @@ export default class Home extends Component {
   }
 
   changeFeed = currentFeed => this.setState({currentFeed})
-  feedFromSlug = feedSlug => ({name: feedSlug, slug: feedSlug, nodeName: feedSlug})
+  feedFromSlug = feedSlug => ({
+    name: feedSlug,
+    slug: feedSlug,
+    nodeName: feedSlug,
+  })
 
   render() {
     const {feedSlug} = this.props.match.params
@@ -35,9 +39,11 @@ export default class Home extends Component {
           </button>
         </div>
 
-        <Player currentFeed={this.state.currentFeed} />
+        <Player
+          currentFeed={this.state.currentFeed}
+          key={this.state.currentFeed && this.state.currentFeed.nodeName}
+        />
       </div>
     )
   }
-
 }
