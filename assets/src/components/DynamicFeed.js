@@ -9,7 +9,7 @@ import FeedList from './FeedList'
 
 import 'styles/home.scss'
 
-export default class Home extends Component {
+export default class DynamicFeed extends Component {
   state = {}
 
   componentDidMount() {
