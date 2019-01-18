@@ -63,6 +63,15 @@ You should now be able to see the page when visiting
 `http://localhost:4000`
 
 
+## Test
+
+## React Test
+
+From the assets folder
+
+`npx mocha`
+
+
 ## Deployment
 
 For the moment, this app is running in a heroku instance with `mix phx.server`. To access the console, run:

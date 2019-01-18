@@ -5,14 +5,14 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faGithub} from '@fortawesome/free-brands-svg-icons'
 
-import 'styles/header.scss'
+import '../styles/header.scss'
 export default class Header extends Component {
   render() {
     return (
       <header className="header d-flex justify-content-between align-items-center">
-        <Link to="/" className="logo">
+        <a href="/" className="logo">
           Orcasound
-        </Link>
+        </a>
         <a
           href="https://github.com/orcasound"
           target="_blank"
