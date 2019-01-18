@@ -1,0 +1,4 @@
+--require @babel/register
+--require jsdom-global/register
+--require ignore-styles
+--require test/testsetup.js
