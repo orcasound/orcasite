@@ -8,8 +8,7 @@ We recommend following these steps if you'd like to contribute to the repo.
 0. Check out the [Trello board](https://trello.com/b/hRFh7Sc1/orcasite-development) for an overview of features being worked on.
     - This [public roadmap](https://trello.com/b/wBg0qhss/orcasound-roadmap) has a higher level view.
 1. Fork the Orcasite repo
-2. Develop on master with feature flags (using ENV variables as found in `/assets/webpack.config.js` for frontend)
-  	- See [this article](https://devops.com/feature-branching-vs-feature-flags-whats-right-tool-job/) for reasoning
+2. Develop on a [feature branch](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow)
 3. Submit a PR (don't review your own)!
   	- To maintain a consistent style, we recommend running [Prettier](https://github.com/prettier/prettier) on js, and `mix format` before submission
 4. Once a PR is merged, we can throw it up onto the dev server to see how things look!
@@ -17,8 +16,8 @@ We recommend following these steps if you'd like to contribute to the repo.
 ### Questions?
 If you have any questions about parts of the architecture and site, these are contributors with context about various parts:
 
-- Paul Cretu - Orcanode, streaming backend, ffmpeg
-- Skander Mzali - Elixir backend, JS/React frontend
+- [Paul Cretu](https://github.com/paulcretu) - Orcanode, streaming backend, ffmpeg
+- [Skander Mzali](https://github.com/skanderm) - Elixir backend, JS/React frontend
 
 ### Learning resources
 If you're new to Elixir (or JS and React), that's no problem! Here are some resources for learning what they're about.
@@ -111,7 +110,7 @@ further defined and clarified by project maintainers.
 ### Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
+reported by contacting the project team at admin@orcasound.net. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
