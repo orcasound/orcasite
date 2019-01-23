@@ -5,7 +5,8 @@ Welcome to Orcasound! We're thrilled you're interested in contributing to the si
 ### General workflow
 We recommend following these steps if you'd like to contribute to the repo.
 
-0. Check out the [Trello board](https://trello.com/b/wBg0qhss/orcasound-roadmap) for an overview of features we're considering
+0. Check out the [Trello board](https://trello.com/b/hRFh7Sc1/orcasite-development) for an overview of features being worked on.
+    - This [public roadmap](https://trello.com/b/wBg0qhss/orcasound-roadmap) has a higher level view.
 1. Fork the Orcasite repo
 2. Develop on master with feature flags (using ENV variables as found in `/assets/webpack.config.js` for frontend)
   	- See [this article](https://devops.com/feature-branching-vs-feature-flags-whats-right-tool-job/) for reasoning
@@ -28,12 +29,17 @@ If you're new to Elixir (or JS and React), that's no problem! Here are some reso
 - [Elixir Forum](https://elixirforum.com/) - A huge repository of discussion and answered questions
 - [Elixir Slack](https://elixir-slackin.herokuapp.com/) - Super friendly bunch of people
 - [Absinthe](https://hexdocs.pm/absinthe/overview.html) - Elixir library for GraphQL
+- [Umbrella Projects](https://elixirforum.com/t/resources-on-how-to-build-and-structure-umbrella-projects-using-phoenix-1-3/11225) - Forum post with various resources for building a distributed architecture
 
 ##### Some cool videos
 
 - [Micropatterns in Elixir](https://www.youtube.com/watch?v=9uvp4h7gXHg) - Great video on how to think about recursion to solve problems
 - [An intro to OTP](https://www.youtube.com/watch?v=CJT8wPnmjTM) - Overview of OTP supvervision trees
 - [Fred Hebert - The Hitchhiker's Guide to the Unexpected](https://www.youtube.com/watch?v=W0BR_tWZChQ) - There's a good section on a real-world supervision trees
+- [ElixirConf - GraphQL with Absinthe & Dataloader](https://www.youtube.com/watch?v=m26i1L2D7Yk)
+- [ElixirDaze - Phoenix Contexts](https://www.youtube.com/watch?v=l3VgbSgo71E) - Great video on how to think about Phoenix Contexts
+- [Domain Driven Design: The Good Parts](https://www.youtube.com/watch?v=U6CeaA-Phqo) - Real-world contexts using DDD
+- [DDD & Microservices](https://www.youtube.com/watch?v=yPvef9R3k-M) - Not Elixir specific, but an overview of how a distributed system can interact
 
 #### React/JS/Frontend
 
