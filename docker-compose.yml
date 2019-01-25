@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  phoenix:
+    build: ./
+    image: orcasound/orcasite
+    command: /bin/bash -c "mix ecto.create && mix ecto.migrate && mix phx.server"
+    environment:
+      - POSTGRES_HOST=postgres
+    ports:
+      - "4000:4000"
+      - "8080:8080"
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    image: mdillon/postgis:10-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
