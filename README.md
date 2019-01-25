@@ -8,7 +8,7 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 
 ## Getting started
 
-##### Quick: `docker-compose up`
+##### Quick: `docker-compose pull && docker-compose up`
 
 The fastest way to get the site up and running is to [use the included Docker configuration](#running-in-docker).
 
@@ -20,9 +20,9 @@ If you would like a more flexible setup, you can install the dependencies [direc
 
 Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both `docker` and `docker-compose` installed on your machine.
 
-Once you clone the repository, you can just run docker-compose in the root directory:
+Once you clone the repository, you can just run docker-compose in the root directory. To avoid building locally you can use the `pull` command first to grab the pre-built image from Docker Hub. Combining both commands into one line:
 
-`docker-compose up`
+`docker-compose pull && docker-compose up`
 
 This will pull the pre-built image from Docker Hub along with an image for the database, automatically configure everything, and run the Phoenix server. The orcasite page will be accessible at [`http://localhost:4000`](http://localhost:4000).
 
