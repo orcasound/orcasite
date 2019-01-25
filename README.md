@@ -4,7 +4,7 @@ This repo specifies the web backend and frontend for the [Orcasound app](http://
 
 ## Contributing
 
-Please check out the CONTRIBUTING doc for how we work on things and learning resources!
+Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a successful contribution, as well as learning resources!
 
 ## Getting started
 
