@@ -1,7 +1,7 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 
-import {gql} from 'apollo-boost'
-import {Query} from 'react-apollo'
+import { gql } from 'apollo-boost'
+import { Query } from 'react-apollo'
 
 import Player from './Player'
 import Header from './Header'
@@ -21,10 +21,10 @@ export default class Home extends Component {
     }
   }
 
-  changeFeed = currentFeed => this.setState({currentFeed, autoplay: true})
+  changeFeed = currentFeed => this.setState({ currentFeed, autoplay: true })
 
   render() {
-    const {feedSlug} = this.props.match.params
+    const { feedSlug } = this.props.match.params
 
     return (
       <div className="home">
@@ -47,6 +47,7 @@ export default class Home extends Component {
                 control bar at the bottom lets you pause/play and shows how many
                 people are listening for whales with you.{' '}
               </p>
+              <p>this is a test</p>
               <p>
                 While you listen, you can also{' '}
                 <a href="http://www.orcasound.net/learn/" target="_blank">

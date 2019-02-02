@@ -21,3 +21,10 @@ erl_crash.dump
 /config/*.secret.exs
 
 assets/src/config/
+
+# Webstorm
+.idea/
+
+bash /
+
+docker/
