@@ -1,46 +1,49 @@
 import React, { Component } from "react"
 import { Paper, Tabs, Tab, Button, Typography, Grid } from "@material-ui/core"
-//import { NotificationIcon } from "@material-ui/icons"
-//import { Notifications, ArrowDropDown } from "@material-ui/icons"
-
 import NotificationIcon from "@material-ui/icons/Notifications"
-import ArrowDropDown from "@material-ui/icons/ArrowDropDown"
+// import ArrowDropDown from "@material-ui/icons/ArrowDropDown"
 import { withStyles } from "@material-ui/core/styles"
 
 const styles = theme => ({
-  root: {
-  },
-  background: {
+  header: {
     background: "#000000",
     height: 80
   },
   h1: {
     color: "#ffffff",
-    fontFamily: 'Roboto-Medium',
     fontSize: 30,
     letterSpacing: 1.07,
-
     paddingLeft: 20,
-    paddingTop: 10,
+    paddingTop: 18,
   },
   button: {
-    fontFamily: 'Roboto-Regular',
     fontSize: 10,
     color: '#ffffff',
     opacity: .87,
-    textAlign: 'left'
+    textAlign: 'left',
+    height: 40
   },
   notificationIcon: {
-    fontSize: 16
+    fontSize: 16,
   },
-  // navTabs: {
-  //   display: 'flex',
-  //   justifyContent: 'space-evenly'
-  // },
   label: {
     fontSize: 14,
     textAlign: 'center',
   },
+  labelIcon: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  bodyHeader: {
+    marginLeft: 15,
+    marginRight: 15,
+    paddingTop: 18
+  },
+  bodyText: {
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 15
+  }
 });
 
 export default withStyles(styles)(
@@ -59,34 +62,41 @@ export default withStyles(styles)(
     }
     mabyeAbout = () => {
       if (this.aboutTabSelected()) {
+        const { classes } = this.props;
         return (
-          <Paper gutterBottom>
+          <Paper>
             <Typography
               variant="h6"
-            >Welcome to OrcaSound!
-                </Typography>
+              className={classes.bodyHeader}
+            //style={{ paddingTop: 18 }}
+            >
+              Welcome to OrcaSound!
+            </Typography>
             <Typography
               component="p"
               paragraph={true}
+              className={classes.bodyText}
             >
               Learn what orcas sound like. Then listen live for them on underwater
               microphones (hydrophones).
-                </Typography>
+            </Typography>
             <Typography
               component="p"
               paragraph={true}
+              className={classes.bodyText}
             >
               Let us know when you hear them, or any sound you think is
               interesting! That will help researchers and stewards protect the
               orcas and their environment.
-                </Typography>
+            </Typography>
             <Typography
               component="p"
               paragraph={true}
+              className={classes.bodyText}
             >
               You can also get notified when our listeners or algorithms detect
               whales at any of our hydrophone locations.
-          </Typography>
+            </Typography>
           </Paper>
         )
       }
@@ -101,7 +111,7 @@ export default withStyles(styles)(
         >
           <Paper
             square
-            className={classes.background}
+            className={classes.header}
             elevation={1}
           >
             <Typography
@@ -132,7 +142,7 @@ export default withStyles(styles)(
             indicatorColor="primary"
             textColor="primary"
             onChange={this.handleChange}
-            centered
+          //centered
           >
             <Tab
               label="About"
@@ -143,11 +153,11 @@ export default withStyles(styles)(
             />
             <Tab
               label="Listen Live"
-              //disabled
+              disabled
               //icon={<ArrowDropDown />}
               fullWidth={true}
               classes={{
-                label: classes.label,
+                labelIcon: classes.labelIcon,
               }}
             >
             </Tab>
@@ -158,5 +168,3 @@ export default withStyles(styles)(
     }
   }
 )
-
-//export default SiteMenu

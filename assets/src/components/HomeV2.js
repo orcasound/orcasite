@@ -8,7 +8,9 @@ import color from "@material-ui/core/colors/indigo";
 
 const theme = createMuiTheme(
   {
-    /* config */
+    /* change default theme options below */
+    /* gets merged into custom style objects */
+    /* using latest version of typography */
     typography: {
       useNextVariants: true,
     },
@@ -20,13 +22,8 @@ const theme = createMuiTheme(
         main: '#009688',
       }
     },
-    spacing: {
-      unit: 10 // overriding default theme value of 8
-    }
   }
 );
-
-console.log(theme);
 
 export default class HomeV2 extends Component {
   state = {}
@@ -42,6 +39,8 @@ export default class HomeV2 extends Component {
           <MuiThemeProvider theme={theme}>
             <Paper
               square
+              // This will get replaced when we add breakpoints
+              style={{ maxWidth: 599 }}
             >
               <SiteMenu />
             </Paper>
