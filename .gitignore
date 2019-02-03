@@ -9,6 +9,8 @@
 
 node_modules/
 
+.vscode/
+
 # Generated on crash by the VM
 erl_crash.dump
 
@@ -21,3 +23,10 @@ erl_crash.dump
 /config/*.secret.exs
 
 assets/src/config/
+
+# Webstorm
+.idea/
+
+bash /
+
+docker/

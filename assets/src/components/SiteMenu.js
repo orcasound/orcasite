@@ -1,5 +1,51 @@
 import React, { Component } from "react"
-import { Paper, Tabs, Tab, Button } from "@material-ui/core"
+import { Paper, Tabs, Tab, Button, Typography, Grid } from "@material-ui/core"
+import NotificationIcon from "@material-ui/icons/Notifications"
+// import ArrowDropDown from "@material-ui/icons/ArrowDropDown"
+import { withStyles } from "@material-ui/core/styles"
+
+const styles = {
+  header: {
+    background: "#000000",
+    height: 80
+  },
+  h1: {
+    color: "#ffffff",
+    fontSize: 30,
+    letterSpacing: 1.07,
+    paddingLeft: 20,
+    paddingTop: 18
+  },
+  button: {
+    fontSize: 10,
+    color: "#ffffff",
+    opacity: 0.87,
+    textAlign: "left",
+    height: 40,
+    borderRadius: 0
+  },
+  notificationIcon: {
+    fontSize: 16
+  },
+  label: {
+    fontSize: 14,
+    textAlign: "center"
+  },
+  labelIcon: {
+    fontSize: 14,
+    textAlign: "center"
+  },
+  bodyHeader: {
+    marginLeft: 15,
+    marginRight: 15,
+    paddingTop: 18
+  },
+  bodyText: {
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 15
+  }
+}
 
 class SiteMenu extends React.Component {
   state = {
@@ -16,48 +62,86 @@ class SiteMenu extends React.Component {
   }
   mabyeAbout = () => {
     if (this.aboutTabSelected()) {
+      const { classes } = this.props
       return (
         <Paper>
-          <p>Welcome to OrcaSound!</p>
-          <p>
+          <Typography variant="h6" className={classes.bodyHeader}>
+            Welcome to OrcaSound!
+          </Typography>
+          <Typography
+            component="p"
+            paragraph={true}
+            className={classes.bodyText}
+          >
             Learn what orcas sound like. Then listen live for them on underwater
             microphones (hydrophones).
-          </p>
-          <p>
+          </Typography>
+          <Typography
+            component="p"
+            paragraph={true}
+            className={classes.bodyText}
+          >
             Let us know when you hear them, or any sound you think is
             interesting! That will help researchers and stewards protect the
             orcas and their environment.
-          </p>
-          <p>
+          </Typography>
+          <Typography
+            component="p"
+            paragraph={true}
+            className={classes.bodyText}
+          >
             You can also get notified when our listeners or algorithms detect
             whales at any of our hydrophone locations.
-          </p>
+          </Typography>
         </Paper>
       )
     }
   }
+
   render() {
+    const { classes } = this.props
+
     return (
       <Paper square>
-        <Paper square>Orcasound</Paper>
+        <Paper square className={classes.header} elevation={1}>
+          <Typography component="h1" className={classes.h1} align="left">
+            Orcasound
+          </Typography>
+        </Paper>
         <Button
           color="primary"
           variant="contained"
           centered="true"
           fullWidth={true}
-          className="sitemenu-notification-link"
+          className={classes.button}
         >
           Get notified when there's whale activity
+          <NotificationIcon className={classes.notificationIcon} />
         </Button>
         <Tabs
           value={this.state.value}
+          variant="fullWidth"
           indicatorColor="primary"
           textColor="primary"
           onChange={this.handleChange}
-          centered
+          //centered
         >
-          <Tab label="About" />
-          <Tab label="Listen Live" disabled />
+          <Tab
+            label="About"
+            fullWidth={true}
+            classes={{
+              label: classes.label
+            }}
+          />
+          <Tab
+            label="Listen Live"
+            disabled
+            //icon={<ArrowDropDown />}
+            fullWidth={true}
+            classes={{
+              labelIcon: classes.labelIcon
+            }}
+          />
         </Tabs>
         {this.mabyeAbout()}
       </Paper>
@@ -65,4 +149,4 @@ class SiteMenu extends React.Component {
   }
 }
 
-export default SiteMenu
+export default withStyles(styles)(SiteMenu)
