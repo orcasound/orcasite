@@ -4,7 +4,7 @@ services:
   phoenix:
     build: ./
     image: orcasound/orcasite
-    command: /bin/bash -c "mix ecto.create && mix ecto.migrate && mix phx.server"
+    command: /bin/bash -c "mix ecto.create && mix ecto.migrate && mix run priv/repo/seeds.exs && mix phx.server"
     environment:
       - POSTGRES_HOST=postgres
     ports:

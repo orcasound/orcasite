@@ -12,6 +12,8 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 
 The fastest way to get the site up and running is to [use the included Docker configuration](#running-in-docker).
 
+To access the site, use `docker-machine ps` to get the IP of your docker machine, then go to port `4000` in your browser: `<docker machine IP>:4000`.
+
 ##### Flexible
 
 If you would like a more flexible setup, you can install the dependencies [directly on your machine](#set-up-manually).
@@ -38,7 +40,7 @@ At the moment, the provided Docker configuration requires rebuilding everytime t
 
 ## Set up manually
 
-If Docker doesn't suit your needs, you can follow these instructions to get everything running directly on your machine. 
+If Docker doesn't suit your needs, you can follow these instructions to get everything running directly on your machine.
 
 ### Requirements
 
@@ -105,19 +107,11 @@ You can then return to the root directory
 
 `cd ..`
 
-The freshly created database is empty. To create a feed in the database, start an Elixir console in the root directory:
+The freshly created database is empty. To create a Feed in the database, run the `seeds.exs` file like this:
 
-`iex -S mix`
+`mix run priv/repo/seeds.exs`
 
-In the console, run:
-
-```
-attrs = %{location_point: Geo.WKT.decode!("SRID=4326;POINT(47.60621 -122.33207)"), name: "Orcasound Lab (Haro Strait)", node_name: "rpi_orcasound_lab", slug: "orcasound-lab"}
-
-Orcasite.Radio.create_feed(attrs)
-```
-
-Finally, in another terminal, run the server with
+Finally, run the server with:
 
 `iex -S mix phx.server`
 
