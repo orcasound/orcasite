@@ -1,8 +1,9 @@
 import React, { Component } from "react"
 import { Paper, Tabs, Tab, Button, Typography, Grid } from "@material-ui/core"
-import NotificationIcon from "@material-ui/icons/Notifications"
-// import ArrowDropDown from "@material-ui/icons/ArrowDropDown"
 import { withStyles } from "@material-ui/core/styles"
+import ArrowDropDown from "@material-ui/icons/ArrowDropDown"
+import NotificationIcon from "@material-ui/icons/Notifications"
+import FeedListV2 from "./FeedListV2"
 
 const styles = {
   header: {
@@ -29,7 +30,7 @@ const styles = {
   },
   label: {
     fontSize: 14,
-    textAlign: "center"
+    textAlign: "center",
   },
   labelIcon: {
     fontSize: 14,
@@ -44,7 +45,7 @@ const styles = {
     marginLeft: 15,
     marginRight: 15,
     marginTop: 15
-  }
+  },
 }
 
 class SiteMenu extends React.Component {
@@ -60,7 +61,8 @@ class SiteMenu extends React.Component {
   aboutTabSelected = () => {
     return this.state.value == 0
   }
-  mabyeAbout = () => {
+
+  maybeAbout = () => {
     if (this.aboutTabSelected()) {
       const { classes } = this.props
       return (
@@ -124,7 +126,7 @@ class SiteMenu extends React.Component {
           indicatorColor="primary"
           textColor="primary"
           onChange={this.handleChange}
-          //centered
+          centered
         >
           <Tab
             label="About"
@@ -133,17 +135,9 @@ class SiteMenu extends React.Component {
               label: classes.label
             }}
           />
-          <Tab
-            label="Listen Live"
-            disabled
-            //icon={<ArrowDropDown />}
-            fullWidth={true}
-            classes={{
-              labelIcon: classes.labelIcon
-            }}
-          />
+          <FeedListV2 />} />
         </Tabs>
-        {this.mabyeAbout()}
+        {this.maybeAbout()}
       </Paper>
     )
   }
