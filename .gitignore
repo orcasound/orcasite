@@ -30,3 +30,9 @@ assets/src/config/
 bash /
 
 docker/
+
+.vagrant/
+
+*.log
+
+.elixir_ls/

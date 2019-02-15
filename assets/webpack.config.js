@@ -36,7 +36,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, "../priv/static"),
       filename: 'js/[name].js',
-      publicPath: (isDev ? 'http://localhost:8080/' : "/")
+      publicPath: (isDev ? 'http://0.0.0.0:8080/' : "/")
     },
 
     devServer: {
