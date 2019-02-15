@@ -39,8 +39,6 @@ export default class HomeV2 extends Component {
           <MuiThemeProvider theme={theme}>
             <Paper
               square
-              // This will get replaced when we add breakpoints
-              style={{ maxWidth: 599 }}
             >
               <SiteMenu />
             </Paper>
