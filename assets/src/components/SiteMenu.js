@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import { Paper, Tabs, Tab, Button, Typography, Grid } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
-import ArrowDropDown from "@material-ui/icons/ArrowDropDown"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedListV2 from "./FeedListV2"
 

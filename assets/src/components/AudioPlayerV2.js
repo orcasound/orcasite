@@ -1,19 +1,19 @@
 import React from 'react'
-import { Paper, Typography, Card, CardHeader } from "@material-ui/core"
+import { Paper, Typography, Card } from "@material-ui/core"
 import styled from "styled-components"
 
 const AudioHeader = styled(Paper)`
   margin-left: 1rem;
-`;
+`
 
 const CardWrapper = styled(Card)`
   display: flex;
   justify-content: center;
-`;
+`
 
 const Audio = styled.audio`
   margin: .5rem;
-`;
+`
 
 const AudioPlayerV2 = () => {
   return (
@@ -50,7 +50,7 @@ const AudioPlayerV2 = () => {
         </Audio>
       </CardWrapper>
     </Paper>
-  );
+  )
 }
 
-export default AudioPlayerV2;
+export default AudioPlayerV2

@@ -2,11 +2,9 @@ import React, { Component } from "react"
 import SiteMenu from "./SiteMenu"
 import AudioPlayerV2 from "./AudioPlayerV2"
 import { Button, Paper } from "@material-ui/core"
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles'
+import { createMuiTheme, MuiThemeProvider, withStyles } from "@material-ui/core/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
-import { blue, black } from '@material-ui/core/colors'
-import color from "@material-ui/core/colors/indigo";
-import { CallMissedSharp } from "@material-ui/icons";
+import { blue, black } from "@material-ui/core/colors"
 
 const theme = createMuiTheme(
   {
@@ -25,13 +23,7 @@ const theme = createMuiTheme(
       }
     },
   }
-);
-
-const styles = {
-  paper: {
-    height: '100%'
-  }
-};
+)
 
 export default class HomeV2 extends Component {
   state = {}
@@ -41,6 +33,8 @@ export default class HomeV2 extends Component {
   }
 
   render() {
+    const { classes } = this.props
+
     return (
       <>
         <CssBaseline>
@@ -48,7 +42,6 @@ export default class HomeV2 extends Component {
             <Paper
               square
               elevation={0}
-              className={CallMissedSharp.paper}
             >
               <SiteMenu />
               <AudioPlayerV2 />
