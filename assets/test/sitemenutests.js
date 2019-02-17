@@ -23,11 +23,6 @@ describe("<SiteMenu />", () => {
   })
 
   describe("<Tabs />", () => {
-    it("has 2 <Tab />", () => {
-      const wrapper = mount(<SiteMenu />)
-      expect(wrapper.find("Tabs")).to.exist
-      expect(wrapper.find("Tab")).to.have.lengthOf(2)
-    })
     it("has About tab", () => {
       const wrapper = mount(<SiteMenu />)
       expect(
@@ -37,14 +32,9 @@ describe("<SiteMenu />", () => {
           .prop("label")
       ).to.be.eql("About")
     })
-    it("has Feeds tab", () => {
+    it("has <FeedsListV2>", () => {
       const wrapper = mount(<SiteMenu />)
-      expect(
-        wrapper
-          .find("Tab")
-          .at(1)
-          .prop("label")
-      ).to.be.eql("Listen Live")
+      expect(wrapper.find("FeedListV2")).to.exist
     })
   })
   describe("notifications link", () => {
