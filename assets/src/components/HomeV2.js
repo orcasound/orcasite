@@ -27,8 +27,6 @@ const theme = createMuiTheme(
   }
 );
 
-console.log(theme);
-
 const styles = {
   paper: {
     height: '100%'
