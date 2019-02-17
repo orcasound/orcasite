@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import { Paper, Tabs, Tab, Button, Typography, Grid } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
-import ArrowDropDown from "@material-ui/icons/ArrowDropDown"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedListV2 from "./FeedListV2"
 
@@ -66,9 +65,9 @@ class SiteMenu extends React.Component {
     if (this.aboutTabSelected()) {
       const { classes } = this.props
       return (
-        <Paper>
+        <Paper elevation={0} square>
           <Typography variant="h6" className={classes.bodyHeader}>
-            Welcome to OrcaSound!
+            Listen for Whales!
           </Typography>
           <Typography
             component="p"
@@ -104,8 +103,8 @@ class SiteMenu extends React.Component {
     const { classes } = this.props
 
     return (
-      <Paper square>
-        <Paper square className={classes.header} elevation={1}>
+      <Paper elevation={0} square>
+        <Paper square className={classes.header} elevation={0}>
           <Typography component="h1" className={classes.h1} align="left">
             Orcasound
           </Typography>

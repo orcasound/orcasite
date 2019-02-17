@@ -1,10 +1,10 @@
 import React, { Component } from "react"
 import SiteMenu from "./SiteMenu"
+import AudioPlayerV2 from "./AudioPlayerV2"
 import { Button, Paper } from "@material-ui/core"
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles'
+import { createMuiTheme, MuiThemeProvider, withStyles } from "@material-ui/core/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
-import { blue, black } from '@material-ui/core/colors'
-import color from "@material-ui/core/colors/indigo";
+import { blue, black } from "@material-ui/core/colors"
 
 const theme = createMuiTheme(
   {
@@ -23,7 +23,7 @@ const theme = createMuiTheme(
       }
     },
   }
-);
+)
 
 export default class HomeV2 extends Component {
   state = {}
@@ -33,14 +33,18 @@ export default class HomeV2 extends Component {
   }
 
   render() {
+    const { classes } = this.props
+
     return (
       <>
         <CssBaseline>
           <MuiThemeProvider theme={theme}>
             <Paper
               square
+              elevation={0}
             >
               <SiteMenu />
+              <AudioPlayerV2 />
             </Paper>
           </MuiThemeProvider>
         </CssBaseline>
