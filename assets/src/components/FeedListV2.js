@@ -16,7 +16,8 @@ const styles = {
     display: "flex",
     flexGrow: 1,
     maxWidth: "none",
-    flexShrink: 1
+    flexShrink: 1,
+    boxShadow: '0 25px 25px rgba(192, 192, 192, 0.5)',
   },
   menuList: {
     fontSize: 14,

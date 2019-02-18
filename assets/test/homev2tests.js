@@ -8,14 +8,14 @@ describe("<HomeV2 />", () => {
     const wrapper = shallow(<HomeV2 />)
     console.log(wrapper.debug())
     expect(wrapper.find("WithStyles(SiteMenu)")).to.exist
-    
+
   })
   it("has <AudioPlayerV2 />", () => {
     const wrapper = shallow(<HomeV2 />)
     expect(wrapper.find("AudioPlayerV2")).to.exist
   })
   it("has <MuiThemeProvider />", () => {
-    const wrapper = shallow(<HomeV2 />) 
+    const wrapper = shallow(<HomeV2 />)
     expect(wrapper.find("MuiThemeProviderOld")).to.exist
   })
 })
