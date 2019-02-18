@@ -4,6 +4,9 @@ import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedListV2 from "./FeedListV2"
 
+// -------------------------------------------
+// Styled Components - TODO:  Move to a new file
+// -------------------------------------------
 const MainHeader = styled(Paper)`
   background: #000000;
   color: #ffffff;
@@ -42,7 +45,9 @@ const GridContainer = styled.div`
     }
   }
 `
-
+// -------------------------------------------
+// Component
+// -------------------------------------------
 class SiteMenu extends React.Component {
   state = {
     value: 0
@@ -95,7 +100,6 @@ class SiteMenu extends React.Component {
   }
 
   render() {
-
     return (
       <Paper elevation={0} square>
         <MainHeader square elevation={0}>

@@ -7,8 +7,7 @@ describe("<HomeV2 />", () => {
   it("has <SiteMenu />", () => {
     const wrapper = shallow(<HomeV2 />)
     console.log(wrapper.debug())
-    expect(wrapper.find("WithStyles(SiteMenu)")).to.exist
-
+    expect(wrapper.find("SiteMenu")).to.exist
   })
   it("has <AudioPlayerV2 />", () => {
     const wrapper = shallow(<HomeV2 />)

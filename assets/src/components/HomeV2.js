@@ -29,7 +29,9 @@ const theme = createMuiTheme(
   }
 )
 
-
+// ---------------------------------------
+// Ordering style sheets in the <head>
+// ---------------------------------------
 const generateClassName = createGenerateClassName();
 const jss = create({
   ...jssPreset(),
@@ -45,8 +47,6 @@ export default class HomeV2 extends Component {
   }
 
   render() {
-    const { classes } = this.props
-
     return (
       <>
         <JssProvider jss={jss} generateClassName={generateClassName}>
