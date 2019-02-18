@@ -14,14 +14,6 @@ describe("<SiteMenu />", () => {
     mount.cleanUp();
   });
 
-
-  it('has classes prop', () => {
-    const wrapper = mount(<SiteMenu />)
-    const siteMenu = wrapper.find("SiteMenu")
-    expect(siteMenu.prop("classes")).to.exist
-    console.log(siteMenu.props())
-  })
-
   describe("<Tabs />", () => {
     it("has About tab", () => {
       const wrapper = mount(<SiteMenu />)

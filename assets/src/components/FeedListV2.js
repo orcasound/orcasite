@@ -1,33 +1,35 @@
 import React, { Component } from "react"
 import { Button, ClickAwayListener, Grow, Paper, Popper, MenuList, MenuItem } from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
-import { withStyles } from "@material-ui/core/styles"
+import styled from "styled-components"
 
-const styles = {
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    flexGrow: 1,
-    maxWidth: "none",
-    flexShrink: 1
-  },
-  button: {
-    display: "flex",
-    flexGrow: 1,
-    maxWidth: "none",
-    flexShrink: 1
-  },
-  menuList: {
-    fontSize: 14,
-    textAlign: "center",
-  },
-  menuItem: {
-    display: "flex",
-    justifyContent: "space-between",
-  }
-};
+// -------------------------------------------
+// Styled Components - TODO:  Move to a new file
+// -------------------------------------------
+const FeedListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  max-width: none;
+  flex-shrink: 1;
+`
 
+const FeedButton = styled(Button)`
+  display: flex;
+  flex-grow: 1;
+  max-width: none;
+  flex-shrink: 1;
+  box-shadow: 0 25px 25px rgba(192, 192, 192, 0.5);
+`
+
+const FeedMenuItem = styled(MenuItem)`
+  display: flex;
+  justify-content: space-between;
+`
+// -------------------------------------------
+// Component
+// -------------------------------------------
 class FeedListV2 extends Component {
   state = {
     open: false,
@@ -48,13 +50,11 @@ class FeedListV2 extends Component {
   }
 
   render() {
-    const { classes } = this.props
     const { open, bushPointUsers, haroStraitUsers } = this.state
 
     return (
-      <div className={classes.root} >
-        <Button
-          className={classes.button}
+      <FeedListContainer>
+        <FeedButton
           buttonRef={node => {
             this.anchorEl = node;
           }}
@@ -63,7 +63,7 @@ class FeedListV2 extends Component {
           onClick={this.handleToggle}
         >
           Listen Live<ArrowDropDown />
-        </Button>
+        </FeedButton>
         <Popper
           open={open}
           anchorEl={this.anchorEl}
@@ -79,28 +79,28 @@ class FeedListV2 extends Component {
               <Paper>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList>
-                    <MenuItem
-                      className={classes.menuItem}
+                    <FeedMenuItem
+                      //className={classes.menuItem}
                       onClick={this.handleClose}>
                       <span>Bush Point</span>
                       <div>{bushPointUsers}<Person /></div>
-                    </MenuItem>
-                    <MenuItem
-                      className={classes.menuItem}
+                    </FeedMenuItem>
+                    <FeedMenuItem
+                      //className={classes.menuItem}
                       onClick={this.handleClose}>
                       <span>Haro Strait/<br>
                       </br>OrcaSound Lab</span>
                       <div>{haroStraitUsers}<Person /></div>
-                    </MenuItem>
+                    </FeedMenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
             </Grow>
           )}
         </Popper>
-      </div>
+      </FeedListContainer>
     )
   }
 }
 
-export default withStyles(styles)(FeedListV2)
+export default FeedListV2
