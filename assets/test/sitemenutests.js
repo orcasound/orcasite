@@ -7,12 +7,12 @@ describe("<SiteMenu />", () => {
   let mount
 
   before(() => {
-    mount = createMount();
+    mount = createMount()
   })
 
   after(() => {
-    mount.cleanUp();
-  });
+    mount.cleanUp()
+  })
 
   describe("<Tabs />", () => {
     it("has About tab", () => {

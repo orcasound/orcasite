@@ -5,16 +5,17 @@ import styled from "styled-components"
 // -------------------------------------------
 // Styled Components - TODO:  Move to a new file
 // -------------------------------------------
-const AudioHeader = styled(Paper)`
+
+export const AudioHeader = styled(Paper)`
   margin-left: 1rem;
 `
 
-const CardWrapper = styled(Card)`
+export const CardWrapper = styled(Card)`
   display: flex;
   justify-content: center;
 `
 
-const Audio = styled.audio`
+export const Audio = styled.audio`
   margin: .5rem;
 `
 // -------------------------------------------
@@ -37,19 +38,19 @@ const AudioPlayerV2 = () => {
         </Typography>
       </AudioHeader>
       <CardWrapper>
-        <Audio
+        <Audio id="call-examples"
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3">
         </Audio>
       </CardWrapper>
       <CardWrapper>
-        <Audio
+        <Audio id="four-minute-sample"
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/4min-sample.mp3">
         </Audio>
       </CardWrapper>
       <CardWrapper>
-        <Audio
+        <Audio id="whistle-examples"
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3">
         </Audio>

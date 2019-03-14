@@ -31,13 +31,19 @@ const FeedMenuItem = styled(MenuItem)`
 // Component
 // -------------------------------------------
 class FeedListV2 extends Component {
+  constructor(props) {
+    super(props);
+
+    this.handleToggle = this.handleToggle.bind(this);
+}
+
   state = {
     open: false,
     bushPointUsers: 1,
     haroStraitUsers: 3
   }
 
-  handleToggle = () => {
+  handleToggle() {
     this.setState(state => ({ open: !state.open }))
   }
 
