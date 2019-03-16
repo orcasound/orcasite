@@ -45,6 +45,7 @@ defmodule Orcasite.Mixfile do
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
+      {:absinthe_ecto, "~>0.1.3"}, # Provides helper functions for easy batching of Ecto associations
       {:poison, "~> 3.1.0"}, # JSON parser, works with Absinthe out of the box
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 2.0"},
