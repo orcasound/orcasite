@@ -24,6 +24,11 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Configures Guardian
+config :orcasite, Orcasite.Auth.Guardian,
+  issuer: "orcasite",
+  secret_key: "1Kw9VhSyQWzgZm+Tle5H3/5KkF8frUZpsOsGrhRv99Jbi6fUwQkRCHvWLRPzgtqe"
+
 config :orcasite, env: Mix.env()
 
 # Import environment specific config. This must remain at the bottom

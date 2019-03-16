@@ -2,7 +2,7 @@
 Sets up callbacks for user authentication with Guardian.
 This is the app's implementation for a token configuration.
 """
-defmodule Orcasite.Accounts.Auth.Guardian do
+defmodule Orcasite.Auth.Guardian do
   use Guardian, otp_app: :orcasite
 
   alias Orcasite.Accounts
