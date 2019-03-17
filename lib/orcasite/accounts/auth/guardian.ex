@@ -1,8 +1,8 @@
-@moduledoc """
-Sets up callbacks for user authentication with Guardian.
-This is the app's implementation for a token configuration.
-"""
 defmodule Orcasite.Auth.Guardian do
+  @moduledoc """
+  Sets up callbacks for user authentication with Guardian.
+  This is the app's implementation for a token configuration.
+  """
   use Guardian, otp_app: :orcasite
 
   alias Orcasite.Accounts
@@ -13,10 +13,6 @@ defmodule Orcasite.Auth.Guardian do
     {:ok, sub}
   end
 
-  def subject_for_token(_,_) do
-    {:error, :reason_for_error}
-  end
-
   # Looks up the user from the claims
   def resource_from_claims(claims) do
     id = claims["sub"]
@@ -24,7 +20,4 @@ defmodule Orcasite.Auth.Guardian do
     {:ok, user}
   end
 
-  def resource_from_claims(_claims) do
-    {:error, :reason_for_error}
-  end
 end
