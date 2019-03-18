@@ -1,4 +1,4 @@
-defmodule Orcasite.Accounts do 
+defmodule Orcasite.Accounts do
   # Stubbed out for now.
   def find_user(id) do
     %{
