@@ -30,6 +30,9 @@ sudo apt -y install automake \
 # install zip / unzip needed to unzip source
 sudo apt-get -y install zip unzip
 
+# install tools to allow filewatching for webpack
+sudo apt -y install inotify-tools
+
 # install database
 
 # install postgresql
@@ -50,12 +53,12 @@ sudo su postgres -c "psql -c \"alter user postgres with PASSWORD 'postgres'\" -U
 # Phase 2 Installation of Erlang, Elixir, and Node.js via asdf
 
 # get .bashrc changes into effect so we can call asdf
-chmod +777 /vagrant/bootstrap_asdf.sh
-bash -lic "/vagrant/bootstrap_asdf.sh"
+chmod +777 /vagrant/vagrant_bootstrap/bootstrap_asdf.sh
+bash -lic "/vagrant/vagrant_bootstrap/bootstrap_asdf.sh"
 
 # Phase 3 App Specific Setup
-chmod +777 /vagrant/bootstrap_app.sh
-bash -lic "/vagrant/bootstrap_app.sh"
+chmod +777 /vagrant/vagrant_bootstrap/bootstrap_app.sh
+bash -lic "/vagrant/vagrant_bootstrap/bootstrap_app.sh"
 
 # end
 

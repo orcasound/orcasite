@@ -5,16 +5,17 @@ import styled from "styled-components"
 // -------------------------------------------
 // Styled Components - TODO:  Move to a new file
 // -------------------------------------------
-const AudioHeader = styled(Paper)`
+
+export const AudioHeader = styled(Paper)`
   margin-left: 1rem;
 `
 
-const CardWrapper = styled(Card)`
+export const CardWrapper = styled(Card)`
   display: flex;
   justify-content: center;
 `
 
-const Audio = styled.audio`
+export const Audio = styled.audio`
   margin: .5rem;
 `
 // -------------------------------------------
@@ -36,20 +37,20 @@ const AudioPlayerV2 = () => {
           Here are some samples of calls, clicks, and whistles that are made by southern resident killer whales:
         </Typography>
       </AudioHeader>
-      <CardWrapper elevation={0}>
-        <Audio
+      <CardWrapper>
+        <Audio id="call-examples"
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3">
         </Audio>
       </CardWrapper>
-      <CardWrapper elevation={0}>
-        <Audio
+      <CardWrapper>
+        <Audio id="four-minute-sample"
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/4min-sample.mp3">
         </Audio>
       </CardWrapper>
-      <CardWrapper elevation={0}>
-        <Audio
+      <CardWrapper>
+        <Audio id="whistle-examples"
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3">
         </Audio>
