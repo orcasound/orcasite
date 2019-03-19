@@ -4,7 +4,11 @@
   "main": "app.js",
   "scripts": {
     "start": "npm run watch",
+<<<<<<< HEAD
     "watch": "MIX_ENV=dev webpack-dev-server --mode development --inline --hot --stdin --colors --host 0.0.0.0 --public localhost:8080",
+=======
+    "watch": "MIX_ENV=dev webpack-dev-server --mode development --inline --hot --stdin --colors",
+>>>>>>> dcfa483079175f953f970aea42d848d31505f490
     "deploy": "MIX_ENV=prod webpack --mode production --env.prod"
   },
   "dependencies": {
@@ -16,7 +20,7 @@
     "@material-ui/icons": "^3.0.2",
     "apollo-boost": "^0.1.20",
     "autoprefixer": "^9.3.1",
-    "bootstrap": "^4.1.3",
+    "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
     "flv.js": "^1.4.2",
     "formik": "^1.3.1",
@@ -40,9 +44,9 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/plugin-proposal-decorators": "^7.0.0",
+    "@babel/core": "^7.3.3",
+    "@babel/plugin-proposal-class-properties": "^7.3.3",
+    "@babel/plugin-proposal-decorators": "^7.3.0",
     "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
     "@babel/plugin-proposal-function-sent": "^7.0.0",
     "@babel/plugin-proposal-json-strings": "^7.0.0",
@@ -50,7 +54,7 @@
     "@babel/plugin-proposal-throw-expressions": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-syntax-import-meta": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.0",

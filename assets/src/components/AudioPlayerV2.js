@@ -36,19 +36,19 @@ const AudioPlayerV2 = () => {
           Here are some samples of calls, clicks, and whistles that are made by southern resident killer whales:
         </Typography>
       </AudioHeader>
-      <CardWrapper>
+      <CardWrapper elevation={0}>
         <Audio
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3">
         </Audio>
       </CardWrapper>
-      <CardWrapper>
+      <CardWrapper elevation={0}>
         <Audio
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/4min-sample.mp3">
         </Audio>
       </CardWrapper>
-      <CardWrapper>
+      <CardWrapper elevation={0}>
         <Audio
           controls
           src="http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3">
