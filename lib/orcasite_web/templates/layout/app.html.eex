@@ -8,12 +8,8 @@
     <meta name="author" content="">
 
     <title>Orcasound - Listen for whales</title>
-<<<<<<< HEAD
-    <%= {:safe, css_link_tag()} %>
-    <!-- jss-insertion-point -->
-=======
     <%= {:safe, css_link_tag(@conn)} %>
->>>>>>> dcfa483079175f953f970aea42d848d31505f490
+    <!-- jss-insertion-point -->
   </head>
 
   <body>
