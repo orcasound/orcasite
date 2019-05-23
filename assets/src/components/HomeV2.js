@@ -1,5 +1,12 @@
 import React, { Component } from "react"
+
+import { gql } from "apollo-boost"
+import { Query } from "react-apollo"
+
+
+import FeedPageV2 from "./FeedPageV2"
 import SiteMenu from "./SiteMenu"
+import About from "./AboutV2"
 import AudioPlayerV2 from "./AudioPlayerV2"
 import { Button, Paper } from "@material-ui/core"
 import CssBaseline from "@material-ui/core/CssBaseline"
@@ -9,6 +16,7 @@ import { create } from "jss"
 import { createGenerateClassName, jssPreset } from "@material-ui/core/styles"
 import styled, { ThemeProvider } from 'styled-components'
 import { blue, black } from "@material-ui/core/colors"
+
 
 const theme = createMuiTheme(
   {
@@ -46,17 +54,31 @@ export default class HomeV2 extends Component {
     document.title = `Orcasound`
   }
 
+  changeFeed = currentFeed => this.setState({ currentFeed, autoplay: true })
+
   render() {
+    const { feedSlug } = this.props.match.params;
+
     return (
       <>
         <JssProvider jss={jss} generateClassName={generateClassName}>
           <MuiThemeProvider theme={theme}>
-            <Paper
-              square
-              elevation={0}
-            >
+            <Paper square elevation={0}>
               <SiteMenu />
-              <AudioPlayerV2 />
+              {!feedSlug && (
+                <div>
+                  <About />
+                  <AudioPlayerV2 />
+                </div>
+
+              )}
+              {feedSlug && (
+                <FeedPageV2
+                  feedSlug={feedSlug}
+                  onChangeFeed={this.changeFeed}
+                />
+              )}
+              <div>{feedSlug}</div>
             </Paper>
           </MuiThemeProvider>
         </JssProvider>

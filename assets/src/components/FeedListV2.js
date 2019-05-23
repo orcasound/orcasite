@@ -5,7 +5,7 @@ import { Button, ClickAwayListener, Grow, Paper, Popper, MenuList, MenuItem } fr
 import { ArrowDropDown, Person } from "@material-ui/icons"
 import styled from "styled-components"
 
-import { LIST_FEEDS } from 'queries/feeds'
+import { LIST_FEEDS } from '../queries/feeds'
 
 // -------------------------------------------
 // Styled Components - TODO:  Move to a new file
@@ -30,6 +30,12 @@ const FeedButton = styled(Button)`
 const FeedMenuItem = styled(MenuItem)`
   display: flex;
   justify-content: space-between;
+  
+  a {
+    color: rgba(0,0,0,0.87);
+  }
+  
+  color: #000000;
 `
 // -------------------------------------------
 // Component
@@ -76,7 +82,7 @@ class FeedListV2 extends Component {
           }
 
           const { feeds } = data
-
+          console.log('data', data.feeds)
           return (
             <FeedListContainer>
               <FeedButton
@@ -103,7 +109,6 @@ class FeedListV2 extends Component {
                   >
                     <Paper>
                       <ClickAwayListener onClickAway={this.handleClose}>
-
                         <MenuList>
                           {feeds
                             .slice()
@@ -114,7 +119,7 @@ class FeedListV2 extends Component {
                                   key={i}
                                   onClick={this.handleClose}
                                 >
-                                  <Link to={`/${feed.slug}`}>
+                                  <Link to={`/v2/${feed.slug}`}>
                                     <span>{feed.name}</span>
                                     <div>
                                       {bushPointUsers}

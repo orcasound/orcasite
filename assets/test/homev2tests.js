@@ -1,7 +1,8 @@
 import React from "react"
-import { shallow } from "enzyme"
+import { shallow, mount } from "enzyme"
 import { expect } from "chai"
 import HomeV2 from "../src/components/HomeV2"
+
 
 describe("<HomeV2 />", () => {
   it("has <SiteMenu />", () => {
@@ -14,7 +15,7 @@ describe("<HomeV2 />", () => {
     const wrapper = shallow(<HomeV2 />)
     expect(wrapper.find("AudioPlayerV2")).to.exist
   })
-  
+
   it("has <MuiThemeProvider />", () => {
     const wrapper = shallow(<HomeV2 />)
     expect(wrapper.find("MuiThemeProviderOld")).to.exist

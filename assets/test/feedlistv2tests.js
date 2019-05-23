@@ -4,6 +4,7 @@ import { expect } from "chai"
 import sinon from "sinon"
 import FeedListV2 from "../src/components/FeedListV2"
 
+
 describe("<FeedListV2 />", () => {
   describe("</Button>", () => {
     it("has expected text", () => {
