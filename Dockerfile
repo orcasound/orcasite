@@ -15,7 +15,7 @@ FROM bitwalker/alpine-elixir:${ELIXIR_VERSION} as alpine-elixir-phoenix
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2019-01-23 \
+ENV REFRESHED_AT=2019-05-30 \
     # Set this so that CTRL+G works properly
     TERM=xterm
 
@@ -38,8 +38,11 @@ RUN \
 # https://medium.com/@tonistiigi/advanced-multi-stage-build-patterns-6f741b852fae
 COPY --from=node /usr/local /opt/node
 
+# Use rsync to merge in the node files into /usr/local without overwritting
+# everything already in there, then clean up and remove rsync
 RUN rsync -a /opt/node/ /usr/local \
   && apk del .build-deps \
+  && rm -rf /opt/node \
   && rm -rf /root/.cache \
   && rm -rf /var/cache/apk/*
 
@@ -64,14 +67,14 @@ ENV MIX_ENV=dev
 
 # Install temporary build deps
 RUN apk --no-cache --update add \
-      automake autoconf
+      automake autoconf libtool nasm
 
 # Cache elixir deps
 ADD mix.exs mix.lock ./
 RUN mix do deps.get, deps.compile
 
 # Same with npm deps
-ADD assets/package.json assets/
+ADD assets/package.json assets/package-lock.json assets/
 RUN cd assets && \
     npm install --no-optional
 
@@ -86,6 +89,8 @@ ENV PORT=4000 MIX_ENV=dev
 
 # Copy deps over
 COPY --from=phx-builder /opt/app/assets/node_modules /opt/app/assets/node_modules
+# Make node_modules a volume so that it doesn't get replaced with host bind mount
+VOLUME /opt/app/assets/node_modules
 COPY --from=phx-builder /opt/app/_build /opt/app/_build
 COPY --from=phx-builder /opt/app/deps /opt/app/deps
 COPY --from=phx-builder /opt/app/.mix /opt/app/.mix

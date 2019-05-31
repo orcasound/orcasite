@@ -12,7 +12,7 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 
 The fastest way to get the site up and running is to [use the included Docker configuration](#running-in-docker).
 
-To access the site, use `docker-machine ps` to get the IP of your docker machine, then go to port `4000` in your browser: `<docker machine IP>:4000`.
+To access the site, run `docker-compose pull && docker-compose up` and wait until the `phoenix_1` container outputs `Compiled successfully`. Then you should find the site available in your browser at `http://localhost:4000`.
 
 ##### Flexible
 
@@ -26,7 +26,7 @@ Once you clone the repository, you can just run docker-compose in the root direc
 
 `docker-compose pull && docker-compose up`
 
-This will pull the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) along with an image for the database, automatically configure everything, and run the Phoenix server. The orcasite page will be accessible at [`http://localhost:4000`](http://localhost:4000).
+This will pull the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) along with an image for the database, automatically configure everything, and run the Phoenix server. The orcasite page will be accessible at [`http://localhost:4000`](http://localhost:4000) as soon as the `phoenix_1` container outputs `Compiled successfully`.
 
 If you want to make changes to the site, you will have to rebuild the Docker image locally. You can do this by running
 
@@ -36,7 +36,15 @@ and then recreating the container with
 
 `docker-compose up`
 
-At the moment, the provided Docker configuration requires rebuilding everytime the code gets changed. For smaller, one-off contributions this may be fine, but for a fully fledged dev setup, consider [installing everything manually on the local machine](#set-up-manually).
+### Development setup
+
+At the moment, the `docker-compose` file uses bind mounting for the source files (`assets`, `config`, `lib`, `test`, `mix.exs`, and `mix.lock`), which means if you edit the source on your host file system, the changes will get picked up and hot reloaded in your browser.
+
+However, please note that installed packages are not shared with the host file system, which means node packages and hexes need to be installed by running `mix deps.get` and `npm install` inside the `phoenix` container. The best way to do this is to use `docker-compose exec`: `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`. The `exec` command can also be used to run any other commands that need to be completed in the container, like `ecto.migrate` and other database operations.
+
+For more involved development you may want to access `iex`. To do this, stop the containers with `docker-compose stop` and start them back up using `docker-compose run --rm --service-ports phoenix iex -S mix phx.server`. You will now have an interactive access to iex, while the postgres container runs in the background.
+
+If you need more control over the dev setup, consider [installing everything manually on the local machine](#set-up-manually).
 
 ## Set up manually
 
@@ -119,7 +127,6 @@ You should now be able to see the page when visiting
 
 [`http://localhost:4000`](http://localhost:4000)
 
-
 ## Test
 
 ### React
@@ -127,7 +134,6 @@ You should now be able to see the page when visiting
 From the assets folder
 
 `npx mocha`
-
 
 ## Deployment
 
