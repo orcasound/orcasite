@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   phoenix:
@@ -14,6 +14,13 @@ services:
       - postgres
     links:
       - postgres
+    volumes:
+      - ./assets:/opt/app/assets
+      - ./config:/opt/app/config
+      - ./lib:/opt/app/lib
+      - ./test:/opt/app/test
+      - ./mix.exs:/opt/app/mix.exs
+      - ./mix.lock:/opt/app/mix.lock
 
   postgres:
     image: mdillon/postgis:10-alpine
