@@ -9,6 +9,7 @@
 
     <title>Orcasound - Listen for whales</title>
     <%= {:safe, css_link_tag(@conn)} %>
+    <!-- jss-insertion-point -->
   </head>
 
   <body>

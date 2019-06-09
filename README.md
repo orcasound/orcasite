@@ -142,3 +142,32 @@ For the moment, this app is running in a Heroku instance with `mix phx.server`. 
 `heroku run POOL_SIZE=2 iex -S mix`
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
+<<<<<<< HEAD
+
+
+## Setting up Vagrant
+
+Install [Oracle Virtual Box](https://www.virtualbox.org/wiki/Downloads)
+
+Install [Vagrant](https://www.vagrantup.com/downloads.html)
+
+Spin up the vagrant box. This is a onetime setup that will take some time. Approximately 30 minutes.
+```
+$ vagrant up
+```
+
+SSH into the vagrant box
+```
+$ vagrant ssh
+```
+
+from the vagrant shell
+
+```
+vagrant@ubuntu-bionic:~$ cd /vagrant
+```
+
+Run all the mix, iex, npm and all other build type commands from the vagrant shell from the /vagrant directory or it's children.
+
+=======
+>>>>>>> dcfa483079175f953f970aea42d848d31505f490
