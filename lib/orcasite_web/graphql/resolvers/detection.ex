@@ -1,7 +1,13 @@
 defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.Radio
 
-  def submit(
+  def index(_, _) do
+    # TODO: Add permissions inside of Radio context once
+    # auth is merged
+    {:ok, Radio.list_detections()}
+  end
+
+  def create(
         %{
           feed_id: feed_id,
           playlist_timestamp: _playlist_timestamp,

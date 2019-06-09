@@ -7,7 +7,7 @@ export default class Loader extends Component {
   render() {
     return (
       <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-        <FontAwesomeIcon icon={faSpinner} spin />
+        <FontAwesomeIcon icon={faSpinner} spin size="3x" />
       </div>
     )
   }

@@ -63,7 +63,9 @@ defmodule Orcasite.Radio do
   end
 
   def list_detections do
-    Repo.all(Detection)
+    Detection
+    |> preload(:feed)
+    |> Repo.all()
   end
 
   def get_detection!(id), do: Repo.get!(Detection, id)

@@ -17,9 +17,6 @@ import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
 import JssProvider from "react-jss/lib/JssProvider"
 import { create } from "jss"
 import { createGenerateClassName, jssPreset } from "@material-ui/core/styles"
-import styled, { ThemeProvider } from 'styled-components'
-import { blue, black } from "@material-ui/core/colors"
-
 
 const theme = createMuiTheme(
   {
