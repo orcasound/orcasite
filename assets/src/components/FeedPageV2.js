@@ -3,6 +3,17 @@ import { Query } from 'react-apollo'
 import { string, func } from 'prop-types'
 import { GET_FEED } from '../queries/feeds'
 import Loader from './Loader'
+import { Paper, Typography } from '@material-ui/core'
+import styled from "styled-components"
+
+const FeedName = styled(Typography)`
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(0,0,0,0.87);
+  letter-spacing: 0;
+  text-align: left;
+  line-height: 28px;
+`
 
 class FeedPageV2 extends Component {
   static propTypes = {
@@ -26,30 +37,24 @@ class FeedPageV2 extends Component {
             return <div>Feed Not Found for {slug}</div>
           }
 
-          let lat, long
-          if (feed.locationPoint && feed.locationPoint.coordinates) {
-            const {
-              locationPoint: { coordinates: [lat, long] = [] },
-            } = feed
-          }
+          // let lat, long
+          // if (feed.locationPoint && feed.locationPoint.coordinates) {
+          //   const {
+          //     locationPoint: { coordinates: [lat, long] = [] },
+          //   } = feed
+          // }
 
-          const { introHtml } = feed
+          const { introHtml, thumbUrl } = feed
 
           return (
-            <div>
-              <h1>{feed.name}</h1>
-              {lat &&
-                long && (
-                  <p>Located at: {lat}, {long}</p>
-                )
-              }
-              <button onClick={() => this.props.onChangeFeed(feed)}>
-                Listen to {feed.name}
-              </button>
-
+            <Paper>
+              <FeedName variant="h2">{feed.name}</FeedName>
+              <img
+                src="https://via.placeholder.com/375x127"
+              />
               {introHtml && <div dangerouslySetInnerHTML={{ __html: introHtml }} />}
 
-            </div>
+            </Paper>
           )
         }}
       </Query>

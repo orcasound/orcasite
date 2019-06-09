@@ -3,8 +3,11 @@ import React, { Component } from "react"
 import { gql } from "apollo-boost"
 import { Query } from "react-apollo"
 
+import IconButton from "@material-ui/core/IconButton"
+import PlayArrowIcon from "@material-ui/icons/PlayArrow"
 
 import FeedPageV2 from "./FeedPageV2"
+import PlayerV2 from "./PlayerV2"
 import SiteMenu from "./SiteMenu"
 import About from "./AboutV2"
 import AudioPlayerV2 from "./AudioPlayerV2"
@@ -51,7 +54,11 @@ export default class HomeV2 extends Component {
   state = {}
 
   componentDidMount() {
-    document.title = `Orcasound`
+    if (['beta', 'dev', 'staging'].indexOf(ENV.ENV_NAME) >= 0) {
+      document.title = `Orcasound ${ENV.ENV.NAME}`
+    } else {
+      document.title = `Orcasound`
+    }
   }
 
   changeFeed = currentFeed => this.setState({ currentFeed, autoplay: true })
@@ -73,12 +80,18 @@ export default class HomeV2 extends Component {
 
               )}
               {feedSlug && (
-                <FeedPageV2
-                  feedSlug={feedSlug}
-                  onChangeFeed={this.changeFeed}
-                />
+                <div>
+                  <FeedPageV2
+                    feedSlug={feedSlug}
+                    onChangeFeed={this.changeFeed}
+                  />
+                  <PlayerV2
+                    currentFeed={this.state.currentFeed}
+                    key={this.state.currentFeed && this.state.currentFeed.nodeName}
+                    autoplay={this.state.autoplay}
+                  />
+                </div>
               )}
-              <div>{feedSlug}</div>
             </Paper>
           </MuiThemeProvider>
         </JssProvider>

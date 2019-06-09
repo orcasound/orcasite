@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
-import socket from 'utils/socket'
-import {Presence} from 'phoenix'
+import React, { Component } from 'react'
+import socket from '../utils/socket'
+import { Presence } from 'phoenix'
 
-import {feedType} from 'types/feedType'
+import { feedType } from '../types/feedType'
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faUser} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 export default class FeedPresence extends Component {
   static propTypes = {
@@ -31,7 +31,7 @@ export default class FeedPresence extends Component {
       this.state.channel.leave()
     }
 
-    this.setState({channel: socket.channel(`feed:${feed_id}`, {})}, () => {
+    this.setState({ channel: socket.channel(`feed:${feed_id}`, {}) }, () => {
       let channel = this.state.channel
       let presence = new Presence(channel)
       presence.onSync(() => this.setListeners(presence))
@@ -45,14 +45,14 @@ export default class FeedPresence extends Component {
     }
   }
 
-  setListeners({state}) {
-    const {id} = this.props.feed
+  setListeners({ state }) {
+    const { id } = this.props.feed
     const listenerCount = state[id] ? state[id].metas.length : 0
-    this.setState({listenerCount})
+    this.setState({ listenerCount })
   }
 
   render() {
-    const {listenerCount} = this.state
+    const { listenerCount } = this.state
     return (
       <div className={`feed-presence text-nowrap ${this.props.className}`}>
         {listenerCount > 0 && listenerCount}

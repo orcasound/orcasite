@@ -127,6 +127,7 @@ export default class MediaStreamer extends Component {
         className="video-js"
         playsInline
       />
+
     )
   }
 }
