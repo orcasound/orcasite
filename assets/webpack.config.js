@@ -15,6 +15,7 @@ const autoprefixer = require("autoprefixer");
  **/
 module.exports = (env, argv) => {
   const isDev = !(env && env.prod) && argv.mode !== 'production';
+
   // Turned off uglifying due to minimization of webworker inlining not having 'window' defined
   // See:
   // https://github.com/videojs/videojs-contrib-hls/issues/600
@@ -40,6 +41,8 @@ module.exports = (env, argv) => {
     },
 
     devServer: {
+      disableHostCheck: true,
+      host: "0.0.0.0",
       headers: {
         "Access-Control-Allow-Origin": "*",
       }
@@ -113,7 +116,7 @@ module.exports = (env, argv) => {
           test: /\.swf$/,
           loader: 'file-loader',
           query: {
-              name: 'static/media/[name].[ext]'
+            name: 'static/media/[name].[ext]'
           }
         }
       ]

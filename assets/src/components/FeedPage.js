@@ -1,9 +1,9 @@
-import React, {Component} from 'react'
-import {Query} from 'react-apollo'
+import React, { Component } from 'react'
+import { Query } from 'react-apollo'
 
-import {string, func} from 'prop-types'
+import { string, func } from 'prop-types'
 
-import {GET_FEED} from 'queries/feeds'
+import { GET_FEED } from 'queries/feeds'
 
 import Loader from 'components/Loader'
 
@@ -14,15 +14,15 @@ export default class FeedPage extends Component {
   }
 
   render() {
-    const {feedSlug: slug} = this.props
+    const { feedSlug: slug } = this.props
     return (
-      <Query query={GET_FEED} variables={{slug}}>
-        {({data, loading, error}) => {
+      <Query query={GET_FEED} variables={{ slug }}>
+        {({ data, loading, error }) => {
           if (loading) {
             return <Loader />
           }
 
-          const {feed} = data
+          const { feed } = data
 
           if (error || !feed) {
             return <h4 className="mb-4">Couldn't find feed for {slug}</h4>
@@ -31,11 +31,11 @@ export default class FeedPage extends Component {
           let lat, long
           if (feed.locationPoint && feed.locationPoint.coordinates) {
             const {
-              locationPoint: {coordinates: [lat, long] = []},
+              locationPoint: { coordinates: [lat, long] = [] },
             } = feed
           }
 
-          const {introHtml} = feed
+          const { introHtml } = feed
 
           return (
             <div className="feed-page mb-4">
@@ -53,7 +53,7 @@ export default class FeedPage extends Component {
                 Listen to {feed.name}
               </button>
 
-              {introHtml && <div dangerouslySetInnerHTML={{__html: introHtml}} />}
+              {introHtml && <div dangerouslySetInnerHTML={{ __html: introHtml }} />}
             </div>
           )
         }}

@@ -8,7 +8,7 @@
     <meta name="author" content="">
 
     <title>Orcasound - Listen for whales</title>
-    <%= {:safe, css_link_tag()} %>
+    <%= {:safe, css_link_tag(@conn)} %>
     <!-- jss-insertion-point -->
   </head>
 
@@ -16,6 +16,6 @@
     <%= render @view_module, @view_template, assigns %>
     <div id="root"></div>
 
-    <%= {:safe, js_script_tag()} %>
+    <%= {:safe, js_script_tag(@conn)} %>
   </body>
 </html>

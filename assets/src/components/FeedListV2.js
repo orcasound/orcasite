@@ -1,7 +1,11 @@
 import React, { Component } from "react"
+import { Link } from 'react-router-dom'
+import { Query } from 'react-apollo'
 import { Button, ClickAwayListener, Grow, Paper, Popper, MenuList, MenuItem } from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
 import styled from "styled-components"
+
+import { LIST_FEEDS } from '../queries/feeds'
 
 // -------------------------------------------
 // Styled Components - TODO:  Move to a new file
@@ -26,6 +30,12 @@ const FeedButton = styled(Button)`
 const FeedMenuItem = styled(MenuItem)`
   display: flex;
   justify-content: space-between;
+  
+  a {
+    color: rgba(0,0,0,0.87);
+  }
+  
+  color: #000000;
 `
 // -------------------------------------------
 // Component
@@ -35,7 +45,7 @@ class FeedListV2 extends Component {
     super(props);
 
     this.handleToggle = this.handleToggle.bind(this);
-}
+  }
 
   state = {
     open: false,
@@ -59,52 +69,76 @@ class FeedListV2 extends Component {
     const { open, bushPointUsers, haroStraitUsers } = this.state
 
     return (
-      <FeedListContainer>
-        <FeedButton
-          buttonRef={node => {
-            this.anchorEl = node;
-          }}
-          aria-owns={open ? "menu-list-grow" : undefined}
-          aria-haspopup="true"
-          onClick={this.handleToggle}
-        >
-          Listen Live<ArrowDropDown />
-        </FeedButton>
-        <Popper
-          open={open}
-          anchorEl={this.anchorEl}
-          keepMounted
-          transition
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              id="menu-list-grow"
-              style={{ transformOrigin: placement === "bottom" ? "center top" : "center bottom" }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={this.handleClose}>
-                  <MenuList>
-                    <FeedMenuItem
-                      //className={classes.menuItem}
-                      onClick={this.handleClose}>
-                      <span>Bush Point</span>
-                      <div>{bushPointUsers}<Person /></div>
-                    </FeedMenuItem>
-                    <FeedMenuItem
-                      //className={classes.menuItem}
-                      onClick={this.handleClose}>
-                      <span>Haro Strait/<br>
-                      </br>OrcaSound Lab</span>
-                      <div>{haroStraitUsers}<Person /></div>
-                    </FeedMenuItem>
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </FeedListContainer>
+      <Query query={LIST_FEEDS}>
+        {({ data, loading, error }) => {
+          if (loading || error) {
+            return (
+              <ul>
+                <li>
+                  <div>LOADING</div>
+                </li>
+              </ul>
+            )
+          }
+
+          const { feeds } = data
+          console.log('data', data.feeds)
+          return (
+            <FeedListContainer>
+              <FeedButton
+                buttonRef={node => {
+                  this.anchorEl = node;
+                }}
+                aria-owns={open ? "menu-list-grow" : undefined}
+                aria-haspopup="true"
+                onClick={this.handleToggle}
+              >
+                Listen Live<ArrowDropDown />
+              </FeedButton>
+              <Popper
+                open={open}
+                anchorEl={this.anchorEl}
+                keepMounted
+                transition
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    id="menu-list-grow"
+                    style={{ transformOrigin: placement === "bottom" ? "center top" : "center bottom" }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={this.handleClose}>
+                        <MenuList>
+                          {feeds
+                            .slice()
+                            .reverse()
+                            .map((feed, i) => {
+                              return (
+                                <FeedMenuItem
+                                  key={i}
+                                  onClick={this.handleClose}
+                                >
+                                  <Link to={`/v2/${feed.slug}`}>
+                                    <span>{feed.name}</span>
+                                    <div>
+                                      {bushPointUsers}
+                                      <Person />
+                                    </div>
+                                  </Link>
+                                </FeedMenuItem>
+                              )
+                            })}
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </FeedListContainer>
+          )
+        }}
+      </Query>
     )
   }
 }

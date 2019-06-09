@@ -1,5 +1,6 @@
 import React, { Component } from "react"
-import { Paper, Tabs, Tab, Button, Typography, Grid } from "@material-ui/core"
+import { Link as RouterLink } from "react-router-dom"
+import { Paper, Tabs, Tab, Button, Typography, Link, Grid } from "@material-ui/core"
 import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedListV2 from "./FeedListV2"
@@ -11,12 +12,6 @@ const MainHeader = styled(Paper)`
   background: #000000;
   color: #ffffff;
   height: 80px;
-  h1 {
-    font-size: 30px;
-    letter-spacing: 1.07px;
-    line-height: 35px;
-    padding: 1.5rem;
-  }
 `
 
 const NotificationButton = styled(Button)`
@@ -45,6 +40,21 @@ const GridContainer = styled.div`
     }
   }
 `
+
+const HeaderLink = styled(Link)`
+  font-size: 2.2rem;
+  font-weight: 400;
+  letter-spacing: 1.07px;
+  line-height: 35px;
+  padding-top: 1.5rem;
+  padding-left: 1.5rem;
+  display: block;
+
+  :hover {
+    text-decoration: none;
+    color: #009BDE;
+  }
+`
 // -------------------------------------------
 // Component
 // -------------------------------------------
@@ -62,50 +72,57 @@ class SiteMenu extends React.Component {
     return this.state.value == 0
   }
 
-  maybeAbout = () => {
-    if (this.aboutTabSelected()) {
-      //const { classes } = this.props
-      return (
-        <Paper elevation={0} square>
-          <Typography variant="h6"
-          //className={classes.bodyHeader}
-          >
-            Listen for Whales!
-          </Typography>
-          <Typography
-            component="p"
-            paragraph={true}
-          >
-            Learn what orcas sound like. Then listen live for them on underwater
-            microphones (hydrophones).
-          </Typography>
-          <Typography
-            component="p"
-            paragraph={true}
-          >
-            Let us know when you hear them, or any sound you think is
-            interesting! That will help researchers and stewards protect the
-            orcas and their environment.
-          </Typography>
-          <Typography
-            component="p"
-            paragraph={true}
-          >
-            You can also get notified when our listeners or algorithms detect
-            whales at any of our hydrophone locations.
-          </Typography>
-        </Paper>
-      )
-    }
-  }
+  // maybeAbout = () => {
+  //   if (this.aboutTabSelected()) {
+
+  //     return (
+  //       <Paper elevation={0} square>
+  //         <Typography variant="h6"
+  //         //className={classes.bodyHeader}
+  //         >
+  //           Listen for Whales!
+  //         </Typography>
+  //         <Typography
+  //           component="p"
+  //           paragraph={true}
+  //         >
+  //           Learn what orcas sound like. Then listen live for them on underwater
+  //           microphones (hydrophones).
+  //         </Typography>
+  //         <Typography
+  //           component="p"
+  //           paragraph={true}
+  //         >
+  //           Let us know when you hear them, or any sound you think is
+  //           interesting! That will help researchers and stewards protect the
+  //           orcas and their environment.
+  //         </Typography>
+  //         <Typography
+  //           component="p"
+  //           paragraph={true}
+  //         >
+  //           You can also get notified when our listeners or algorithms detect
+  //           whales at any of our hydrophone locations.
+  //         </Typography>
+  //       </Paper>
+  //     )
+  //   }
+  // }
 
   render() {
     return (
       <Paper elevation={0} square>
         <MainHeader square elevation={0}>
-          <Typography component="h1" align="left" color="inherit">
+          <HeaderLink
+            component={RouterLink}
+            to="/v2"
+            color="inherit"
+            variant="h1"
+            underline="none"
+          >
             Orcasound
-          </Typography>
+          </HeaderLink>
+
         </MainHeader>
         <NotificationButton
           variant="contained"
@@ -126,15 +143,19 @@ class SiteMenu extends React.Component {
         >
           <Tab
             label="About"
+            component={RouterLink}
+            to="/v2/about"
             fullWidth={true}
           />
           <FeedListV2 />} />
         </Tabs>
         <GridContainer>
           <div />
+          {/**
           <article>
             {this.maybeAbout()}
           </article>
+          */}
           <div />
         </GridContainer>
       </Paper>

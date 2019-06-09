@@ -3,9 +3,12 @@ defmodule OrcasiteWeb.Endpoint do
 
   socket("/socket", OrcasiteWeb.UserSocket,
     websocket: [
-      check_origin:
-        Application.get_env(:orcasite, :env) != :prod ||
-          Map.fetch!(System.get_env(), "URLS") |> String.split(" ")
+      check_origin: if Mix.env() == :prod do
+                      Map.fetch!(System.get_env(), "URLS") |> String.split(" ")
+                    else
+                      false
+                    end
+          
     ]
   )
 
