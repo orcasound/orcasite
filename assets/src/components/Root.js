@@ -1,7 +1,6 @@
-import React from 'react'
-import { hot } from 'react-hot-loader'
-import { compose } from 'react-apollo'
+import { hot } from 'react-hot-loader/root'
 
+import React from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 import Home from './Home'
@@ -28,6 +27,4 @@ const Root = (props) => {
   )
 }
 
-export default compose(
-  hot(module),
-)(Root)
+export default hot(Root)
