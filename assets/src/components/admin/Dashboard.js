@@ -1,7 +1,8 @@
 import React, { Component } from "react"
 import { Route, Link as RouterLink } from "react-router-dom"
 
-import { Paper, Link } from "@material-ui/core"
+import Link from "@material-ui/core/Link"
+import Paper  from "@material-ui/core/Paper"
 import JssProvider from "react-jss/lib/JssProvider"
 import { create } from "jss"
 import {

@@ -11,47 +11,50 @@ import PlayerV2 from "./PlayerV2"
 import SiteMenu from "./SiteMenu"
 import About from "./AboutV2"
 import AudioPlayerV2 from "./AudioPlayerV2"
-import { Button, Paper } from "@material-ui/core"
+import Button from "@material-ui/core/Button"
+import Paper from "@material-ui/core/Paper"
 import CssBaseline from "@material-ui/core/CssBaseline"
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
+import {
+  createMuiTheme,
+  MuiThemeProvider,
+  createGenerateClassName,
+  jssPreset
+} from "@material-ui/core/styles"
 import JssProvider from "react-jss/lib/JssProvider"
 import { create } from "jss"
-import { createGenerateClassName, jssPreset } from "@material-ui/core/styles"
 
-const theme = createMuiTheme(
-  {
-    /* change default theme options below */
-    /* gets merged into custom style objects */
-    /* using latest version of typography */
-    typography: {
-      useNextVariants: true,
+const theme = createMuiTheme({
+  /* change default theme options below */
+  /* gets merged into custom style objects */
+  /* using latest version of typography */
+  typography: {
+    useNextVariants: true
+  },
+  palette: {
+    primary: {
+      main: "#2196f3"
     },
-    palette: {
-      primary: {
-        main: '#2196f3',
-      },
-      secondary: {
-        main: '#009688',
-      }
-    },
+    secondary: {
+      main: "#009688"
+    }
   }
-)
+})
 
 // ---------------------------------------
 // Ordering style sheets in the <head>
 // ---------------------------------------
-const generateClassName = createGenerateClassName();
+const generateClassName = createGenerateClassName()
 const jss = create({
   ...jssPreset(),
   // Define a custom insertion for injecting the JSS styles in the DOM
-  insertionPoint: 'jss-insertion-point',
-});
+  insertionPoint: "jss-insertion-point"
+})
 
 export default class HomeV2 extends Component {
   state = {}
 
   componentDidMount() {
-    if (['beta', 'dev', 'staging'].indexOf(ENV.ENV_NAME) >= 0) {
+    if (["beta", "dev", "staging"].indexOf(ENV.ENV_NAME) >= 0) {
       document.title = `Orcasound ${ENV.ENV.NAME}`
     } else {
       document.title = `Orcasound`
@@ -61,7 +64,7 @@ export default class HomeV2 extends Component {
   changeFeed = currentFeed => this.setState({ currentFeed, autoplay: true })
 
   render() {
-    const { feedSlug } = this.props.match.params;
+    const { feedSlug } = this.props.match.params
 
     return (
       <>
@@ -74,7 +77,6 @@ export default class HomeV2 extends Component {
                   <About />
                   <AudioPlayerV2 />
                 </div>
-
               )}
               {feedSlug && (
                 <div>
@@ -84,7 +86,9 @@ export default class HomeV2 extends Component {
                   />
                   <PlayerV2
                     currentFeed={this.state.currentFeed}
-                    key={this.state.currentFeed && this.state.currentFeed.nodeName}
+                    key={
+                      this.state.currentFeed && this.state.currentFeed.nodeName
+                    }
                     autoplay={this.state.autoplay}
                   />
                 </div>
