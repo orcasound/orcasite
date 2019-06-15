@@ -93,11 +93,16 @@ module.exports = (env, argv) => {
           loader: "file-loader",
         },
         {
-          test: /\.(css|scss)$/,
+          test: /\.(c|sc)ss$/,
           exclude: /node_modules\/(?!(video.js)\/).*/,
           use: [
-            'css-hot-loader',
-            MiniCssExtractPlugin.loader,
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                hmr: process.env.NODE_ENV === 'development',
+                reloadAll: true
+              }
+            },
             'css-loader',
             'postcss-loader',
             {
