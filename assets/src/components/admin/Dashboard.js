@@ -2,18 +2,12 @@ import React, { Component } from "react"
 import { Route, Link as RouterLink } from "react-router-dom"
 
 import Link from "@material-ui/core/Link"
-import Paper  from "@material-ui/core/Paper"
-import JssProvider from "react-jss/lib/JssProvider"
-import { create } from "jss"
-import {
-  createGenerateClassName,
-  jssPreset,
-  createMuiTheme,
-  MuiThemeProvider
-} from "@material-ui/core/styles"
+import Paper from "@material-ui/core/Paper"
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
+import { StylesProvider } from "@material-ui/styles"
 import styled from "styled-components"
 
-import Detections from './Detections'
+import Detections from "./Detections"
 
 const theme = createMuiTheme({
   /* change default theme options below */
@@ -52,20 +46,10 @@ const HeaderLink = styled(Link)`
     color: #009bde;
   }
 `
-// ---------------------------------------
-// Ordering style sheets in the <head>
-// ---------------------------------------
-const generateClassName = createGenerateClassName()
-const jss = create({
-  ...jssPreset(),
-  // Define a custom insertion for injecting the JSS styles in the DOM
-  insertionPoint: "jss-insertion-point"
-})
-
 export default class Dashboard extends Component {
   render() {
     return (
-      <JssProvider jss={jss} generateClassName={generateClassName}>
+      <StylesProvider injectFirst>
         <MuiThemeProvider theme={theme}>
           <Paper square elevation={0}>
             <MainHeader square elevation={0}>
@@ -80,10 +64,10 @@ export default class Dashboard extends Component {
               </HeaderLink>
             </MainHeader>
             <h1 className="px-5 my-3">Admin</h1>
-            <Route exact path='/admin' component={Detections} />
+            <Route exact path="/admin" component={Detections} />
           </Paper>
         </MuiThemeProvider>
-      </JssProvider>
+      </StylesProvider>
     )
   }
 }

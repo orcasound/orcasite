@@ -13,9 +13,9 @@ const Root = (props) => {
     <BrowserRouter>
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route exact path="/v2" component={HomeV2} />
-        <Route path="v2/about" component={HomeV2} />
-        <Route path="/v2/:feedSlug" component={HomeV2} />
+        {/* <Route exact path="/v2" component={HomeV2} /> */}
+        {/* <Route path="v2/about" component={HomeV2} /> */}
+        {/* <Route path="/v2/:feedSlug" component={HomeV2} /> */}
         <Route path="/dynamic/:feedSlug" component={DynamicFeed} />
 
         {/* TODO: Change to AdminRoute once auth is in */}

@@ -14,14 +14,8 @@ import AudioPlayerV2 from "./AudioPlayerV2"
 import Button from "@material-ui/core/Button"
 import Paper from "@material-ui/core/Paper"
 import CssBaseline from "@material-ui/core/CssBaseline"
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-  createGenerateClassName,
-  jssPreset
-} from "@material-ui/core/styles"
-import JssProvider from "react-jss/lib/JssProvider"
-import { create } from "jss"
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
+import { StylesProvider } from "@material-ui/styles"
 
 const theme = createMuiTheme({
   /* change default theme options below */
@@ -43,13 +37,6 @@ const theme = createMuiTheme({
 // ---------------------------------------
 // Ordering style sheets in the <head>
 // ---------------------------------------
-const generateClassName = createGenerateClassName()
-const jss = create({
-  ...jssPreset(),
-  // Define a custom insertion for injecting the JSS styles in the DOM
-  insertionPoint: "jss-insertion-point"
-})
-
 export default class HomeV2 extends Component {
   state = {}
 
@@ -68,7 +55,7 @@ export default class HomeV2 extends Component {
 
     return (
       <>
-        <JssProvider jss={jss} generateClassName={generateClassName}>
+        <StylesProvider>
           <MuiThemeProvider theme={theme}>
             <Paper square elevation={0}>
               <SiteMenu />
@@ -95,7 +82,7 @@ export default class HomeV2 extends Component {
               )}
             </Paper>
           </MuiThemeProvider>
-        </JssProvider>
+        </StylesProvider>
       </>
     )
   }
