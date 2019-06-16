@@ -18,12 +18,6 @@ import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
 import { StylesProvider } from "@material-ui/styles"
 
 const theme = createMuiTheme({
-  /* change default theme options below */
-  /* gets merged into custom style objects */
-  /* using latest version of typography */
-  typography: {
-    useNextVariants: true
-  },
   palette: {
     primary: {
       main: "#2196f3"
