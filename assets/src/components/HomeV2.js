@@ -1,25 +1,17 @@
 import React, { Component } from "react"
 
-import { gql } from "apollo-boost"
-import { Query } from "react-apollo"
-
-import IconButton from "@material-ui/core/IconButton"
-import PlayArrowIcon from "@material-ui/icons/PlayArrow"
-
 import FeedPageV2 from "./FeedPageV2"
 import PlayerV2 from "./PlayerV2"
+import DetectionDialogV2 from "./DetectionDialogV2"
 import SiteMenu from "./SiteMenu"
 import About from "./AboutV2"
 import AudioPlayerV2 from "./AudioPlayerV2"
-import { Button, Paper } from "@material-ui/core"
-import CssBaseline from "@material-ui/core/CssBaseline"
+import { Paper } from "@material-ui/core"
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
 import JssProvider from "react-jss/lib/JssProvider"
 import { create } from "jss"
 import { createGenerateClassName, jssPreset } from "@material-ui/core/styles"
-import styled, { ThemeProvider } from 'styled-components'
-import { blue, black } from "@material-ui/core/colors"
-
+import styled from 'styled-components'
 
 const theme = createMuiTheme(
   {
@@ -50,6 +42,14 @@ const jss = create({
   insertionPoint: 'jss-insertion-point',
 });
 
+const FeedPageLayout = styled.div`
+  display: flex;
+`
+
+const PlayerLayout = styled.div`
+  display: flex;
+`
+
 export default class HomeV2 extends Component {
   state = {}
 
@@ -65,7 +65,7 @@ export default class HomeV2 extends Component {
 
   render() {
     const { feedSlug } = this.props.match.params;
-
+    console.log('props', this.props)
     return (
       <>
         <JssProvider jss={jss} generateClassName={generateClassName}>
@@ -77,20 +77,23 @@ export default class HomeV2 extends Component {
                   <About />
                   <AudioPlayerV2 />
                 </div>
-
               )}
               {feedSlug && (
-                <div>
+                <FeedPageLayout>
                   <FeedPageV2
                     feedSlug={feedSlug}
                     onChangeFeed={this.changeFeed}
-                  />
-                  <PlayerV2
-                    currentFeed={this.state.currentFeed}
-                    key={this.state.currentFeed && this.state.currentFeed.nodeName}
-                    autoplay={this.state.autoplay}
-                  />
-                </div>
+                  >
+                    <PlayerLayout>
+                      <PlayerV2
+                        currentFeed={this.state.currentFeed}
+                        key={this.state.currentFeed && this.state.currentFeed.nodeName}
+                        autoplay={this.state.autoplay}
+                      />
+
+                    </PlayerLayout>
+                  </FeedPageV2>
+                </FeedPageLayout>
               )}
             </Paper>
           </MuiThemeProvider>
