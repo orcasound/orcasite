@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { Tabs, Tab, Button, Typography, Link, Grid } from "@material-ui/core"
-import Paper from "@material-ui/core/Paper"
+import { Paper, Tabs, Tab, Button, Typography, Link, Grid } from "@material-ui/core"
 import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedListV2 from "./FeedListV2"
@@ -22,25 +21,6 @@ const NotificationButton = styled(Button)`
     height: 40px;
     border-radius: 0px;
 `
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: 15px auto 15px;
-  article {
-    padding-top: 18px;
-    h6 {
-      color: rgba(0,0,0,0.87);
-      letter-spacing: 0;
-      text-align: left;
-      line-height: 28px;
-    }
-    p {
-      font-size: 14px;
-      color: rgba(0,0,0,0.87);
-      text-align: left;
-      line-height: 20px;
-    }
-  }
-`
 
 const HeaderLink = styled(Link)`
   font-size: 2.2rem;
@@ -59,7 +39,7 @@ const HeaderLink = styled(Link)`
 // -------------------------------------------
 // Component
 // -------------------------------------------
-class SiteMenu extends React.Component {
+class SiteMenu extends Component {
   state = {
     value: 0
   }
@@ -72,43 +52,6 @@ class SiteMenu extends React.Component {
   aboutTabSelected = () => {
     return this.state.value == 0
   }
-
-  // maybeAbout = () => {
-  //   if (this.aboutTabSelected()) {
-
-  //     return (
-  //       <Paper elevation={0} square>
-  //         <Typography variant="h6"
-  //         //className={classes.bodyHeader}
-  //         >
-  //           Listen for Whales!
-  //         </Typography>
-  //         <Typography
-  //           component="p"
-  //           paragraph={true}
-  //         >
-  //           Learn what orcas sound like. Then listen live for them on underwater
-  //           microphones (hydrophones).
-  //         </Typography>
-  //         <Typography
-  //           component="p"
-  //           paragraph={true}
-  //         >
-  //           Let us know when you hear them, or any sound you think is
-  //           interesting! That will help researchers and stewards protect the
-  //           orcas and their environment.
-  //         </Typography>
-  //         <Typography
-  //           component="p"
-  //           paragraph={true}
-  //         >
-  //           You can also get notified when our listeners or algorithms detect
-  //           whales at any of our hydrophone locations.
-  //         </Typography>
-  //       </Paper>
-  //     )
-  //   }
-  // }
 
   render() {
     return (
@@ -123,7 +66,6 @@ class SiteMenu extends React.Component {
           >
             Orcasound
           </HeaderLink>
-
         </MainHeader>
         <NotificationButton
           variant="contained"
@@ -145,20 +87,11 @@ class SiteMenu extends React.Component {
           <Tab
             label="About"
             component={RouterLink}
-            to="/v2/about"
+            to="/v2"
             fullWidth={true}
           />
           <FeedListV2 />} />
         </Tabs>
-        <GridContainer>
-          <div />
-          {/**
-          <article>
-            {this.maybeAbout()}
-          </article>
-          */}
-          <div />
-        </GridContainer>
       </Paper>
     )
   }

@@ -1,15 +1,15 @@
-import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlay, faPause, faSpinner } from '@fortawesome/free-solid-svg-icons'
 
 import MediaStreamer from './MediaStreamer'
 import DetectButton from './DetectButton'
 import FeedPresence from './FeedPresence'
 
-import {feedType} from 'types/feedType'
-import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
+import { feedType } from 'types/feedType'
+import { storeCurrentFeed, getCurrentFeed } from 'utils/feedStorage'
 import classNames from 'classnames'
 
 import 'styles/player.scss'
@@ -35,17 +35,17 @@ export default class Player extends Component {
         playerTime: 0,
         latencyHistory: [0],
       },
-      play: () => {},
-      pause: () => {},
-      playPause: () => {},
-      getPlayerTime: () => {},
+      play: () => { },
+      pause: () => { },
+      playPause: () => { },
+      getPlayerTime: () => { },
     }
   }
 
   isEmpty = object => Object.keys(object).length === 0
 
   startTimestampFetcher = () => {
-    var {currentFeed, intervalId} = this.state
+    var { currentFeed, intervalId } = this.state
 
     this.clearInterval()
     if (currentFeed && Object.keys(currentFeed).length > 0) {
@@ -55,7 +55,7 @@ export default class Player extends Component {
         10000,
       )
 
-      this.setState({intervalId})
+      this.setState({ intervalId })
     }
   }
 
@@ -68,15 +68,15 @@ export default class Player extends Component {
   }
 
   clearInterval = () => {
-    const {intervalId, currentXhr} = this.state
+    const { intervalId, currentXhr } = this.state
     if (currentXhr) currentXhr.abort()
     if (intervalId) clearInterval(intervalId)
   }
 
-  playIconOpts = ({isLoading, isPlaying}) => {
-    if (isLoading) return {icon: faSpinner, pulse: true}
-    if (isPlaying) return {icon: faPause}
-    return {icon: faPlay}
+  playIconOpts = ({ isLoading, isPlaying }) => {
+    if (isLoading) return { icon: faSpinner, pulse: true }
+    if (isPlaying) return { icon: faPause }
+    return { icon: faPlay }
   }
 
   debugInfo = (hlsUri, awsConsoleUri) => (
@@ -118,10 +118,10 @@ export default class Player extends Component {
   fetchTimestamp = feed => {
     const timestampURI = `https://s3-us-west-2.amazonaws.com/${
       ENV.S3_BUCKET
-    }/${feed}/latest.txt`
+      }/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
-    this.setState({currentXhr: xhr})
+    this.setState({ currentXhr: xhr })
     xhr.open('GET', timestampURI)
     xhr.onload = () => {
       if (xhr.status === 200) {
@@ -135,7 +135,7 @@ export default class Player extends Component {
           if (ENV.DEVELOPMENT)
             console.log(
               'New stream instance: ' +
-                this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
+              this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
             )
         }
       }
@@ -143,9 +143,11 @@ export default class Player extends Component {
     xhr.send()
   }
 
-  setControls = controls => this.setState({isLoading: false, ...controls})
+  setControls = controls => this.setState({ isLoading: false, ...controls })
 
   render() {
+    console.log('player v1 props', this.props)
+    console.log('player v1 state', this.state)
     const {
       hlsURI,
       playPause,
@@ -168,7 +170,7 @@ export default class Player extends Component {
           <FontAwesomeIcon
             size="3x"
             {...this.playIconOpts(this.state)}
-            className={classNames('m-3', {clickable: !isLoading})}
+            className={classNames('m-3', { clickable: !isLoading })}
             onClick={playPause}
           />
           {currentFeed.slug && (
@@ -181,12 +183,12 @@ export default class Player extends Component {
               src={hlsURI}
               autoplay={this.props.autoplay}
               onReady={this.setControls}
-              onLoading={() => this.setState({isLoading: true})}
+              onLoading={() => this.setState({ isLoading: true })}
               onPlaying={() =>
-                this.setState({isLoading: false, isPlaying: true})
+                this.setState({ isLoading: false, isPlaying: true })
               }
               onPaused={() =>
-                this.setState({isLoading: false, isPlaying: false})
+                this.setState({ isLoading: false, isPlaying: false })
               }
               onLatencyUpdate={(newestLatency, playerTime) =>
                 this.setState({

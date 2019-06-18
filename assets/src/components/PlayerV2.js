@@ -4,9 +4,13 @@ import { Link } from "react-router-dom"
 import Button from "@material-ui/core/Button"
 import { PlayArrow, Pause } from "@material-ui/icons"
 
-import MediaStreamerV2 from "./MediaStreamerV2"
+import Fab from '@material-ui/core/Fab'
 
-import FeedPresence from "./FeedPresence"
+
+import MediaStreamerV2 from "./MediaStreamerV2"
+import DetectionDialogV2 from "./DetectionDialogV2"
+
+// import FeedPresence from "./FeedPresence"
 
 import { feedType } from "../types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
@@ -14,17 +18,29 @@ import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
 import styled from "styled-components"
 
 const StyledMediaContainer = styled.div`
-  .video-js {
-    display: none;
+    .video-js {
+      display: none;
     }
+`
+const PlayerContainer = styled.div`
+    margin: -2rem 1rem 1rem 1rem;
+    z-index: 10;
+`
+
+const RaisedButtonContainer = styled.div`
+    z-index: 10;
 `
 
 const StyledButtonContainer = styled.div`
-  background: #007166; 
+  background: ${props => props.active ? "#007166" : "transparent"}; 
+  box-shadow: ${props => props.active ? "0 2px 4px 0" : "none"};
   border-radius: 33px;
-  box-shadow: 0 2px 4px 0;
-  width: 337px;
+  min-width: 337px;
+  max-width: 450px;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 `
 
 const StyledMuiButton = styled(Button)`
@@ -35,16 +51,6 @@ const StyledMuiButton = styled(Button)`
     color: #ffffff;
     font-size: 3rem;
   }
-`
-
-const StyledActivityButton = styled(Button)`
-  background: #007166; 
-  color: #ffffff;
-
-  border-radius: 33px;
-  box-shadow: 0 2px 4px 0; 
-  font-size: .875rem;
-  letter-spacing: 0.5px;
 `
 
 class PlayerV2 extends Component {
@@ -72,7 +78,6 @@ class PlayerV2 extends Component {
       pause: () => { },
       playPause: () => { },
       getPLayerTime: () => { },
-      playButtonClicked: true,
     }
   }
 
@@ -164,7 +169,6 @@ class PlayerV2 extends Component {
 
 
   render() {
-    console.log('playPause', this.state.playPause)
     const {
       hlsURI,
       playPause,
@@ -183,15 +187,21 @@ class PlayerV2 extends Component {
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
-        <div>
-          <StyledButtonContainer>
-            <StyledMuiButton aria-label="Play/Pause" onClick={playPause}>
-              <PlayArrow className="icon" fontSize="large" />
-              <Pause className="icon" fontSize="large" />
+        <PlayerContainer>
+          <StyledButtonContainer active={isPlaying}>
+            <Fab color="secondary" onClick={playPause}>
+              {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
+              {isPlaying && <Pause className="icon" fontSize="large" />}
+            </Fab>
+
+            {/**
+       <StyledMuiButton aria-label="Play/Pause" onClick={playPause}>
+              {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
+              {isPlaying && <Pause className="icon" fontSize="large" />}
             </StyledMuiButton>
-            <StyledActivityButton aria-label="I hear something interesting">
-              I hear something interesting
-          </StyledActivityButton>
+     */}
+
+            {isPlaying && <DetectionDialogV2 />}
           </StyledButtonContainer>
           {
             hlsURI && (
@@ -202,7 +212,7 @@ class PlayerV2 extends Component {
                   onReady={this.setControls}
                   onLoading={() => this.setState({ isLoading: true })}
                   onPlaying={() =>
-                    this.setState({ isLoading: false, isPlaying: false })
+                    this.setState({ isLoading: false, isPlaying: true })
                   }
                   onPaused={() =>
                     this.setState({ isLoading: false, isPlaying: false })}
@@ -220,7 +230,7 @@ class PlayerV2 extends Component {
               </StyledMediaContainer>
             )
           }
-        </div >
+        </PlayerContainer >
       )
     }
   }
