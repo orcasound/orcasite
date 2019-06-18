@@ -27,8 +27,8 @@ const theme = createMuiTheme({
 })
 
 const MainHeader = styled(Paper)`
-  background: #000000;
-  color: #ffffff;
+  background: #011c28;
+  color: #f4f4f0;
   height: 80px;
 `
 
@@ -52,7 +52,7 @@ export default class Dashboard extends Component {
       <StylesProvider injectFirst>
         <MuiThemeProvider theme={theme}>
           <Paper square elevation={0}>
-            <MainHeader square elevation={0}>
+            <MainHeader square elevation={1}>
               <HeaderLink
                 component={RouterLink}
                 to="/"

@@ -2,6 +2,14 @@ import React, { Component } from "react"
 import { Query } from "react-apollo"
 import { LIST_DETECTIONS } from "queries/detections"
 
+import Paper from "@material-ui/core/Paper"
+import Table from "@material-ui/core/Table"
+import TableHead from "@material-ui/core/TableHead"
+import TableFooter from "@material-ui/core/TableFooter"
+import TableBody from "@material-ui/core/TableBody"
+import TableRow from "@material-ui/core/TableRow"
+import TableCell from "@material-ui/core/TableCell"
+
 import Loader from "components/Loader"
 
 export default class Detections extends Component {
@@ -16,38 +24,40 @@ export default class Detections extends Component {
 
             const { detections } = data
             return (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Feed</th>
-                    <th>Slug</th>
-                    <th className="text-right">Feed timestamp</th>
-                    <th className="text-right">Player offset</th>
-                    <th className="text-right">Timestamp</th>
-                    <th className="text-right">Listeners</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {detections.map(detection => (
-                    <tr key={detection.id}>
-                      <td>{detection.id}</td>
-                      <td>{detection.feed.name}</td>
-                      <td>{detection.feed.slug}</td>
-                      <td className="text-right">
-                        {detection.playlistTimestamp}
-                      </td>
-                      <td className="text-right">
-                        {Number(detection.playerOffset).toFixed(2)}
-                      </td>
-                      <td className="text-right">{detection.timestamp}</td>
-                      <td className="text-right">
-                        {detection.listenerCount || "-"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <Paper>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Feed</TableCell>
+                      <TableCell>Slug</TableCell>
+                      <TableCell align="right">Feed timestamp</TableCell>
+                      <TableCell align="right">Player offset</TableCell>
+                      <TableCell align="right">Timestamp</TableCell>
+                      <TableCell align="right">Listeners</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {detections.map(detection => (
+                      <TableRow key={detection.id} hover={true}>
+                        <TableCell>{detection.id}</TableCell>
+                        <TableCell>{detection.feed.name}</TableCell>
+                        <TableCell>{detection.feed.slug}</TableCell>
+                        <TableCell align="right">
+                          {detection.playlistTimestamp}
+                        </TableCell>
+                        <TableCell align="right">
+                          {Number(detection.playerOffset).toFixed(2)}
+                        </TableCell>
+                        <TableCell align="right">{detection.timestamp}</TableCell>
+                        <TableCell align="right">
+                          {detection.listenerCount || "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
             )
           }}
         </Query>
