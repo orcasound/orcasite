@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { Paper, Tabs, Tab, Button, Typography, Link, Grid } from "@material-ui/core"
+import { Tabs, Tab, Button, Typography, Link, Grid } from "@material-ui/core"
+import Paper from "@material-ui/core/Paper"
 import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedListV2 from "./FeedListV2"

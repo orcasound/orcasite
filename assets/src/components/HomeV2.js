@@ -28,9 +28,6 @@ const theme = createMuiTheme({
   }
 })
 
-// ---------------------------------------
-// Ordering style sheets in the <head>
-// ---------------------------------------
 export default class HomeV2 extends Component {
   state = {}
 
@@ -49,7 +46,7 @@ export default class HomeV2 extends Component {
 
     return (
       <>
-        <StylesProvider>
+        <StylesProvider injectFirst>
           <MuiThemeProvider theme={theme}>
             <Paper square elevation={0}>
               <SiteMenu />
