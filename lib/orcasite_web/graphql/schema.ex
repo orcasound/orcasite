@@ -17,11 +17,11 @@ defmodule OrcasiteWeb.Schema do
       resolve &Resolvers.Feed.show/2
     end
 
-    field :detections, list_of(:detection) do
-
-      # TODO: Add auth inside of Radio logic
-      resolve &Resolvers.Detection.index/2
-    end
+    # field :detections, list_of(:detection) do
+    #
+    #   # TODO: Add auth inside of Radio logic
+    #   resolve &Resolvers.Detection.index/2
+    # end
   end
 
   mutation do
