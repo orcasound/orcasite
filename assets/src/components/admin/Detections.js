@@ -24,7 +24,7 @@ export default class Detections extends Component {
 
             const { detections } = data
             return (
-              <Paper>
+              <Paper elevation={1}>
                 <Table>
                   <TableHead>
                     <TableRow>
