@@ -9,10 +9,14 @@ import TableFooter from "@material-ui/core/TableFooter"
 import TableBody from "@material-ui/core/TableBody"
 import TableRow from "@material-ui/core/TableRow"
 import TableCell from "@material-ui/core/TableCell"
+import Button from "@material-ui/core/Button"
 
 import Loader from "components/Loader"
 
 export default class Detections extends Component {
+  handleGroupClick = detectionGroup => () =>
+    console.log("Clicked", detectionGroup)
+
   render() {
     return (
       <div className="admin-detections px-5">
@@ -32,6 +36,7 @@ export default class Detections extends Component {
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Listeners</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
+                      <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -50,6 +55,13 @@ export default class Detections extends Component {
                         </TableCell>
                         <TableCell align="right">
                           {detectionGroup.detections[0].timestamp}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            onClick={this.handleGroupClick(detectionGroup)}
+                          >
+                            View
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
