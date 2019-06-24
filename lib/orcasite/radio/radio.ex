@@ -62,6 +62,32 @@ defmodule Orcasite.Radio do
     end
   end
 
+  @doc "Groups detections by timestamp - 3 minute buckets by default"
+  def list_detection_groups(params \\ []) do
+    # minutes
+    interval = 3
+
+    from(d in Detection,
+      join: f in Feed,
+      on: f.id == d.feed_id,
+      select: %{
+        feed: fragment("row_to_json(?)", f),
+        detections: fragment("json_agg(?)", d),
+        time_bucket:
+          fragment(
+            "(date_trunc('hour', timestamp) + (((date_part('minute', timestamp)::integer / ?::integer) * ?::integer) || 'minutes')::interval) at time zone 'UTC' as ts",
+            ^interval,
+            ^interval
+          )
+      },
+      group_by: [fragment("ts"), f],
+      order_by: fragment("ts desc")
+    )
+    |> Orcasite.Repo.all()
+
+    # |> Orcasite.Utils.atomize_keys()
+  end
+
   def list_detections do
     Detection
     |> preload(:feed)
@@ -72,14 +98,53 @@ defmodule Orcasite.Radio do
 
   def create_detection(attrs \\ %{}) do
     %Detection{}
-    |> Detection.changeset(attrs)
+    |> Detection.changeset(merge_timestamp_attrs(attrs))
     |> Repo.insert()
   end
 
   def update_detection(%Detection{} = detection, attrs) do
     detection
-    |> Detection.changeset(attrs)
+    |> Detection.changeset(merge_timestamp_attrs(attrs))
     |> Repo.update()
+  end
+
+  def merge_timestamp_attrs(%{playlist_timestamp: ts, player_offset: offset} = attrs)
+      when is_nil(ts) or is_nil(offset),
+      do: attrs
+
+  def merge_timestamp_attrs(
+        %{
+          playlist_timestamp: playlist_timestamp,
+          player_offset: player_offset
+        } = attrs
+      ) do
+    epoch =
+      playlist_timestamp
+      |> case do
+        ts when is_integer(ts) -> ts
+        ts when is_binary(ts) -> String.to_integer(ts)
+      end
+
+    offset =
+      player_offset
+      |> case do
+        %Decimal{} = offset -> round(Decimal.to_float(offset))
+        offset when is_float(offset) -> round(offset)
+      end
+
+    timestamp =
+      epoch
+      |> DateTime.from_unix!()
+      |> DateTime.add(offset)
+
+    Map.merge(attrs, %{timestamp: timestamp})
+  end
+
+  def update_detection_timestamp(detection) do
+    attrs = Map.take(detection, [:playlist_timestamp, :player_offset])
+
+    detection
+    |> update_detection(merge_timestamp_attrs(attrs))
   end
 
   def delete_detection(%Detection{} = detection) do

@@ -13,7 +13,7 @@ defmodule Orcasite.RadioTest do
     def feed_fixture(attrs \\ %{}) do
       {:ok, feed} =
         attrs
-        |> Enum.into(@valid_attrs)
+        |> Map.merge(@valid_attrs)
         |> Radio.create_feed()
 
       feed
@@ -77,7 +77,7 @@ defmodule Orcasite.RadioTest do
     def detection_fixture(attrs \\ %{}) do
       {:ok, detection} =
         attrs
-        |> Enum.into(@valid_attrs)
+        |> Map.merge(@valid_attrs)
         |> Radio.create_detection()
 
       detection

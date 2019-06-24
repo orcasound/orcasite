@@ -11,28 +11,20 @@ defmodule OrcasiteWeb.Types.Detection do
     field(:source_ip, :string)
     field(:player_offset, :decimal)
     field(:listener_count, :integer)
-
-    field :timestamp, :datetime do
-      resolve(fn detection, _, _ ->
-        offset =
-          detection.player_offset
-          |> Decimal.to_float()
-          |> Kernel.*(1000)
-          |> round()
-
-        time =
-          detection.playlist_timestamp
-          |> DateTime.from_unix!()
-          |> DateTime.add(offset, :millisecond)
-
-        {:ok, time}
-      end)
-    end
+    field(:timestamp, :datetime)
   end
 
   object :detection_with_lockout do
     field(:detection, :detection)
     field(:lockout_initial, :float)
     field(:lockout_remaining, :float)
+  end
+
+  # TODO: Move :detections and :feed back to their respective
+  # types once we've figured out serialization from Radio context
+  object :detection_group do
+    field(:time_bucket, :datetime)
+    field(:detections, :json)
+    field(:feed, :json)
   end
 end

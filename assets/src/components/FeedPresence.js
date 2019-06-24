@@ -1,15 +1,15 @@
-import React, { Component } from 'react'
-import socket from '../utils/socket'
-import { Presence } from 'phoenix'
+import React, { Component } from "react"
+import socket from "../utils/socket"
+import { Presence } from "phoenix"
 
-import { feedType } from '../types/feedType'
+import { feedType } from "../types/feedType"
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 export default class FeedPresence extends Component {
   static propTypes = {
-    feed: feedType.isRequired,
+    feed: feedType.isRequired
   }
 
   state = {
@@ -49,6 +49,7 @@ export default class FeedPresence extends Component {
     const { id } = this.props.feed
     const listenerCount = state[id] ? state[id].metas.length : 0
     this.setState({ listenerCount })
+    this.props.onListenerChange && this.props.onListenerChange(listenerCount)
   }
 
   render() {
@@ -56,7 +57,9 @@ export default class FeedPresence extends Component {
     return (
       <div className={`feed-presence text-nowrap ${this.props.className}`}>
         {listenerCount > 0 && listenerCount}
-        {listenerCount > 0 && <FontAwesomeIcon icon={faUser} className="ml-2" />}
+        {listenerCount > 0 && (
+          <FontAwesomeIcon icon={faUser} className="ml-2" />
+        )}
       </div>
     )
   }
