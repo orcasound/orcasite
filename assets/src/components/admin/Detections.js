@@ -28,30 +28,28 @@ export default class Detections extends Component {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Time</TableCell>
-                      <TableCell>Feed</TableCell>
-                      <TableCell align="right">Timestamp</TableCell>
+                      <TableCell>Node</TableCell>
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Listeners</TableCell>
+                      <TableCell align="right">Timestamp</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {detectionGroups.map((detectionGroup, i) => (
                       <TableRow key={i} hover={true}>
-                        <TableCell>{detectionGroup.timeBucket}</TableCell>
                         <TableCell>{detectionGroup.feed.slug}</TableCell>
-                        <TableCell align="right">
-                          {detectionGroup.detections[0].timestamp}
-                        </TableCell>
                         <TableCell align="right">
                           {detectionGroup.detections.length}
                         </TableCell>
                         <TableCell align="right">
                           {Math.max(
                             ...detectionGroup.detections.map(
-                              det => det.listener_count
+                              det => det.listenerCount
                             )
                           ) || "-"}
+                        </TableCell>
+                        <TableCell align="right">
+                          {detectionGroup.detections[0].timestamp}
                         </TableCell>
                       </TableRow>
                     ))}

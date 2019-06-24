@@ -84,8 +84,15 @@ defmodule Orcasite.Radio do
       order_by: fragment("ts desc")
     )
     |> Orcasite.Repo.all()
-
-    # |> Orcasite.Utils.atomize_keys()
+    # TODO: Find better way to decode JSON into schema structs
+    |> Stream.map(fn result ->
+      %{
+        Orcasite.Utils.atomize_keys(result)
+        | detections: Enum.map(result.detections, &Detection.from_json/1),
+          feed: Feed.from_json(result.feed)
+      }
+    end)
+    |> Enum.to_list()
   end
 
   def list_detections do

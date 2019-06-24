@@ -3,6 +3,7 @@ defmodule Orcasite.Radio.Detection do
   import Ecto.Changeset
 
   alias Orcasite.Radio.Feed
+  alias __MODULE__
 
   schema "detections" do
     field(:source_ip, :string)
@@ -28,5 +29,11 @@ defmodule Orcasite.Radio.Detection do
       :timestamp
     ])
     |> validate_required([:feed_id, :playlist_timestamp, :player_offset, :source_ip])
+  end
+
+  def from_json(attrs) do
+    %Detection{}
+    |> cast(attrs, Map.keys(Orcasite.Utils.atomize_keys(attrs)))
+    |> apply_changes()
   end
 end

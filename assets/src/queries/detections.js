@@ -21,8 +21,18 @@ export const LIST_DETECTION_GROUPS = gql`
   {
     detectionGroups {
       timeBucket
-      detections
-      feed
+      detections {
+        id
+        timestamp
+        playlistTimestamp
+        playerOffset
+        listenerCount
+      }
+      feed {
+        id
+        name
+        slug
+      }
     }
   }
 `

@@ -20,11 +20,9 @@ defmodule OrcasiteWeb.Types.Detection do
     field(:lockout_remaining, :float)
   end
 
-  # TODO: Move :detections and :feed back to their respective
-  # types once we've figured out serialization from Radio context
   object :detection_group do
     field(:time_bucket, :datetime)
-    field(:detections, :json)
-    field(:feed, :json)
+    field(:detections, list_of(:detection))
+    field(:feed, :feed)
   end
 end
