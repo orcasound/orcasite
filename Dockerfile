@@ -23,13 +23,11 @@ ENV REFRESHED_AT=2019-05-30 \
 RUN \
     mkdir -p /opt/app && \
     chmod -R 777 /opt/app && \
-    apk update && \
     apk --no-cache --update add \
       git make g++ wget curl inotify-tools && \
     # temporary rsync install for grabbing node in the next step
     apk --no-cache --update add --virtual .build-deps rsync && \
-    update-ca-certificates --fresh && \
-    rm -rf /var/cache/apk/*
+    update-ca-certificates --fresh
 
 # "borrow" the node install from the official node alpine image so that we don't
 # have to do all the messy compilation (due to being on musl)
@@ -41,10 +39,8 @@ COPY --from=node /usr/local /opt/node
 # Use rsync to merge in the node files into /usr/local without overwritting
 # everything already in there, then clean up and remove rsync
 RUN rsync -a /opt/node/ /usr/local \
-  && apk del .build-deps \
-  && rm -rf /opt/node \
-  && rm -rf /root/.cache \
-  && rm -rf /var/cache/apk/*
+  && apk --no-cache del .build-deps \
+  && rm -rf /opt/node
 
 # Add local node module binaries to PATH
 ENV PATH=./node_modules/.bin:$PATH \
