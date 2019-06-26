@@ -8,8 +8,8 @@ asdf global erlang 21.0.4
 
 # # Add Elixir using asdf
 asdf plugin-add elixir
-asdf install elixir 1.7.1
-asdf global elixir 1.7.1
+asdf install elixir 1.8.2-otp-21
+asdf global elixir 1.8.2-otp-21
 
 # Add node.js using asdf
 asdf plugin-add nodejs

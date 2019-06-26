@@ -60,7 +60,7 @@ Language-level dependencies can be found under `.tool-versions`. As of this writ
 
 ```
 erlang 21.0.4
-elixir 1.8.2
+elixir 1.8.2-otp-21
 nodejs 10.4.0
 ```
 
