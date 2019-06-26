@@ -21,8 +21,11 @@ services:
       - ./test:/opt/app/test
       - ./mix.exs:/opt/app/mix.exs
       - ./mix.lock:/opt/app/mix.lock
+      - ./priv:/opt/app/priv
 
   postgres:
     image: mdillon/postgis:10-alpine
+    ports:
+      - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
