@@ -5,7 +5,7 @@ defmodule Orcasite.Radio do
 
   import Ecto.Query, warn: false
   alias Orcasite.Repo
-  alias Orcasite.Radio.{Feed, Detection}
+  alias Orcasite.Radio.{Feed, Detection, Candidate}
 
   def list_feeds do
     Repo.all(Feed)
@@ -30,14 +30,6 @@ defmodule Orcasite.Radio do
     feed
     |> Feed.changeset(attrs)
     |> Repo.update()
-  end
-
-  def delete_feed(%Feed{} = feed) do
-    Repo.delete(feed)
-  end
-
-  def change_feed(%Feed{} = feed) do
-    Feed.changeset(feed, %{})
   end
 
   def verify_can_submit_detection(
@@ -109,6 +101,11 @@ defmodule Orcasite.Radio do
     |> Repo.insert()
   end
 
+  def create_detection_with_candidate(detection_attrs) do
+    # Find or create candidate for detection, create detection
+    create_detection(detection_attrs)
+  end
+
   def update_detection(%Detection{} = detection, attrs) do
     detection
     |> Detection.changeset(merge_timestamp_attrs(attrs))
@@ -154,11 +151,9 @@ defmodule Orcasite.Radio do
     |> update_detection(merge_timestamp_attrs(attrs))
   end
 
-  def delete_detection(%Detection{} = detection) do
-    Repo.delete(detection)
-  end
-
-  def change_detection(%Detection{} = detection) do
-    Detection.changeset(detection, %{})
+  def create_candidate(attrs \\ %{}) do
+    %Candidate{}
+    |> Candidate.changeset(attrs)
+    |> Repo.insert()
   end
 end

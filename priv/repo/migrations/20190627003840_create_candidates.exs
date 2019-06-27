@@ -3,7 +3,8 @@ defmodule Orcasite.Repo.Migrations.CreateCandidates do
 
   def change do
     create table(:candidates) do
-      add(:timestamp, :utc_datetime)
+      add(:min_time, :utc_datetime)
+      add(:max_time, :utc_datetime)
       add(:feed_id, references(:feeds, on_delete: :nothing))
       add(:detection_count, :integer)
 

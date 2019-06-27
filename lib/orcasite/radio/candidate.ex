@@ -2,11 +2,11 @@ defmodule Orcasite.Radio.Candidate do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "candidates" do
-    field :detection_count, :integer
-    field :timestamp, :utc_datetime
-    field :feed_id, :id
+    field(:detection_count, :integer)
+    field(:min_time, :utc_datetime)
+    field(:max_time, :utc_datetime)
+    field(:feed_id, :id)
 
     timestamps()
   end
@@ -14,7 +14,7 @@ defmodule Orcasite.Radio.Candidate do
   @doc false
   def changeset(candidate, attrs) do
     candidate
-    |> cast(attrs, [:detection_count, :timestamp])
-    |> validate_required([:detection_count, :timestamp])
+    |> cast(attrs, [:detection_count, :min_time, :max_time, :feed_id])
+    |> validate_required([:detection_count, :min_time, :max_time, :feed_id])
   end
 end

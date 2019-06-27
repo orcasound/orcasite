@@ -28,7 +28,7 @@ defmodule OrcasiteWeb.Resolvers.Detection do
     with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, lockout_seconds()) do
       detection_attrs
       |> Map.put(:source_ip, source_ip)
-      |> Radio.create_detection()
+      |> Radio.create_detection_with_candidate()
       |> case do
         {:ok, detection} ->
           {:ok,
