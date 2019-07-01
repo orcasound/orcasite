@@ -101,9 +101,70 @@ defmodule Orcasite.Radio do
     |> Repo.insert()
   end
 
-  def create_detection_with_candidate(detection_attrs) do
+  def create_detection_with_candidate(%{feed_id: feed_id} = detection_attrs) do
     # Find or create candidate for detection, create detection
-    create_detection(detection_attrs)
+    within_ms = :timer.minutes(3)
+
+    with %{timestamp: timestamp} when not is_nil(timestamp) <-
+           merge_timestamp_attrs(detection_attrs),
+         candidate <-
+           find_or_create_relevant_candidate(
+             %{feed_id: feed_id, timestamp: timestamp},
+             within_ms
+           ),
+         {:ok, detection} <-
+           create_detection(Map.merge(detection_attrs, %{candidate_id: candidate.id})),
+         update_candidate(candidate, %{
+           min_time: datetime_min(candidate.min_time, timestamp),
+           max_time: datetime_max(candidate.max_time, timestamp),
+           detection_count: candidate.detection_count + 1
+         }) do
+      detection
+    end
+  end
+
+  def datetime_min(time_1, time_2) do
+    case DateTime.compare(time_1, time_2) do
+      :lt -> time_1
+      _ -> time_2
+    end
+  end
+
+  def datetime_max(time_1, time_2) do
+    case DateTime.compare(time_1, time_2) do
+      :gt -> time_1
+      _ -> time_2
+    end
+  end
+
+  def find_or_create_relevant_candidate(
+        %{feed_id: feed_id, timestamp: timestamp},
+        within_ms \\ 0
+      ) do
+    with min_time <- DateTime.add(timestamp, -within_ms, :millisecond),
+         max_time <- DateTime.add(timestamp, within_ms, :millisecond),
+         {:candidate, %Candidate{} = candidate} <-
+           {:candidate,
+            Repo.one(
+              from(c in Candidate,
+                where: c.feed_id == ^feed_id,
+                where: ^max_time >= c.min_time and c.max_time >= ^min_time,
+                limit: 1
+              )
+            )} do
+      candidate
+    else
+      {:candidate, _} ->
+        {:ok, candidate} =
+          create_candidate(%{
+            feed_id: feed_id,
+            min_time: timestamp,
+            max_time: timestamp,
+            detection_count: 1
+          })
+
+        candidate
+    end
   end
 
   def update_detection(%Detection{} = detection, attrs) do
@@ -155,5 +216,11 @@ defmodule Orcasite.Radio do
     %Candidate{}
     |> Candidate.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def update_candidate(candidate, attrs \\ %{}) do
+    candidate
+    |> Candidate.changeset(attrs)
+    |> Repo.update()
   end
 end
