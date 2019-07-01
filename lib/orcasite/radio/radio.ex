@@ -54,37 +54,10 @@ defmodule Orcasite.Radio do
     end
   end
 
-  @doc "Groups detections by timestamp - 3 minute buckets by default"
-  def list_detection_groups(params \\ []) do
-    # minutes
-    interval = 3
-
-    from(d in Detection,
-      join: f in Feed,
-      on: f.id == d.feed_id,
-      select: %{
-        feed: fragment("row_to_json(?)", f),
-        detections: fragment("json_agg(?)", d),
-        time_bucket:
-          fragment(
-            "(date_trunc('hour', timestamp) + (((date_part('minute', timestamp)::integer / ?::integer) * ?::integer) || 'minutes')::interval) at time zone 'UTC' as ts",
-            ^interval,
-            ^interval
-          )
-      },
-      group_by: [fragment("ts"), f],
-      order_by: fragment("ts desc")
-    )
-    |> Orcasite.Repo.all()
-    # TODO: Find better way to decode JSON into schema structs
-    |> Stream.map(fn result ->
-      %{
-        Orcasite.Utils.atomize_keys(result)
-        | detections: Enum.map(result.detections, &Detection.from_json/1),
-          feed: Feed.from_json(result.feed)
-      }
-    end)
-    |> Enum.to_list()
+  def list_candidates() do
+    Candidate
+    |> preload([:feed, :detections])
+    |> Repo.all()
   end
 
   def list_detections do
@@ -103,6 +76,7 @@ defmodule Orcasite.Radio do
 
   def create_detection_with_candidate(%{feed_id: feed_id} = detection_attrs) do
     # Find or create candidate for detection, create detection
+    # in ms
     within_ms = :timer.minutes(3)
 
     with %{timestamp: timestamp} when not is_nil(timestamp) <-
@@ -119,7 +93,7 @@ defmodule Orcasite.Radio do
            max_time: datetime_max(candidate.max_time, timestamp),
            detection_count: candidate.detection_count + 1
          }) do
-      detection
+      {:ok, detection}
     end
   end
 
@@ -160,7 +134,7 @@ defmodule Orcasite.Radio do
             feed_id: feed_id,
             min_time: timestamp,
             max_time: timestamp,
-            detection_count: 1
+            detection_count: 0
           })
 
         candidate

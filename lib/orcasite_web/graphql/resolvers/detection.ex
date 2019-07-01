@@ -7,8 +7,8 @@ defmodule OrcasiteWeb.Resolvers.Detection do
     {:ok, Radio.list_detections()}
   end
 
-  def list_group(_, _) do
-    {:ok, Radio.list_detection_groups()}
+  def list_candidates(_, _) do
+    {:ok, Radio.list_candidates()}
   end
 
   def create(

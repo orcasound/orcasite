@@ -2,7 +2,7 @@ defmodule Orcasite.Radio.Detection do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Orcasite.Radio.Feed
+  alias Orcasite.Radio.{Feed, Candidate}
   alias __MODULE__
 
   schema "detections" do
@@ -13,6 +13,7 @@ defmodule Orcasite.Radio.Detection do
     field(:timestamp, :utc_datetime)
 
     belongs_to(:feed, Feed)
+    belongs_to(:candidate, Candidate)
 
     timestamps()
   end
@@ -26,7 +27,8 @@ defmodule Orcasite.Radio.Detection do
       :player_offset,
       :source_ip,
       :listener_count,
-      :timestamp
+      :timestamp,
+      :candidate_id
     ])
     |> validate_required([:feed_id, :playlist_timestamp, :player_offset, :source_ip])
   end

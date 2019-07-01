@@ -20,8 +20,10 @@ defmodule OrcasiteWeb.Types.Detection do
     field(:lockout_remaining, :float)
   end
 
-  object :detection_group do
-    field(:time_bucket, :datetime)
+  object :candidate do
+    field(:min_time, :datetime)
+    field(:max_time, :datetime)
+    field(:detection_count, :integer)
     field(:detections, list_of(:detection))
     field(:feed, :feed)
   end

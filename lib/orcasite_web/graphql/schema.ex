@@ -22,9 +22,9 @@ defmodule OrcasiteWeb.Schema do
       resolve(&Resolvers.Detection.index/2)
     end
 
-    field :detection_groups, list_of(:detection_group) do
+    field :candidates, list_of(:candidate) do
       # TODO: Add auth inside of Radio logic
-      resolve(&Resolvers.Detection.list_group/2)
+      resolve(&Resolvers.Detection.list_candidates/2)
     end
   end
 

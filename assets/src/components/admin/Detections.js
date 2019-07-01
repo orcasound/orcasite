@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { Query } from "react-apollo"
-import { LIST_DETECTION_GROUPS } from "queries/detections"
+import { LIST_CANDIDATES } from "queries/detections"
 
 import Paper from "@material-ui/core/Paper"
 import Table from "@material-ui/core/Table"
@@ -21,12 +21,12 @@ export default class Detections extends Component {
     return (
       <div className="admin-detections px-5">
         <h2>Detections</h2>
-        <Query query={LIST_DETECTION_GROUPS}>
+        <Query query={LIST_CANDIDATES}>
           {({ data, error, loading }) => {
             if (loading) return <Loader />
             if (error) return <div>Error retrieving detections</div>
 
-            const { detectionGroups } = data
+            const { candidates } = data
             return (
               <Paper elevation={1}>
                 <Table>
@@ -34,32 +34,20 @@ export default class Detections extends Component {
                     <TableRow>
                       <TableCell>Node</TableCell>
                       <TableCell align="right">Detections</TableCell>
-                      <TableCell align="right">Listeners</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {detectionGroups.map((detectionGroup, i) => (
+                    {candidates.map((candidate, i) => (
                       <TableRow key={i} hover={true}>
-                        <TableCell>{detectionGroup.feed.slug}</TableCell>
+                        <TableCell>{candidate.feed.slug}</TableCell>
                         <TableCell align="right">
-                          {detectionGroup.detections.length}
+                          {candidate.detectionCount}
                         </TableCell>
-                        <TableCell align="right">
-                          {Math.max(
-                            ...detectionGroup.detections.map(
-                              det => det.listenerCount
-                            )
-                          ) || "-"}
-                        </TableCell>
-                        <TableCell align="right">
-                          {detectionGroup.detections[0].timestamp}
-                        </TableCell>
+                        <TableCell align="right">{candidate.minTime}</TableCell>
                         <TableCell align="center">
-                          <Button
-                            onClick={this.handleGroupClick(detectionGroup)}
-                          >
+                          <Button onClick={this.handleGroupClick(candidate)}>
                             View
                           </Button>
                         </TableCell>

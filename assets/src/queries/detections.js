@@ -17,10 +17,12 @@ export const LIST_DETECTIONS = gql`
   }
 `
 
-export const LIST_DETECTION_GROUPS = gql`
+export const LIST_CANDIDATES = gql`
   {
-    detectionGroups {
-      timeBucket
+    candidates {
+      minTime
+      maxTime
+      detectionCount
       detections {
         id
         timestamp

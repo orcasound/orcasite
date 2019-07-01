@@ -2,11 +2,15 @@ defmodule Orcasite.Radio.Candidate do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Orcasite.Radio.{Detection, Feed}
+
   schema "candidates" do
     field(:detection_count, :integer)
     field(:min_time, :utc_datetime)
     field(:max_time, :utc_datetime)
-    field(:feed_id, :id)
+
+    has_many(:detections, Detection)
+    belongs_to(:feed, Feed)
 
     timestamps()
   end
