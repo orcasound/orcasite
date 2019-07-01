@@ -17,18 +17,21 @@ import Loader from "components/Loader"
 export default class Detections extends Component {
   state = {
     page: 1,
-    pageSize: 10
+    pageSize: 10,
+    rowOptions: [10, 25, 50, 100]
   }
 
   handleGroupClick = detectionGroup => () =>
     console.log("Clicked", detectionGroup)
 
-  onChangePage = (event, page) => this.setState({ page: page + 1 })
+  // MUI uses 0-indexing for pages, must add offset
+  onChangePage = offset => (event, page) =>
+    this.setState({ page: page + offset })
   onChangeRowsPerPage = ({ target: { value } }) =>
     this.setState({ pageSize: value })
 
   render() {
-    const { page, pageSize } = this.state
+    const { page, pageSize, rowOptions } = this.state
     return (
       <div className="admin-detections px-5">
         <h2>Detections</h2>
@@ -85,8 +88,9 @@ export default class Detections extends Component {
                         count={totalEntries}
                         page={currentPage - 1}
                         rowsPerPage={pageSize}
-                        onChangePage={this.onChangePage}
+                        onChangePage={this.onChangePage(1)}
                         onChangeRowsPerPage={this.onChangeRowsPerPage}
+                        rowsPerPageOptions={rowOptions}
                       />
                     </TableRow>
                   </TableFooter>
