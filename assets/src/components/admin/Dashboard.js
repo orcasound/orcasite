@@ -7,7 +7,7 @@ import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
 import { StylesProvider } from "@material-ui/styles"
 import styled from "styled-components"
 
-import Detections from "./Detections"
+import Candidates from "./Candidates"
 
 const theme = createMuiTheme({
   /* change default theme options below */
@@ -64,7 +64,7 @@ export default class Dashboard extends Component {
               </HeaderLink>
             </MainHeader>
             <h1 className="px-5 my-3">Admin</h1>
-            <Route exact path="/admin" component={Detections} />
+            <Route exact path="/admin" component={Candidates} />
           </Paper>
         </MuiThemeProvider>
       </StylesProvider>
