@@ -11,6 +11,8 @@ import TablePagination from "@material-ui/core/TablePagination"
 
 import Loader from "components/Loader"
 
+import { formatTimestamp } from "utils/utils"
+
 export default class Detections extends Component {
   render() {
     const { detections, feed } = this.props
@@ -22,6 +24,7 @@ export default class Detections extends Component {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Node</TableCell>
+              <TableCell>Listeners</TableCell>
               <TableCell align="right">Timestamp</TableCell>
             </TableRow>
           </TableHead>
@@ -30,7 +33,10 @@ export default class Detections extends Component {
               <TableRow key={detection.id} hover={true}>
                 <TableCell>{detection.id}</TableCell>
                 <TableCell>{feed.slug}</TableCell>
-                <TableCell align="right">{detection.timestamp}</TableCell>
+                <TableCell>{detection.listenerCount}</TableCell>
+                <TableCell align="right" title={detection.timestamp}>
+                  {formatTimestamp(detection.timestamp)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

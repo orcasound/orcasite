@@ -16,6 +16,8 @@ import Modal from "@material-ui/core/Modal"
 import Loader from "components/Loader"
 import Detections from "components/admin/Detections"
 
+import { formatTimestamp } from "utils/utils"
+
 export default class Candidates extends Component {
   state = {
     page: 1,
@@ -101,7 +103,9 @@ export default class Candidates extends Component {
                         <TableCell align="right">
                           {candidate.detectionCount}
                         </TableCell>
-                        <TableCell align="right">{candidate.minTime}</TableCell>
+                        <TableCell align="right" title={candidate.minTime}>
+                          {formatTimestamp(candidate.minTime)}
+                        </TableCell>
                         <TableCell align="center">
                           <Button
                             onClick={this.handleCandidateClick(candidate)}
