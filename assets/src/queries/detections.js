@@ -18,22 +18,32 @@ export const LIST_DETECTIONS = gql`
 `
 
 export const LIST_CANDIDATES = gql`
-  {
-    candidates {
-      minTime
-      maxTime
-      detectionCount
-      detections {
-        id
-        timestamp
-        playlistTimestamp
-        playerOffset
-        listenerCount
+  query getCandidates($pagination: Pagination!) {
+    candidates(pagination: $pagination) {
+      meta {
+        currentPage
+        previousPage
+        nextPage
+        totalEntries
+        totalPages
       }
-      feed {
+      entries {
         id
-        name
-        slug
+        minTime
+        maxTime
+        detectionCount
+        detections {
+          id
+          timestamp
+          playlistTimestamp
+          playerOffset
+          listenerCount
+        }
+        feed {
+          id
+          name
+          slug
+        }
       }
     }
   }

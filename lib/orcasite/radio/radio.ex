@@ -54,12 +54,6 @@ defmodule Orcasite.Radio do
     end
   end
 
-  def list_candidates() do
-    Candidate
-    |> preload([:feed, :detections])
-    |> Repo.all()
-  end
-
   def list_detections do
     Detection
     |> preload(:feed)
@@ -177,6 +171,13 @@ defmodule Orcasite.Radio do
       |> DateTime.add(offset)
 
     Map.merge(attrs, %{timestamp: timestamp})
+  end
+
+  def list_candidates(params \\ %{pagination: %{page: 1, page_size: 10}}) do
+    Candidate
+    |> order_by(desc: :inserted_at)
+    |> preload([:feed, :detections])
+    |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
   end
 
   def update_detection_timestamp(detection) do

@@ -6,9 +6,9 @@ defmodule Orcasite.Mixfile do
       app: :orcasite,
       version: "0.0.1",
       elixir: "~> 1.4",
-      elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
-      start_permanent: Mix.env == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
     ]
@@ -20,13 +20,13 @@ defmodule Orcasite.Mixfile do
   def application do
     [
       mod: {Orcasite.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :scrivener_ecto]
     ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
@@ -45,10 +45,12 @@ defmodule Orcasite.Mixfile do
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
-      {:poison, "~> 3.1.0"}, # JSON parser, works with Absinthe out of the box
+      # JSON parser, works with Absinthe out of the box
+      {:poison, "~> 3.1.0"},
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 2.0"},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+      {:scrivener_ecto, "~> 2.0"}
     ]
   end
 

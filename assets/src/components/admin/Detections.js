@@ -9,29 +9,53 @@ import TableFooter from "@material-ui/core/TableFooter"
 import TableBody from "@material-ui/core/TableBody"
 import TableRow from "@material-ui/core/TableRow"
 import TableCell from "@material-ui/core/TableCell"
+import TablePagination from "@material-ui/core/TablePagination"
 import Button from "@material-ui/core/Button"
 
 import Loader from "components/Loader"
 
 export default class Detections extends Component {
+  state = {
+    page: 1,
+    pageSize: 10
+  }
+
   handleGroupClick = detectionGroup => () =>
     console.log("Clicked", detectionGroup)
 
+  onChangePage = (event, page) => this.setState({ page: page + 1 })
+  onChangeRowsPerPage = ({ target: { value } }) =>
+    this.setState({ pageSize: value })
+
   render() {
+    const { page, pageSize } = this.state
     return (
       <div className="admin-detections px-5">
         <h2>Detections</h2>
-        <Query query={LIST_CANDIDATES}>
+        <Query
+          query={LIST_CANDIDATES}
+          variables={{ pagination: { page: page, pageSize: pageSize } }}
+        >
           {({ data, error, loading }) => {
             if (loading) return <Loader />
             if (error) return <div>Error retrieving detections</div>
 
             const { candidates } = data
+            const {
+              meta: {
+                currentPage,
+                previousPage,
+                nextPage,
+                totalEntries,
+                totalPages
+              }
+            } = candidates
             return (
               <Paper elevation={1}>
                 <Table>
                   <TableHead>
                     <TableRow>
+                      <TableCell>ID</TableCell>
                       <TableCell>Node</TableCell>
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
@@ -39,8 +63,9 @@ export default class Detections extends Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {candidates.map((candidate, i) => (
-                      <TableRow key={i} hover={true}>
+                    {candidates.entries.map(candidate => (
+                      <TableRow key={candidate.id} hover={true}>
+                        <TableCell>{candidate.id}</TableCell>
                         <TableCell>{candidate.feed.slug}</TableCell>
                         <TableCell align="right">
                           {candidate.detectionCount}
@@ -54,6 +79,17 @@ export default class Detections extends Component {
                       </TableRow>
                     ))}
                   </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        count={totalEntries}
+                        page={currentPage - 1}
+                        rowsPerPage={pageSize}
+                        onChangePage={this.onChangePage}
+                        onChangeRowsPerPage={this.onChangeRowsPerPage}
+                      />
+                    </TableRow>
+                  </TableFooter>
                 </Table>
               </Paper>
             )

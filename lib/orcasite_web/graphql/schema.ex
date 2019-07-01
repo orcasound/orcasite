@@ -2,7 +2,7 @@ defmodule OrcasiteWeb.Schema do
   use Absinthe.Schema
 
   import_types(Absinthe.Type.Custom)
-  import_types(OrcasiteWeb.Types.{JSON, Account, Feed, Detection})
+  import_types(OrcasiteWeb.Types.{JSON, Account, Feed, Detection, Pagination})
 
   alias OrcasiteWeb.Resolvers
 
@@ -22,7 +22,8 @@ defmodule OrcasiteWeb.Schema do
       resolve(&Resolvers.Detection.index/2)
     end
 
-    field :candidates, list_of(:candidate) do
+    field :candidates, :candidates do
+      arg(:pagination, :pagination)
       # TODO: Add auth inside of Radio logic
       resolve(&Resolvers.Detection.list_candidates/2)
     end

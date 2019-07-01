@@ -1,5 +1,6 @@
 defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.Radio
+  alias OrcasiteWeb.Paginated
 
   def index(_, _) do
     # TODO: Add permissions inside of Radio context once
@@ -7,8 +8,10 @@ defmodule OrcasiteWeb.Resolvers.Detection do
     {:ok, Radio.list_detections()}
   end
 
-  def list_candidates(_, _) do
-    {:ok, Radio.list_candidates()}
+  def list_candidates(args, _) do
+    # TODO: Add permissions inside of Radio context
+    IO.inspect(args, label: "Args")
+    {:ok, Paginated.format(Radio.list_candidates(args))}
   end
 
   def create(

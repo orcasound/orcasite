@@ -21,10 +21,17 @@ defmodule OrcasiteWeb.Types.Detection do
   end
 
   object :candidate do
+    field(:id, :id)
     field(:min_time, :datetime)
     field(:max_time, :datetime)
     field(:detection_count, :integer)
     field(:detections, list_of(:detection))
     field(:feed, :feed)
+  end
+
+  @desc "Pagination version of candidates"
+  object :candidates do
+    field(:meta, :pagination_meta)
+    field(:entries, list_of(:candidate))
   end
 end
