@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component } from "react"
 
-import videojs from 'video.js'
+import videojs from "video.js"
 
 export default class MediaStreamer extends Component {
   componentDidMount() {
@@ -26,8 +26,8 @@ export default class MediaStreamer extends Component {
 
     var options = {
       hls: {
-        overrideNative: true,
-      },
+        overrideNative: true
+      }
     }
 
     this.player = videojs(this.audioNode, {
@@ -37,33 +37,37 @@ export default class MediaStreamer extends Component {
       sources: [
         {
           src: this.props.src,
-          type: 'application/x-mpegurl',
-        },
-      ],
+          type: "application/x-mpegurl"
+        }
+      ]
     })
 
     this.player.ready(() => {
-      this.props.onReady(this.controls)
-      this.player.tech().on('retryplaylist', e => {
+      this.props.onReady && this.props.onReady(this.controls)
+      this.player.tech().on("retryplaylist", e => {
         if (this.getLatency() < MAX_LATENCY) {
           this.rewind(RETRY_REWIND_AMOUNT)
         }
       })
       this.latencyUpdateInterval = setInterval(() => {
-        this.props.onLatencyUpdate(this.getLatency(), this.player.currentTime())
+        this.props.onLatencyUpdate &&
+          this.props.onLatencyUpdate(
+            this.getLatency(),
+            this.player.currentTime()
+          )
       }, 1000)
     })
 
-    this.player.on('playing', e => {
-      this.props.onPlaying()
+    this.player.on("playing", e => {
+      this.props.onPlaying && this.props.onPlaying()
     })
 
-    this.player.on('pause', () => {
-      this.props.onPaused()
+    this.player.on("pause", () => {
+      this.props.onPaused && this.props.onPaused()
     })
 
-    this.player.on('waiting', () => {
-      this.props.onLoading()
+    this.player.on("waiting", () => {
+      this.props.onLoading && this.props.onLoading()
     })
   }
 
@@ -115,7 +119,7 @@ export default class MediaStreamer extends Component {
     play: this.play,
     pause: this.pause,
     playPause: this.playPause,
-    getPlayerTime: this.getPlayerTime,
+    getPlayerTime: this.getPlayerTime
   }
 
   render() {

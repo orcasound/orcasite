@@ -43,6 +43,7 @@ export const LIST_CANDIDATES = gql`
           id
           name
           slug
+          nodeName
         }
       }
     }

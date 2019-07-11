@@ -16,6 +16,8 @@ import Modal from "@material-ui/core/Modal"
 import Loader from "components/Loader"
 import Detections from "components/admin/Detections"
 
+import Miniplayer from "components/Miniplayer"
+
 import { formatTimestamp } from "utils/utils"
 
 export default class Candidates extends Component {
@@ -74,6 +76,9 @@ export default class Candidates extends Component {
                 totalPages
               }
             } = candidates
+
+            const det = candidates.entries[0].detections[0]
+            const feed = candidates.entries[0].feed
             return (
               <Paper elevation={1}>
                 <Modal
@@ -85,6 +90,12 @@ export default class Candidates extends Component {
                     <Detections detections={detections} feed={feed} />
                   </Paper>
                 </Modal>
+                <Miniplayer
+                  feed={candidates.entries[0].feed}
+                  timestamp={det.playlistTimestamp}
+                  offset={Number(det.playerOffset)}
+                />
+
                 <Table>
                   <TableHead>
                     <TableRow>
