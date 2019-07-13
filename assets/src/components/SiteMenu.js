@@ -1,6 +1,14 @@
 import React, { Component } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { Paper, Tabs, Tab, Button, Typography, Link, Grid } from "@material-ui/core"
+import {
+  Paper,
+  Tabs,
+  Tab,
+  Button,
+  Typography,
+  Link,
+  Grid
+} from "@material-ui/core"
 import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedListV2 from "./FeedListV2"
@@ -15,11 +23,11 @@ const MainHeader = styled(Paper)`
 `
 
 const NotificationButton = styled(Button)`
-    font-size: 10px;
-    opacity: 0.87;
-    textAlign: left;
-    height: 40px;
-    border-radius: 0px;
+  font-size: 10px;
+  opacity: 0.87;
+  textalign: left;
+  height: 40px;
+  border-radius: 0px;
 `
 
 const HeaderLink = styled(Link)`
@@ -33,7 +41,7 @@ const HeaderLink = styled(Link)`
 
   :hover {
     text-decoration: none;
-    color: #009BDE;
+    color: #009bde;
   }
 `
 // -------------------------------------------
@@ -74,8 +82,7 @@ class SiteMenu extends Component {
           color="primary"
         >
           Get notified when there's whale activity
-          <NotificationIcon
-          />
+          <NotificationIcon />
         </NotificationButton>
         <Tabs
           value={this.state.value}
@@ -84,13 +91,8 @@ class SiteMenu extends Component {
           onChange={this.handleChange}
           centered
         >
-          <Tab
-            label="About"
-            component={RouterLink}
-            to="/v2"
-            fullWidth={true}
-          />
-          <FeedListV2 />} />
+          <Tab label="About" component={RouterLink} to="/v2" fullWidth={true} />
+          <FeedListV2 />
         </Tabs>
       </Paper>
     )
