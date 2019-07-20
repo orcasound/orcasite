@@ -15,7 +15,7 @@ const Hidden = styled.div`
   display: none;
 `
 
-export default class Miniplayer extends Component {
+export default class DetectionPlayer extends Component {
   static propTypes = {
     feed: object.isRequired,
     timestamp: number,

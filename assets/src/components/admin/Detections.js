@@ -10,6 +10,7 @@ import TableCell from "@material-ui/core/TableCell"
 import TablePagination from "@material-ui/core/TablePagination"
 
 import Loader from "components/Loader"
+import DetectionPlayer from "components/DetectionPlayer"
 
 import { formatTimestamp } from "utils/utils"
 
@@ -19,6 +20,12 @@ export default class Detections extends Component {
     return (
       <div className="admin-detections">
         <h2>Detections</h2>
+        <DetectionPlayer
+          feed={feed}
+          timestamp={detections[0].playlistTimestamp}
+          offset={Number(detections[0].playerOffset)}
+        />
+
         <Table>
           <TableHead>
             <TableRow>
@@ -29,7 +36,7 @@ export default class Detections extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {detections.map(detection => (
+            {detections.slice().sort((a, b) => b.id - a.id).map(detection => (
               <TableRow key={detection.id} hover={true}>
                 <TableCell>{detection.id}</TableCell>
                 <TableCell>{feed.slug}</TableCell>
