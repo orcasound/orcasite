@@ -69,6 +69,10 @@ export default class MediaStreamer extends Component {
     this.player.on("waiting", () => {
       this.props.onLoading && this.props.onLoading()
     })
+
+    this.player.on("timeupdate", () => {
+      this.props.onTimeUpdate && this.props.onTimeUpdate(this.player.currentTime())
+    })
   }
 
   play = () => {
