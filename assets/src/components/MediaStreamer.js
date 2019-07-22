@@ -1,8 +1,21 @@
 import React, { Component } from "react"
 
+import { bool, string, func } from "prop-types"
+
 import videojs from "video.js"
 
 export default class MediaStreamer extends Component {
+  static propTypes = {
+    src: string.isRequired,
+    autoplay: bool,
+
+    onReady: func,
+    onPlaying: func,
+    onPaused: func,
+    onTimeUpdate: func,
+    onLatencyUpdate: func
+  }
+
   componentDidMount() {
     this.setupPlayer()
   }
@@ -46,6 +59,7 @@ export default class MediaStreamer extends Component {
       this.props.onReady && this.props.onReady(this.controls)
       this.player.tech().on("retryplaylist", e => {
         if (this.getLatency() < MAX_LATENCY) {
+          console.log("Rewinding")
           this.rewind(RETRY_REWIND_AMOUNT)
         }
       })
@@ -71,13 +85,16 @@ export default class MediaStreamer extends Component {
     })
 
     this.player.on("timeupdate", () => {
-      this.props.onTimeUpdate && this.props.onTimeUpdate(this.player.currentTime())
+      this.props.onTimeUpdate &&
+        this.props.onTimeUpdate(this.player.currentTime())
     })
   }
 
   play = () => {
     if (this.player) {
+      console.log("playing at", this.player.currentTime())
       this.player.play()
+      console.log("time now", this.player.currentTime())
     }
   }
 
@@ -101,7 +118,9 @@ export default class MediaStreamer extends Component {
 
   setPlayerTime = time => {
     if (this.player) {
-      return this.player.currentTime(time)
+      console.log("Setting player time", time)
+      this.player.currentTime(time)
+      console.log("player time is", this.player.currentTime())
     }
   }
 

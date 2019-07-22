@@ -14,7 +14,12 @@ import DetectionPlayer from "components/DetectionPlayer"
 
 import { formatTimestamp } from "utils/utils"
 
+const offsetPadding = 5
+
 export default class Detections extends Component {
+  minOffset = detections => Math.min(...detections.map(d => +d.playerOffset))
+  maxOffset = detections => Math.max(...detections.map(d => +d.playerOffset))
+
   render() {
     const { detections, feed } = this.props
     return (
@@ -23,7 +28,8 @@ export default class Detections extends Component {
         <DetectionPlayer
           feed={feed}
           timestamp={detections[0].playlistTimestamp}
-          offset={Number(detections[0].playerOffset)}
+          startOffset={Math.max(0, this.minOffset(detections) - offsetPadding)}
+          endOffset={this.maxOffset(detections) + offsetPadding}
         />
 
         <Table>
@@ -36,16 +42,19 @@ export default class Detections extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {detections.slice().sort((a, b) => b.id - a.id).map(detection => (
-              <TableRow key={detection.id} hover={true}>
-                <TableCell>{detection.id}</TableCell>
-                <TableCell>{feed.slug}</TableCell>
-                <TableCell>{detection.listenerCount}</TableCell>
-                <TableCell align="right" title={detection.timestamp}>
-                  {formatTimestamp(detection.timestamp)}
-                </TableCell>
-              </TableRow>
-            ))}
+            {detections
+              .slice()
+              .sort((a, b) => b.id - a.id)
+              .map(detection => (
+                <TableRow key={detection.id} hover={true}>
+                  <TableCell>{detection.id}</TableCell>
+                  <TableCell>{feed.slug}</TableCell>
+                  <TableCell>{detection.listenerCount}</TableCell>
+                  <TableCell align="right" title={detection.timestamp}>
+                    {formatTimestamp(detection.timestamp)}
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </div>

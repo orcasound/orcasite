@@ -1,13 +1,13 @@
 import React, { Component } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPlay, faPause, faSpinner } from "@fortawesome/free-solid-svg-icons"
+import Slider from "@material-ui/core/Slider"
 import { object, number } from "prop-types"
 import classNames from "classnames"
 import styled from "styled-components"
 
 import { feedSrc } from "utils/feedStorage"
 import MediaStreamer from "components/MediaStreamer"
-
 
 import "styles/player.scss"
 
@@ -23,15 +23,17 @@ const Player = styled.div`
 export default class DetectionPlayer extends Component {
   static propTypes = {
     feed: object.isRequired,
-    timestamp: number,
-    offset: number
+    timestamp: number.isRequired,
+    startOffset: number.isRequired,
+    endOffset: number
   }
 
   constructor(props) {
     super(props)
 
     this.state = {
-      playerTime: props.offset
+      playerTime: props.startOffset,
+      endOffset: props.endOffset
     }
   }
 
@@ -43,16 +45,17 @@ export default class DetectionPlayer extends Component {
 
   setControls = controls =>
     this.setState({ isLoading: false, ...controls }, () =>
-      this.state.setPlayerTime(this.props.offset)
+      this.state.setPlayerTime(this.props.startOffset)
     )
 
-  playerTimeToDisplayTime = playerTime => Number(playerTime) - Number(this.props.offset)
+  playerTimeToDisplayTime = playerTime =>
+    Number(playerTime) - Number(this.props.startOffset)
 
   render() {
     const {
       feed: { nodeName },
       timestamp,
-      offset
+      startOffset
     } = this.props
     return (
       <Player>
@@ -63,7 +66,9 @@ export default class DetectionPlayer extends Component {
           onClick={this.state.playPause}
         />
         <div>
-          {this.playerTimeToDisplayTime(this.state.playerTime)}
+          {this.playerTimeToDisplayTime(this.state.playerTime)}{" "}
+          <Slider onChange={console.log} value={3} />
+          {this.playerTimeToDisplayTime(this.props.endOffset)}
         </div>
         <Hidden>
           <MediaStreamer
@@ -76,7 +81,7 @@ export default class DetectionPlayer extends Component {
             onPaused={() =>
               this.setState({ isLoading: false, isPlaying: false })
             }
-            onTimeUpdate={(playerTime) => this.setState({playerTime})}
+            onTimeUpdate={playerTime => this.setState({ playerTime })}
           />
         </Hidden>
       </Player>
