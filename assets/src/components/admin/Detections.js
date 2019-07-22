@@ -22,14 +22,20 @@ export default class Detections extends Component {
 
   render() {
     const { detections, feed } = this.props
+    const startOffset = Math.max(0, this.minOffset(detections) - offsetPadding)
+    const endOffset = this.maxOffset(detections) + offsetPadding
     return (
       <div className="admin-detections">
         <h2>Detections</h2>
         <DetectionPlayer
           feed={feed}
+          marks={detections.map(d => ({
+            label: d.id,
+            value: (+d.playerOffset - +startOffset).toFixed(1)
+          }))}
           timestamp={detections[0].playlistTimestamp}
-          startOffset={Math.max(0, this.minOffset(detections) - offsetPadding)}
-          endOffset={this.maxOffset(detections) + offsetPadding}
+          startOffset={startOffset}
+          endOffset={endOffset}
         />
 
         <Table>
