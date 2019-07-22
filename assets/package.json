@@ -33,6 +33,7 @@
     "styled-components": "^4.3.1",
     "typeface-roboto": "0.0.54",
     "video.js": "^7.5.5",
+    "videojs-offset": "^2.1.2",
     "yup": "^0.27.0"
   },
   "devDependencies": {

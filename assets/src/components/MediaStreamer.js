@@ -1,13 +1,17 @@
 import React, { Component } from "react"
 
-import { bool, string, func } from "prop-types"
+import { bool, string, func, number } from "prop-types"
 
 import videojs from "video.js"
+import "videojs-offset"
 
 export default class MediaStreamer extends Component {
   static propTypes = {
     src: string.isRequired,
     autoplay: bool,
+
+    startOffset: number,
+    endOffset: number,
 
     onReady: func,
     onPlaying: func,
@@ -55,11 +59,18 @@ export default class MediaStreamer extends Component {
       ]
     })
 
+    if (this.props.startOffset && this.props.endOffset) {
+      this.player.offset({
+        start: this.props.startOffset,
+        end: this.props.endOffset,
+        restart_beginning: true
+      })
+    }
+
     this.player.ready(() => {
       this.props.onReady && this.props.onReady(this.controls)
       this.player.tech().on("retryplaylist", e => {
         if (this.getLatency() < MAX_LATENCY) {
-          console.log("Rewinding")
           this.rewind(RETRY_REWIND_AMOUNT)
         }
       })
@@ -92,9 +103,7 @@ export default class MediaStreamer extends Component {
 
   play = () => {
     if (this.player) {
-      console.log("playing at", this.player.currentTime())
       this.player.play()
-      console.log("time now", this.player.currentTime())
     }
   }
 
@@ -117,11 +126,7 @@ export default class MediaStreamer extends Component {
   }
 
   setPlayerTime = time => {
-    if (this.player) {
-      console.log("Setting player time", time)
-      this.player.currentTime(time)
-      console.log("player time is", this.player.currentTime())
-    }
+    if (this.player) this.player.currentTime(time)
   }
 
   seekToLive = (secondsFromLive = 30) => {

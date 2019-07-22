@@ -43,10 +43,7 @@ export default class DetectionPlayer extends Component {
     return { icon: faPlay }
   }
 
-  setControls = controls =>
-    this.setState({ isLoading: false, ...controls }, () =>
-      this.state.setPlayerTime(this.props.startOffset)
-    )
+  setControls = controls => this.setState({ isLoading: false, ...controls })
 
   playerTimeToDisplayTime = playerTime =>
     Number(playerTime) - Number(this.props.startOffset)
@@ -66,13 +63,14 @@ export default class DetectionPlayer extends Component {
           onClick={this.state.playPause}
         />
         <div>
-          {this.playerTimeToDisplayTime(this.state.playerTime)}{" "}
-          <Slider onChange={console.log} value={3} />
+          {this.playerTimeToDisplayTime(this.state.playerTime)} <Slider />
           {this.playerTimeToDisplayTime(this.props.endOffset)}
         </div>
         <Hidden>
           <MediaStreamer
             src={feedSrc(nodeName, timestamp)}
+            startOffset={this.props.startOffset}
+            endOffset={this.props.endOffset}
             onReady={this.setControls}
             onLoading={() => this.setState({ isLoading: true })}
             onPlaying={() =>
