@@ -99,6 +99,12 @@ export default class MediaStreamer extends Component {
     }
   }
 
+  setPlayerTime = time => {
+    if (this.player) {
+      return this.player.currentTime(time)
+    }
+  }
+
   seekToLive = (secondsFromLive = 30) => {
     if (this.player && this.player.readyState() > 0) {
       this.player.currentTime(this.player.seekable().end(0) - secondsFromLive)
@@ -123,7 +129,8 @@ export default class MediaStreamer extends Component {
     play: this.play,
     pause: this.pause,
     playPause: this.playPause,
-    getPlayerTime: this.getPlayerTime
+    getPlayerTime: this.getPlayerTime,
+    setPlayerTime: this.setPlayerTime
   }
 
   render() {

@@ -41,7 +41,10 @@ export default class DetectionPlayer extends Component {
     return { icon: faPlay }
   }
 
-  setControls = controls => this.setState({ isLoading: false, ...controls })
+  setControls = controls =>
+    this.setState({ isLoading: false, ...controls }, () =>
+      this.state.setPlayerTime(this.props.offset)
+    )
 
   playerTimeToDisplayTime = playerTime => Number(playerTime) - Number(this.props.offset)
 
