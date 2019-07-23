@@ -65,6 +65,7 @@ export default class Dashboard extends Component {
             </MainHeader>
             <h1 className="px-5 my-3">Admin</h1>
             <Route exact path="/admin" component={Candidates} />
+            <Route path="/admin/candidates/:id" component={Candidates} />
           </Paper>
         </MuiThemeProvider>
       </StylesProvider>

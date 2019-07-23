@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import { Query } from "react-apollo"
 import { LIST_CANDIDATES } from "queries/detections"
+import queryString from "query-string"
 
 import Paper from "@material-ui/core/Paper"
 import Table from "@material-ui/core/Table"
@@ -20,12 +21,15 @@ import { formatTimestamp } from "utils/utils"
 
 export default class Candidates extends Component {
   state = {
-    page: 1,
-    pageSize: 10,
     rowOptions: [10, 25, 50, 100],
     detectionModalOpen: false,
     detections: [],
     feed: null
+  }
+
+  static defaultProps = {
+    page: 1,
+    pageSize: 10
   }
 
   handleCandidateClick = ({ detections, feed }) => () =>
@@ -39,26 +43,37 @@ export default class Candidates extends Component {
     this.setState({ detectionModalOpen: false, detections: [] })
 
   // MUI uses 0-indexing for pages, must add offset
-  onChangePage = offset => (event, page) =>
-    this.setState({ page: page + offset })
+  onChangePage = offset => (_event, page) =>
+    this.props.history.push({
+      pathname: this.props.location.pathname,
+      search: `page=${page + offset}&pageSize=${this.pageSize()}`
+    })
+
   onChangeRowsPerPage = ({ target: { value } }) =>
-    this.setState({ pageSize: value })
+    this.props.history.push({
+      pathname: this.props.location.pathname,
+      search: `page=${this.page()}&pageSize=${value}`
+    })
+
+  page = () => {
+    const { page } = queryString.parse(this.props.location.search)
+    return Number(page || this.props.page)
+  }
+  pageSize = () => {
+    const { pageSize } = queryString.parse(this.props.location.search)
+    return Number(pageSize || this.props.pageSize)
+  }
 
   render() {
-    const {
-      page,
-      pageSize,
-      rowOptions,
-      detectionModalOpen,
-      detections,
-      feed
-    } = this.state
+    const { rowOptions, detectionModalOpen, detections, feed } = this.state
     return (
       <div className="admin-candidates px-5">
         <h2>Candidates</h2>
         <Query
           query={LIST_CANDIDATES}
-          variables={{ pagination: { page: page, pageSize: pageSize } }}
+          variables={{
+            pagination: { page: this.page(), pageSize: this.pageSize() }
+          }}
         >
           {({ data, error, loading }) => {
             if (loading) return <Loader />
@@ -122,7 +137,7 @@ export default class Candidates extends Component {
                       <TablePagination
                         count={totalEntries}
                         page={currentPage - 1}
-                        rowsPerPage={pageSize}
+                        rowsPerPage={this.pageSize()}
                         onChangePage={this.onChangePage(1)}
                         onChangeRowsPerPage={this.onChangeRowsPerPage}
                         rowsPerPageOptions={rowOptions}
