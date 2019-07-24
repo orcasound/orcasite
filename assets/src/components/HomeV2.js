@@ -39,7 +39,7 @@ export default class HomeV2 extends Component {
 
   componentDidMount() {
     if (["beta", "dev", "staging"].indexOf(ENV.ENV_NAME) >= 0) {
-      document.title = `Orcasound ${ENV.ENV.NAME}`
+      document.title = `Orcasound ${ENV.ENV_NAME}`
     } else {
       document.title = `Orcasound`
     }
