@@ -9,10 +9,11 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 ## Getting started
 
 #### Quick Start: 
-- Load the Docker Configuration `docker-compose pull && docker-compose up` 
-- You should now have a phoenix server running running at localhost:8080
-- Next, leave the phoenix server running while opening a new tab
-- In the new tab, install the dependencies by running `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
+- Load the Docker Configuration`docker-compose pull && docker-compose up`
+- Navigate to a new terminal in the same directory 
+- Stop the containers by running `docker-compose stop`
+- Install the hex and npm dependencies by running `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
+- Restart your containers by running `docker-compose up`
 - Navigate to localhost:4000 to view the React app
 
 ## Detailed Setup
