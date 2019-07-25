@@ -4,13 +4,10 @@ import { Link } from "react-router-dom"
 import Button from "@material-ui/core/Button"
 import { PlayArrow, Pause } from "@material-ui/icons"
 
-import Fab from '@material-ui/core/Fab'
-
+import Fab from "@material-ui/core/Fab"
 
 import MediaStreamerV2 from "./MediaStreamerV2"
 import DetectionDialogV2 from "./DetectionDialogV2"
-
-// import FeedPresence from "./FeedPresence"
 
 import { feedType } from "../types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
@@ -18,22 +15,22 @@ import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
 import styled from "styled-components"
 
 const StyledMediaContainer = styled.div`
-    .video-js {
-      display: none;
-    }
+  .video-js {
+    display: none;
+  }
 `
 const PlayerContainer = styled.div`
-    margin: -2rem 1rem 1rem 1rem;
-    z-index: 10;
+  margin: -2rem 1rem 1rem 1rem;
+  z-index: 10;
 `
 
 const RaisedButtonContainer = styled.div`
-    z-index: 10;
+  z-index: 10;
 `
 
 const StyledButtonContainer = styled.div`
-  background: ${props => props.active ? "#007166" : "transparent"}; 
-  box-shadow: ${props => props.active ? "0 2px 4px 0" : "none"};
+  background: ${props => (props.active ? "#007166" : "transparent")};
+  box-shadow: ${props => (props.active ? "0 2px 4px 0" : "none")};
   border-radius: 33px;
   min-width: 337px;
   max-width: 450px;
@@ -66,18 +63,18 @@ class PlayerV2 extends Component {
 
     this.state = {
       currentFeed,
-      timestamp: '',
+      timestamp: "",
       isLoading: true,
       isPlaying: false,
       intervalId: null,
       debugInfo: {
         playerTime: 0,
-        latencyHistory: [0],
+        latencyHistory: [0]
       },
-      play: () => { },
-      pause: () => { },
-      playPause: () => { },
-      getPLayerTime: () => { },
+      play: () => {},
+      pause: () => {},
+      playPause: () => {},
+      getPLayerTime: () => {}
     }
   }
 
@@ -91,7 +88,7 @@ class PlayerV2 extends Component {
       this.fetchTimestamp(currentFeed.nodeName)
       intervalId = setInterval(
         () => this.fetchTimestamp(currentFeed.nodeName),
-        10000,
+        10000
       )
 
       this.setState({ intervalId })
@@ -137,26 +134,24 @@ class PlayerV2 extends Component {
     `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
 
   fetchTimestamp = feed => {
-    const timestampURI = `https://s3-us-west-2.amazonaws.com/${
-      ENV.S3_BUCKET
-      }/${feed}/latest.txt`
+    const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
     this.setState({ currentXhr: xhr })
-    xhr.open('GET', timestampURI)
+    xhr.open("GET", timestampURI)
     xhr.onload = () => {
       if (xhr.status === 200) {
         const timestamp = xhr.responseText.trim()
-        if (ENV.DEVELOPMENT) console.log('Latest timestamp: ' + timestamp)
+        if (ENV.DEVELOPMENT) console.log("Latest timestamp: " + timestamp)
         if (timestamp != this.state.timestamp) {
           this.setState({
             timestamp: timestamp,
-            hlsURI: this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
+            hlsURI: this.getHlsUri(timestamp, feed, ENV.S3_BUCKET)
           })
           if (ENV.DEVELOPMENT)
             console.log(
               "New stream instance: " +
-              this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
+                this.getHlsUri(timestamp, feed, ENV.S3_BUCKET)
             )
         }
       }
@@ -166,8 +161,6 @@ class PlayerV2 extends Component {
 
   setControls = controls => this.setState({ isLoading: false, ...controls })
 
-
-
   render() {
     const {
       hlsURI,
@@ -176,13 +169,13 @@ class PlayerV2 extends Component {
       timestamp,
       isLoading,
       isPlaying,
-      getPlayerTime,
+      getPlayerTime
     } = this.state
 
     const awsConsoleUri = this.getAwsConsoleUri(
       timestamp,
       currentFeed.nodeName,
-      ENV.S3_BUCKET,
+      ENV.S3_BUCKET
     )
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
@@ -194,43 +187,42 @@ class PlayerV2 extends Component {
               {isPlaying && <Pause className="icon" fontSize="large" />}
             </Fab>
 
-            {/**
-       <StyledMuiButton aria-label="Play/Pause" onClick={playPause}>
-              {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
-              {isPlaying && <Pause className="icon" fontSize="large" />}
-            </StyledMuiButton>
-     */}
-
-            {isPlaying && <DetectionDialogV2 />}
+            {isPlaying && (
+              <DetectionDialogV2
+                isPlaying={isPlaying}
+                feed={this.state.currentFeed}
+                timestamp={this.state.timestamp}
+                getPlayerTime={this.state.getPlayerTime}
+              />
+            )}
           </StyledButtonContainer>
-          {
-            hlsURI && (
-              <StyledMediaContainer>
-                <MediaStreamerV2
-                  src={hlsURI}
-                  autoplay={this.props.autoplay}
-                  onReady={this.setControls}
-                  onLoading={() => this.setState({ isLoading: true })}
-                  onPlaying={() =>
-                    this.setState({ isLoading: false, isPlaying: true })
-                  }
-                  onPaused={() =>
-                    this.setState({ isLoading: false, isPlaying: false })}
-                  onLatencyUpdate={(newestLatency, playerTime) =>
-                    this.setState({
-                      debugInfo: {
-                        playerTime: playerTime,
-                        latencyHistory: this.state.debugInfo.latencyHistory.concat(
-                          newestLatency,
-                        ),
-                      },
-                    })
-                  }
-                />
-              </StyledMediaContainer>
-            )
-          }
-        </PlayerContainer >
+          {hlsURI && (
+            <StyledMediaContainer>
+              <MediaStreamerV2
+                src={hlsURI}
+                autoplay={this.props.autoplay}
+                onReady={this.setControls}
+                onLoading={() => this.setState({ isLoading: true })}
+                onPlaying={() =>
+                  this.setState({ isLoading: false, isPlaying: true })
+                }
+                onPaused={() =>
+                  this.setState({ isLoading: false, isPlaying: false })
+                }
+                onLatencyUpdate={(newestLatency, playerTime) =>
+                  this.setState({
+                    debugInfo: {
+                      playerTime: playerTime,
+                      latencyHistory: this.state.debugInfo.latencyHistory.concat(
+                        newestLatency
+                      )
+                    }
+                  })
+                }
+              />
+            </StyledMediaContainer>
+          )}
+        </PlayerContainer>
       )
     }
   }
