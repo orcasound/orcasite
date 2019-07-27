@@ -36,7 +36,7 @@ defmodule Orcasite.Accounts do
     |> Repo.update()
   end
 
-  def authenticate(%{email: email, password: password} do)
+  def authenticate(%{email: email, password: password}) do
     User
     |> Repo.get_by(email: String.downcase(email))
     |> case do
