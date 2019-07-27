@@ -45,6 +45,10 @@ defmodule Orcasite.Mixfile do
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
+      {:absinthe_ecto, "~>0.1.3"}, # Provides helper functions for easy batching of Ecto associations
+      {:guardian, "~> 1.0"}, # Authenitication library for admin dashboard
+      {:comeonin, "~>4.0"}, # Password hashing library for Elixir
+      {:bcrypt_elixir, "~>1.0"}, # Algorithm used by Comeonin to has password 
       # JSON parser, works with Absinthe out of the box
       {:poison, "~> 4.0"},
       {:logfmt, "~> 3.0"},
