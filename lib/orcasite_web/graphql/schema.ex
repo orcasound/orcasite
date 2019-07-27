@@ -7,6 +7,9 @@ defmodule OrcasiteWeb.Schema do
   alias OrcasiteWeb.Resolvers
 
   query do
+    @desc "Get logged in user"
+    field(:current_user, :user, resolve: &Resolvers.Accounts.current_user/2)
+
     @desc "Get a list of feeds"
     field(:feeds, list_of(:feed), resolve: &Resolvers.Feed.index/2)
 
@@ -38,6 +41,20 @@ defmodule OrcasiteWeb.Schema do
       arg(:listener_count, :integer)
 
       resolve(&Resolvers.Detection.create/2)
+    end
+
+    @desc "Log in"
+    field :login, :user do
+      arg(:email, non_null(:string))
+      arg(:password, non_null(:string))
+
+      resolve(&Resolvers.Accounts.login/2)
+    end
+
+    @desc "Log out"
+    field :logout, :user do
+      arg(:id)
+      resolve(&Resolvers.Accounts.logout/2)
     end
   end
 end

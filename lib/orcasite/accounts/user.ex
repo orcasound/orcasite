@@ -2,39 +2,48 @@ defmodule Orcasite.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-   alias Orcasite.Accounts.User
+  alias Orcasite.Accounts.User
 
-   schema "users" do
-    field(:first_name, :string)
-    field(:last_name, :string)
+  schema "users" do
     field(:email, :string, unique: true)
     field(:password_hash, :string)
-    field(:password, :string, virtual: true)
-    field(:password_confirmation, :string, virtual: true)
-    field(:role, :string, default: "admin")
-    field(:active, :boolean, default: true)
+    field(:first_name, :string)
+    field(:last_name, :string)
+    field(:admin, :boolean)
+    field(:auth_token, :string)
 
-     timestamps()
+    field(:password, :string, virtual: true)
+
+    timestamps()
   end
 
-   def changeset(%User{}=user, attrs) do
+  def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:first_name, :last_name, :email, :password, :password_confirmation, :role, :active])
-    |> validate_required([:first_name, :last_name, :email, :password, :password_confirmation, :role, :active])
-    |> validate_format(:email, ~r/@/)
-    |> update_change(:email, &String.downcase(&1))
-    |> validate_length(:password, min: 8, max: 20)
-    |> validate_confirmation(:password)
-    |> unique_constraint(:email)
+    |> cast(attrs, [:email, :first_name, :last_name])
+    |> validate_required([:email])
+    |> update_change(:email, &String.downcase/1)
+    |> validate_format(:email, ~r/^.+@.+$/)
+    |> unique_constraint(:email, name: :users_lower_email_index)
+  end
+
+  def create_changeset(%User{} = user, attrs) do
+    user
+    |> changeset(attrs)
+    |> cast(attrs, [:password])
+    |> validate_length(:password, min: 6, max: 100)
     |> hash_password
   end
 
+  def store_token_changeset(%User{} = user, attrs) do
+    user
+    |> cast(attrs, [:auth_token])
+  end
+
   defp hash_password(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
-    change(changeset, Comeonin.Argon2.add_hash(password))
+    put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(password))
   end
 
   defp hash_password(changeset) do
     changeset
   end
-
 end
