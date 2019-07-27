@@ -2,6 +2,8 @@ defmodule Orcasite.Radio.Feed do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias __MODULE__
+
   schema "feeds" do
     field(:name, :string)
     field(:slug, :string)
@@ -20,4 +22,19 @@ defmodule Orcasite.Radio.Feed do
 
   def latlong_to_geo(lat, long) when is_float(lat) and is_float(long),
     do: Geo.WKT.decode!("SRID=4326;POINT(#{lat} #{long})")
+
+  # TODO: Find the actual json -> schema function
+  def from_json(attrs) do
+    %Feed{}
+    |> cast(
+      decode_location_point(attrs),
+      Map.keys(Orcasite.Utils.atomize_keys(attrs))
+    )
+    |> apply_changes()
+  end
+
+  def decode_location_point(%{"location_point" => point} = attrs) when is_binary(point),
+    do: %{attrs | "location_point" => Geo.WKB.decode!(attrs["location_point"])}
+
+  def decode_location_point(attrs), do: attrs
 end

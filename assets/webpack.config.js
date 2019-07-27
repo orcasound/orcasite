@@ -37,7 +37,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, "../priv/static"),
       filename: 'js/[name].js',
-      publicPath: (isDev ? "http://0.0.0.0:8080/" : "/")
+      publicPath: (isDev ? 'http://0.0.0.0:8080/' : "/")
     },
 
     devServer: {
@@ -93,11 +93,16 @@ module.exports = (env, argv) => {
           loader: "file-loader",
         },
         {
-          test: /\.(css|scss)$/,
+          test: /\.(c|sc)ss$/,
           exclude: /node_modules\/(?!(video.js)\/).*/,
           use: [
-            'css-hot-loader',
-            MiniCssExtractPlugin.loader,
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                hmr: process.env.NODE_ENV === 'development',
+                reloadAll: true
+              }
+            },
             'css-loader',
             'postcss-loader',
             {
@@ -116,7 +121,7 @@ module.exports = (env, argv) => {
           test: /\.swf$/,
           loader: 'file-loader',
           query: {
-              name: 'static/media/[name].[ext]'
+            name: 'static/media/[name].[ext]'
           }
         }
       ]

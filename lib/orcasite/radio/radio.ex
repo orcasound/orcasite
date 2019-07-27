@@ -5,7 +5,7 @@ defmodule Orcasite.Radio do
 
   import Ecto.Query, warn: false
   alias Orcasite.Repo
-  alias Orcasite.Radio.{Feed, Detection}
+  alias Orcasite.Radio.{Feed, Detection, Candidate}
 
   def list_feeds do
     Repo.all(Feed)
@@ -32,14 +32,6 @@ defmodule Orcasite.Radio do
     |> Repo.update()
   end
 
-  def delete_feed(%Feed{} = feed) do
-    Repo.delete(feed)
-  end
-
-  def change_feed(%Feed{} = feed) do
-    Feed.changeset(feed, %{})
-  end
-
   def verify_can_submit_detection(
         feed_id,
         source_ip,
@@ -63,28 +55,147 @@ defmodule Orcasite.Radio do
   end
 
   def list_detections do
-    Repo.all(Detection)
+    Detection
+    |> preload(:feed)
+    |> Repo.all()
   end
 
   def get_detection!(id), do: Repo.get!(Detection, id)
 
   def create_detection(attrs \\ %{}) do
     %Detection{}
-    |> Detection.changeset(attrs)
+    |> Detection.changeset(merge_timestamp_attrs(attrs))
     |> Repo.insert()
+  end
+
+  def create_detection_with_candidate(%{feed_id: feed_id} = detection_attrs) do
+    # Find or create candidate for detection, create detection
+    # in ms
+    within_ms = :timer.minutes(3)
+
+    with %{timestamp: timestamp} when not is_nil(timestamp) <-
+           merge_timestamp_attrs(detection_attrs),
+         candidate <-
+           find_or_create_relevant_candidate(
+             %{feed_id: feed_id, timestamp: timestamp},
+             within_ms
+           ),
+         {:ok, detection} <-
+           create_detection(Map.merge(detection_attrs, %{candidate_id: candidate.id})),
+         update_candidate(candidate, %{
+           min_time: datetime_min(candidate.min_time, timestamp),
+           max_time: datetime_max(candidate.max_time, timestamp),
+           detection_count: candidate.detection_count + 1
+         }) do
+      {:ok, detection}
+    end
+  end
+
+  def datetime_min(time_1, time_2) do
+    case DateTime.compare(time_1, time_2) do
+      :lt -> time_1
+      _ -> time_2
+    end
+  end
+
+  def datetime_max(time_1, time_2) do
+    case DateTime.compare(time_1, time_2) do
+      :gt -> time_1
+      _ -> time_2
+    end
+  end
+
+  def find_or_create_relevant_candidate(
+        %{feed_id: feed_id, timestamp: timestamp},
+        within_ms \\ 0
+      ) do
+    with min_time <- DateTime.add(timestamp, -within_ms, :millisecond),
+         max_time <- DateTime.add(timestamp, within_ms, :millisecond),
+         {:candidate, %Candidate{} = candidate} <-
+           {:candidate,
+            Repo.one(
+              from(c in Candidate,
+                where: c.feed_id == ^feed_id,
+                where: ^max_time >= c.min_time and c.max_time >= ^min_time,
+                limit: 1
+              )
+            )} do
+      candidate
+    else
+      {:candidate, _} ->
+        {:ok, candidate} =
+          create_candidate(%{
+            feed_id: feed_id,
+            min_time: timestamp,
+            max_time: timestamp,
+            detection_count: 0
+          })
+
+        candidate
+    end
   end
 
   def update_detection(%Detection{} = detection, attrs) do
     detection
-    |> Detection.changeset(attrs)
+    |> Detection.changeset(merge_timestamp_attrs(attrs))
     |> Repo.update()
   end
 
-  def delete_detection(%Detection{} = detection) do
-    Repo.delete(detection)
+  def merge_timestamp_attrs(%{playlist_timestamp: ts, player_offset: offset} = attrs)
+      when is_nil(ts) or is_nil(offset),
+      do: attrs
+
+  def merge_timestamp_attrs(
+        %{
+          playlist_timestamp: playlist_timestamp,
+          player_offset: player_offset
+        } = attrs
+      ) do
+    epoch =
+      playlist_timestamp
+      |> case do
+        ts when is_integer(ts) -> ts
+        ts when is_binary(ts) -> String.to_integer(ts)
+      end
+
+    offset =
+      player_offset
+      |> case do
+        %Decimal{} = offset -> round(Decimal.to_float(offset))
+        offset when is_float(offset) -> round(offset)
+      end
+
+    timestamp =
+      epoch
+      |> DateTime.from_unix!()
+      |> DateTime.add(offset)
+
+    Map.merge(attrs, %{timestamp: timestamp})
   end
 
-  def change_detection(%Detection{} = detection) do
-    Detection.changeset(detection, %{})
+  def list_candidates(params \\ %{pagination: %{page: 1, page_size: 10}}) do
+    Candidate
+    |> order_by(desc: :inserted_at)
+    |> preload([:feed, :detections])
+    |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
+  end
+
+  def update_detection_timestamp(detection) do
+    attrs = Map.take(detection, [:playlist_timestamp, :player_offset])
+
+    detection
+    |> update_detection(merge_timestamp_attrs(attrs))
+  end
+
+  def create_candidate(attrs \\ %{}) do
+    %Candidate{}
+    |> Candidate.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_candidate(candidate, attrs \\ %{}) do
+    candidate
+    |> Candidate.changeset(attrs)
+    |> Repo.update()
   end
 end

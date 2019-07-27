@@ -1,20 +1,20 @@
-import React, {Component} from 'react'
-import {Mutation} from 'react-apollo'
-import {SUBMIT_DETECTION} from 'mutations/detections'
+import React, { Component } from "react"
+import { Mutation } from "react-apollo"
+import { SUBMIT_DETECTION } from "mutations/detections"
 
-import {feedType} from 'types/feedType'
-import {string, func, bool} from 'prop-types'
+import { feedType } from "types/feedType"
+import { string, func, bool } from "prop-types"
 
-import Loader from 'components/Loader'
+import Loader from "components/Loader"
 
-import 'styles/detect_button.scss'
+import "styles/detect_button.scss"
 
 export default class DetectButton extends Component {
   static propTypes = {
     isPlaying: bool.isRequired,
     feed: feedType.isRequired,
     timestamp: string.isRequired,
-    getPlayerTime: func.isRequired,
+    getPlayerTime: func.isRequired
   }
 
   constructor(props) {
@@ -26,24 +26,24 @@ export default class DetectButton extends Component {
       showError: false,
       showSuccess: false,
       showLockout: false,
-
       lockoutInitial: 0,
       lockoutProgress: 1,
       lockoutDefault: 10,
       lockoutUpdateInterval: 100,
-      messageTimeout: 2000,
+      messageTimeout: 2000
     }
   }
 
   onDetect = submitDetection => {
     const {
-      feed: {id: feedId},
+      feed: { id: feedId },
       timestamp: playlistTimestamp,
       isPlaying,
       getPlayerTime,
+      listenerCount
     } = this.props
 
-    const {showDefault} = this.state
+    const { showDefault } = this.state
 
     const playerOffset = getPlayerTime()
     if (
@@ -53,30 +53,30 @@ export default class DetectButton extends Component {
       showDefault &&
       isPlaying
     ) {
-      this.setState({showSubmitting: true, showDefault: false}, () => {
+      this.setState({ showSubmitting: true, showDefault: false }, () => {
         submitDetection({
-          variables: {feedId, playlistTimestamp, playerOffset},
+          variables: { feedId, playlistTimestamp, playerOffset, listenerCount }
         })
       })
     }
   }
 
-  onSuccess = ({submitDetection: {lockoutInitial, lockoutRemaining}}) => {
+  onSuccess = ({ submitDetection: { lockoutInitial, lockoutRemaining } }) => {
     const lockoutStart = lockoutInitial || this.state.lockoutDefault
     const lockoutCurrent = lockoutRemaining || lockoutStart
 
-    this.processResponse({showSuccess: true}, lockoutStart, lockoutCurrent)
+    this.processResponse({ showSuccess: true }, lockoutStart, lockoutCurrent)
   }
 
-  onError = ({graphQLErrors}) => {
+  onError = ({ graphQLErrors }) => {
     const {
       details: {
         lockout_initial: lockoutInitial = this.state.lockoutDefault,
-        lockout_remaining: lockoutRemaining = this.state.lockoutDefault,
-      },
-    } = graphQLErrors.find(err => err.message === 'lockout') || {details: {}}
+        lockout_remaining: lockoutRemaining = this.state.lockoutDefault
+      }
+    } = graphQLErrors.find(err => err.message === "lockout") || { details: {} }
 
-    this.processResponse({showError: true}, lockoutInitial, lockoutRemaining)
+    this.processResponse({ showError: true }, lockoutInitial, lockoutRemaining)
   }
 
   processResponse = (newState, lockoutStart, lockoutCurrent) => {
@@ -90,8 +90,8 @@ export default class DetectButton extends Component {
         this.setLockoutProgress()
       }, this.state.lockoutUpdateInterval),
       messageTimeoutId: setTimeout(() => {
-        this.setState({showSuccess: false, showError: false})
-      }, this.state.messageTimeout),
+        this.setState({ showSuccess: false, showError: false })
+      }, this.state.messageTimeout)
     })
   }
 
@@ -101,12 +101,12 @@ export default class DetectButton extends Component {
       lockoutInitial,
       lockoutProgress,
       lockoutUpdateInterval,
-      lockoutIntervalId,
+      lockoutIntervalId
     } = this.state
     const newLockoutProgress = Math.min(
       (lockoutInitial * lockoutProgress + lockoutUpdateInterval / 1000) /
         lockoutInitial,
-      1,
+      1
     )
     if (newLockoutProgress >= 1) {
       clearInterval(this.state.lockoutIntervalId)
@@ -114,7 +114,7 @@ export default class DetectButton extends Component {
     this.setState({
       lockoutProgress: newLockoutProgress,
       showLockout: newLockoutProgress < 1,
-      showDefault: newLockoutProgress >= 1,
+      showDefault: newLockoutProgress >= 1
     })
   }
 
@@ -125,12 +125,13 @@ export default class DetectButton extends Component {
   }
 
   buttonColor = (
-    {showDefault, showSuccess, showError, showLockout},
-    {isPlaying},
+    { showDefault, showSuccess, showError, showLockout },
+    { isPlaying }
   ) => {
-    if (showError) return 'error'
-    if (showSuccess) return 'success'
-    if ((showDefault && !isPlaying) || showLockout) return 'disabled'
+    if (showError) return "error"
+    if (showSuccess) return "success"
+    if ((showDefault && !isPlaying) || showLockout) return "disabled"
+    return ""
   }
 
   render() {
@@ -140,15 +141,16 @@ export default class DetectButton extends Component {
       showError,
       showSuccess,
       showLockout,
-      lockoutProgress,
+      lockoutProgress
     } = this.state
 
     return (
       <Mutation
         mutation={SUBMIT_DETECTION}
         onError={this.onError}
-        onCompleted={this.onSuccess}>
-        {(submitDetection, {data}) => {
+        onCompleted={this.onSuccess}
+      >
+        {(submitDetection, { data }) => {
           return (
             <div
               className={`detect-button ${
@@ -156,18 +158,19 @@ export default class DetectButton extends Component {
               } ${this.buttonColor(this.state, this.props)}`}
               onClick={() => {
                 this.onDetect(submitDetection)
-              }}>
+              }}
+            >
               <div className="button-text text-nowrap">
                 {showSubmitting && <Loader />}
                 {(showDefault || (showLockout && !showError && !showSuccess)) &&
-                  'Activity'}
-                {showError && 'Recently submitted'}
-                {showSuccess && 'Submitted'}
+                  "Activity"}
+                {showError && "Recently submitted"}
+                {showSuccess && "Submitted"}
               </div>
               {showLockout && (
                 <div
                   className="lockout-progress"
-                  style={{width: `${100 * (1 - lockoutProgress)}%`}}
+                  style={{ width: `${100 * (1 - lockoutProgress)}%` }}
                 />
               )}
             </div>

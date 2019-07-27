@@ -6,9 +6,9 @@ defmodule Orcasite.Mixfile do
       app: :orcasite,
       version: "0.0.1",
       elixir: "~> 1.4",
-      elixirc_paths: elixirc_paths(Mix.env),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers,
-      start_permanent: Mix.env == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
     ]
@@ -20,13 +20,13 @@ defmodule Orcasite.Mixfile do
   def application do
     [
       mod: {Orcasite.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :scrivener_ecto]
     ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
@@ -46,13 +46,15 @@ defmodule Orcasite.Mixfile do
       {:absinthe, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
       {:absinthe_ecto, "~>0.1.3"}, # Provides helper functions for easy batching of Ecto associations
-      {:poison, "~> 3.1.0"}, # JSON parser, works with Absinthe out of the box
-      {:logfmt, "~> 3.0"},
-      {:geo_postgis, "~> 2.0"},
-      {:jason, "~> 1.1"},
       {:guardian, "~> 1.0"}, # Authenitication library for admin dashboard
       {:comeonin, "~>4.0"}, # Password hashing library for Elixir
-      {:bcrypt_elixir, "~>1.0"} # Algorithm used by Comeonin to has password 
+      {:bcrypt_elixir, "~>1.0"}, # Algorithm used by Comeonin to has password 
+      # JSON parser, works with Absinthe out of the box
+      {:poison, "~> 4.0"},
+      {:logfmt, "~> 3.0"},
+      {:geo_postgis, "~> 3.0"},
+      {:jason, "~> 1.1"},
+      {:scrivener_ecto, "~> 2.0"}
     ]
   end
 

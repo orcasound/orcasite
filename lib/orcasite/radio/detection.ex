@@ -2,12 +2,18 @@ defmodule Orcasite.Radio.Detection do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Orcasite.Radio.{Feed, Candidate}
+  alias __MODULE__
 
   schema "detections" do
-    field :source_ip, :string
-    field :playlist_timestamp, :integer
-    field :player_offset, :decimal
-    field :feed_id, :id
+    field(:source_ip, :string)
+    field(:playlist_timestamp, :integer)
+    field(:player_offset, :decimal)
+    field(:listener_count, :integer)
+    field(:timestamp, :utc_datetime)
+
+    belongs_to(:feed, Feed)
+    belongs_to(:candidate, Candidate)
 
     timestamps()
   end
@@ -15,7 +21,21 @@ defmodule Orcasite.Radio.Detection do
   @doc false
   def changeset(detection, attrs) do
     detection
-    |> cast(attrs, [:feed_id, :playlist_timestamp, :player_offset, :source_ip])
+    |> cast(attrs, [
+      :feed_id,
+      :playlist_timestamp,
+      :player_offset,
+      :source_ip,
+      :listener_count,
+      :timestamp,
+      :candidate_id
+    ])
     |> validate_required([:feed_id, :playlist_timestamp, :player_offset, :source_ip])
+  end
+
+  def from_json(attrs) do
+    %Detection{}
+    |> cast(attrs, Map.keys(Orcasite.Utils.atomize_keys(attrs)))
+    |> apply_changes()
   end
 end
