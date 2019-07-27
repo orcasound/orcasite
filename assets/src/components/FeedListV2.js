@@ -1,11 +1,19 @@
 import React, { Component } from "react"
-import { Link } from 'react-router-dom'
-import { Query } from 'react-apollo'
-import { Button, ClickAwayListener, Grow, Paper, Popper, MenuList, MenuItem } from "@material-ui/core"
+import { Link } from "react-router-dom"
+import { Query } from "react-apollo"
+import {
+  Button,
+  ClickAwayListener,
+  Grow,
+  Paper,
+  Popper,
+  MenuList,
+  MenuItem
+} from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
 import styled from "styled-components"
 
-import { LIST_FEEDS } from '../queries/feeds'
+import { LIST_FEEDS } from "../queries/feeds"
 
 // -------------------------------------------
 // Styled Components - TODO:  Move to a new file
@@ -30,11 +38,11 @@ const FeedButton = styled(Button)`
 const FeedMenuItem = styled(MenuItem)`
   display: flex;
   justify-content: space-between;
-  
+
   a {
-    color: rgba(0,0,0,0.87);
+    color: rgba(0, 0, 0, 0.87);
   }
-  
+
   color: #000000;
 `
 // -------------------------------------------
@@ -42,9 +50,9 @@ const FeedMenuItem = styled(MenuItem)`
 // -------------------------------------------
 class FeedListV2 extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.handleToggle = this.handleToggle.bind(this);
+    this.handleToggle = this.handleToggle.bind(this)
   }
 
   state = {
@@ -82,18 +90,18 @@ class FeedListV2 extends Component {
           }
 
           const { feeds } = data
-          console.log('data', data.feeds)
           return (
             <FeedListContainer>
               <FeedButton
                 buttonRef={node => {
-                  this.anchorEl = node;
+                  this.anchorEl = node
                 }}
                 aria-owns={open ? "menu-list-grow" : undefined}
                 aria-haspopup="true"
                 onClick={this.handleToggle}
               >
-                Listen Live<ArrowDropDown />
+                Listen Live
+                <ArrowDropDown />
               </FeedButton>
               <Popper
                 open={open}
@@ -105,7 +113,10 @@ class FeedListV2 extends Component {
                   <Grow
                     {...TransitionProps}
                     id="menu-list-grow"
-                    style={{ transformOrigin: placement === "bottom" ? "center top" : "center bottom" }}
+                    style={{
+                      transformOrigin:
+                        placement === "bottom" ? "center top" : "center bottom"
+                    }}
                   >
                     <Paper>
                       <ClickAwayListener onClickAway={this.handleClose}>

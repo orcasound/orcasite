@@ -9,8 +9,6 @@ import Fab from "@material-ui/core/Fab"
 import MediaStreamer from "./MediaStreamer"
 import DetectionDialogV2 from "./DetectionDialogV2"
 
-// import FeedPresence from "./FeedPresence"
-
 import { feedType } from "../types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
 
@@ -189,18 +187,18 @@ class PlayerV2 extends Component {
               {isPlaying && <Pause className="icon" fontSize="large" />}
             </Fab>
 
-            {/**
-       <StyledMuiButton aria-label="Play/Pause" onClick={playPause}>
-              {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
-              {isPlaying && <Pause className="icon" fontSize="large" />}
-            </StyledMuiButton>
-     */}
-
-            {isPlaying && <DetectionDialogV2 />}
+            {isPlaying && (
+              <DetectionDialogV2
+                isPlaying={isPlaying}
+                feed={this.state.currentFeed}
+                timestamp={this.state.timestamp}
+                getPlayerTime={this.state.getPlayerTime}
+              />
+            )}
           </StyledButtonContainer>
           {hlsURI && (
             <StyledMediaContainer>
-              <MediaStreamerV2
+              <MediaStreamer
                 src={hlsURI}
                 autoplay={this.props.autoplay}
                 onReady={this.setControls}
