@@ -32,7 +32,7 @@ config :logger, level: :info, format: {Orcasite.Logger, :format}
 
 config :orcasite, :orcasite_s3_url, Map.fetch!(System.get_env(), "ORCASITE_S3_URL")
 
-config :orcasite, Orcasite.Auth.Guardian,
+config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
   secret_key: System.fetch_env!("GUARDIAN_SECRET_KEY")
 

@@ -6,6 +6,7 @@ defmodule OrcasiteWeb.Types.Account do
     field(:id, :id)
     field(:first_name, :string)
     field(:last_name, :string)
+    field(:auth_token, :string)
     field(:email, :string)
   end
 end

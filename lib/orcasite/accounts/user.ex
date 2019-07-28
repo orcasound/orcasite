@@ -29,6 +29,11 @@ defmodule Orcasite.Accounts.User do
   def create_changeset(%User{} = user, attrs) do
     user
     |> changeset(attrs)
+    |> password_changeset(attrs)
+  end
+
+  def password_changeset(user_or_changeset, attrs) do
+    user_or_changeset
     |> cast(attrs, [:password])
     |> validate_length(:password, min: 6, max: 100)
     |> hash_password

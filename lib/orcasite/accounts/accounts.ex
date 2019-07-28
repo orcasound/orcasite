@@ -19,6 +19,12 @@ defmodule Orcasite.Accounts do
     |> Repo.update()
   end
 
+  def update_password(user, password) do
+    user
+    |> User.password_changeset(%{password: password})
+    |> Repo.update()
+  end
+
   def login_user(user) do
     {:ok, jwt, _} = OrcasiteWeb.Guardian.encode_and_sign(user)
     {:ok, _} = store_token(user, jwt)

@@ -20,4 +20,29 @@ defmodule OrcasiteWeb.Resolvers.Accounts do
   def logout(_args, _info) do
     {:error, "Please log in first!"}
   end
+
+  def create_user(params, _info) do
+    case Accounts.create_user(params) do
+      {:ok, user} ->
+        Accounts.login_user(user)
+
+      {:error, %Ecto.Changeset{valid?: false} = changeset} ->
+        {:error,
+         %{
+           message: "validation",
+           errors: error_response(changeset)
+         }}
+
+      {:error, errors} ->
+        {:error, errors}
+    end
+  end
+
+  defp error_response(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+  end
 end

@@ -33,6 +33,16 @@ defmodule OrcasiteWeb.Schema do
   end
 
   mutation do
+    @desc "Create user"
+    field :signup, :user do
+      arg(:first_name, :string)
+      arg(:last_name, :string)
+      arg(:email, non_null(:string))
+      arg(:password, non_null(:string))
+
+      resolve(&Resolvers.Accounts.create_user/2)
+    end
+
     @desc "Submit an orca sound detection"
     field :submit_detection, :detection_with_lockout do
       arg(:feed_id, :id)

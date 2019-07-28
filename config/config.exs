@@ -24,7 +24,7 @@ config :logger, :console,
   metadata: [:request_id]
 
 # Configures Guardian
-config :orcasite, Orcasite.Auth.Guardian,
+config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
   secret_key: "1Kw9VhSyQWzgZm+Tle5H3/5KkF8frUZpsOsGrhRv99Jbi6fUwQkRCHvWLRPzgtqe"
 
