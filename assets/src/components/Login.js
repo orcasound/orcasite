@@ -1,16 +1,16 @@
 import React, { Component } from "react"
 import { Link } from "react-router-dom"
 import Humanize from "humanize-plus"
-
 import { graphql, compose } from "react-apollo"
 import gql from "graphql-tag"
-
 import { withFormik, Form, Field } from "formik"
 import { object, string } from "yup"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import ChevronRightIcon from "@material-ui/icons/ChevronRight"
 
 import { logIn } from "utils/auth"
 
-import Header from "./Header"
+import Header from "./SiteMenu"
 
 import classNames from "classnames"
 
@@ -42,16 +42,16 @@ class Login extends Component {
   submitButton = isSubmitting => (
     <button
       type="submit"
-      className="btn btn-lg btn-primary w-100"
+      className="btn btn-lg btn-primary w-100 d-flex align-items-center justify-content-center"
       disabled={isSubmitting}
     >
       {isSubmitting ? "Sending..." : this.props.login ? "Login" : "Register"}
-      <i
-        className={classNames("fa ml-2", {
-          "fa-pulse fa-spinner": isSubmitting,
-          "fa-arrow-right": !isSubmitting
-        })}
-      />
+      {isSubmitting && (
+        <span className="ml-2">
+          <CircularProgress size={25} color={"inherit"} />
+        </span>
+      )}
+      {!isSubmitting && <ChevronRightIcon />}
     </button>
   )
 
@@ -68,9 +68,9 @@ class Login extends Component {
     } = props
 
     return (
-      <div className="">
+      <div className="login">
         <Header />
-        <Form className="login-form container">
+        <Form className="login-form">
           <h4 className="my-5 text-center">
             {(props.login && "Log in") || "Register an account"}
           </h4>

@@ -1,20 +1,20 @@
-import React, { Component } from 'react'
+import React, { Component } from "react"
 
-import { gql } from 'apollo-boost'
-import { Query } from 'react-apollo'
+import { gql } from "apollo-boost"
+import { Query } from "react-apollo"
 
-import Player from './Player'
-import Header from './Header'
-import FeedList from './FeedList'
-import FeedPage from './FeedPage'
+import Player from "./Player"
+import Header from "./Header"
+import FeedList from "./FeedList"
+import FeedPage from "./FeedPage"
 
-import 'styles/home.scss'
+import "styles/home.scss"
 
 export default class Home extends Component {
   state = {}
 
   componentDidMount() {
-    if (['beta', 'dev', 'staging'].indexOf(ENV.ENV_NAME) >= 0) {
+    if (["beta", "dev", "staging"].indexOf(ENV.ENV_NAME) >= 0) {
       document.title = `Orcasound ${ENV.ENV_NAME}`
     } else {
       document.title = `Orcasound`
@@ -45,15 +45,16 @@ export default class Home extends Component {
               <p>
                 Choose a location and then select the green listen button. The
                 control bar at the bottom lets you pause/play and shows how many
-                people are listening for whales with you.{' '}
+                people are listening for whales with you.{" "}
               </p>
               <p>this is a test</p>
               <p>
-                While you listen, you can also{' '}
+                While you listen, you can also{" "}
                 <a href="http://www.orcasound.net/learn/" target="_blank">
                   learn more about orca sounds
-                </a>. If you need some more inspiration, here is five minutes of
-                J & K pod orcas calling, whistling, and clicking:
+                </a>
+                . If you need some more inspiration, here is five minutes of J &
+                K pod orcas calling, whistling, and clicking:
               </p>
 
               <audio controls>
@@ -69,10 +70,14 @@ export default class Home extends Component {
               <p>
                 Launched in November, 2018, the Orcasound app makes it easy for
                 everyone to listen for whales. We welcome feedback about your
-                listening experience via this{' '}
-                <a href="https://goo.gl/forms/tgi4zoEDOFf5zQRJ3" target="_blank">
+                listening experience via this{" "}
+                <a
+                  href="https://goo.gl/forms/tgi4zoEDOFf5zQRJ3"
+                  target="_blank"
+                >
                   user experience survey
-                </a>. If you have trouble, try reloading the site after clearing
+                </a>
+                . If you have trouble, try reloading the site after clearing
                 your browser's cache.
               </p>
             </div>

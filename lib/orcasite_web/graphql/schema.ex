@@ -21,13 +21,11 @@ defmodule OrcasiteWeb.Schema do
     end
 
     field :detections, list_of(:detection) do
-      # TODO: Add auth inside of Radio logic
       resolve(&Resolvers.Detection.index/2)
     end
 
     field :candidates, :candidates do
       arg(:pagination, :pagination)
-      # TODO: Add auth inside of Radio logic
       resolve(&Resolvers.Detection.list_candidates/2)
     end
   end

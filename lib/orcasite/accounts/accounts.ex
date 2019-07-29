@@ -6,6 +6,9 @@ defmodule Orcasite.Accounts do
 
   def get_user!(id), do: Repo.get!(User, id)
 
+  def find_user_by_auth_token(auth_token),
+    do: User |> where(auth_token: ^auth_token) |> Repo.one()
+
   def create_user(attrs \\ %{}) do
     %User{}
     |> User.create_changeset(attrs)

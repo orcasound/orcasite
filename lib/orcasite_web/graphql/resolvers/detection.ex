@@ -2,17 +2,17 @@ defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.Radio
   alias OrcasiteWeb.Paginated
 
-  def index(_, _) do
-    # TODO: Add permissions inside of Radio context once
-    # auth is merged
+  def index(_, %{context: %{current_user: %{admin: true}}}) do
     {:ok, Radio.list_detections()}
   end
 
-  def list_candidates(args, _) do
-    # TODO: Add permissions inside of Radio context
-    IO.inspect(args, label: "Args")
+  def index(_, _), do: {:error, :not_authorized}
+
+  def list_candidates(args, %{context: %{current_user: %{admin: true}}}) do
     {:ok, Paginated.format(Radio.list_candidates(args))}
   end
+
+  def list_candidates(_, _), do: {:error, :not_authorized}
 
   def create(
         %{
