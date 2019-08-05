@@ -4,8 +4,9 @@ import FeedPageV2 from "./FeedPageV2"
 import PlayerV2 from "./PlayerV2"
 import DetectionDialogV2 from "./DetectionDialogV2"
 import SiteMenu from "./SiteMenu"
-import About from "./AboutV2"
+import AboutV2 from "./AboutV2"
 import AudioPlayerV2 from "./AudioPlayerV2"
+import VerticalImageV2 from "./VerticalImageV2"
 
 import Button from "@material-ui/core/Button"
 import Paper from "@material-ui/core/Paper"
@@ -15,6 +16,7 @@ import { StylesProvider } from "@material-ui/styles"
 
 import styled from "styled-components"
 
+// TODO: Put this is a separate directory and file....
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -26,12 +28,29 @@ const theme = createMuiTheme({
   }
 })
 
+const desktopBreakpoint = `@media screen and (min-width: 599px)`
+
 const FeedPageLayout = styled.div`
   display: flex;
 `
 
 const PlayerLayout = styled.div`
   display: flex;
+`
+
+const HomeLayoutContainer = styled.div`
+  ${desktopBreakpoint} {
+    display: grid;
+    grid-template-columns: 60% 40%;
+
+    .image {
+      display: block;
+    }
+  }
+
+  .image {
+    display: none;
+  }
 `
 
 export default class HomeV2 extends Component {
@@ -49,6 +68,7 @@ export default class HomeV2 extends Component {
 
   render() {
     const { feedSlug } = this.props.match.params
+    console.log("theme", theme)
     return (
       <>
         <StylesProvider injectFirst>
@@ -56,10 +76,13 @@ export default class HomeV2 extends Component {
             <Paper square elevation={0}>
               <SiteMenu />
               {!feedSlug && (
-                <div>
-                  <About />
-                  <AudioPlayerV2 />
-                </div>
+                <HomeLayoutContainer>
+                  <div>
+                    <AboutV2 />
+                    <AudioPlayerV2 />
+                  </div>
+                  {innerWidth > 599 && <VerticalImageV2 />}
+                </HomeLayoutContainer>
               )}
               {feedSlug && (
                 <FeedPageLayout>

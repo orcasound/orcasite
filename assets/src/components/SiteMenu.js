@@ -23,6 +23,14 @@ const MainHeader = styled(Paper)`
 `
 
 const NotificationButton = styled(Button)`
+  @media screen and (min-width: 599px) {
+    font-size: 14px;
+    opacity: 0.87;
+    textalign: left;
+    height: 40px;
+    border-radius: 0px;
+  }
+
   font-size: 10px;
   opacity: 0.87;
   textalign: left;
@@ -36,7 +44,7 @@ const HeaderLink = styled(Link)`
   letter-spacing: 1.07px;
   line-height: 35px;
   padding-top: 1.5rem;
-  padding-left: 1.5rem;
+  padding-left: 3.5rem;
   display: block;
 
   :hover {
@@ -62,6 +70,7 @@ class SiteMenu extends Component {
   }
 
   render() {
+    console.log("inner width", innerWidth)
     return (
       <Paper elevation={0} square>
         <MainHeader square elevation={0}>
