@@ -1,47 +1,48 @@
 import React from "react"
-import { Paper, Typography } from "@material-ui/core"
-import styled from "styled-components"
-import { useTheme } from "@material-ui/styles"
-
-const StyledAboutContainer = styled(Paper)`
-  @media screen and (min-width: 599px) {
-    padding: 1rem;
-    margin: 1rem 3rem 1rem 5rem;
-  }
-
-  padding: 0.5rem;
-  margin: 0.1rem 0.3rem 0.1rem 0.5rem;
-`
-
-// background: ${theme.palette.primary.main};
+import { Paper, Typography, Grid, Box } from "@material-ui/core"
 
 const About = props => {
-  const theme = useTheme()
-  console.log("about theme", theme)
   return (
-    <StyledAboutContainer elevation={0} square>
-      <Typography
-        variant="h6"
-        style={{
-          margin: "0rem 0rem 1rem 0rem"
-        }}
-      >
-        Listen for Whales!
-      </Typography>
-      <Typography component="p" paragraph={true}>
-        Learn what orcas sound like. Then listen live for them on underwater
-        microphones (hydrophones).
-      </Typography>
-      <Typography component="p" paragraph={true}>
-        Let us know when you hear them, or any sound you think is interesting!
-        That will help researchers and stewards protect the orcas and their
-        environment.
-      </Typography>
-      <Typography component="p" paragraph={true}>
-        You can also get notified when our listeners or algorithms detect whales
-        at any of our hydrophone locations.
-      </Typography>
-    </StyledAboutContainer>
+    <Grid
+      container
+      spacing={0}
+      direction="column"
+      justify="flex-start"
+      alignItems="flex-start"
+    >
+      <Grid item>
+        <Typography variant="h5" component="h5">
+          <Box ml={3} mt={2} mr={3}>
+            Listen for Whales!
+          </Box>
+        </Typography>
+      </Grid>
+      <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
+        <Typography component="div">
+          <Box ml={3} mt={1.5} mr={3}>
+            Learn what orcas sound like. Then listen live for them on underwater
+            microphones (hydrophones).
+          </Box>
+        </Typography>
+      </Grid>
+      <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
+        <Typography component="div">
+          <Box ml={3} mt={1.5} mr={3}>
+            Let us know when you hear them, or any sound you think is
+            interesting! That will help researchers and stewards protect the
+            orcas and their environment.
+          </Box>
+        </Typography>
+      </Grid>
+      <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
+        <Typography component="div">
+          <Box ml={3} mt={1.5} mr={3}>
+            You can also get notified when our listeners or algorithms detect
+            whales at any of our hydrophone locations.
+          </Box>
+        </Typography>
+      </Grid>
+    </Grid>
   )
 }
 
