@@ -1,9 +1,6 @@
 import React, { Component } from "react"
-import { Link } from "react-router-dom"
 
-import Button from "@material-ui/core/Button"
 import { PlayArrow, Pause } from "@material-ui/icons"
-
 import Fab from "@material-ui/core/Fab"
 
 import MediaStreamer from "./MediaStreamer"
@@ -14,18 +11,13 @@ import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
 
 import styled from "styled-components"
 
-const StyledMediaContainer = styled.div`
-  .video-js {
-    display: none;
-  }
-`
 const PlayerContainer = styled.div`
   margin: -2rem 1rem 1rem 1rem;
   z-index: 10;
-`
 
-const RaisedButtonContainer = styled.div`
-  z-index: 10;
+  .video-js {
+    display: none;
+  }
 `
 
 const StyledButtonContainer = styled.div`
@@ -38,16 +30,6 @@ const StyledButtonContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-`
-
-const StyledMuiButton = styled(Button)`
-  background: #009688;
-  border-radius: 33px;
-  color: #ffffff;
-  .icon {
-    color: #ffffff;
-    font-size: 3rem;
-  }
 `
 
 class PlayerV2 extends Component {
@@ -190,37 +172,35 @@ class PlayerV2 extends Component {
             {isPlaying && (
               <DetectionDialogV2
                 isPlaying={isPlaying}
-                feed={this.state.currentFeed}
-                timestamp={this.state.timestamp}
-                getPlayerTime={this.state.getPlayerTime}
+                feed={currentFeed}
+                timestamp={timestamp}
+                getPlayerTime={getPlayerTime}
               />
             )}
           </StyledButtonContainer>
           {hlsURI && (
-            <StyledMediaContainer>
-              <MediaStreamer
-                src={hlsURI}
-                autoplay={this.props.autoplay}
-                onReady={this.setControls}
-                onLoading={() => this.setState({ isLoading: true })}
-                onPlaying={() =>
-                  this.setState({ isLoading: false, isPlaying: true })
-                }
-                onPaused={() =>
-                  this.setState({ isLoading: false, isPlaying: false })
-                }
-                onLatencyUpdate={(newestLatency, playerTime) =>
-                  this.setState({
-                    debugInfo: {
-                      playerTime: playerTime,
-                      latencyHistory: this.state.debugInfo.latencyHistory.concat(
-                        newestLatency
-                      )
-                    }
-                  })
-                }
-              />
-            </StyledMediaContainer>
+            <MediaStreamerV2
+              src={hlsURI}
+              autoplay={this.props.autoplay}
+              onReady={this.setControls}
+              onLoading={() => this.setState({ isLoading: true })}
+              onPlaying={() =>
+                this.setState({ isLoading: false, isPlaying: true })
+              }
+              onPaused={() =>
+                this.setState({ isLoading: false, isPlaying: false })
+              }
+              onLatencyUpdate={(newestLatency, playerTime) =>
+                this.setState({
+                  debugInfo: {
+                    playerTime: playerTime,
+                    latencyHistory: this.state.debugInfo.latencyHistory.concat(
+                      newestLatency
+                    )
+                  }
+                })
+              }
+            />
           )}
         </PlayerContainer>
       )
