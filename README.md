@@ -9,10 +9,11 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 ## Getting started
 
 #### Quick Start: 
-- Load the Docker Configuration `docker-compose pull && docker-compose up` 
-- You should now have a phoenix server running running at localhost:8080
-- Next, leave the phoenix server running while opening a new tab
-- In the new tab, install the dependencies by running `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
+- Load the Docker Configuration `docker-compose pull && docker-compose up`
+- Navigate to a new terminal in the same directory 
+- Stop the containers by running `docker-compose stop`
+- Install the hex and npm dependencies by running `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
+- Restart your containers by running `docker-compose up`
 - Navigate to localhost:4000 to view the React app
 
 ## Detailed Setup
@@ -20,7 +21,8 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 The fastest way to get the site up and running is to [use the included Docker configuration](#running-in-docker).
 
 To access the site, run `docker-compose pull && docker-compose up` and wait until the `phoenix_1` container outputs `Compiled successfully`. Then you should find the site available in your browser at [`http://localhost:4000`](http://localhost:4000).
-Note:  The first time you load the docker configuration you will need to install the dependencies.  Leave the `phoenix_1` server running while navigating to a new command line tab inside the same directory.  Then run `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"` which will install the node modules and hex dependencies.  Now, navigate to `localhost:4000` to view the running application.
+
+Note:  The first time you load the docker configuration you will need to install the dependencies.  Leave the `phoenix_1` server running while navigating to a new command line tab inside the same directory.  Then run `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"` which will install the node modules and hex dependencies.  Now, navigate to `localhost:4000` to view the running application.  
 
 ##### Flexible
 

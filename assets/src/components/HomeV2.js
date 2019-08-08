@@ -1,30 +1,18 @@
 import React, { Component } from "react"
+import { Paper, Hidden, Grid } from "@material-ui/core"
 
 import FeedPageV2 from "./FeedPageV2"
 import PlayerV2 from "./PlayerV2"
-import DetectionDialogV2 from "./DetectionDialogV2"
 import SiteMenu from "./SiteMenu"
-import About from "./AboutV2"
-import AudioPlayerV2 from "./AudioPlayerV2"
+import AboutV2 from "./AboutV2"
+import AudioExamplesV2 from "./AudioExamplesV2"
+import VerticalImageV2 from "./VerticalImageV2"
 
-import Button from "@material-ui/core/Button"
-import Paper from "@material-ui/core/Paper"
+import { StylesProvider, ThemeProvider } from "@material-ui/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
-import { StylesProvider } from "@material-ui/styles"
+import theme from "./theme"
 
 import styled from "styled-components"
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#2196f3"
-    },
-    secondary: {
-      main: "#009688"
-    }
-  }
-})
 
 const FeedPageLayout = styled.div`
   display: flex;
@@ -52,14 +40,28 @@ export default class HomeV2 extends Component {
     return (
       <>
         <StylesProvider injectFirst>
-          <MuiThemeProvider theme={theme}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
             <Paper square elevation={0}>
               <SiteMenu />
               {!feedSlug && (
-                <div>
-                  <About />
-                  <AudioPlayerV2 />
-                </div>
+                <Grid
+                  container
+                  spacing={0}
+                  direction="row"
+                  justify="flex-start"
+                  alignItems="flex-start"
+                >
+                  <Grid item xs={12} sm={8} md={8} lg={7} xl={7}>
+                    <AboutV2 />
+                    <AudioExamplesV2 />
+                  </Grid>
+                  <Grid item xs={12} sm={4} md={4} lg={5} xl={5}>
+                    <Hidden xsDown>
+                      <VerticalImageV2 />
+                    </Hidden>
+                  </Grid>
+                </Grid>
               )}
               {feedSlug && (
                 <FeedPageLayout>
@@ -81,7 +83,7 @@ export default class HomeV2 extends Component {
                 </FeedPageLayout>
               )}
             </Paper>
-          </MuiThemeProvider>
+          </ThemeProvider>
         </StylesProvider>
       </>
     )

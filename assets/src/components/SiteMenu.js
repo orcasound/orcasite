@@ -6,6 +6,7 @@ import {
   Tab,
   Button,
   Typography,
+  Box,
   Link,
   Grid
 } from "@material-ui/core"
@@ -19,10 +20,18 @@ import FeedListV2 from "./FeedListV2"
 const MainHeader = styled(Paper)`
   background: #000000;
   color: #ffffff;
-  height: 80px;
+  height: 6rem;
 `
 
 const NotificationButton = styled(Button)`
+  @media screen and (min-width: 599px) {
+    font-size: 14px;
+    opacity: 0.87;
+    textalign: left;
+    height: 40px;
+    border-radius: 0px;
+  }
+
   font-size: 10px;
   opacity: 0.87;
   textalign: left;
@@ -36,7 +45,7 @@ const HeaderLink = styled(Link)`
   letter-spacing: 1.07px;
   line-height: 35px;
   padding-top: 1.5rem;
-  padding-left: 1.5rem;
+  padding-left: 3.5rem;
   display: block;
 
   :hover {
@@ -69,10 +78,12 @@ class SiteMenu extends Component {
             component={RouterLink}
             to="/v2"
             color="inherit"
-            variant="h1"
+            variant="h6"
             underline="none"
           >
-            Orcasound
+            <Typography component="h1" variant="h4">
+              <Box>Orcasound</Box>
+            </Typography>
           </HeaderLink>
         </MainHeader>
         <NotificationButton
