@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import { Typography, Box, Grid, Avatar } from "@material-ui/core"
 import wave from "../../static/wave-orca.png"
 
-class AudioExamplesV2 extends Component {
+class AudioExamples extends Component {
   state = {
     example: [
       {
@@ -111,4 +111,4 @@ class AudioExamplesV2 extends Component {
   }
 }
 
-export default AudioExamplesV2
+export default AudioExamples

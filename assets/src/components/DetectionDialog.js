@@ -26,7 +26,7 @@ const StyledActivityButton = styled(Button)`
   flex-grow: 1;
 `
 
-class DetectionDialogV2 extends Component {
+class DetectionDialog extends Component {
   static propTypes = {
     isPlaying: bool.isRequired,
     feed: feedType.isRequired,
@@ -162,4 +162,4 @@ class DetectionDialogV2 extends Component {
   }
 }
 
-export default DetectionDialogV2
+export default DetectionDialog

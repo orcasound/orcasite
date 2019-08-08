@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core"
 import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
-import FeedListV2 from "./FeedListV2"
+import FeedList from "./FeedList"
 
 // -------------------------------------------
 // Styled Components - TODO:  Move to a new file
@@ -76,7 +76,7 @@ class SiteMenu extends Component {
         <MainHeader square elevation={0}>
           <HeaderLink
             component={RouterLink}
-            to="/v2"
+            to="/"
             color="inherit"
             variant="h6"
             underline="none"
@@ -102,8 +102,8 @@ class SiteMenu extends Component {
           onChange={this.handleChange}
           centered
         >
-          <Tab label="About" component={RouterLink} to="/v2" fullWidth={true} />
-          <FeedListV2 />
+          <Tab label="About" component={RouterLink} to="/" fullWidth={true} />
+          <FeedList />
         </Tabs>
       </Paper>
     )

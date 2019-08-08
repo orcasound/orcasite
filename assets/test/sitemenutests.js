@@ -24,9 +24,9 @@ describe("<SiteMenu />", () => {
           .prop("label")
       ).to.be.eql("About")
     })
-    it("has <FeedsListV2>", () => {
+    it("has <FeedsList>", () => {
       const wrapper = mount(<SiteMenu />)
-      expect(wrapper.find("FeedListV2")).to.exist
+      expect(wrapper.find("FeedList")).to.exist
     })
   })
   describe("notifications link", () => {

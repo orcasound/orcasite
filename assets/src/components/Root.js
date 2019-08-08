@@ -7,7 +7,6 @@ import AdminRoute from "./AdminRoute"
 
 import Home from "./Home"
 import Admin from "./admin/Dashboard"
-import HomeV2 from "./HomeV2"
 import DynamicFeed from "./DynamicFeed"
 import Login from "./Login"
 
@@ -16,8 +15,6 @@ const Root = props => {
     <BrowserRouter>
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route exact path="/v2" component={HomeV2} />
-        <Route exact path="/v2/:feedSlug" component={HomeV2} />
         <Route
           exact
           path="/login"

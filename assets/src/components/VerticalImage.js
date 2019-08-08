@@ -3,7 +3,7 @@ import { CardMedia, Grid, Box } from "@material-ui/core"
 
 import OrcaImage from "../../static/spyhops_ship_updated.jpg"
 
-const VerticalImageV2 = () => {
+const VerticalImage = () => {
   return (
     <Grid container>
       <Grid item>
@@ -21,4 +21,4 @@ const VerticalImageV2 = () => {
   )
 }
 
-export default VerticalImageV2
+export default VerticalImage

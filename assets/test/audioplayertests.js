@@ -3,13 +3,13 @@ import { createShallow } from "@material-ui/core/test-utils"
 import { expect } from "chai"
 import "styled-components-test-utils/lib/chai"
 import renderer from "react-test-renderer"
-import AudioPlayerV2, {
+import AudioPlayer, {
   CardWrapper,
   AudioHeader,
   Audio
-} from "../src/components/AudioPlayerV2"
+} from "../src/components/AudioPlayer"
 
-describe("<AudioPlayerV2 />", () => {
+describe("<AudioPlayer />", () => {
   let shallow
 
   before(() => {
@@ -20,7 +20,7 @@ describe("<AudioPlayerV2 />", () => {
     let wrapper
 
     before(() => {
-      wrapper = shallow(<AudioPlayerV2 />)
+      wrapper = shallow(<AudioPlayer />)
     })
 
     it("has call example audio player", () => {
@@ -83,10 +83,14 @@ describe("<AudioPlayerV2 />", () => {
         expect(audio_wrapper).toHaveStyleRule("margin", ".5rem")
       })
       it("CardWrapper Alternate", () => {
-        const component_wrapper = renderer.create(<AudioPlayerV2 />)
-        const card_wrapper = component_wrapper.root.findAllByType(CardWrapper)[0]
+        const component_wrapper = renderer.create(<AudioPlayer />)
+        const card_wrapper = component_wrapper.root.findAllByType(
+          CardWrapper
+        )[0]
         // console.log(card_wrapper)
-        expect(card_wrapper.type.componentStyle.rules[0]).to.eql('display:flex;justify-content:center;')
+        expect(card_wrapper.type.componentStyle.rules[0]).to.eql(
+          "display:flex;justify-content:center;"
+        )
       })
     })
   })
