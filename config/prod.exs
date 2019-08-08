@@ -15,14 +15,14 @@ use Mix.Config
 # which you typically run after static files are built.
 config :orcasite, OrcasiteWeb.Endpoint,
   load_from_system_env: true,
-  url: [scheme: "http", host: System.fetch_env!("HOST_URL"), port: 443],
+  url: [scheme: "http", host: System.get_env("HOST_URL"), port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
-  secret_key_base: System.fetch_env!("SECRET_KEY_BASE")
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Configure your database
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
-  url: System.fetch_env!("DATABASE_URL"),
+  url: System.get_env("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE", "10")),
   ssl: true,
   types: Orcasite.PostgresTypes
@@ -30,11 +30,11 @@ config :orcasite, Orcasite.Repo,
 # Do not print debug messages in production
 config :logger, level: :info, format: {Orcasite.Logger, :format}
 
-config :orcasite, :orcasite_s3_url, Map.fetch!(System.get_env(), "ORCASITE_S3_URL")
+config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
 
 config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
-  secret_key: System.fetch_env!("GUARDIAN_SECRET_KEY")
+  secret_key: System.get_env("GUARDIAN_SECRET_KEY")
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
