@@ -11,6 +11,7 @@
     <title>Orcasound - Listen for whales</title>
     <%= {:safe, css_link_tag(@conn)} %>
     <!-- jss-insertion-point -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
   </head>
 
   <body>

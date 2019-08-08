@@ -12,31 +12,31 @@ const About = props => {
     >
       <Grid item>
         <Typography variant="h5" component="h5">
-          <Box ml={3} mt={2} mr={3}>
+          <Box ml={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 10 }} mt={2} mr={3}>
             Listen for Whales!
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
-        <Typography component="div">
-          <Box ml={3} mt={1.5} mr={3}>
+      <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
+        <Typography variant="body1" component="div">
+          <Box ml={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 10 }} mt={1.5} mr={3}>
             Learn what orcas sound like. Then listen live for them on underwater
             microphones (hydrophones).
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
-        <Typography component="div">
-          <Box ml={3} mt={1.5} mr={3}>
+      <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
+        <Typography variant="body1" component="div">
+          <Box ml={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 10 }} mt={1.5} mr={3}>
             Let us know when you hear them, or any sound you think is
             interesting! That will help researchers and stewards protect the
             orcas and their environment.
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
-        <Typography component="div">
-          <Box ml={3} mt={1.5} mr={3}>
+      <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
+        <Typography variant="body1" component="div">
+          <Box ml={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 10 }} mt={1.5} mr={3}>
             You can also get notified when our listeners or algorithms detect
             whales at any of our hydrophone locations.
           </Box>

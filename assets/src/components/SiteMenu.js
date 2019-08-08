@@ -71,7 +71,6 @@ class SiteMenu extends Component {
   }
 
   render() {
-    console.log("inner width", innerWidth)
     return (
       <Paper elevation={0} square>
         <MainHeader square elevation={0}>
