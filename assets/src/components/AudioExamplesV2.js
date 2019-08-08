@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Paper, Typography, Box, Card, Grid, Avatar } from "@material-ui/core"
+import { Typography, Box, Grid, Avatar } from "@material-ui/core"
 import wave from "../../static/wave-orca.png"
 
 class AudioExamplesV2 extends Component {

@@ -14,29 +14,12 @@ import theme from "./theme"
 
 import styled from "styled-components"
 
-const desktopBreakpoint = `@media screen and (min-width: 599px)`
-
 const FeedPageLayout = styled.div`
   display: flex;
 `
 
 const PlayerLayout = styled.div`
   display: flex;
-`
-
-const HomeLayoutContainer = styled.div`
-  ${desktopBreakpoint} {
-    display: grid;
-    grid-template-columns: 60% 40%;
-
-    .image {
-      display: block;
-    }
-  }
-
-  .image {
-    display: none;
-  }
 `
 
 export default class HomeV2 extends Component {
@@ -54,11 +37,11 @@ export default class HomeV2 extends Component {
 
   render() {
     const { feedSlug } = this.props.match.params
-    console.log("theme", theme)
     return (
       <>
         <StylesProvider injectFirst>
           <ThemeProvider theme={theme}>
+            <CssBaseline />
             <Paper square elevation={0}>
               <SiteMenu />
               {!feedSlug && (

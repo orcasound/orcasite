@@ -1,5 +1,5 @@
 import React from "react"
-import { Paper, Typography, Grid, Box } from "@material-ui/core"
+import { Typography, Grid, Box } from "@material-ui/core"
 
 const About = props => {
   return (
