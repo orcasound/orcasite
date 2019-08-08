@@ -11,6 +11,7 @@ defmodule Orcasite.Radio.Detection do
     field(:player_offset, :decimal)
     field(:listener_count, :integer)
     field(:timestamp, :utc_datetime)
+    field(:description, :string)
 
     belongs_to(:feed, Feed)
     belongs_to(:candidate, Candidate)
@@ -28,7 +29,8 @@ defmodule Orcasite.Radio.Detection do
       :source_ip,
       :listener_count,
       :timestamp,
-      :candidate_id
+      :candidate_id,
+      :description
     ])
     |> validate_required([:feed_id, :playlist_timestamp, :player_offset, :source_ip])
   end

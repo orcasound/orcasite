@@ -40,7 +40,7 @@ class DetectionDialog extends Component {
     this.state = {
       open: false,
       submitted: false,
-      detectionText: ""
+      description: ""
     }
   }
 
@@ -49,7 +49,7 @@ class DetectionDialog extends Component {
   }
 
   handleChange = e => {
-    this.setState({ detectionText: e.target.value })
+    this.setState({ description: e.target.value })
   }
 
   handleSubmit = submitDetection => {
@@ -62,7 +62,7 @@ class DetectionDialog extends Component {
     this.setState({
       open: false,
       submitted: false,
-      detectionText: ""
+      description: ""
     })
   }
 
@@ -75,9 +75,10 @@ class DetectionDialog extends Component {
     } = this.props
 
     const playerOffset = getPlayerTime()
+    const { description } = this.state
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
       submitDetection({
-        variables: { feedId, playlistTimestamp, playerOffset }
+        variables: { feedId, playlistTimestamp, playerOffset, description }
       })
     }
   }
@@ -111,7 +112,6 @@ class DetectionDialog extends Component {
                     <TextField
                       autoFocus
                       margin="dense"
-                      id="name"
                       placeholder="Describe what you heard"
                       type="text"
                       fullWidth

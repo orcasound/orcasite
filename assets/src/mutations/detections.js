@@ -5,6 +5,7 @@ export const SUBMIT_DETECTION = gql`
     $feedId: ID!
     $playlistTimestamp: String!
     $playerOffset: Decimal!
+    $description: String!
     $listenerCount: Int
   ) {
     submitDetection(
@@ -12,6 +13,7 @@ export const SUBMIT_DETECTION = gql`
       playlistTimestamp: $playlistTimestamp
       playerOffset: $playerOffset
       listenerCount: $listenerCount
+      description: $description
     ) {
       detection {
         id

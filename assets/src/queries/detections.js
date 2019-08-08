@@ -8,6 +8,7 @@ export const LIST_DETECTIONS = gql`
       playerOffset
       timestamp
       listenerCount
+      description
       feed {
         id
         name
@@ -38,6 +39,7 @@ export const LIST_CANDIDATES = gql`
           playlistTimestamp
           playerOffset
           listenerCount
+          description
         }
         feed {
           id
