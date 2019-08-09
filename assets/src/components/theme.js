@@ -8,9 +8,6 @@ const theme = createMuiTheme({
     secondary: {
       main: "#009688"
     }
-  },
-  shape: {
-    borderRadius: 33
   }
 })
 

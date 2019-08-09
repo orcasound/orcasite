@@ -39,7 +39,7 @@ class AudioExamples extends Component {
           container
           spacing={0}
           direction="column"
-          justify="flex-start"
+          justify="center"
           alignItems="flex-start"
         >
           <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
