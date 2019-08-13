@@ -36,30 +36,42 @@ export default class Home extends Component {
   changeFeed = currentFeed => this.setState({ currentFeed, autoplay: true })
 
   render() {
+    console.log(theme)
     const { feedSlug } = this.props.match.params
     return (
       <>
         <StylesProvider injectFirst>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Paper square elevation={0}>
+            <Paper square elevation={0} component="main">
               <SiteMenu />
               {!feedSlug && (
                 <Grid
                   container
                   spacing={0}
-                  direction="row"
+                  direction="column"
                   justify="flex-start"
-                  alignItems="flex-start"
+                  alignItems="center"
                 >
-                  <Grid item xs={12} sm={8} md={8} lg={7} xl={7}>
-                    <About />
-                    <AudioExamples />
+                  <Grid
+                    container
+                    item
+                    spacing={0}
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="flex-start"
+                  >
+                    <Grid item sm={8}>
+                      <About />
+                    </Grid>
+                    <Grid item sm={4}>
+                      <Hidden xsDown>
+                        <VerticalImage />
+                      </Hidden>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={4} md={4} lg={5} xl={5}>
-                    <Hidden xsDown>
-                      <VerticalImage />
-                    </Hidden>
+                  <Grid item>
+                    <AudioExamples />
                   </Grid>
                 </Grid>
               )}

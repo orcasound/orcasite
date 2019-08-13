@@ -8,7 +8,9 @@ import {
   Paper,
   Popper,
   MenuList,
-  MenuItem
+  MenuItem,
+  Box,
+  Tab
 } from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
 import styled from "styled-components"
@@ -100,7 +102,7 @@ class FeedList extends Component {
                 aria-haspopup="true"
                 onClick={this.handleToggle}
               >
-                Listen Live
+                <Box letterSpacing="0.03572em">Listen Live</Box>
                 <ArrowDropDown />
               </FeedButton>
               <Popper

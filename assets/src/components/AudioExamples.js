@@ -26,11 +26,13 @@ class AudioExamples extends Component {
   render() {
     return (
       <Grid
+        className="audio-example-section"
+        component="section"
         container
         spacing={0}
         direction="column"
         justify="space-evenly"
-        alignItems="flex-start"
+        alignItems="center"
         item
         xs={10}
         sm={12}
@@ -44,14 +46,14 @@ class AudioExamples extends Component {
         >
           <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
             <Typography variant="h5" component="h5">
-              <Box ml={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 2 }} mt={2} mr={3}>
+              <Box ml={{ xs: 2, sm: 20, md: 6, lg: 8, xl: 2 }} mt={2}>
                 What do orcas sound like?
               </Box>
             </Typography>
           </Grid>
           <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
             <Typography variant="body1" component="div">
-              <Box ml={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 15 }} mt={1.5} mr={3}>
+              <Box ml={{ xs: 2, sm: 8, md: 6, lg: 8, xl: 15 }} mt={1.5}>
                 Here are some samples of calls, clicks, and whistles that are
                 made by southern resident killer whales:
               </Box>

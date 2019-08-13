@@ -2,13 +2,16 @@ import React, { Component } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   Paper,
+  AppBar,
+  Toolbar,
   Tabs,
   Tab,
   Button,
   Typography,
   Box,
   Link,
-  Grid
+  Grid,
+  useTheme
 } from "@material-ui/core"
 import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
@@ -62,7 +65,7 @@ class SiteMenu extends Component {
   }
 
   handleChange = (event, value) => {
-    console.log(value)
+    //console.log(value)
     this.setState({ value })
   }
 
@@ -71,30 +74,39 @@ class SiteMenu extends Component {
   }
 
   render() {
+    console.log("AppBar", <Box />)
+
     return (
       <Paper elevation={0} square>
-        <MainHeader square elevation={0}>
-          <HeaderLink
-            component={RouterLink}
-            to="/"
-            color="inherit"
-            variant="h6"
-            underline="none"
-          >
-            <Typography component="h1" variant="h4">
-              <Box>Orcasound</Box>
-            </Typography>
-          </HeaderLink>
-        </MainHeader>
-        <NotificationButton
+        <AppBar position="static" color="inherit">
+          <Toolbar>
+            <Link
+              component={RouterLink}
+              to="/"
+              color="inherit"
+              underline="none"
+            >
+              <Typography component="h1" variant="h1">
+                <Box ml={0.2} pt={3}>
+                  Orcasound
+                </Box>
+              </Typography>
+            </Link>
+          </Toolbar>
+        </AppBar>
+        <Button
           variant="contained"
           centered="true"
           fullWidth={true}
           color="primary"
         >
-          Get notified when there's whale activity
-          <NotificationIcon />
-        </NotificationButton>
+          <Typography component="div">
+            <Box>Get notified when there's whale activity</Box>
+          </Typography>
+          <Box p={0.2}>
+            <NotificationIcon />
+          </Box>
+        </Button>
         <Tabs
           value={this.state.value}
           variant="fullWidth"
