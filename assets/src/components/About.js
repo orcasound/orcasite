@@ -12,23 +12,23 @@ const About = props => {
       justify="flex-start"
       alignItems="flex-start"
     >
-      <Grid item>
+      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
         <Typography variant="h5" component="h5">
           <Box
             mt={{ xs: 2, sm: 4 }}
-            mr={{ xs: 3, sm: 12, md: 15 }}
-            ml={{ xs: 3, sm: 9 }}
+            mr={{ xs: 3, sm: 10, md: 12 }}
+            ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
           >
             Listen for Whales!
           </Box>
         </Typography>
       </Grid>
-      <Grid item sm={12}>
+      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
         <Typography variant="body1" component="div">
           <Box
             mt={{ xs: 1, sm: 1 }}
-            mr={{ xs: 3, sm: 12, md: 16 }}
-            ml={{ xs: 3, sm: 9 }}
+            mr={{ xs: 3, sm: 10, md: 12 }}
+            ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
             fontSize={{ xs: "0.875rem", sm: "1rem" }}
           >
             Learn what orcas sound like. Then listen live for them on underwater
@@ -36,12 +36,12 @@ const About = props => {
           </Box>
         </Typography>
       </Grid>
-      <Grid item sm={12}>
+      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
         <Typography variant="body1" component="div">
           <Box
             mt={{ xs: 0, sm: 1 }}
-            mr={{ xs: 3, sm: 12, md: 16 }}
-            ml={{ xs: 3, sm: 9 }}
+            mr={{ xs: 3, sm: 10, md: 12 }}
+            ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
             fontSize={{ xs: "0.875rem", sm: "1rem" }}
           >
             Let us know when you hear them, or any sound you think is
@@ -50,12 +50,12 @@ const About = props => {
           </Box>
         </Typography>
       </Grid>
-      <Grid item sm={12}>
+      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
         <Typography variant="body1" component="div">
           <Box
             mt={{ xs: 0, sm: 1 }}
-            mr={{ xs: 3, sm: 12, md: 16 }}
-            ml={{ xs: 3, sm: 9 }}
+            mr={{ xs: 3, sm: 10, md: 12 }}
+            ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
             fontSize={{ xs: "0.875rem", sm: "1rem" }}
           >
             You can also get notified when our listeners or algorithms detect
