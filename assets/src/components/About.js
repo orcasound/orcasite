@@ -7,7 +7,7 @@ const About = props => {
       className="about-section"
       component="section"
       container
-      spacing={0}
+      spacing={1}
       direction="column"
       justify="flex-start"
       alignItems="flex-start"
@@ -15,34 +15,49 @@ const About = props => {
       <Grid item>
         <Typography variant="h5" component="h5">
           <Box
-            mt={{ xs: 2, sm: 4, md: 8, lg: 8, xl: 8 }}
-            ml={{ xs: 2, sm: 8, md: 6, lg: 8, xl: 10 }}
-            mr={3}
+            mt={{ xs: 2, sm: 4 }}
+            mr={{ xs: 3, sm: 12, md: 15 }}
+            ml={{ xs: 3, sm: 9 }}
           >
             Listen for Whales!
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
+      <Grid item sm={12}>
         <Typography variant="body1" component="div">
-          <Box ml={{ xs: 2, sm: 8, md: 6, lg: 8, xl: 10 }} mt={1.5} mr={3}>
+          <Box
+            mt={{ xs: 1, sm: 1 }}
+            mr={{ xs: 3, sm: 12, md: 16 }}
+            ml={{ xs: 3, sm: 9 }}
+            fontSize={{ xs: "0.875rem", sm: "1rem" }}
+          >
             Learn what orcas sound like. Then listen live for them on underwater
             microphones (hydrophones).
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
+      <Grid item sm={12}>
         <Typography variant="body1" component="div">
-          <Box ml={{ xs: 2, sm: 8, md: 6, lg: 8, xl: 10 }} mt={1.5} mr={3}>
+          <Box
+            mt={{ xs: 0, sm: 1 }}
+            mr={{ xs: 3, sm: 12, md: 16 }}
+            ml={{ xs: 3, sm: 9 }}
+            fontSize={{ xs: "0.875rem", sm: "1rem" }}
+          >
             Let us know when you hear them, or any sound you think is
             interesting! That will help researchers and stewards protect the
             orcas and their environment.
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
+      <Grid item sm={12}>
         <Typography variant="body1" component="div">
-          <Box ml={{ xs: 2, sm: 8, md: 6, lg: 8, xl: 10 }} mt={1.5} mr={3}>
+          <Box
+            mt={{ xs: 0, sm: 1 }}
+            mr={{ xs: 3, sm: 12, md: 16 }}
+            ml={{ xs: 3, sm: 9 }}
+            fontSize={{ xs: "0.875rem", sm: "1rem" }}
+          >
             You can also get notified when our listeners or algorithms detect
             whales at any of our hydrophone locations.
           </Box>

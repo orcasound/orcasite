@@ -22,7 +22,7 @@ let theme = createMuiTheme({
       lineHeight: 1.75
     },
     body1: {
-      fontSize: ".875rem",
+      fontSize: "0.875rem",
       lineHeight: 1.4,
       fontWeight: 400
     }

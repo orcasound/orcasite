@@ -7,6 +7,7 @@ import SiteMenu from "./SiteMenu"
 import About from "./About"
 import AudioExamples from "./AudioExamples"
 import VerticalImage from "./VerticalImage"
+import GiveFeedback from "./GiveFeedback"
 
 import { StylesProvider, ThemeProvider } from "@material-ui/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
@@ -43,35 +44,41 @@ export default class Home extends Component {
         <StylesProvider injectFirst>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Paper square elevation={0} component="main">
+            <Paper
+              square
+              elevation={0}
+              component="main"
+              style={{ position: "relative" }}
+            >
               <SiteMenu />
               {!feedSlug && (
                 <Grid
                   container
                   spacing={0}
-                  direction="column"
-                  justify="flex-start"
-                  alignItems="center"
+                  direction="row"
+                  justify="center"
+                  alignItems="flex-start"
                 >
                   <Grid
                     container
                     item
                     spacing={0}
-                    direction="row"
+                    direction="column"
                     justify="flex-start"
                     alignItems="flex-start"
+                    sm={8}
                   >
-                    <Grid item sm={8}>
+                    <Grid item>
                       <About />
                     </Grid>
-                    <Grid item sm={4}>
-                      <Hidden xsDown>
-                        <VerticalImage />
-                      </Hidden>
+                    <Grid item>
+                      <AudioExamples />
                     </Grid>
                   </Grid>
-                  <Grid item>
-                    <AudioExamples />
+                  <Grid item sm={4}>
+                    <Hidden xsDown>
+                      <VerticalImage />
+                    </Hidden>
                   </Grid>
                 </Grid>
               )}

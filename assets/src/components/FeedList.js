@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { Link } from "react-router-dom"
 import { Query } from "react-apollo"
 import {
+  Grid,
   Button,
   ClickAwayListener,
   Grow,
@@ -9,21 +10,14 @@ import {
   Popper,
   MenuList,
   MenuItem,
-  Box,
-  Tab
+  Box
 } from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
 import styled from "styled-components"
 
 import { LIST_FEEDS } from "../queries/feeds"
 
-// -------------------------------------------
-// Styled Components - TODO:  Move to a new file
-// -------------------------------------------
-const FeedListContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+const FeedListGridContainer = styled(Grid)`
   flex-grow: 1;
   max-width: none;
   flex-shrink: 1;
@@ -32,9 +26,8 @@ const FeedListContainer = styled.div`
 const FeedButton = styled(Button)`
   display: flex;
   flex-grow: 1;
-  max-width: none;
   flex-shrink: 1;
-  box-shadow: 0 25px 25px rgba(192, 192, 192, 0.5);
+  padding: 0.375rem 0rem 0.375rem 0rem;
 `
 
 const FeedMenuItem = styled(MenuItem)`
@@ -47,6 +40,7 @@ const FeedMenuItem = styled(MenuItem)`
 
   color: #000000;
 `
+
 // -------------------------------------------
 // Component
 // -------------------------------------------
@@ -93,18 +87,28 @@ class FeedList extends Component {
 
           const { feeds } = data
           return (
-            <FeedListContainer>
-              <FeedButton
-                buttonRef={node => {
-                  this.anchorEl = node
-                }}
-                aria-owns={open ? "menu-list-grow" : undefined}
-                aria-haspopup="true"
-                onClick={this.handleToggle}
-              >
-                <Box letterSpacing="0.03572em">Listen Live</Box>
-                <ArrowDropDown />
-              </FeedButton>
+            <FeedListGridContainer
+              container
+              direction="column"
+              justify="flex-start"
+              alignItems="center"
+              alignContent="center"
+            >
+              <Grid item>
+                <FeedButton
+                  variant="text"
+                  buttonRef={node => {
+                    this.anchorEl = node
+                  }}
+                  aria-owns={open ? "menu-list-grow" : undefined}
+                  aria-haspopup="true"
+                  onClick={this.handleToggle}
+                >
+                  <Box letterSpacing="0.03572em">Listen Live</Box>
+                  <ArrowDropDown />
+                </FeedButton>
+              </Grid>
+
               <Popper
                 open={open}
                 anchorEl={this.anchorEl}
@@ -148,7 +152,7 @@ class FeedList extends Component {
                   </Grow>
                 )}
               </Popper>
-            </FeedListContainer>
+            </FeedListGridContainer>
           )
         }}
       </Query>
