@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Paper, Hidden, Grid } from "@material-ui/core"
+import { Paper, Hidden, Grid, Button, Box } from "@material-ui/core"
 
 import FeedPage from "./FeedPage"
 import Player from "./Player"
@@ -7,9 +7,8 @@ import SiteMenu from "./SiteMenu"
 import About from "./About"
 import AudioExamples from "./AudioExamples"
 import VerticalImage from "./VerticalImage"
-import GiveFeedback from "./GiveFeedback"
 
-import { StylesProvider, ThemeProvider } from "@material-ui/styles"
+import { StylesProvider, ThemeProvider, withTheme } from "@material-ui/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import theme from "./theme"
 
@@ -23,8 +22,20 @@ const PlayerLayout = styled.div`
   display: flex;
 `
 
-export default class Home extends Component {
-  state = {}
+const StyledBody = styled.body`
+  position: relative;
+`
+
+const StyledButton = styled.button`
+  background-color: ${props => props.backgroundColor}
+  color: ${props => props.textColor};
+`
+
+class Home extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
 
   componentDidMount() {
     if (["beta", "dev", "staging"].indexOf(ENV.ENV_NAME) >= 0) {
@@ -37,8 +48,8 @@ export default class Home extends Component {
   changeFeed = currentFeed => this.setState({ currentFeed, autoplay: true })
 
   render() {
-    console.log(theme)
     const { feedSlug } = this.props.match.params
+
     return (
       <>
         <StylesProvider injectFirst>
@@ -98,6 +109,7 @@ export default class Home extends Component {
                   </FeedPage>
                 </FeedPageLayout>
               )}
+              <StyledButton>Give Feedback</StyledButton>
             </Paper>
           </ThemeProvider>
         </StylesProvider>
@@ -105,3 +117,5 @@ export default class Home extends Component {
     )
   }
 }
+
+export default Home

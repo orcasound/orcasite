@@ -8,6 +8,9 @@ let theme = createMuiTheme({
     },
     secondary: {
       main: "#009688"
+    },
+    text: {
+      secondary: "#ffffff"
     }
   },
   typography: {

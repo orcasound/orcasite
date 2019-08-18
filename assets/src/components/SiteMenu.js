@@ -9,17 +9,10 @@ import {
   Button,
   Typography,
   Box,
-  Link,
-  Grid
+  Link
 } from "@material-ui/core"
-import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedList from "./FeedList"
-
-const StyledTabs = styled(Tabs)`
-  display: grid;
-  flex-grow: 1;
-`
 
 class SiteMenu extends Component {
   state = {
@@ -69,15 +62,15 @@ class SiteMenu extends Component {
           </Box>
         </Button>
         <Tabs
+          centered
+          variant="fullWidth"
           value={this.state.value}
           indicatorColor="primary"
           onChange={this.handleChange}
-          centered
           scrollButtons="off"
-          variant="fullWidth"
         >
           <Tab label="About" component={RouterLink} to="/" />
-          <FeedList />
+          <Tab label="Listen Live" component={FeedList} />
         </Tabs>
       </Paper>
     )

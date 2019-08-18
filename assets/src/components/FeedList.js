@@ -17,7 +17,8 @@ import styled from "styled-components"
 
 import { LIST_FEEDS } from "../queries/feeds"
 
-const FeedListGridContainer = styled(Grid)`
+const FeedListGridContainer = styled.div`
+  display: flex;
   flex-grow: 1;
   max-width: none;
   flex-shrink: 1;
@@ -28,6 +29,7 @@ const FeedButton = styled(Button)`
   flex-grow: 1;
   flex-shrink: 1;
   padding: 0.375rem 0rem 0.375rem 0rem;
+  height: 3rem;
 `
 
 const FeedMenuItem = styled(MenuItem)`
@@ -87,27 +89,19 @@ class FeedList extends Component {
 
           const { feeds } = data
           return (
-            <FeedListGridContainer
-              container
-              direction="column"
-              justify="flex-start"
-              alignItems="center"
-              alignContent="center"
-            >
-              <Grid item>
-                <FeedButton
-                  variant="text"
-                  buttonRef={node => {
-                    this.anchorEl = node
-                  }}
-                  aria-owns={open ? "menu-list-grow" : undefined}
-                  aria-haspopup="true"
-                  onClick={this.handleToggle}
-                >
-                  <Box letterSpacing="0.03572em">Listen Live</Box>
-                  <ArrowDropDown />
-                </FeedButton>
-              </Grid>
+            <FeedListGridContainer>
+              <FeedButton
+                variant="text"
+                buttonRef={node => {
+                  this.anchorEl = node
+                }}
+                aria-owns={open ? "menu-list-grow" : undefined}
+                aria-haspopup="true"
+                onClick={this.handleToggle}
+              >
+                <Box letterSpacing="0.03572em">Listen Live</Box>
+                <ArrowDropDown />
+              </FeedButton>
 
               <Popper
                 open={open}
