@@ -15,7 +15,7 @@ import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedList from "./FeedList"
 
 const SiteMenu = () => {
-  const [value, setValue] = useState(0)
+  const [value, setValue] = useState("about")
 
   const handleChange = (e, newValue) => {
     setValue(newValue)
@@ -61,8 +61,8 @@ const SiteMenu = () => {
         onChange={handleChange}
         scrollButtons="off"
       >
-        <Tab label="About" component={RouterLink} to="/" />
-        <Tab label="Listen Live" component={FeedList} />
+        <Tab value="about" label="About" component={RouterLink} to="/" />
+        <Tab value="listen" label="Listen Live" component={FeedList} />
       </Tabs>
     </Paper>
   )
