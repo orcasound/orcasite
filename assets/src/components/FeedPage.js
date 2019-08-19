@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React from "react"
 import { Query } from "react-apollo"
 import { string, func } from "prop-types"
 import { GET_FEED } from "../queries/feeds"
@@ -36,60 +36,48 @@ const StyledIntroHTML = styled.div`
   padding: 1rem 3rem 1rem 2rem;
 `
 
-class FeedPage extends Component {
-  state = { show: false }
+const FeedPage = props => {
+  const { feedSlug: slug } = props
 
-  static propTypes = {
-    feedSlug: string.isRequired,
-    onChangeFeed: func
-  }
+  return (
+    <Query query={GET_FEED} variables={{ slug }}>
+      {({ data, loading, error }) => {
+        if (loading) {
+          return <Loader />
+        }
 
-  showModal = () => {
-    this.setState({ show: true })
-  }
+        const { feed } = data
 
-  hideModal = () => {
-    this.setState({ show: false })
-  }
+        if (error || !feed) {
+          return <div>Feed Not Found for {slug}</div>
+        }
 
-  render() {
-    const { feedSlug: slug } = this.props
+        const { introHtml, thumbUrl, mapUrl } = feed
 
-    return (
-      <Query query={GET_FEED} variables={{ slug }}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <Loader />
-          }
+        return (
+          <FeedPageContainer>
+            <FeedName variant="h2">{feed.name}</FeedName>
+            <FeedImageContainer
+              style={{
+                backgroundImage: `url(${mapUrl})`
+              }}
+            />
+            {props.children}
+            <StyledIntroHTML>
+              {introHtml && (
+                <div dangerouslySetInnerHTML={{ __html: introHtml }} />
+              )}
+            </StyledIntroHTML>
+          </FeedPageContainer>
+        )
+      }}
+    </Query>
+  )
+}
 
-          const { feed } = data
-
-          if (error || !feed) {
-            return <div>Feed Not Found for {slug}</div>
-          }
-
-          const { introHtml, thumbUrl, mapUrl } = feed
-
-          return (
-            <FeedPageContainer>
-              <FeedName variant="h2">{feed.name}</FeedName>
-              <FeedImageContainer
-                style={{
-                  backgroundImage: `url(${mapUrl})`
-                }}
-              ></FeedImageContainer>
-              {this.props.children}
-              <StyledIntroHTML>
-                {introHtml && (
-                  <div dangerouslySetInnerHTML={{ __html: introHtml }} />
-                )}
-              </StyledIntroHTML>
-            </FeedPageContainer>
-          )
-        }}
-      </Query>
-    )
-  }
+FeedPage.propTypes = {
+  feedSlug: string.isRequired,
+  onChangeFeed: func
 }
 
 export default FeedPage
