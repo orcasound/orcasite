@@ -3,21 +3,32 @@ import { Query } from "react-apollo"
 import { string, func } from "prop-types"
 import { GET_FEED } from "../queries/feeds"
 import Loader from "./Loader"
-import { Paper, Box, Typography } from "@material-ui/core"
+import { Paper, Box, Typography, makeStyles } from "@material-ui/core"
 import styled from "styled-components"
 
-const FeedImageContainer = styled.div`
-  background-repeat: no-repeat;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  background-position: center;
-  background-color: gray;
-  height: 127px;
-`
+// const FeedImageContainer = styled.div`
+//   background-repeat: no-repeat;
+//   -webkit-background-size: cover;
+//   -moz-background-size: cover;
+//   -o-background-size: cover;
+//   background-size: cover;
+//   background-position: center;
+//   background-color: gray;
+//   height: 127px;
+// `
+
+const useStyles = makeStyles(theme => ({
+  paper: {
+    height: "8rem",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundColor: "gray"
+  }
+}))
 
 const FeedPage = props => {
+  const classes = useStyles()
   const { feedSlug: slug } = props
 
   return (
@@ -48,7 +59,8 @@ const FeedPage = props => {
               </Box>
             </Typography>
 
-            <FeedImageContainer
+            <Paper
+              className={classes.paper}
               style={{
                 backgroundImage: `url(${mapUrl})`
               }}

@@ -3,7 +3,8 @@ import { AppBar, Button, Link, Grid, makeStyles } from "@material-ui/core"
 
 const useStyles = makeStyles(theme => ({
   appBar: {
-    bottom: 0,
+    top: "auto",
+    bottom: "0",
     backgroundColor: "none",
     width: "9.25rem"
   },
@@ -11,7 +12,9 @@ const useStyles = makeStyles(theme => ({
     bottom: 0,
     background: "#000000",
     width: "9.25rem",
-    height: "3rem"
+    height: "3rem",
+    position: "fixed",
+    borderRadius: ".5rem .5rem 0rem 0rem"
   }
 }))
 
@@ -21,7 +24,12 @@ const GiveFeedback = () => {
 
   return (
     <AppBar position="relative" className={classes.appBar} color="inherit">
-      <Grid container direction="column" alignItems="center" justify="flex-end">
+      <Grid
+        container
+        direction="column"
+        alignItems="flex-start"
+        justify="flex-end"
+      >
         <Grid item>
           <Button
             className={classes.button}

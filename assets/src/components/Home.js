@@ -7,6 +7,7 @@ import SiteMenu from "./SiteMenu"
 import About from "./About"
 import AudioExamples from "./AudioExamples"
 import VerticalImage from "./VerticalImage"
+import GiveFeedback from "./GiveFeedback"
 
 import { StylesProvider, ThemeProvider, withTheme } from "@material-ui/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
@@ -91,25 +92,40 @@ class Home extends Component {
                       <VerticalImage />
                     </Hidden>
                   </Grid>
+                  <Grid item>
+                    <GiveFeedback />
+                  </Grid>
                 </Grid>
               )}
               {feedSlug && (
-                <FeedPageLayout>
-                  <FeedPage feedSlug={feedSlug} onChangeFeed={this.changeFeed}>
-                    <PlayerLayout>
-                      <Player
-                        currentFeed={this.state.currentFeed}
-                        key={
-                          this.state.currentFeed &&
-                          this.state.currentFeed.nodeName
-                        }
-                        autoplay={this.state.autoplay}
-                      />
-                    </PlayerLayout>
-                  </FeedPage>
-                </FeedPageLayout>
+                <Grid
+                  container
+                  direction="column"
+                  justify="center"
+                  alignItems="center"
+                >
+                  <Grid item>
+                    <FeedPage
+                      feedSlug={feedSlug}
+                      onChangeFeed={this.changeFeed}
+                    >
+                      <PlayerLayout>
+                        <Player
+                          currentFeed={this.state.currentFeed}
+                          key={
+                            this.state.currentFeed &&
+                            this.state.currentFeed.nodeName
+                          }
+                          autoplay={this.state.autoplay}
+                        />
+                      </PlayerLayout>
+                    </FeedPage>
+                  </Grid>
+                  <Grid item>
+                    <GiveFeedback />
+                  </Grid>
+                </Grid>
               )}
-              <StyledButton>Give Feedback</StyledButton>
             </Paper>
           </ThemeProvider>
         </StylesProvider>
