@@ -3,23 +3,8 @@ import { Query } from "react-apollo"
 import { string, func } from "prop-types"
 import { GET_FEED } from "../queries/feeds"
 import Loader from "./Loader"
-import { Typography } from "@material-ui/core"
+import { Paper, Box, Typography } from "@material-ui/core"
 import styled from "styled-components"
-
-const FeedPageContainer = styled.div`
-  img {
-    z-index: 0;
-  }
-`
-const FeedName = styled(Typography)`
-  font-size: 20px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.87);
-  letter-spacing: 0;
-  text-align: left;
-  line-height: 28px;
-  padding: 1rem 0rem 1rem 2rem;
-`
 
 const FeedImageContainer = styled.div`
   background-repeat: no-repeat;
@@ -30,10 +15,6 @@ const FeedImageContainer = styled.div`
   background-position: center;
   background-color: gray;
   height: 127px;
-`
-
-const StyledIntroHTML = styled.div`
-  padding: 1rem 3rem 1rem 2rem;
 `
 
 const FeedPage = props => {
@@ -55,20 +36,44 @@ const FeedPage = props => {
         const { introHtml, thumbUrl, mapUrl } = feed
 
         return (
-          <FeedPageContainer>
-            <FeedName variant="h2">{feed.name}</FeedName>
+          <Paper elevation={0}>
+            <Typography variant="h5" component="h5">
+              <Box
+                mt={{ xs: 2, sm: 4 }}
+                mr={{ xs: 3, sm: 10, md: 12 }}
+                mb={{ xs: 2, sm: 4 }}
+                ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
+              >
+                {feed.name}
+              </Box>
+            </Typography>
+
             <FeedImageContainer
               style={{
                 backgroundImage: `url(${mapUrl})`
               }}
             />
             {props.children}
-            <StyledIntroHTML>
+            <Paper elevation={0}>
               {introHtml && (
-                <div dangerouslySetInnerHTML={{ __html: introHtml }} />
+                <Typography variant="body1" component="div">
+                  <Box
+                    mt={{ xs: 2, sm: 4, md: 6 }}
+                    mr={{ xs: 6, sm: 30, md: 50, lg: 60 }}
+                    ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
+                    fontSize={{ xs: "0.875rem", sm: "1rem" }}
+                  >
+                    <Paper
+                      variant="body1"
+                      component="div"
+                      elevation={0}
+                      dangerouslySetInnerHTML={{ __html: introHtml }}
+                    />
+                  </Box>
+                </Typography>
               )}
-            </StyledIntroHTML>
-          </FeedPageContainer>
+            </Paper>
+          </Paper>
         )
       }}
     </Query>
