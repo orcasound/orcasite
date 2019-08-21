@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Paper, Hidden, Grid, Button, Box } from "@material-ui/core"
+import { Paper, Hidden, Grid } from "@material-ui/core"
 
 import FeedPage from "./FeedPage"
 import Player from "./Player"
@@ -9,28 +9,9 @@ import AudioExamples from "./AudioExamples"
 import VerticalImage from "./VerticalImage"
 import GiveFeedback from "./GiveFeedback"
 
-import { StylesProvider, ThemeProvider, withTheme } from "@material-ui/styles"
+import { StylesProvider, ThemeProvider } from "@material-ui/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import theme from "./theme"
-
-import styled from "styled-components"
-
-const FeedPageLayout = styled.div`
-  display: flex;
-`
-
-const PlayerLayout = styled.div`
-  display: flex;
-`
-
-const StyledBody = styled.body`
-  position: relative;
-`
-
-const StyledButton = styled.button`
-  background-color: ${props => props.backgroundColor}
-  color: ${props => props.textColor};
-`
 
 class Home extends Component {
   constructor(props) {
@@ -110,7 +91,7 @@ class Home extends Component {
                       feedSlug={feedSlug}
                       onChangeFeed={this.changeFeed}
                     >
-                      <PlayerLayout>
+                      <div>
                         <Player
                           currentFeed={this.state.currentFeed}
                           key={
@@ -119,7 +100,7 @@ class Home extends Component {
                           }
                           autoplay={this.state.autoplay}
                         />
-                      </PlayerLayout>
+                      </div>
                     </FeedPage>
                   </Grid>
                   <Grid item>

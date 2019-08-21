@@ -17,7 +17,8 @@ import FeedList from "./FeedList"
 
 const useStyles = makeStyles(theme => ({
   button: {
-    minWidth: "180px"
+    minWidth: "180px",
+    borderRadius: 0
   }
 }))
 
@@ -55,6 +56,7 @@ const SiteMenu = () => {
         centered="true"
         fullWidth={true}
         color="primary"
+        className={classes.button}
       >
         <Typography component="div">
           <Box zIndex={1}>

@@ -12,7 +12,6 @@ const AudioExamples = props => {
       justify="space-evenly"
       alignItems="flex-start"
       item
-      xs={12}
     >
       <Grid
         container
@@ -21,20 +20,20 @@ const AudioExamples = props => {
         justify="flex-start"
         alignItems="flex-start"
       >
-        <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
+        <Grid item xs={12} md={10}>
           <Typography variant="h5" component="h5">
             <Box ml={{ xs: 3, sm: 9, md: 12, lg: 20 }} mt={{ xs: 2 }}>
               What do orcas sound like?
             </Box>
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={12} md={10} lg={10} xl={10}>
+        <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
           <Typography variant="body1" component="div">
             <Box
               mt={{ xs: 2 }}
               mb={{ xs: 1 }}
               ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
-              mr={{ xs: 3, sm: 9, md: 12, lg: 15 }}
+              mr={{ xs: 3, sm: 10, md: 12 }}
               fontSize={{ xs: "0.875rem", sm: "1rem" }}
             >
               Here are some samples of calls, clicks, and whistles that are made
@@ -48,8 +47,6 @@ const AudioExamples = props => {
           <Grid
             container
             item
-            xs={12}
-            sm={12}
             direction="column"
             justify="flex-start"
             alignItems="flex-start"
@@ -57,19 +54,17 @@ const AudioExamples = props => {
           >
             <Grid
               item
-              xs={12}
-              sm={12}
               container
               direction="row"
               justify="center"
               alignItems="center"
             >
-              <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
-                <Box ml={{ xs: 2, sm: 9, md: 12, lg: 20, xl: 20 }} p={1}>
+              <Grid item xs={2}>
+                <Box ml={{ xs: 2, sm: 9, md: 12, lg: 20 }} p={1}>
                   <Avatar alt="wave" src={wave} />
                 </Box>
               </Grid>
-              <Grid item xs={10} sm={10} md={10} lg={10} xl={10}>
+              <Grid item xs={10}>
                 <Typography component="div" variant="h6">
                   <Box ml={{ xs: 2, sm: 6, md: 10, lg: 12 }} pl={1}>
                     {example.title}
@@ -77,8 +72,8 @@ const AudioExamples = props => {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Box ml={{ xs: 3, sm: 9, md: 12, lg: 20, xl: 20 }}>
+            <Grid item xs={12}>
+              <Box ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}>
                 <audio controls src={example.audio} />
               </Box>
             </Grid>

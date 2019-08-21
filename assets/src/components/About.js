@@ -12,7 +12,7 @@ const About = props => {
       justify="flex-start"
       alignItems="flex-start"
     >
-      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+      <Grid item xs={12} md={10} lg={8}>
         <Typography variant="h5" component="h5">
           <Box
             mt={{ xs: 2, sm: 4 }}
@@ -23,7 +23,7 @@ const About = props => {
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+      <Grid item xs={12} md={10} lg={8}>
         <Typography variant="body1" component="div">
           <Box
             mt={{ xs: 1, sm: 1 }}
@@ -36,7 +36,7 @@ const About = props => {
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+      <Grid item xs={12} md={10} lg={8}>
         <Typography variant="body1" component="div">
           <Box
             mt={{ xs: 0, sm: 1 }}
@@ -50,7 +50,7 @@ const About = props => {
           </Box>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={12} md={10} lg={8} xl={8}>
+      <Grid item xs={12} md={10} lg={8}>
         <Typography variant="body1" component="div">
           <Box
             mt={{ xs: 0, sm: 1 }}

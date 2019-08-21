@@ -4,22 +4,24 @@ import { string, func } from "prop-types"
 import { GET_FEED } from "../queries/feeds"
 import Loader from "./Loader"
 import { Paper, Box, Typography, makeStyles } from "@material-ui/core"
-import styled from "styled-components"
-
-// const FeedImageContainer = styled.div`
-//   background-repeat: no-repeat;
-//   -webkit-background-size: cover;
-//   -moz-background-size: cover;
-//   -o-background-size: cover;
-//   background-size: cover;
-//   background-position: center;
-//   background-color: gray;
-//   height: 127px;
-// `
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    height: "8rem",
+    [theme.breakpoints.down("xs")]: {
+      height: "8rem"
+    },
+    [theme.breakpoints.up("sm")]: {
+      height: "10rem"
+    },
+    [theme.breakpoints.up("md")]: {
+      height: "12rem"
+    },
+    [theme.breakpoints.up("lg")]: {
+      height: "14rem"
+    },
+    [theme.breakpoints.up("xl")]: {
+      height: "16rem"
+    },
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     backgroundPosition: "center",

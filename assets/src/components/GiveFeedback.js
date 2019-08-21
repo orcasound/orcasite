@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     bottom: 0,
-    background: "#000000",
+    background: theme.palette.common.black,
     width: "9.25rem",
     height: "3rem",
     position: "fixed",

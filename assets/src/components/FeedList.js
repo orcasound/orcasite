@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     maxWidth: "none",
     flexShrink: 1,
-    height: "48px",
+    height: "3rem",
     zIndex: 0
   },
   button: {
@@ -68,7 +68,6 @@ const FeedList = React.forwardRef((props, ref) => {
 
   const currentFeed = props.currentFeed || getCurrentFeed() || {}
   storeCurrentFeed(currentFeed)
-  const { bushPointUsers, haroStraitUsers } = props
 
   return (
     <Query query={LIST_FEEDS}>
@@ -147,107 +146,4 @@ const FeedList = React.forwardRef((props, ref) => {
   )
 })
 
-FeedList.defaultProps = {
-  bushPointUsers: 1
-}
-
 export default FeedList
-
-// const FeedList = React.forwardRef((props, ref) => {
-//   let [anchorEl, setAnchorEl] = useState(null)
-//   let open = Boolean(anchorEl)
-//   const id = open ? "popper" : undefined
-
-//   const handleClick = event => {
-//     setAnchorEl(anchorEl ? null : event.currentTarget)
-//   }
-
-//   const handleClose = event => {
-//     if (anchorEl.contains(event.target)) {
-//       return
-//     }
-//     setAnchorEl(prev => !prev)
-//   }
-
-//   const { bushPointUsers, haroStraitUsers } = props
-
-//   return (
-//     <Query query={LIST_FEEDS}>
-//       {({ data, loading, error }) => {
-//         if (loading || error) {
-//           return (
-//             <ul>
-//               <li>
-//                 <div>LOADING</div>
-//               </li>
-//             </ul>
-//           )
-//         }
-
-//         const { feeds } = data
-//         console.log("open", open)
-//         return (
-//           <FeedListGridContainer>
-//             <FeedButton
-//               aria-haspopup="true"
-//               aria-describedby={id}
-//               variant="text"
-//               onClick={handleClick}
-//             >
-//               <Box letterSpacing="0.03572em">Listen Live</Box>
-//               <ArrowDropDown />
-//             </FeedButton>
-//             <Popper
-//               id={id}
-//               open={open}
-//               anchorEl={anchorEl}
-//               keepMounted
-//               transition
-//             >
-//               {({ TransitionProps, placement }) => (
-//                 <ClickAwayListener onClickAway={handleClose}>
-//                   <Grow
-//                     {...TransitionProps}
-//                     id="menu-list-grow"
-//                     style={{
-//                       transformOrigin:
-//                         placement === "bottom" ? "center top" : "center bottom"
-//                     }}
-//                   >
-//                     <Paper>
-//                       <MenuList>
-//                         {feeds
-//                           .slice()
-//                           .reverse()
-//                           .map((feed, i) => {
-//                             return (
-//                               <FeedMenuItem key={i}>
-//                                 <Link to={`/${feed.slug}`}>
-//                                   <span>{feed.name}</span>
-//                                   <div>
-//                                     {bushPointUsers}
-//                                     <Person />
-//                                   </div>
-//                                 </Link>
-//                               </FeedMenuItem>
-//                             )
-//                           })}
-//                       </MenuList>
-//                     </Paper>
-//                   </Grow>
-//                 </ClickAwayListener>
-//               )}
-//             </Popper>
-//           </FeedListGridContainer>
-//         )
-//       }}
-//     </Query>
-//   )
-// })
-
-// FeedList.defaultProps = {
-//   bushPointUsers: 1,
-//   haroStraitUsers: 3
-// }
-
-// export default FeedList

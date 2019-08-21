@@ -18,10 +18,10 @@ const PlayerContainer = styled.div`
 
 const StyledButtonContainer = styled.div`
   background: ${props => (props.active ? "#007166" : "transparent")};
-  box-shadow: ${props => (props.active ? "0 2px 4px 0" : "none")};
-  border-radius: 33px;
-  min-width: 337px;
-  max-width: 450px;
+  box-shadow: ${props => (props.active ? "0 0.125rem 0.25rem 0" : "none")};
+  border-radius: 2.0625rem;
+  min-width: 21.0625rem;
+  max-width: 28.125rem;
   display: flex;
   flex-direction: row;
   align-items: center;
