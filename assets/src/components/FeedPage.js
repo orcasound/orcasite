@@ -1,10 +1,13 @@
 import React, { Component } from "react"
 import { Query } from "react-apollo"
 import { string, func } from "prop-types"
-import { GET_FEED } from "../queries/feeds"
-import Loader from "./Loader"
 import { Typography } from "@material-ui/core"
 import styled from "styled-components"
+
+import { GET_FEED } from "../queries/feeds"
+
+import Loader from "./Loader"
+import FeedPresence from "./FeedPresence"
 
 const FeedPageContainer = styled.div`
   img {
@@ -79,6 +82,7 @@ class FeedPage extends Component {
                 }}
               ></FeedImageContainer>
               {this.props.children}
+              <FeedPresence feed={feed} />
               <StyledIntroHTML>
                 {introHtml && (
                   <div dangerouslySetInnerHTML={{ __html: introHtml }} />
