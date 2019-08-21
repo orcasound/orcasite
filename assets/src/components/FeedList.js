@@ -9,43 +9,50 @@ import {
   Popper,
   MenuList,
   MenuItem,
-  Box
+  Box,
+  makeStyles
 } from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
-import styled from "styled-components"
+import FeedPresence from "./FeedPresence"
 
+import { feedType } from "types/feedType"
+import { storeCurrentFeed, getCurrentFeed } from "utils/feedStorage"
 import { LIST_FEEDS } from "../queries/feeds"
 
-const FeedListGridContainer = styled(Paper)`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-  max-width: none;
-  flex-shrink: 1;
-`
-
-const FeedButton = styled(Button)`
-  display: flex;
-  flex-grow: 1;
-  flex-shrink: 1;
-  max-width: none;
-  padding: 0.375rem 0rem 0.375rem 0rem;
-  height: 3rem;
-`
-
-const FeedMenuItem = styled(MenuItem)`
-  display: flex;
-  justify-content: space-between;
-  color: #000000;
-  a {
-    color: rgba(0, 0, 0, 0.87);
+const useStyles = makeStyles(theme => ({
+  paper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    flexGrow: 1,
+    maxWidth: "none",
+    flexShrink: 1,
+    height: "48px",
+    zIndex: 0
+  },
+  button: {
+    display: "flex",
+    flexGrow: 1,
+    flexShrink: 1,
+    width: "100%",
+    height: "3rem",
+    padding: "0 0 0 0",
+    zIndex: 0
+  },
+  menuItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    color: theme.palette.common.black,
+    "& a": {
+      color: theme.palette.common.black
+    }
   }
-`
+}))
 
-const FeedList = props => {
+const FeedList = React.forwardRef((props, ref) => {
   const [open, setOpen] = useState(false)
   const anchorRef = React.useRef(null)
+  const classes = useStyles()
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen)
@@ -59,6 +66,8 @@ const FeedList = props => {
     setOpen(false)
   }
 
+  const currentFeed = props.currentFeed || getCurrentFeed() || {}
+  storeCurrentFeed(currentFeed)
   const { bushPointUsers, haroStraitUsers } = props
 
   return (
@@ -77,10 +86,11 @@ const FeedList = props => {
         const { feeds } = data
 
         return (
-          <FeedListGridContainer elevation={0}>
+          <Paper className={classes.paper} elevation={0} square>
             <ClickAwayListener onClickAway={handleClose}>
               <div>
-                <FeedButton
+                <Button
+                  className={classes.button}
                   ref={anchorRef}
                   aria-controls="menu-list-grow"
                   aria-haspopup="true"
@@ -89,7 +99,7 @@ const FeedList = props => {
                 >
                   <Box letterSpacing="0.03572em">Listen Live</Box>
                   <ArrowDropDown />
-                </FeedButton>
+                </Button>
                 <Popper
                   open={open}
                   anchorEl={anchorRef.current}
@@ -113,15 +123,14 @@ const FeedList = props => {
                             .reverse()
                             .map((feed, i) => {
                               return (
-                                <FeedMenuItem key={i}>
+                                <MenuItem className={classes.menuItem} key={i}>
                                   <Link to={`/${feed.slug}`}>
                                     <span>{feed.name}</span>
                                     <div>
-                                      {bushPointUsers}
-                                      <Person />
+                                      <FeedPresence feed={currentFeed} />
                                     </div>
                                   </Link>
-                                </FeedMenuItem>
+                                </MenuItem>
                               )
                             })}
                         </MenuList>
@@ -131,16 +140,15 @@ const FeedList = props => {
                 </Popper>
               </div>
             </ClickAwayListener>
-          </FeedListGridContainer>
+          </Paper>
         )
       }}
     </Query>
   )
-}
+})
 
 FeedList.defaultProps = {
-  bushPointUsers: 1,
-  haroStraitUsers: 3
+  bushPointUsers: 1
 }
 
 export default FeedList

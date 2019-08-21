@@ -59,12 +59,13 @@ class Home extends Component {
             <Paper
               square
               elevation={0}
-              component="main"
+              component="div"
               style={{ position: "relative" }}
             >
               <SiteMenu />
               {!feedSlug && (
                 <Grid
+                  component="main"
                   container
                   spacing={0}
                   direction="row"

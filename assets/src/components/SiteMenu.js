@@ -9,13 +9,23 @@ import {
   Button,
   Typography,
   Box,
-  Link
+  Link,
+  makeStyles
 } from "@material-ui/core"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedList from "./FeedList"
 
+const useStyles = makeStyles(theme => ({
+  button: {
+    minWidth: "180px"
+  }
+}))
+
 const SiteMenu = () => {
+  const classes = useStyles()
   const [value, setValue] = useState("about")
+
+  const notificationDoc = `https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit`
 
   const handleChange = (e, newValue) => {
     setValue(newValue)
@@ -47,21 +57,38 @@ const SiteMenu = () => {
         color="primary"
       >
         <Typography component="div">
-          <Box>Get notified when there's whale activity</Box>
+          <Box zIndex={1}>
+            <Link
+              href={notificationDoc}
+              target="_blank"
+              rel="noopener"
+              rel="noreferrer"
+              color="inherit"
+              variant="inherit"
+            >
+              Get notified when there's whale activity
+            </Link>
+          </Box>
         </Typography>
         <Box p={0.2}>
           <NotificationIcon />
         </Box>
       </Button>
       <Tabs
-        centered
         variant="fullWidth"
+        centered
         value={value}
         indicatorColor="primary"
         onChange={handleChange}
         scrollButtons="off"
       >
-        <Tab value="about" label="About" component={RouterLink} to="/" />
+        <Tab
+          className={classes.button}
+          value="about"
+          label="About"
+          component={RouterLink}
+          to="/"
+        />
         <Tab value="listen" label="Listen Live" component={FeedList} />
       </Tabs>
     </Paper>

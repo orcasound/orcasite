@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
     width: "9.25rem",
     height: "3rem",
     position: "fixed",
-    borderRadius: ".5rem .5rem 0rem 0rem"
+    borderRadius: ".5rem .5rem 0rem 0rem",
+    opacity: ".8"
   }
 }))
 
