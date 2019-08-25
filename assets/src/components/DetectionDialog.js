@@ -17,11 +17,11 @@ import styled from "styled-components"
 
 const StyledActivityButton = styled(Button)`
   color: #ffffff;
-  border-radius: 33px;
-  font-size: 0.775rem;
+  border-radius: 2.0625rem;
+  font-size: 0.875rem;
   text-transform: upper-case;
-  letter-spacing: 0.5px;
-  line-spacing: 16px;
+  letter-spacing: 0.03125rem;
+  line-spacing: 1rem;
   padding: 1rem;
   flex-grow: 1;
 `

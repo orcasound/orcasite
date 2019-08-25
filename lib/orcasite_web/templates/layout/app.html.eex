@@ -10,6 +10,7 @@
 
     <title>Orcasound - Listen for whales</title>
     <%= {:safe, css_link_tag(@conn)} %>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <!-- jss-insertion-point -->
   </head>
 
