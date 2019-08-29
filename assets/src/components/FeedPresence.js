@@ -54,6 +54,7 @@ export default class FeedPresence extends Component {
 
   render() {
     const { listenerCount } = this.state
+
     return (
       <div className={`feed-presence text-nowrap ${this.props.className}`}>
         {listenerCount > 0 && listenerCount}

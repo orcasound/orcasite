@@ -66,9 +66,6 @@ const FeedList = React.forwardRef((props, ref) => {
     setOpen(false)
   }
 
-  const currentFeed = props.currentFeed || getCurrentFeed() || {}
-  storeCurrentFeed(currentFeed)
-
   return (
     <Query query={LIST_FEEDS}>
       {({ data, loading, error }) => {
@@ -126,7 +123,8 @@ const FeedList = React.forwardRef((props, ref) => {
                                   <Link to={`/${feed.slug}`}>
                                     <span>{feed.name}</span>
                                     <div>
-                                      <FeedPresence feed={currentFeed} />
+                                      {console.log("feed in menuItem", feed)}
+                                      <FeedPresence feed={feed} />
                                     </div>
                                   </Link>
                                 </MenuItem>
@@ -145,5 +143,9 @@ const FeedList = React.forwardRef((props, ref) => {
     </Query>
   )
 })
+
+FeedList.propTypes = {
+  feed: feedType
+}
 
 export default FeedList

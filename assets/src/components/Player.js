@@ -112,9 +112,7 @@ class Player extends Component {
     `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
 
   fetchTimestamp = feed => {
-    const timestampURI = `https://s3-us-west-2.amazonaws.com/${
-      ENV.S3_BUCKET
-    }/${feed}/latest.txt`
+    const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
     this.setState({ currentXhr: xhr })
