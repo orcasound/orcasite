@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { Query } from "react-apollo"
 import {
@@ -8,150 +8,142 @@ import {
   Paper,
   Popper,
   MenuList,
-  MenuItem
+  MenuItem,
+  Box,
+  makeStyles
 } from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
-import styled from "styled-components"
+import FeedPresence from "./FeedPresence"
 
+import { feedType } from "types/feedType"
+import { storeCurrentFeed, getCurrentFeed } from "utils/feedStorage"
 import { LIST_FEEDS } from "../queries/feeds"
 
-// -------------------------------------------
-// Styled Components - TODO:  Move to a new file
-// -------------------------------------------
-const FeedListContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-  max-width: none;
-  flex-shrink: 1;
-`
+const useStyles = makeStyles(theme => ({
+  paper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    flexGrow: 1,
+    maxWidth: "none",
+    flexShrink: 1,
+    height: "3rem",
+    zIndex: 0
+  },
+  button: {
+    display: "flex",
+    flexGrow: 1,
+    flexShrink: 1,
+    width: "100%",
+    height: "3rem",
+    padding: "0 0 0 0",
+    zIndex: 0
+  },
+  menuItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    color: theme.palette.common.black,
+    "& a": {
+      color: theme.palette.common.black
+    }
+  }
+}))
 
-const FeedButton = styled(Button)`
-  display: flex;
-  flex-grow: 1;
-  max-width: none;
-  flex-shrink: 1;
-  box-shadow: 0 25px 25px rgba(192, 192, 192, 0.5);
-`
+const FeedList = React.forwardRef((props, ref) => {
+  const [open, setOpen] = useState(false)
+  const anchorRef = React.useRef(null)
+  const classes = useStyles()
 
-const FeedMenuItem = styled(MenuItem)`
-  display: flex;
-  justify-content: space-between;
-
-  a {
-    color: rgba(0, 0, 0, 0.87);
+  const handleToggle = () => {
+    setOpen(prevOpen => !prevOpen)
   }
 
-  color: #000000;
-`
-// -------------------------------------------
-// Component
-// -------------------------------------------
-class FeedList extends Component {
-  constructor(props) {
-    super(props)
-
-    this.handleToggle = this.handleToggle.bind(this)
-  }
-
-  state = {
-    open: false,
-    bushPointUsers: 1,
-    haroStraitUsers: 3
-  }
-
-  handleToggle() {
-    this.setState(state => ({ open: !state.open }))
-  }
-
-  handleClose = event => {
-    if (this.anchorEl.contains(event.target)) {
+  const handleClose = event => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return
     }
 
-    this.setState({ open: false })
+    setOpen(false)
   }
 
-  render() {
-    const { open, bushPointUsers, haroStraitUsers } = this.state
+  const currentFeed = props.currentFeed || getCurrentFeed() || {}
+  storeCurrentFeed(currentFeed)
 
-    return (
-      <Query query={LIST_FEEDS}>
-        {({ data, loading, error }) => {
-          if (loading || error) {
-            return (
-              <ul>
-                <li>
-                  <div>LOADING</div>
-                </li>
-              </ul>
-            )
-          }
-
-          const { feeds } = data
+  return (
+    <Query query={LIST_FEEDS}>
+      {({ data, loading, error }) => {
+        if (loading || error) {
           return (
-            <FeedListContainer>
-              <FeedButton
-                buttonRef={node => {
-                  this.anchorEl = node
-                }}
-                aria-owns={open ? "menu-list-grow" : undefined}
-                aria-haspopup="true"
-                onClick={this.handleToggle}
-              >
-                Listen Live
-                <ArrowDropDown />
-              </FeedButton>
-              <Popper
-                open={open}
-                anchorEl={this.anchorEl}
-                keepMounted
-                transition
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    id="menu-list-grow"
-                    style={{
-                      transformOrigin:
-                        placement === "bottom" ? "center top" : "center bottom"
-                    }}
-                  >
-                    <Paper>
-                      <ClickAwayListener onClickAway={this.handleClose}>
+            <ul>
+              <li>
+                <div>LOADING</div>
+              </li>
+            </ul>
+          )
+        }
+
+        const { feeds } = data
+
+        return (
+          <Paper className={classes.paper} elevation={0} square>
+            <ClickAwayListener onClickAway={handleClose}>
+              <div>
+                <Button
+                  className={classes.button}
+                  ref={anchorRef}
+                  aria-controls="menu-list-grow"
+                  aria-haspopup="true"
+                  variant="text"
+                  onClick={handleToggle}
+                >
+                  <Box letterSpacing="0.03572em">Listen Live</Box>
+                  <ArrowDropDown />
+                </Button>
+                <Popper
+                  open={open}
+                  anchorEl={anchorRef.current}
+                  keepMounted
+                  transition
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin:
+                          placement === "bottom"
+                            ? "center top"
+                            : "center bottom"
+                      }}
+                    >
+                      <Paper>
                         <MenuList>
                           {feeds
                             .slice()
                             .reverse()
                             .map((feed, i) => {
                               return (
-                                <FeedMenuItem
-                                  key={i}
-                                  onClick={this.handleClose}
-                                >
+                                <MenuItem className={classes.menuItem} key={i}>
                                   <Link to={`/${feed.slug}`}>
                                     <span>{feed.name}</span>
                                     <div>
-                                      {bushPointUsers}
-                                      <Person />
+                                      <FeedPresence feed={currentFeed} />
                                     </div>
                                   </Link>
-                                </FeedMenuItem>
+                                </MenuItem>
                               )
                             })}
                         </MenuList>
-                      </ClickAwayListener>
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </FeedListContainer>
-          )
-        }}
-      </Query>
-    )
-  }
-}
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
+              </div>
+            </ClickAwayListener>
+          </Paper>
+        )
+      }}
+    </Query>
+  )
+})
 
 export default FeedList

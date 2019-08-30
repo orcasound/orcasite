@@ -1,113 +1,100 @@
-import React, { Component } from "react"
+import React, { useState } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   Paper,
+  AppBar,
+  Toolbar,
   Tabs,
   Tab,
   Button,
   Typography,
   Box,
   Link,
-  Grid
+  makeStyles
 } from "@material-ui/core"
-import styled from "styled-components"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedList from "./FeedList"
 
-// -------------------------------------------
-// Styled Components - TODO:  Move to a new file
-// -------------------------------------------
-const MainHeader = styled(Paper)`
-  background: #000000;
-  color: #ffffff;
-  height: 6rem;
-`
+const useStyles = makeStyles(theme => ({
+  button: {
+    minWidth: "180px",
+    borderRadius: 0
+  }
+}))
 
-const NotificationButton = styled(Button)`
-  @media screen and (min-width: 599px) {
-    font-size: 14px;
-    opacity: 0.87;
-    textalign: left;
-    height: 40px;
-    border-radius: 0px;
+const SiteMenu = () => {
+  const classes = useStyles()
+  const [value, setValue] = useState("about")
+
+  const notificationDoc = `https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit`
+
+  const handleChange = (e, newValue) => {
+    setValue(newValue)
   }
 
-  font-size: 10px;
-  opacity: 0.87;
-  textalign: left;
-  height: 40px;
-  border-radius: 0px;
-`
-
-const HeaderLink = styled(Link)`
-  font-size: 2.2rem;
-  font-weight: 400;
-  letter-spacing: 1.07px;
-  line-height: 35px;
-  padding-top: 1.5rem;
-  padding-left: 3.5rem;
-  display: block;
-
-  :hover {
-    text-decoration: none;
-    color: #009bde;
-  }
-`
-// -------------------------------------------
-// Component
-// -------------------------------------------
-class SiteMenu extends Component {
-  state = {
-    value: 0
-  }
-
-  handleChange = (event, value) => {
-    console.log(value)
-    this.setState({ value })
-  }
-
-  aboutTabSelected = () => {
-    return this.state.value == 0
-  }
-
-  render() {
-    return (
-      <Paper elevation={0} square>
-        <MainHeader square elevation={0}>
-          <HeaderLink
-            component={RouterLink}
-            to="/"
-            color="inherit"
-            variant="h6"
-            underline="none"
-          >
-            <Typography component="h1" variant="h4">
-              <Box>Orcasound</Box>
-            </Typography>
-          </HeaderLink>
-        </MainHeader>
-        <NotificationButton
-          variant="contained"
-          centered="true"
-          fullWidth={true}
-          color="primary"
-        >
-          Get notified when there's whale activity
+  return (
+    <Paper elevation={0} square>
+      <AppBar position="static" color="inherit">
+        <Toolbar>
+          <Typography component="h1" variant="h1">
+            <Link
+              component={RouterLink}
+              to="/"
+              color="inherit"
+              underline="none"
+              variant="inherit"
+            >
+              <Box ml={1} pt={3}>
+                Orcasound
+              </Box>
+            </Link>
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Button
+        variant="contained"
+        centered="true"
+        fullWidth={true}
+        color="primary"
+        className={classes.button}
+      >
+        <Typography component="div">
+          <Box zIndex={1}>
+            <Link
+              href={notificationDoc}
+              target="_blank"
+              rel="noopener"
+              rel="noreferrer"
+              color="inherit"
+              variant="inherit"
+            >
+              Get notified when there's whale activity
+            </Link>
+          </Box>
+        </Typography>
+        <Box p={0.2}>
           <NotificationIcon />
-        </NotificationButton>
-        <Tabs
-          value={this.state.value}
-          variant="fullWidth"
-          indicatorColor="primary"
-          onChange={this.handleChange}
-          centered
-        >
-          <Tab label="About" component={RouterLink} to="/" fullWidth={true} />
-          <FeedList />
-        </Tabs>
-      </Paper>
-    )
-  }
+        </Box>
+      </Button>
+      <Tabs
+        variant="fullWidth"
+        centered
+        value={value}
+        indicatorColor="primary"
+        onChange={handleChange}
+        scrollButtons="off"
+      >
+        <Tab
+          className={classes.button}
+          value="about"
+          label="About"
+          component={RouterLink}
+          to="/"
+        />
+        <Tab value="listen" label="Listen Live" component={FeedList} />
+      </Tabs>
+    </Paper>
+  )
 }
 
 export default SiteMenu

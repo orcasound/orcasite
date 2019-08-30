@@ -1,99 +1,103 @@
-import React, { Component } from "react"
+import React from "react"
 import { Query } from "react-apollo"
 import { string, func } from "prop-types"
-import { Typography } from "@material-ui/core"
-import styled from "styled-components"
-
 import { GET_FEED } from "../queries/feeds"
-
 import Loader from "./Loader"
-import FeedPresence from "./FeedPresence"
+import { Paper, Box, Typography, makeStyles } from "@material-ui/core"
 
-const FeedPageContainer = styled.div`
-  img {
-    z-index: 0;
+const useStyles = makeStyles(theme => ({
+  paper: {
+    [theme.breakpoints.down("xs")]: {
+      height: "8rem"
+    },
+    [theme.breakpoints.up("sm")]: {
+      height: "10rem"
+    },
+    [theme.breakpoints.up("md")]: {
+      height: "12rem"
+    },
+    [theme.breakpoints.up("lg")]: {
+      height: "14rem"
+    },
+    [theme.breakpoints.up("xl")]: {
+      height: "16rem"
+    },
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundColor: "gray"
   }
-`
-const FeedName = styled(Typography)`
-  font-size: 20px;
-  font-weight: 400;
-  color: rgba(0, 0, 0, 0.87);
-  letter-spacing: 0;
-  text-align: left;
-  line-height: 28px;
-  padding: 1rem 0rem 1rem 2rem;
-`
+}))
 
-const FeedImageContainer = styled.div`
-  background-repeat: no-repeat;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  background-position: center;
-  background-color: gray;
-  height: 127px;
-`
+const FeedPage = props => {
+  const classes = useStyles()
+  const { feedSlug: slug } = props
 
-const StyledIntroHTML = styled.div`
-  padding: 1rem 3rem 1rem 2rem;
-`
+  return (
+    <Query query={GET_FEED} variables={{ slug }}>
+      {({ data, loading, error }) => {
+        if (loading) {
+          return <Loader />
+        }
 
-class FeedPage extends Component {
-  state = { show: false }
+        const { feed } = data
 
-  static propTypes = {
-    feedSlug: string.isRequired,
-    onChangeFeed: func
-  }
+        if (error || !feed) {
+          return <div>Feed Not Found for {slug}</div>
+        }
 
-  showModal = () => {
-    this.setState({ show: true })
-  }
+        const { introHtml, thumbUrl, mapUrl } = feed
 
-  hideModal = () => {
-    this.setState({ show: false })
-  }
+        return (
+          <Paper elevation={0}>
+            <Typography variant="h5" component="h5">
+              <Box
+                mt={{ xs: 2, sm: 4 }}
+                mr={{ xs: 3, sm: 10, md: 12 }}
+                mb={{ xs: 2, sm: 4 }}
+                ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
+              >
+                {feed.name}
+              </Box>
+            </Typography>
 
-  render() {
-    const { feedSlug: slug } = this.props
+            <Paper
+              className={classes.paper}
+              style={{
+                backgroundImage: `url(${mapUrl})`
+              }}
+            />
+            {props.children}
+            <FeedPresence feed={feed} />
+            <Paper elevation={0}>
+              {introHtml && (
+                <Typography variant="body1" component="div">
+                  <Box
+                    mt={{ xs: 2, sm: 4, md: 6 }}
+                    mr={{ xs: 6, sm: 30, md: 50, lg: 60 }}
+                    ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
+                    fontSize={{ xs: "0.875rem", sm: "1rem" }}
+                  >
+                    <Paper
+                      variant="body1"
+                      component="div"
+                      elevation={0}
+                      dangerouslySetInnerHTML={{ __html: introHtml }}
+                    />
+                  </Box>
+                </Typography>
+              )}
+            </Paper>
+          </Paper>
+        )
+      }}
+    </Query>
+  )
+}
 
-    return (
-      <Query query={GET_FEED} variables={{ slug }}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <Loader />
-          }
-
-          const { feed } = data
-
-          if (error || !feed) {
-            return <div>Feed Not Found for {slug}</div>
-          }
-
-          const { introHtml, thumbUrl, mapUrl } = feed
-
-          return (
-            <FeedPageContainer>
-              <FeedName variant="h2">{feed.name}</FeedName>
-              <FeedImageContainer
-                style={{
-                  backgroundImage: `url(${mapUrl})`
-                }}
-              ></FeedImageContainer>
-              {this.props.children}
-              <FeedPresence feed={feed} />
-              <StyledIntroHTML>
-                {introHtml && (
-                  <div dangerouslySetInnerHTML={{ __html: introHtml }} />
-                )}
-              </StyledIntroHTML>
-            </FeedPageContainer>
-          )
-        }}
-      </Query>
-    )
-  }
+FeedPage.propTypes = {
+  feedSlug: string.isRequired,
+  onChangeFeed: func
 }
 
 export default FeedPage
