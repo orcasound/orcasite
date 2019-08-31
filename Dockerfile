@@ -1,4 +1,4 @@
-ARG ELIXIR_VERSION=1.8.2
+ARG ELIXIR_VERSION=1.9.1
 ARG NODE_VERSION=12.9.1
 
 # Pre-select the node image we want to use later on
@@ -15,7 +15,7 @@ FROM bitwalker/alpine-elixir:${ELIXIR_VERSION} as alpine-elixir-phoenix
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2019-05-30 \
+ENV REFRESHED_AT=2019-08-30 \
     # Set this so that CTRL+G works properly
     TERM=xterm
 

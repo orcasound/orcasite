@@ -69,8 +69,8 @@ You will need to install Erlang, Elixir, and Nodejs. You can use a tool like [`a
 Language-level dependencies can be found under `.tool-versions`. As of this writing, they are:
 
 ```
-erlang 21.0.4
-elixir 1.8.2-otp-21
+erlang 22.0.7
+elixir 1.9.1-otp-21
 nodejs 12.9.1
 ```
 
@@ -152,8 +152,6 @@ For the moment, this app is running in a Heroku instance with `mix phx.server`. 
 `heroku run POOL_SIZE=2 iex -S mix`
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
-<<<<<<< HEAD
-
 
 ## Setting up Vagrant
 
@@ -178,6 +176,3 @@ vagrant@ubuntu-bionic:~$ cd /vagrant
 ```
 
 Run all the mix, iex, npm and all other build type commands from the vagrant shell from the /vagrant directory or it's children.
-
-=======
->>>>>>> dcfa483079175f953f970aea42d848d31505f490

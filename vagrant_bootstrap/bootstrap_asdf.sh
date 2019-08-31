@@ -3,13 +3,13 @@
 echo -e 'Phase 2 - asdf installations...'
 # Add Erlang using asdf
 asdf plugin-add erlang
-asdf install erlang 21.0.4
-asdf global erlang 21.0.4
+asdf install erlang 22.0.7
+asdf global erlang 22.0.7
 
 # # Add Elixir using asdf
 asdf plugin-add elixir
-asdf install elixir 1.8.2-otp-21
-asdf global elixir 1.8.2-otp-21
+asdf install elixir 1.9.1-otp-22
+asdf global elixir 1.9.1-otp-22
 
 # Add node.js using asdf
 asdf plugin-add nodejs
@@ -17,5 +17,5 @@ asdf plugin-add nodejs
 # fix issue installing node
 ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 
-asdf install nodejs 10.4.0
-asdf global nodejs 10.4.0
+asdf install nodejs 12.9.1
+asdf global nodejs 12.9.1
