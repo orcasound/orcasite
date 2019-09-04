@@ -128,10 +128,13 @@ const FeedList = React.forwardRef((props, ref) => {
                             .reverse()
                             .map((feed, i) => {
                               return (
-                                <MenuItem className={classes.menuItem} key={i}>
-                                  <Link to={`/${feed.slug}`}>
-                                    <span>{feed.name}</span>
-                                  </Link>
+                                <MenuItem
+                                  className={classes.menuItem}
+                                  key={feed.name}
+                                  component={Link}
+                                  to={`/${feed.slug}`}
+                                >
+                                  {feed.name}
                                 </MenuItem>
                               )
                             })}

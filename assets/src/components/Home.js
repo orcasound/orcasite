@@ -82,6 +82,7 @@ class Home extends Component {
                 >
                   <Grid item>
                     <FeedPage
+                      key={feedSlug}
                       feedSlug={feedSlug}
                       onChangeFeed={this.changeFeed}
                     />
