@@ -16,18 +16,18 @@ FROM bitwalker/alpine-elixir:${ELIXIR_VERSION} as alpine-elixir-phoenix
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
 ENV REFRESHED_AT=2019-08-30 \
-    # Set this so that CTRL+G works properly
-    TERM=xterm
+  # Set this so that CTRL+G works properly
+  TERM=xterm
 
 # Prepare to install node
 RUN \
-    mkdir -p /opt/app && \
-    chmod -R 777 /opt/app && \
-    apk --no-cache --update add \
-      git make g++ wget curl inotify-tools && \
-    # temporary rsync install for grabbing node in the next step
-    apk --no-cache --update add --virtual .build-deps rsync && \
-    update-ca-certificates --fresh
+  mkdir -p /opt/app && \
+  chmod -R 777 /opt/app && \
+  apk --no-cache --update add \
+  git make g++ wget curl inotify-tools && \
+  # temporary rsync install for grabbing node in the next step
+  apk --no-cache --update add --virtual .build-deps rsync && \
+  update-ca-certificates --fresh
 
 # "borrow" the node install from the official node alpine image so that we don't
 # have to do all the messy compilation (due to being on musl)
@@ -44,13 +44,13 @@ RUN rsync -a /opt/node/ /usr/local \
 
 # Add local node module binaries to PATH
 ENV PATH=./node_modules/.bin:$PATH \
-    MIX_HOME=/opt/mix \
-    HEX_HOME=/opt/hex \
-    HOME=/opt/app
+  MIX_HOME=/opt/mix \
+  HEX_HOME=/opt/hex \
+  HOME=/opt/app
 
 # Install Hex+Rebar
 RUN mix local.hex --force && \
-    mix local.rebar --force
+  mix local.rebar --force
 
 WORKDIR /opt/app
 
@@ -63,7 +63,7 @@ ENV MIX_ENV=dev
 
 # Install temporary build deps
 RUN apk --no-cache --update add \
-      automake autoconf libtool nasm
+  automake autoconf libtool nasm
 
 # Cache elixir deps
 ADD mix.exs mix.lock ./
@@ -72,7 +72,8 @@ RUN mix do deps.get, deps.compile
 # Same with npm deps
 ADD assets/package.json assets/package-lock.json assets/
 RUN cd assets && \
-    npm install --no-optional
+  npm install --no-optional && \
+  npm rebuild node-sass
 
 # Now that everything is built/installed, reset back to the image we want to
 # be running things in
@@ -89,9 +90,9 @@ COPY --from=phx-builder /opt/app/assets/node_modules /opt/app/assets/node_module
 VOLUME /opt/app/assets/node_modules
 COPY --from=phx-builder /opt/app/_build /opt/app/_build
 COPY --from=phx-builder /opt/app/deps /opt/app/deps
-COPY --from=phx-builder /opt/app/.mix /opt/app/.mix
+# COPY --from=phx-builder /opt/app/.mix /opt/app/.mix
 COPY --from=phx-builder /opt/app/mix.* /opt/app/
-
+# 
 ADD . .
 
 CMD ["mix", "phx.server"]

@@ -2,7 +2,6 @@ import React, { Component } from "react"
 import { Paper, Hidden, Grid } from "@material-ui/core"
 
 import FeedPage from "./FeedPage"
-import Player from "./Player"
 import SiteMenu from "./SiteMenu"
 import About from "./About"
 import AudioExamples from "./AudioExamples"
@@ -14,10 +13,7 @@ import CssBaseline from "@material-ui/core/CssBaseline"
 import theme from "./theme"
 
 class Home extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-  }
+  state = {}
 
   componentDidMount() {
     if (["beta", "dev", "staging"].indexOf(ENV.ENV_NAME) >= 0) {
@@ -26,8 +22,6 @@ class Home extends Component {
       document.title = `Orcasound`
     }
   }
-
-  changeFeed = currentFeed => this.setState({ currentFeed, autoplay: true })
 
   render() {
     const { feedSlug } = this.props.match.params
@@ -90,18 +84,7 @@ class Home extends Component {
                     <FeedPage
                       feedSlug={feedSlug}
                       onChangeFeed={this.changeFeed}
-                    >
-                      <div>
-                        <Player
-                          currentFeed={this.state.currentFeed}
-                          key={
-                            this.state.currentFeed &&
-                            this.state.currentFeed.nodeName
-                          }
-                          autoplay={this.state.autoplay}
-                        />
-                      </div>
-                    </FeedPage>
+                    />
                   </Grid>
                   <Grid item>
                     <GiveFeedback />

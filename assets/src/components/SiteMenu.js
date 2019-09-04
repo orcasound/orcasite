@@ -18,7 +18,29 @@ import FeedList from "./FeedList"
 const useStyles = makeStyles(theme => ({
   button: {
     minWidth: "180px",
-    borderRadius: 0
+    borderRadius: 0,
+    "&:hover": {
+      textDecoration: "none",
+      color: "#000000"
+    },
+    "&active": {
+      color: "#15766b"
+    },
+    "&visited": {
+      color: "#000000"
+    }
+  },
+  link: {
+    "&:hover": {
+      textDecoration: "none",
+      color: "#ffffff"
+    },
+    "&active": {
+      color: "#15766b"
+    },
+    "&visited": {
+      color: "#ffffff"
+    }
   }
 }))
 
@@ -43,6 +65,7 @@ const SiteMenu = () => {
               color="inherit"
               underline="none"
               variant="inherit"
+              className={classes.link}
             >
               <Box ml={1} pt={3}>
                 Orcasound
@@ -67,6 +90,7 @@ const SiteMenu = () => {
               rel="noreferrer"
               color="inherit"
               variant="inherit"
+              className={classes.link}
             >
               Get notified when there's whale activity
             </Link>

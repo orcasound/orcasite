@@ -44,7 +44,17 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-between",
     color: theme.palette.common.black,
     "& a": {
-      color: theme.palette.common.black
+      color: theme.palette.common.black,
+      "&:hover": {
+        textDecoration: "none",
+        color: "#000000"
+      },
+      "&active": {
+        color: "#15766b"
+      },
+      "&visited": {
+        color: "#000000"
+      }
     }
   }
 }))
@@ -65,9 +75,6 @@ const FeedList = React.forwardRef((props, ref) => {
 
     setOpen(false)
   }
-
-  const currentFeed = props.currentFeed || getCurrentFeed() || {}
-  storeCurrentFeed(currentFeed)
 
   return (
     <Query query={LIST_FEEDS}>
@@ -126,7 +133,7 @@ const FeedList = React.forwardRef((props, ref) => {
                                   <Link to={`/${feed.slug}`}>
                                     <span>{feed.name}</span>
                                     <div>
-                                      <FeedPresence feed={currentFeed} />
+                                      <FeedPresence feed={feed} />
                                     </div>
                                   </Link>
                                 </MenuItem>
@@ -145,5 +152,9 @@ const FeedList = React.forwardRef((props, ref) => {
     </Query>
   )
 })
+
+FeedList.propTypes = {
+  feed: feedType
+}
 
 export default FeedList
