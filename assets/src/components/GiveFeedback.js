@@ -15,7 +15,25 @@ const useStyles = makeStyles(theme => ({
     height: "3rem",
     position: "fixed",
     borderRadius: ".5rem .5rem 0rem 0rem",
-    opacity: ".8"
+    opacity: ".8",
+    "&:hover": {
+      background: theme.palette.common.black
+    },
+    "&:focus": {
+      outline: "none"
+    }
+  },
+  link: {
+    "&:hover": {
+      textDecoration: "none",
+      color: "#ffffff"
+    },
+    "&active": {
+      color: "#15766b"
+    },
+    "&visited": {
+      color: "#ffffff"
+    }
   }
 }))
 
@@ -44,6 +62,7 @@ const GiveFeedback = () => {
               target="_blank"
               rel="noopener"
               rel="noreferrer"
+              className={classes.link}
             >
               Give Feedback
             </Link>

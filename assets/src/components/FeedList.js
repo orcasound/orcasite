@@ -133,7 +133,6 @@ const FeedList = React.forwardRef((props, ref) => {
                                   <Link to={`/${feed.slug}`}>
                                     <span>{feed.name}</span>
                                     <div>
-                                      {console.log("feed in menuItem", feed)}
                                       <FeedPresence feed={feed} />
                                     </div>
                                   </Link>

@@ -87,7 +87,6 @@ describe("<AudioPlayer />", () => {
         const card_wrapper = component_wrapper.root.findAllByType(
           CardWrapper
         )[0]
-        // console.log(card_wrapper)
         expect(card_wrapper.type.componentStyle.rules[0]).to.eql(
           "display:flex;justify-content:center;"
         )
