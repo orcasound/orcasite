@@ -1,9 +1,10 @@
 import React from "react"
+import { Paper, Box, Typography, makeStyles } from "@material-ui/core"
+import Player from "./Player"
 import { Query } from "react-apollo"
 import { string, func } from "prop-types"
 import { GET_FEED } from "../queries/feeds"
 import Loader from "./Loader"
-import { Paper, Box, Typography, makeStyles } from "@material-ui/core"
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -67,7 +68,9 @@ const FeedPage = props => {
                 backgroundImage: `url(${mapUrl})`
               }}
             />
-            {props.children}
+
+            <Player currentFeed={feed} />
+
             <Paper elevation={0}>
               {introHtml && (
                 <Typography variant="body1" component="div">

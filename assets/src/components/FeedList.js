@@ -44,7 +44,17 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-between",
     color: theme.palette.common.black,
     "& a": {
-      color: theme.palette.common.black
+      color: theme.palette.common.black,
+      "&:hover": {
+        textDecoration: "none",
+        color: "#000000"
+      },
+      "&active": {
+        color: "#15766b"
+      },
+      "&visited": {
+        color: "#000000"
+      }
     }
   }
 }))
