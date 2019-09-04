@@ -13,7 +13,6 @@ import {
   makeStyles
 } from "@material-ui/core"
 import { ArrowDropDown, Person } from "@material-ui/icons"
-import FeedPresence from "./FeedPresence"
 
 import { feedType } from "types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "utils/feedStorage"
@@ -49,10 +48,10 @@ const useStyles = makeStyles(theme => ({
         textDecoration: "none",
         color: "#000000"
       },
-      "&active": {
+      "&:active": {
         color: "#15766b"
       },
-      "&visited": {
+      "&:visited": {
         color: "#000000"
       }
     }
@@ -132,9 +131,6 @@ const FeedList = React.forwardRef((props, ref) => {
                                 <MenuItem className={classes.menuItem} key={i}>
                                   <Link to={`/${feed.slug}`}>
                                     <span>{feed.name}</span>
-                                    <div>
-                                      <FeedPresence feed={feed} />
-                                    </div>
                                   </Link>
                                 </MenuItem>
                               )

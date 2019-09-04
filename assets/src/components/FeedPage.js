@@ -1,9 +1,11 @@
 import React from "react"
 import { Paper, Box, Typography, makeStyles } from "@material-ui/core"
-import Player from "./Player"
 import { Query } from "react-apollo"
 import { string, func } from "prop-types"
+
 import { GET_FEED } from "../queries/feeds"
+import Player from "./Player"
+import FeedPresence from "./FeedPresence"
 import Loader from "./Loader"
 
 const useStyles = makeStyles(theme => ({
@@ -72,6 +74,7 @@ const FeedPage = props => {
             <Player currentFeed={feed} />
 
             <Paper elevation={0}>
+              <FeedPresence feed={feed} className="text-center" />
               {introHtml && (
                 <Typography variant="body1" component="div">
                   <Box

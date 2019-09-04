@@ -28,10 +28,10 @@ const useStyles = makeStyles(theme => ({
       textDecoration: "none",
       color: "#ffffff"
     },
-    "&active": {
+    "&:active": {
       color: "#15766b"
     },
-    "&visited": {
+    "&:visited": {
       color: "#ffffff"
     }
   }
