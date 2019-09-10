@@ -44,6 +44,7 @@ export default class Detections extends Component {
               <TableCell>ID</TableCell>
               <TableCell>Node</TableCell>
               <TableCell>Listeners</TableCell>
+              <TableCell>Description</TableCell>
               <TableCell align="right">Timestamp</TableCell>
             </TableRow>
           </TableHead>
@@ -56,6 +57,7 @@ export default class Detections extends Component {
                   <TableCell>{detection.id}</TableCell>
                   <TableCell>{feed.slug}</TableCell>
                   <TableCell>{detection.listenerCount}</TableCell>
+                  <TableCell>{detection.description}</TableCell>
                   <TableCell align="right" title={detection.timestamp}>
                     {formatTimestamp(detection.timestamp)}
                   </TableCell>
