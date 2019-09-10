@@ -26,7 +26,7 @@ const StyledActivityButton = styled(Button)`
   flex-grow: 1;
 `
 
-class DetectionDialog extends Component {
+export default class DetectionDialog extends Component {
   static propTypes = {
     isPlaying: bool.isRequired,
     feed: feedType.isRequired,
@@ -34,23 +34,16 @@ class DetectionDialog extends Component {
     getPlayerTime: func.isRequired
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      open: false,
-      submitted: false,
-      description: ""
-    }
+  state = {
+    open: false,
+    submitted: false,
+    description: ""
   }
-
   handleClickOpen = () => {
     this.setState({ open: true })
   }
 
-  handleChange = e => {
-    this.setState({ description: e.target.value })
-  }
+  handleChange = e => this.setState({ description: e.target.value })
 
   handleKeyDown = submitDetection => e => {
     if (e.which === 13) {
@@ -97,77 +90,65 @@ class DetectionDialog extends Component {
   render() {
     return (
       <Mutation mutation={SUBMIT_DETECTION} onCompleted={this.onSuccess}>
-        {(submitDetection, { data }) => {
-          return (
-            <>
-              <StyledActivityButton
-                color="secondary"
-                onClick={this.handleClickOpen}
-              >
-                I hear something interesting
-              </StyledActivityButton>
-              {!this.state.submitted ? (
-                <Dialog
-                  open={this.state.open}
-                  onClose={this.handleClose}
-                  aria-labelledby="form-dialog-title"
-                >
-                  <DialogTitle id="form-dialog-title">
-                    What do you think you heard?
-                  </DialogTitle>
-                  <DialogContent>
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      placeholder="Describe what you heard"
-                      type="text"
-                      fullWidth
-                      onChange={this.handleChange}
-                      onKeyDown={this.handleKeyDown(submitDetection)}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={this.handleClose} color="secondary">
-                      CANCEL
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        this.onDetect(submitDetection)
-                      }}
-                      color="secondary"
-                    >
-                      SUBMIT
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              ) : (
-                <Dialog
-                  open={this.state.open}
-                  aria-labelledby="form-dialog-title"
-                >
-                  <DialogTitle id="form-dialog-title">
-                    Thanks for submitting!
-                  </DialogTitle>
-                  <DialogActions>
-                    <Button
-                      onClick={this.handleShare}
-                      color="secondary"
-                      disabled
-                    >
-                      SHARE
-                    </Button>
-                    <Button onClick={this.handleClose} color="secondary">
-                      CLOSE
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+        {(submitDetection, { data }) => (
+          <>
+            <StyledActivityButton
+              color="secondary"
+              onClick={this.handleClickOpen}
+            >
+              I hear something interesting
+            </StyledActivityButton>
+            <Dialog
+              open={this.state.open}
+              onClose={this.handleClose}
+              aria-labelledby="form-dialog-title"
+            >
+              <DialogTitle id="form-dialog-title">
+                {!this.state.submitted
+                  ? "What do you think you heard?"
+                  : "Thanks for submitting!"}
+              </DialogTitle>
+              {!this.state.submitted && (
+                <DialogContent>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    placeholder="Describe what you heard"
+                    type="text"
+                    fullWidth
+                    onChange={this.handleChange}
+                    onKeyDown={this.handleKeyDown(submitDetection)}
+                  />
+                </DialogContent>
               )}
-            </>
-          )
-        }}
+              {!this.state.submitted ? (
+                <DialogActions>
+                  <Button onClick={this.handleClose} color="secondary">
+                    CANCEL
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      this.onDetect(submitDetection)
+                    }}
+                    color="secondary"
+                  >
+                    SUBMIT
+                  </Button>
+                </DialogActions>
+              ) : (
+                <DialogActions>
+                  <Button onClick={this.handleShare} color="secondary" disabled>
+                    SHARE
+                  </Button>
+                  <Button onClick={this.handleClose} color="secondary">
+                    CLOSE
+                  </Button>
+                </DialogActions>
+              )}
+            </Dialog>
+          </>
+        )}
       </Mutation>
     )
   }
 }
-
-export default DetectionDialog
