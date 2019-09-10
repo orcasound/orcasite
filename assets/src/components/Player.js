@@ -175,6 +175,7 @@ class Player extends Component {
                   feed={currentFeed}
                   timestamp={timestamp}
                   getPlayerTime={getPlayerTime}
+                  listenerCount={this.props.listenerCount}
                 />
               )}
             </StyledButtonContainer>

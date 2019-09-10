@@ -71,14 +71,21 @@ class DetectionDialog extends Component {
       feed: { id: feedId },
       timestamp: playlistTimestamp,
       isPlaying,
-      getPlayerTime
+      getPlayerTime,
+      listenerCount
     } = this.props
 
     const playerOffset = getPlayerTime()
     const { description } = this.state
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
       submitDetection({
-        variables: { feedId, playlistTimestamp, playerOffset, description }
+        variables: {
+          feedId,
+          playlistTimestamp,
+          playerOffset,
+          description,
+          listenerCount
+        }
       })
     }
   }

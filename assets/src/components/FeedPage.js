@@ -36,6 +36,8 @@ const FeedPage = props => {
   const classes = useStyles()
   const { feedSlug: slug } = props
 
+  const [listenerCount, setListenerCount] = useState(0)
+
   return (
     <Query query={GET_FEED} variables={{ slug }}>
       {({ data, loading, error }) => {
@@ -74,7 +76,11 @@ const FeedPage = props => {
             <Player currentFeed={feed} />
 
             <Paper elevation={0}>
-              <FeedPresence feed={feed} className="text-center" />
+              <FeedPresence
+                feed={feed}
+                className="text-center"
+                onListenerChange={setListenerCount}
+              />
               {introHtml && (
                 <Typography variant="body1" component="div">
                   <Box
