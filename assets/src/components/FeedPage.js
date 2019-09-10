@@ -73,7 +73,7 @@ const FeedPage = props => {
               }}
             />
 
-            <Player currentFeed={feed} />
+            <Player currentFeed={feed} listenerCount={listenerCount} />
 
             <Paper elevation={0}>
               <FeedPresence

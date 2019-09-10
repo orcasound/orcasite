@@ -108,6 +108,7 @@ export default class Candidates extends Component {
                       <TableCell>Node</TableCell>
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
+                      <TableCell align="right">Descriptions</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -121,6 +122,13 @@ export default class Candidates extends Component {
                         </TableCell>
                         <TableCell align="right" title={candidate.minTime}>
                           {formatTimestamp(candidate.minTime)}
+                        </TableCell>
+                        <TableCell align="right" title={candidate.minTime}>
+                          {candidate.detections
+                            .map(d => d.description)
+                            .filter(d => typeof d !== "undefined" && d !== null)
+                            .slice(0, 3)
+                            .join(", ")}
                         </TableCell>
                         <TableCell align="center">
                           <Button
