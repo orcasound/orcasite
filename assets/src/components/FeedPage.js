@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Paper, Box, Typography, makeStyles } from "@material-ui/core"
 import { Query } from "react-apollo"
 import { string, func } from "prop-types"

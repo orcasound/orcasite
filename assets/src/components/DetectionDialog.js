@@ -52,10 +52,10 @@ class DetectionDialog extends Component {
     this.setState({ description: e.target.value })
   }
 
-  handleSubmit = submitDetection => {
-    this.setState({ submitted: true }, () => {
+  handleKeyDown = submitDetection => e => {
+    if (e.which === 13) {
       this.onDetect(submitDetection)
-    })
+    }
   }
 
   handleClose = () => {
@@ -123,6 +123,7 @@ class DetectionDialog extends Component {
                       type="text"
                       fullWidth
                       onChange={this.handleChange}
+                      onKeyDown={this.handleKeyDown(submitDetection)}
                     />
                   </DialogContent>
                   <DialogActions>
