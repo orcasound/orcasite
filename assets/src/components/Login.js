@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import { Link } from "react-router-dom"
 import Humanize from "humanize-plus"
-import { graphql, compose } from "react-apollo"
+import { graphql } from "react-apollo"
 import gql from "graphql-tag"
 import { withFormik, Form, Field } from "formik"
 import { object, string } from "yup"
@@ -172,80 +172,77 @@ const LOGIN_MUTATION = gql`
   }
 `
 
-export default compose(
-  graphql(SIGNUP_MUTATION, { name: "signupMutation" }),
-  graphql(LOGIN_MUTATION, { name: "loginMutation" }),
-  withFormik({
-    mapPropsToValues: props => ({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: ""
-    }),
-    validationSchema: object().shape({
-      email: string()
-        .email(
-          "This doesn't seem like an email (needs to look like name@example.com)"
-        )
-        .required("Please enter your email."),
-      password: string()
-        .min(6, "Password should be at least ${min} characters long.")
-        .required("Please enter a password!")
-    }),
-    handleSubmit: async (
-      values,
-      { props, setSubmitting, setErrors, setFieldError }
-    ) => {
-      try {
-        const { firstName, lastName, email, password } = values
-        if (props.login) {
-          const result = await props.loginMutation({
-            variables: {
-              email,
-              password
-            }
-          })
-
-          setSubmitting(false)
-          const { authToken } = result.data.login
-          logIn(authToken)
-        } else {
-          const result = await props.signupMutation({
-            variables: {
-              firstName,
-              lastName,
-              email,
-              password
-            }
-          })
-          setSubmitting(false)
-          const { authToken } = result.data.signup
-          logIn(authToken)
-        }
-
-        if (props.location.state && props.location.state.from) {
-          props.history.push(props.location.state.from)
-        } else {
-          props.history.push(`/`)
-        }
-      } catch (error) {
-        setSubmitting(false)
-        const { graphQLErrors } = error
-        const errors = graphQLErrors || []
-        errors.forEach(({ message, errors }) => {
-          if (message === "validation") {
-            Object.keys(errors).forEach(key => {
-              setFieldError(
-                key,
-                `${Humanize.capitalize(key)} ${errors[key][0]}`
-              )
-            })
+export default withFormik({
+  mapPropsToValues: props => ({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: ""
+  }),
+  validationSchema: object().shape({
+    email: string()
+      .email(
+        "This doesn't seem like an email (needs to look like name@example.com)"
+      )
+      .required("Please enter your email."),
+    password: string()
+      .min(6, "Password should be at least ${min} characters long.")
+      .required("Please enter a password!")
+  }),
+  handleSubmit: async (
+    values,
+    { props, setSubmitting, setErrors, setFieldError }
+  ) => {
+    try {
+      const { firstName, lastName, email, password } = values
+      if (props.login) {
+        const result = await props.loginMutation({
+          variables: {
+            email,
+            password
           }
-          if (message === "wrong_credentials")
-            setFieldError("email", "Your email or password were invalid.")
         })
+
+        setSubmitting(false)
+        const { authToken } = result.data.login
+        logIn(authToken)
+      } else {
+        const result = await props.signupMutation({
+          variables: {
+            firstName,
+            lastName,
+            email,
+            password
+          }
+        })
+        setSubmitting(false)
+        const { authToken } = result.data.signup
+        logIn(authToken)
       }
-    },
-    displayName: "LoginForm"
-  })
-)(Login)
+
+      if (props.location.state && props.location.state.from) {
+        props.history.push(props.location.state.from)
+      } else {
+        props.history.push(`/`)
+      }
+    } catch (error) {
+      setSubmitting(false)
+      const { graphQLErrors } = error
+      const errors = graphQLErrors || []
+      errors.forEach(({ message, errors }) => {
+        if (message === "validation") {
+          Object.keys(errors).forEach(key => {
+            setFieldError(key, `${Humanize.capitalize(key)} ${errors[key][0]}`)
+          })
+        }
+        if (message === "wrong_credentials")
+          setFieldError("email", "Your email or password were invalid.")
+      })
+    }
+  },
+  displayName: "LoginForm"
+})(
+  graphql(LOGIN_MUTATION, { name: "loginMutation" })(
+    graphql(SIGNUP_MUTATION, { name: "signupMutation" })(Login)
+  )
+)

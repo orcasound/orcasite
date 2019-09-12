@@ -6,7 +6,7 @@ const displayFields = ({ record }) =>
 
 export default function EditRecord(props) {
   return (
-    <Drawer open={props.open} onClose={props.onClose} classes={{ root: "p-3" }}>
+    <Drawer open={props.open} onClose={props.onClose}>
       <h1>{props.record["__typename"]}</h1>
       {displayFields(props).join(", ")}
     </Drawer>

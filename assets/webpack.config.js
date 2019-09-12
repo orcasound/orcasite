@@ -105,7 +105,9 @@ module.exports = (env, argv) => {
             {
               loader: "sass-loader",
               options: {
-                includePaths: [path.resolve("node_modules/bootstrap/scss")],
+                sassOptions: {
+                  includePaths: [path.resolve("node_modules/bootstrap/scss")]
+                },
                 sourceMap: isDev
               }
             }

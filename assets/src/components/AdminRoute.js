@@ -17,8 +17,8 @@ const AdminRoute = ({ component: Component, ...props }) => (
           </div>
         )
 
-      const { currentUser } = data
-      if (error || Object.keys(data).length === 0 || !currentUser.admin)
+      const { currentUser } = data || {}
+      if (error || typeof data === "undefined" || !currentUser.admin)
         return (
           <Redirect
             to={{ pathname: "login", state: { from: props.location } }}
