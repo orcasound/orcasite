@@ -1,5 +1,6 @@
 defmodule OrcasiteWeb.Resolvers.Accounts do
   alias Orcasite.Accounts
+  alias OrcasiteWeb.Paginated
 
   def current_user(_params, %{context: %{current_user: current_user}}), do: {:ok, current_user}
   def current_user(_params, _info), do: {:error, :not_authorized}
@@ -35,6 +36,19 @@ defmodule OrcasiteWeb.Resolvers.Accounts do
 
       {:error, errors} ->
         {:error, errors}
+    end
+  end
+
+  def list_users(args, %{context: %{current_user: %{admin: true}}}) do
+    {:ok, Paginated.format(Accounts.list_users(args))}
+  end
+
+  def update_user(%{id: user_id, admin: admin}, %{context: %{current_user: current_user}}) do
+    with user <- Accounts.get_user!(user_id),
+         {:ok, user} <- Accounts.update_user(user, %{admin: admin}, current_user) do
+      {:ok, user}
+    else
+      error -> error
     end
   end
 

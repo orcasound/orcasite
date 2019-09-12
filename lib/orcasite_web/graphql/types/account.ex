@@ -10,4 +10,10 @@ defmodule OrcasiteWeb.Types.Account do
     field(:auth_token, :string)
     field(:email, :string)
   end
+
+  @desc "Pagination version of candidates"
+  object :users do
+    field(:meta, :pagination_meta)
+    field(:entries, list_of(:user))
+  end
 end

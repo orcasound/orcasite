@@ -3,11 +3,13 @@ import { Route, Link as RouterLink } from "react-router-dom"
 
 import Link from "@material-ui/core/Link"
 import Paper from "@material-ui/core/Paper"
+import Container from "@material-ui/core/Container"
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
 import { StylesProvider } from "@material-ui/styles"
 import styled from "styled-components"
 
 import Candidates from "./Candidates"
+import Users from "./Users"
 
 const theme = createMuiTheme({
   /* change default theme options below */
@@ -41,7 +43,7 @@ const HeaderLink = styled(Link)`
   padding-left: 1.5rem;
   display: block;
 
-  :hover {
+  &:hover {
     text-decoration: none;
     color: #009bde;
   }
@@ -63,9 +65,37 @@ export default class Dashboard extends Component {
                 Orcasound
               </HeaderLink>
             </MainHeader>
-            <h1 className="px-5 my-3">Admin</h1>
+            <Paper square elevation={0}>
+              <Container>
+                <Link
+                  to="/admin"
+                  component={RouterLink}
+                  classes={{ root: "mx-2" }}
+                >
+                  Admin
+                </Link>
+                <Link
+                  to="/admin/candidates"
+                  component={RouterLink}
+                  classes={{ root: "mx-2" }}
+                >
+                  Candidates
+                </Link>
+                <Link
+                  to="/admin/users"
+                  component={RouterLink}
+                  classes={{ root: "mx-2" }}
+                >
+                  Users
+                </Link>
+              </Container>
+            </Paper>
             <Route exact path="/admin" component={Candidates} />
-            <Route path="/admin/candidates/:id" component={Candidates} />
+            <Route
+              path={["/admin/candidates/:id", "/admin/candidates"]}
+              component={Candidates}
+            />
+            <Route path={["/admin/users"]} component={Users} />
           </Paper>
         </MuiThemeProvider>
       </StylesProvider>

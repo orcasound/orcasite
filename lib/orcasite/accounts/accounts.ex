@@ -15,6 +15,12 @@ defmodule Orcasite.Accounts do
     |> Repo.insert()
   end
 
+  def list_users(params \\ %{pagination: %{page: 1, page_size: 10}}) do
+    User
+    |> order_by(desc: :inserted_at)
+    |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
+  end
+
   def update_user(%User{id: id} = user, attrs, %User{admin: admin, id: current_user_id})
       when (is_boolean(admin) and admin) or current_user_id == id do
     user

@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import { Query } from "react-apollo"
 import { LIST_CANDIDATES } from "queries/detections"
-import queryString from "query-string"
 
 import Paper from "@material-ui/core/Paper"
 import Table from "@material-ui/core/Table"
@@ -18,6 +17,12 @@ import Loader from "components/Loader"
 import Detections from "components/admin/Detections"
 
 import { formatTimestamp } from "utils/utils"
+import {
+  page,
+  pageSize,
+  onChangePage,
+  onChangeRowsPerPage
+} from "utils/pagination"
 
 export default class Candidates extends Component {
   state = {
@@ -42,28 +47,6 @@ export default class Candidates extends Component {
   handleModalClose = () =>
     this.setState({ detectionModalOpen: false, detections: [] })
 
-  // MUI uses 0-indexing for pages, must add offset
-  onChangePage = offset => (_event, page) =>
-    this.props.history.push({
-      pathname: this.props.location.pathname,
-      search: `page=${page + offset}&pageSize=${this.pageSize()}`
-    })
-
-  onChangeRowsPerPage = ({ target: { value } }) =>
-    this.props.history.push({
-      pathname: this.props.location.pathname,
-      search: `page=${this.page()}&pageSize=${value}`
-    })
-
-  page = () => {
-    const { page } = queryString.parse(this.props.location.search)
-    return Number(page || this.props.page)
-  }
-  pageSize = () => {
-    const { pageSize } = queryString.parse(this.props.location.search)
-    return Number(pageSize || this.props.pageSize)
-  }
-
   render() {
     const { rowOptions, detectionModalOpen, detections, feed } = this.state
     return (
@@ -72,7 +55,10 @@ export default class Candidates extends Component {
         <Query
           query={LIST_CANDIDATES}
           variables={{
-            pagination: { page: this.page(), pageSize: this.pageSize() }
+            pagination: {
+              page: page(this.props),
+              pageSize: pageSize(this.props)
+            }
           }}
         >
           {({ data, error, loading }) => {
@@ -145,9 +131,9 @@ export default class Candidates extends Component {
                       <TablePagination
                         count={totalEntries}
                         page={currentPage - 1}
-                        rowsPerPage={this.pageSize()}
-                        onChangePage={this.onChangePage(1)}
-                        onChangeRowsPerPage={this.onChangeRowsPerPage}
+                        rowsPerPage={pageSize(this.props)}
+                        onChangePage={onChangePage(this.props, 1)}
+                        onChangeRowsPerPage={onChangeRowsPerPage(this.props)}
                         rowsPerPageOptions={rowOptions}
                       />
                     </TableRow>
