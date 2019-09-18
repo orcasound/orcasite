@@ -10,6 +10,7 @@ import styled from "styled-components"
 
 import Candidates from "./Candidates"
 import Users from "./Users"
+import Feeds from "./Feeds"
 
 const theme = createMuiTheme({
   /* change default theme options below */
@@ -48,57 +49,55 @@ const HeaderLink = styled(Link)`
     color: #009bde;
   }
 `
-export default class Dashboard extends Component {
-  render() {
-    return (
-      <StylesProvider injectFirst>
-        <MuiThemeProvider theme={theme}>
+
+const adminLinks = [
+  { name: "Admin", path: "/admin" },
+  { name: "Candidates", path: "/admin/candidates" },
+  { name: "Users", path: "/admin/users" },
+  { name: "Feeds", path: "/admin/feeds" }
+]
+
+const Dashboard = props => {
+  return (
+    <StylesProvider injectFirst>
+      <MuiThemeProvider theme={theme}>
+        <Paper square elevation={0}>
+          <MainHeader square elevation={1}>
+            <HeaderLink
+              component={RouterLink}
+              to="/"
+              color="inherit"
+              variant="h1"
+              underline="none"
+            >
+              Orcasound
+            </HeaderLink>
+          </MainHeader>
           <Paper square elevation={0}>
-            <MainHeader square elevation={1}>
-              <HeaderLink
-                component={RouterLink}
-                to="/"
-                color="inherit"
-                variant="h1"
-                underline="none"
-              >
-                Orcasound
-              </HeaderLink>
-            </MainHeader>
-            <Paper square elevation={0}>
-              <Container>
+            <Container>
+              {adminLinks.map(({ name, path }) => (
                 <Link
-                  to="/admin"
+                  key={path}
+                  to={path}
                   component={RouterLink}
                   classes={{ root: "mx-2" }}
                 >
-                  Admin
+                  {name}
                 </Link>
-                <Link
-                  to="/admin/candidates"
-                  component={RouterLink}
-                  classes={{ root: "mx-2" }}
-                >
-                  Candidates
-                </Link>
-                <Link
-                  to="/admin/users"
-                  component={RouterLink}
-                  classes={{ root: "mx-2" }}
-                >
-                  Users
-                </Link>
-              </Container>
-            </Paper>
-            <Route exact path="/admin" component={Candidates} />
-            <Route
-              path={["/admin/candidates/:id", "/admin/candidates"]}
-              component={Candidates}
-            />
-            <Route path={["/admin/users"]} component={Users} />
+              ))}
+            </Container>
           </Paper>
-        </MuiThemeProvider>
-      </StylesProvider>
-    )
-  }
+          <Route exact path="/admin" component={Candidates} />
+          <Route
+            path={["/admin/candidates/:id", "/admin/candidates"]}
+            component={Candidates}
+          />
+          <Route path={["/admin/users"]} component={Users} />
+          <Route path={["/admin/feeds"]} component={Feeds} />
+        </Paper>
+      </MuiThemeProvider>
+    </StylesProvider>
+  )
 }
+
+export default Dashboard
