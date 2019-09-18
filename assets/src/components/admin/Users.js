@@ -84,7 +84,7 @@ export default class Users extends Component {
                       <TableCell>ID</TableCell>
                       <TableCell>Email</TableCell>
                       <TableCell align="right">Admin</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                      {/* <TableCell align="right">Actions</TableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -95,14 +95,14 @@ export default class Users extends Component {
                         <TableCell align="right">
                           {(user.admin && "Yes") || "-"}
                         </TableCell>
-                        <TableCell align="right">
-                          <Button
+                        {/* <TableCell align="right">
+                            <Button
                             variant="text"
                             onClick={this.handleEditClick(user)}
-                          >
+                            >
                             Edit
-                          </Button>
-                        </TableCell>
+                            </Button>
+                            </TableCell> */}
                       </TableRow>
                     ))}
                   </TableBody>
