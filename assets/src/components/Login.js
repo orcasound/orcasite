@@ -11,6 +11,10 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight"
 
 import { logIn } from "utils/auth"
 
+import { StylesProvider, ThemeProvider } from "@material-ui/styles"
+import CssBaseline from "@material-ui/core/CssBaseline"
+import theme from "./theme"
+
 import Header from "./SiteMenu"
 
 import classNames from "classnames"
@@ -69,79 +73,84 @@ class Login extends Component {
     } = props
 
     return (
-      <div className="login">
-        <Header />
-        <Form className="login-form">
-          <h4 className="my-5 text-center">
-            {(props.login && "Log in") || "Register an account"}
-          </h4>
-          {errors.submitErrors && this.submitErrorMessage(errors)}
-          <div className="d-flex flex-column">
-            {!props.login && (
-              <Field
-                name="firstName"
-                placeholder="First name"
-                className="form-control form-control-lg mb-3"
-              />
-            )}
+      <StylesProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <div className="login">
+            <Header />
+            <Form className="login-form">
+              <h4 className="my-5 text-center">
+                {(props.login && "Log in") || "Register an account"}
+              </h4>
+              {errors.submitErrors && this.submitErrorMessage(errors)}
+              <div className="d-flex flex-column">
+                {!props.login && (
+                  <Field
+                    name="firstName"
+                    placeholder="First name"
+                    className="form-control form-control-lg mb-3"
+                  />
+                )}
 
-            {!props.login && (
-              <Field
-                name="lastName"
-                placeholder="Last name"
-                className="form-control form-control-lg mb-3"
-              />
-            )}
+                {!props.login && (
+                  <Field
+                    name="lastName"
+                    placeholder="Last name"
+                    className="form-control form-control-lg mb-3"
+                  />
+                )}
 
-            <Field
-              name="email"
-              placeholder="Email"
-              type="email"
-              className={`form-control form-control-lg ${(((errors.email &&
-                touched.email) ||
-                props.errors.error) &&
-                "is-invalid") ||
-                "mb-3"}`}
-            />
-            {errors.email && touched.email && (
-              <div className="invalid-feedback mb-3">{errors.email}</div>
-            )}
+                <Field
+                  name="email"
+                  placeholder="Email"
+                  type="email"
+                  className={`form-control form-control-lg ${(((errors.email &&
+                    touched.email) ||
+                    props.errors.error) &&
+                    "is-invalid") ||
+                    "mb-3"}`}
+                />
+                {errors.email && touched.email && (
+                  <div className="invalid-feedback mb-3">{errors.email}</div>
+                )}
 
-            {props.errors.error && (
-              <div className="invalid-feedback mb-3">
-                {props.errors.error.email}
+                {props.errors.error && (
+                  <div className="invalid-feedback mb-3">
+                    {props.errors.error.email}
+                  </div>
+                )}
+
+                <Field
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  className={`form-control form-control-lg ${(errors.password &&
+                    touched.password &&
+                    "is-invalid") ||
+                    "mb-3"}`}
+                />
+                {errors.password && touched.password && (
+                  <div className="invalid-feedback mb-3">{errors.password}</div>
+                )}
+
+                <div className="d-flex mt-2 flex-column justify-content-center align-items-center">
+                  {this.submitButton(isSubmitting)}
+
+                  {props.login ? (
+                    <Link to="/register" className="mt-5">
+                      Need an account?
+                    </Link>
+                  ) : (
+                    <Link to="/login" className="mt-5">
+                      Already have an account?
+                    </Link>
+                  )}
+                </div>
               </div>
-            )}
-
-            <Field
-              name="password"
-              type="password"
-              placeholder="Password"
-              className={`form-control form-control-lg ${(errors.password &&
-                touched.password &&
-                "is-invalid") ||
-                "mb-3"}`}
-            />
-            {errors.password && touched.password && (
-              <div className="invalid-feedback mb-3">{errors.password}</div>
-            )}
-
-            <div className="d-flex mt-2 flex-column justify-content-center align-items-center">
-              {this.submitButton(isSubmitting)}
-
-              {props.login ? (
-                <Link to="/register" className="mt-5">
-                  Need an account?
-                </Link>
-              ) : (
-                <Link to="/login" className="mt-5">
-                  Already have an account?
-                </Link>
-              )}
-            </div>
+            </Form>
           </div>
-        </Form>
-      </div>
+        </ThemeProvider>
+      </StylesProvider>
     )
   }
 }
