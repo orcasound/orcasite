@@ -37,6 +37,7 @@
     "react-dom": "^16.9.0",
     "react-ga": "^2.6.0",
     "react-router-dom": "^5.0.1",
+    "recompose": "^0.30.0",
     "styled-components": "^4.3.2",
     "typeface-roboto": "0.0.75",
     "video.js": "^7.6.0",
