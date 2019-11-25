@@ -11,7 +11,7 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 ##### Quick method (e.g. at hackathons): 
 
 *Short-cut: `docker-compose pull && docker-compose up`*
-Note: this assumes you have installed [https://docs.docker.com/v17.09/engine/installation/](docker) and [https://docs.docker.com/compose/install/](docker-compose).
+Note: this assumes you have installed [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 To access the site, run `docker-compose pull && docker-compose up` and wait until the `phoenix_1` container outputs `Compiled successfully`. Then you should find the site available in your browser at [`http://localhost:4000`](http://localhost:4000).
 
@@ -23,7 +23,7 @@ If you would like a more flexible method, you can [install the dependencies dire
 
 ## Running in Docker
 
-Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both [https://docs.docker.com/v17.09/engine/installation/](docker) and [https://docs.docker.com/compose/install/](docker-compose) installed on your machine.
+Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/) installed on your machine.
 
 Once you clone the repository, you can just run docker-compose in the root directory. To avoid building locally you can use the `pull` command first to grab the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite). Combining both commands into one line:
 
