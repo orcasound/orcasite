@@ -10,7 +10,8 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 
 ##### Quick method (e.g. at hackathons): 
 
-*Short-cut: `docker-compose pull && docker-compose up`*
+**Short-cut: `docker-compose pull && docker-compose up`**
+
 Note: this assumes you have installed [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 To access the site, run `docker-compose pull && docker-compose up` and wait until the `phoenix_1` container outputs `Compiled successfully`. Then you should find the site available in your browser at [`http://localhost:4000`](http://localhost:4000).
