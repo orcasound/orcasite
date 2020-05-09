@@ -16,6 +16,7 @@ use Mix.Config
 config :orcasite, OrcasiteWeb.Endpoint,
   load_from_system_env: true,
   url: [scheme: "https", host: System.get_env("HOST_URL"), port: 443],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
