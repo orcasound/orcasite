@@ -38,6 +38,7 @@ class Home extends Component {
               style={{ position: "relative" }}
             >
               <SiteMenu />
+
               {!feedSlug && (
                 <Grid
                   component="main"
@@ -57,9 +58,6 @@ class Home extends Component {
                     sm={8}
                   >
                     <Grid item>
-                      <About />
-                    </Grid>
-                    <Grid item>
                       <AudioExamples />
                     </Grid>
                   </Grid>
@@ -68,9 +66,11 @@ class Home extends Component {
                       <VerticalImage />
                     </Hidden>
                   </Grid>
-                  <Grid item>
+                  {/**
+                    <Grid item>
                     <GiveFeedback />
-                  </Grid>
+                    </Grid>
+                */}
                 </Grid>
               )}
               {feedSlug && (
@@ -86,9 +86,11 @@ class Home extends Component {
                       onChangeFeed={this.changeFeed}
                     />
                   </Grid>
-                  <Grid item>
+                  {/**
+                    <Grid item>
                     <GiveFeedback />
-                  </Grid>
+                    </Grid>
+                */}
                 </Grid>
               )}
             </Paper>

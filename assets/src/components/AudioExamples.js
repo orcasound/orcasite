@@ -1,8 +1,9 @@
 import React from "react"
-import { Typography, Box, Grid, Avatar } from "@material-ui/core"
+import GiveFeedback from "./GiveFeedback"
+import { Typography, Box, Grid, Hidden, Avatar } from "@material-ui/core"
 import wave from "../../static/wave-orca.png"
 
-const AudioExamples = props => {
+const AudioExamples = (props) => {
   return (
     <Grid
       className="audio-example-section"
@@ -13,6 +14,11 @@ const AudioExamples = props => {
       alignItems="flex-start"
       item
     >
+      <Box marginTop={2} ml={{ xs: 4, sm: 9, md: 12, lg: 20 }}>
+        <Hidden smDown>
+          <GiveFeedback />
+        </Hidden>
+      </Box>
       <Grid
         container
         spacing={0}
@@ -80,6 +86,11 @@ const AudioExamples = props => {
           </Grid>
         )
       })}
+      <Box marginTop={5} ml={{ xs: 4, sm: 9, md: 12, lg: 20 }}>
+        <Hidden mdUp>
+          <GiveFeedback />
+        </Hidden>
+      </Box>
     </Grid>
   )
 }
@@ -89,19 +100,19 @@ AudioExamples.defaultProps = {
     {
       title: "Orca Calls",
       audio:
-        "http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3"
+        "http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3",
     },
     {
       title: "Orca Clicks",
       audio:
-        "http://orcasound.net/data/product/SRKW/clicks/20190705-JK_varied_clicks-10sec.mp3"
+        "http://orcasound.net/data/product/SRKW/clicks/20190705-JK_varied_clicks-10sec.mp3",
     },
     {
       title: "Orca Whistles",
       audio:
-        "http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3"
-    }
-  ]
+        "http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3",
+    },
+  ],
 }
 
 export default AudioExamples

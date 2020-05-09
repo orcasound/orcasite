@@ -1,40 +1,49 @@
 import React from "react"
-import { AppBar, Button, Link, Grid, makeStyles } from "@material-ui/core"
+import { AppBar, Button, Link, Grid, Box, makeStyles } from "@material-ui/core"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   appBar: {
     top: "auto",
     bottom: "0",
     backgroundColor: "none",
-    width: "9.25rem"
-  },
-  button: {
-    bottom: 0,
-    background: theme.palette.common.black,
     width: "9.25rem",
+  },
+  notified: {
+    bottom: 0,
+    width: "9rem",
     height: "3rem",
-    position: "fixed",
-    borderRadius: ".5rem .5rem 0rem 0rem",
-    opacity: ".8",
     "&:hover": {
-      background: theme.palette.common.black
+      background: theme.palette.common.black,
     },
     "&:focus": {
-      outline: "none"
-    }
+      outline: "none",
+    },
+  },
+  feedback: {
+    bottom: 0,
+    background: "#000000",
+    color: "#ffffff",
+    width: "9rem",
+    height: "3rem",
+    "&:hover": {
+      background: theme.palette.common.black,
+    },
+    "&:focus": {
+      outline: "none",
+    },
   },
   link: {
     "&:hover": {
       textDecoration: "none",
-      color: "#ffffff"
+      color: "#ffffff",
     },
     "&active": {
-      color: "#15766b"
+      color: "#15766b",
     },
     "&visited": {
-      color: "#ffffff"
-    }
-  }
+      color: "#ffffff",
+    },
+  },
 }))
 
 const GiveFeedback = () => {
@@ -42,34 +51,48 @@ const GiveFeedback = () => {
   const feedbackLink = `https://forms.gle/wKpAnxzUh9a5LMfd7`
 
   return (
-    <AppBar position="relative" className={classes.appBar} color="inherit">
-      <Grid
-        container
-        direction="column"
-        alignItems="flex-start"
-        justify="flex-end"
-      >
-        <Grid item>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
+    <Grid
+      container
+      direction="row"
+      alignItems="flex-end"
+      justify="flex-start"
+      spacing={1}
+    >
+      <Grid item>
+        <Button
+          className={classes.notified}
+          variant="contained"
+          color="primary"
+        >
+          <Link
+            href={feedbackLink}
+            color="inherit"
+            variant="inherit"
+            target="_blank"
+            rel="noopener"
+            rel="noreferrer"
+            className={classes.link}
           >
-            <Link
-              href={feedbackLink}
-              color="inherit"
-              variant="inherit"
-              target="_blank"
-              rel="noopener"
-              rel="noreferrer"
-              className={classes.link}
-            >
-              Give Feedback
-            </Link>
-          </Button>
-        </Grid>
+            Get Notified
+          </Link>
+        </Button>
       </Grid>
-    </AppBar>
+      <Grid item>
+        <Button className={classes.feedback} variant="contained">
+          <Link
+            href={feedbackLink}
+            color="inherit"
+            variant="inherit"
+            target="_blank"
+            rel="noopener"
+            rel="noreferrer"
+            className={classes.link}
+          >
+            Give Feedback
+          </Link>
+        </Button>
+      </Grid>
+    </Grid>
   )
 }
 
