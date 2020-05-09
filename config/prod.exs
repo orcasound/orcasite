@@ -15,7 +15,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :orcasite, OrcasiteWeb.Endpoint,
   load_from_system_env: true,
-  url: [scheme: "http", host: System.get_env("HOST_URL"), port: 443],
+  url: [scheme: "https", host: System.get_env("HOST_URL"), port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
