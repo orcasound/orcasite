@@ -1,5 +1,6 @@
 import React from "react"
 import { AppBar, Button, Link, Grid, makeStyles } from "@material-ui/core"
+import ReactGA from 'react-ga'
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -63,6 +64,7 @@ const GiveFeedback = () => {
               rel="noopener"
               rel="noreferrer"
               className={classes.link}
+              onClick={() => ReactGA.event({category: "Give Feedback", action: "Button clicked"})}
             >
               Give Feedback
             </Link>

@@ -17,6 +17,7 @@ import { ArrowDropDown, Person } from "@material-ui/icons"
 import { feedType } from "types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "utils/feedStorage"
 import { LIST_FEEDS } from "../queries/feeds"
+import ReactGA from 'react-ga'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -64,6 +65,7 @@ const FeedList = React.forwardRef((props, ref) => {
   const classes = useStyles()
 
   const handleToggle = () => {
+    ReactGA.event({category: "Feed list", action: "Menu opened"})
     setOpen(prevOpen => !prevOpen)
   }
 

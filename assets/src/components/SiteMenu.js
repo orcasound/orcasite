@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedList from "./FeedList"
+import ReactGA from 'react-ga'
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -114,6 +115,7 @@ const SiteMenu = () => {
           label="About"
           component={RouterLink}
           to="/"
+          onClick={() => ReactGA.event({category: "Site Menu", action: "About tab clicked"})}
         />
         <Tab value="listen" label="Listen Live" component={FeedList} />
       </Tabs>
