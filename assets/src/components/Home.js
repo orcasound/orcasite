@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Paper, Hidden, Grid } from "@material-ui/core"
+import { Paper, Hidden, Grid, AppBar } from "@material-ui/core"
 
 import FeedPage from "./FeedPage"
 import SiteMenu from "./SiteMenu"
@@ -7,10 +7,30 @@ import About from "./About"
 import AudioExamples from "./AudioExamples"
 import VerticalImage from "./VerticalImage"
 import GiveFeedback from "./GiveFeedback"
+import FeedList from "./FeedList"
 
-import { StylesProvider, ThemeProvider } from "@material-ui/styles"
+import { StylesProvider, ThemeProvider, withStyles } from "@material-ui/styles"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import theme from "./theme"
+
+const styles = (theme) => ({
+  appBar: {
+    display: "flex",
+    height: "3.75rem",
+    // justifyContent: "space-between",
+    alignItems: "center",
+    background: "#777",
+  },
+  innerAppBar: {
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+    margin: "0 0.5rem 0 0.5rem",
+  },
+  item: {
+    margin: "0 0.5rem 0 0.5rem",
+  },
+})
 
 class Home extends Component {
   state = {}
@@ -24,6 +44,7 @@ class Home extends Component {
   }
 
   render() {
+    const { classes } = this.props
     const { feedSlug } = this.props.match.params
 
     return (
@@ -38,6 +59,18 @@ class Home extends Component {
               style={{ position: "relative" }}
             >
               <SiteMenu />
+              <AppBar position="relative" className={classes.appBar}>
+                <Grid container className={classes.innerAppBar}>
+                  <Grid item className={classes.item}>
+                    <GiveFeedback />
+                  </Grid>
+
+                  <Grid item className={classes.item}>
+                    <FeedList />
+                  </Grid>
+                </Grid>
+              </AppBar>
+
               {!feedSlug && (
                 <Grid
                   component="main"
@@ -57,9 +90,6 @@ class Home extends Component {
                     sm={8}
                   >
                     <Grid item>
-                      <About />
-                    </Grid>
-                    <Grid item>
                       <AudioExamples />
                     </Grid>
                   </Grid>
@@ -68,9 +98,11 @@ class Home extends Component {
                       <VerticalImage />
                     </Hidden>
                   </Grid>
-                  <Grid item>
+                  {/**
+                    <Grid item>
                     <GiveFeedback />
-                  </Grid>
+                    </Grid>
+                */}
                 </Grid>
               )}
               {feedSlug && (
@@ -87,9 +119,11 @@ class Home extends Component {
                       onChangeFeed={this.changeFeed}
                     />
                   </Grid>
-                  <Grid item>
+                  {/**
+                    <Grid item>
                     <GiveFeedback />
-                  </Grid>
+                    </Grid>
+                */}
                 </Grid>
               )}
             </Paper>
@@ -100,4 +134,4 @@ class Home extends Component {
   }
 }
 
-export default Home
+export default withStyles(styles)(Home)

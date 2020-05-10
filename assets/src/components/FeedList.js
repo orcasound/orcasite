@@ -10,52 +10,53 @@ import {
   MenuList,
   MenuItem,
   Box,
-  makeStyles
+  Typography,
+  Tooltip,
+  makeStyles,
+  Hidden,
 } from "@material-ui/core"
-import { ArrowDropDown, Person } from "@material-ui/icons"
+import { ArrowDropDown, Person, GraphicEq } from "@material-ui/icons"
+import FeedPresence from "./FeedPresence"
 
 import { feedType } from "types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "utils/feedStorage"
 import { LIST_FEEDS } from "../queries/feeds"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    flexGrow: 1,
-    maxWidth: "none",
-    flexShrink: 1,
-    height: "3rem",
-    zIndex: 0
+    zIndex: 99,
+    // position: "relative",
   },
   button: {
-    display: "flex",
-    flexGrow: 1,
-    flexShrink: 1,
-    width: "100%",
     height: "3rem",
-    padding: "0 0 0 0",
-    zIndex: 0
+    zIndex: 1,
+  },
+  mobileButton: {
+    height: "3rem",
+    zIndex: 1,
+    padding: 0,
+  },
+  menuList: {
+    right: "8rem",
   },
   menuItem: {
-    display: "flex",
-    justifyContent: "space-between",
+    // display: "flex",
+    // justifyContent: "space-between",
     color: theme.palette.common.black,
     "& a": {
       color: theme.palette.common.black,
       "&:hover": {
         textDecoration: "none",
-        color: "#000000"
+        color: "#000000",
       },
       "&:active": {
-        color: "#15766b"
+        color: "#15766b",
       },
       "&:visited": {
-        color: "#000000"
-      }
-    }
-  }
+        color: "#000000",
+      },
+    },
+  },
 }))
 
 const FeedList = React.forwardRef((props, ref) => {
@@ -64,10 +65,10 @@ const FeedList = React.forwardRef((props, ref) => {
   const classes = useStyles()
 
   const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen)
+    setOpen((prevOpen) => !prevOpen)
   }
 
-  const handleClose = event => {
+  const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return
     }
@@ -78,51 +79,70 @@ const FeedList = React.forwardRef((props, ref) => {
   return (
     <Query query={LIST_FEEDS}>
       {({ data, loading, error }) => {
-        if (loading || error) {
-          return (
-            <ul>
-              <li>
-                <div>LOADING</div>
-              </li>
-            </ul>
-          )
-        }
-
         const { feeds } = data
 
         return (
-          <Paper className={classes.paper} elevation={0} square>
-            <ClickAwayListener onClickAway={handleClose}>
-              <div>
+          <ClickAwayListener onClickAway={handleClose}>
+            <div>
+              {/** --- MOBILE VIEW --- */}
+              <Hidden smUp>
+                <Button
+                  className={classes.mobileButton}
+                  ref={anchorRef}
+                  aria-controls="menu-list-grow"
+                  aria-haspopup="true"
+                  variant="contained"
+                  onClick={handleToggle}
+                  color="primary"
+                >
+                  <GraphicEq />
+                  <Hidden xsDown>
+                    <Box letterSpacing="0.03572em">Listen Live</Box>
+                  </Hidden>
+                  <Tooltip arrow title={<Typography>Listen Live</Typography>}>
+                    <ArrowDropDown />
+                  </Tooltip>
+                </Button>
+              </Hidden>
+              {/** --- TABLET -> DESKTOP BREAKPOINT --- */}
+              <Hidden xsDown>
                 <Button
                   className={classes.button}
                   ref={anchorRef}
                   aria-controls="menu-list-grow"
                   aria-haspopup="true"
-                  variant="text"
+                  variant="contained"
                   onClick={handleToggle}
+                  color="primary"
                 >
-                  <Box letterSpacing="0.03572em">Listen Live</Box>
-                  <ArrowDropDown />
+                  <GraphicEq />
+                  <Hidden xsDown>
+                    <Box letterSpacing="0.03572em">Listen Live</Box>
+                  </Hidden>
+                  <Tooltip arrow title={<Typography>Listen Live</Typography>}>
+                    <ArrowDropDown />
+                  </Tooltip>
                 </Button>
-                <Popper
-                  open={open}
-                  anchorEl={anchorRef.current}
-                  keepMounted
-                  transition
-                >
-                  {({ TransitionProps, placement }) => (
-                    <Grow
-                      {...TransitionProps}
-                      style={{
-                        transformOrigin:
-                          placement === "bottom"
-                            ? "center top"
-                            : "center bottom"
-                      }}
-                    >
-                      <Paper>
-                        <MenuList>
+              </Hidden>
+              <Popper
+                open={open}
+                anchorEl={anchorRef.current}
+                keepMounted
+                transition
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === "bottom" ? "center top" : "center bottom",
+                    }}
+                  >
+                    <Paper className={classes.paper}>
+                      {loading ? (
+                        <Paper>Loading</Paper>
+                      ) : (
+                        <MenuList className={classes.MenuList}>
                           {feeds
                             .slice()
                             .reverse()
@@ -139,13 +159,13 @@ const FeedList = React.forwardRef((props, ref) => {
                               )
                             })}
                         </MenuList>
-                      </Paper>
-                    </Grow>
-                  )}
-                </Popper>
-              </div>
-            </ClickAwayListener>
-          </Paper>
+                      )}
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </div>
+          </ClickAwayListener>
         )
       }}
     </Query>
@@ -153,7 +173,7 @@ const FeedList = React.forwardRef((props, ref) => {
 })
 
 FeedList.propTypes = {
-  feed: feedType
+  feed: feedType,
 }
 
 export default FeedList
