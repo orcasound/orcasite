@@ -6,31 +6,31 @@ import { string, func } from "prop-types"
 import { GET_FEED } from "../queries/feeds"
 import Loader from "./Loader"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     [theme.breakpoints.down("xs")]: {
-      height: "8rem"
+      height: "8rem",
     },
     [theme.breakpoints.up("sm")]: {
-      height: "10rem"
+      height: "10rem",
     },
     [theme.breakpoints.up("md")]: {
-      height: "12rem"
+      height: "12rem",
     },
     [theme.breakpoints.up("lg")]: {
-      height: "14rem"
+      height: "14rem",
     },
     [theme.breakpoints.up("xl")]: {
-      height: "16rem"
+      height: "16rem",
     },
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    backgroundColor: "gray"
-  }
+    backgroundColor: "gray",
+  },
 }))
 
-const FeedPage = props => {
+const FeedPage = (props) => {
   const classes = useStyles()
   const { feedSlug: slug } = props
 
@@ -65,7 +65,7 @@ const FeedPage = props => {
             <Paper
               className={classes.paper}
               style={{
-                backgroundImage: `url(${mapUrl})`
+                backgroundImage: `url(${mapUrl})`,
               }}
             />
 
@@ -99,7 +99,7 @@ const FeedPage = props => {
 
 FeedPage.propTypes = {
   feedSlug: string.isRequired,
-  onChangeFeed: func
+  onChangeFeed: func,
 }
 
 export default FeedPage

@@ -14,11 +14,11 @@ const AudioExamples = (props) => {
       alignItems="flex-start"
       item
     >
-      <Box marginTop={2} ml={{ xs: 4, sm: 9, md: 12, lg: 20 }}>
-        <Hidden smDown>
-          <GiveFeedback />
-        </Hidden>
-      </Box>
+      {/**
+        <Box marginTop={2} ml={{ xs: 4, sm: 9, md: 12, lg: 20 }}>
+        <GiveFeedback />
+        </Box>
+    */}
       <Grid
         container
         spacing={0}
@@ -86,11 +86,13 @@ const AudioExamples = (props) => {
           </Grid>
         )
       })}
-      <Box marginTop={5} ml={{ xs: 4, sm: 9, md: 12, lg: 20 }}>
+      {/**
+        <Box marginTop={5} ml={{ xs: 4, sm: 9, md: 12, lg: 20 }}>
         <Hidden mdUp>
-          <GiveFeedback />
+        <GiveFeedback />
         </Hidden>
-      </Box>
+        </Box>
+    */}
     </Grid>
   )
 }

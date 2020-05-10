@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   Paper,
+  Grid,
   AppBar,
   Toolbar,
   Tabs,
@@ -28,6 +29,11 @@ const useStyles = makeStyles((theme) => ({
     },
     "&visited": {
       color: "#000000",
+    },
+  },
+  h1: {
+    "&:hover": {
+      background: "#777",
     },
   },
   link: {
@@ -58,20 +64,24 @@ const SiteMenu = () => {
     <Paper elevation={0} square>
       <AppBar position="static" color="inherit">
         <Toolbar>
-          <Typography component="h1" variant="h1">
-            <Link
-              component={RouterLink}
-              to="/"
-              color="inherit"
-              underline="none"
-              variant="inherit"
-              className={classes.link}
-            >
-              <Box ml={1} pt={3}>
-                Orcasound
-              </Box>
-            </Link>
-          </Typography>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography component="h1" variant="h1" className={classes.h1}>
+                <Link
+                  component={RouterLink}
+                  to="/"
+                  color="inherit"
+                  underline="none"
+                  variant="inherit"
+                  className={classes.link}
+                >
+                  <Box ml={0} pt={3}>
+                    Orcasound
+                  </Box>
+                </Link>
+              </Typography>
+            </Grid>
+          </Grid>
         </Toolbar>
       </AppBar>
       {/**
@@ -101,24 +111,24 @@ const SiteMenu = () => {
         <NotificationIcon />
         </Box>
         </Button>
-    */}
-      <Tabs
+        <Tabs
         variant="fullWidth"
         centered
         value={value}
         indicatorColor="primary"
         onChange={handleChange}
         scrollButtons="off"
-      >
+        >
         <Tab
-          className={classes.button}
-          value="about"
-          label="About"
-          component={RouterLink}
-          to="/"
+        className={classes.button}
+        value="about"
+        label="About"
+        component={RouterLink}
+        to="/"
         />
         <Tab value="listen" label="Listen Live" component={FeedList} />
-      </Tabs>
+        </Tabs>
+    */}
     </Paper>
   )
 }
