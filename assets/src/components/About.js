@@ -59,7 +59,7 @@ const About = props => {
             fontSize={{ xs: "0.875rem", sm: "1rem" }}
           >
             You can also get notified when our listeners or algorithms detect
-            whales at any of our hydrophone locations.
+            whales at any of our hydrophone locations (Bush Point, Port Townsend, and Haro Strait).
           </Box>
         </Typography>
       </Grid>
