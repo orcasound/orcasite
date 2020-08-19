@@ -68,7 +68,7 @@ const SiteMenu = () => {
               className={classes.link}
             >
               <Box ml={1} pt={3}>
-                Orcasound
+                <h1>Orcasound</h1>
               </Box>
             </Link>
           </Typography>

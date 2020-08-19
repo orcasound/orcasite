@@ -34,12 +34,12 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, "../priv/static"),
       filename: "js/[name].js",
-      publicPath: isDev ? "http://0.0.0.0:8080/" : "/"
+      publicPath: isDev ? "http://localhost:4000/" : "/"
     },
 
     devServer: {
       disableHostCheck: true,
-      host: "0.0.0.0",
+      host: "localhost",
       headers: {
         "Access-Control-Allow-Origin": "*"
       }
