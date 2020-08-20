@@ -54,7 +54,7 @@ const Root = props => {
         <Route path="/subscribe" component={SubscribePageRoot}/>
 
 
-        <Route path="/:feedslug" component={FeedPage} />
+        <Route path="/:feedslug" component={Home} />
 
       </Switch>
     </BrowserRouter>  

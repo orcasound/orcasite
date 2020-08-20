@@ -1,0 +1,24 @@
+const Root = props => {
+  return (
+    <BrowserRouter>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route
+          exact
+          path="/login"
+          render={props => <Login {...props} login={true} />}
+        />
+        <Route
+          exact
+          path="/register"
+          render={props => <Login {...props} login={false} />}
+        />
+        <Route path="/dynamic/:feedSlug" component={DynamicFeed} />
+
+        <AdminRoute path="/admin" component={Admin} />
+
+        <Route path="/:feedSlug" component={Home} />
+      </Switch>
+    </BrowserRouter>
+  )
+}
