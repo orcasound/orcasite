@@ -20,6 +20,8 @@ import BlogsPageRoot from "./BlogsPageRoot.js"
 import SupportPageRoot from "./SupportPageRoot.js"
 import SubscribePageRoot from "./SubscribePageRoot.js"
 
+import FeedPage from "./FeedPage.js"
+
 const Root = props => {
   return (
     <BrowserRouter>
@@ -52,7 +54,7 @@ const Root = props => {
         <Route path="/subscribe" component={SubscribePageRoot}/>
 
 
-        <Route path="/:feedslug" component={DynamicFeed} />
+        <Route path="/:feedslug" component={FeedPage} />
 
       </Switch>
     </BrowserRouter>  

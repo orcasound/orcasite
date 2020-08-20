@@ -113,6 +113,9 @@ class Player extends Component {
 
   fetchTimestamp = feed => {
     const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
+    if (feed == "undefined") { 
+      console.log("oops, feed is undefined here")
+    }
 
     const xhr = new XMLHttpRequest()
     this.setState({ currentXhr: xhr })
