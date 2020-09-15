@@ -156,9 +156,10 @@ module.exports = (env, argv) => {
           ),
           SHOW_PLAYER_DEBUG_INFO: process.env.SHOW_PLAYER_DEBUG_INFO || isDev,
           ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
-          GOOGLE_ANALYTICS_ID: JSON.stringify(
-            process.env.GOOGLE_ANALYTICS_ID || ""
-          ),
+          GOOGLE_ANALYTICS_ID: "UA-178080782-1" //JSON.stringify(
+            //process.env.GOOGLE_ANALYTICS_ID || ""
+          //)
+          ,
           FEATURE_ACTIVITY_BUTTON: process.env.FEATURE_ACTIVITY_BUTTON || isDev
         },
         "process.env": {
