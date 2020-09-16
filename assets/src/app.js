@@ -13,8 +13,8 @@ if (ENV.GOOGLE_ANALYTICS_ID) {
   //console.log(window.localtion.pathname + window.location.search);
   ReactGA.modalview('/bush-point');
   ReactGA.modalview('/port-townsend');
-  ReactGA.modalview('/orcasound-lab')
-  ReactGA.modalview(['/paul-test');
+  ReactGA.modalview('/orcasound-lab');
+  ReactGA.modalview('/paul-test');
   ReactGA.modalview('/steve-test');
 
 
