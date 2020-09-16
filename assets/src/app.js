@@ -9,7 +9,15 @@ import ReactGA from 'react-ga'
 
 if (ENV.GOOGLE_ANALYTICS_ID) {
   ReactGA.initialize(ENV.GOOGLE_ANALYTICS_ID)
-  ReactGA.pageview(window.location.pathname + window.location.search);
+  ReactGA.modalview("/");
+  //console.log(window.localtion.pathname + window.location.search);
+  ReactGA.modalview('/bush-point');
+  ReactGA.modalview('/port-townsend');
+  ReactGA.modalview('/orcasound-lab')
+  ReactGA.modalview(['/paul-test');
+  ReactGA.modalview('/steve-test');
+
+
 }
 
 render(
