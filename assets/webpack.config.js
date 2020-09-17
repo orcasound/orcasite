@@ -14,7 +14,8 @@ const autoprefixer = require("autoprefixer")
  * Configuration
  **/
 module.exports = (env, argv) => {
-  const isDev = !(env && env.prod) && argv.mode !== "production"
+  //const isDev = !(env && env.prod) && argv.mode !== "production"
+  const isDev = true;
 
   // Turned off uglifying due to minimization of webworker inlining not having 'window' defined
   // See:
@@ -34,7 +35,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, "../priv/static"),
       filename: "js/[name].js",
-      publicPath: isDev ? "http://localhost:4000/" : "/"
+      publicPath: isDev ? "http://localhost:4000/" : "/",      
     },
 
     devServer: {
@@ -42,7 +43,8 @@ module.exports = (env, argv) => {
       host: "localhost",
       headers: {
         "Access-Control-Allow-Origin": "*"
-      }
+      },
+      hot: true
     },
 
     module: {

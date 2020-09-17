@@ -20,6 +20,8 @@ import BlogsPageRoot from "./BlogsPageRoot.js"
 import SupportPageRoot from "./SupportPageRoot.js"
 import SubscribePageRoot from "./SubscribePageRoot.js"
 
+import GoogleAnalytics from "./GoogleAnalytics"
+
 import FeedPage from "./FeedPage.js"
 
 const Root = props => {
@@ -57,6 +59,7 @@ const Root = props => {
         <Route path="/:feedSlug" component={Home} />
 
       </Switch>
+      <GoogleAnalytics />
     </BrowserRouter>  
     )
 }
