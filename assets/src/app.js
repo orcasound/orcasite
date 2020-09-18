@@ -25,6 +25,8 @@ import { GA_TRACKING_ID } from '../config.js';
 //<script async src="https://www.googletagmanager.com/gtag/js?id=UA-178080782-1"></script>
 
 
+/*
+
 if (true) {
 
   var Promise = require('promise')
@@ -79,7 +81,9 @@ if (true) {
 
 }
 
-/*
+*/
+
+
 
 render(
   <ApolloProvider client={apolloClient}>
@@ -87,8 +91,6 @@ render(
   </ApolloProvider>,
   document.getElementById('root'),
 )            
-
-*/
 
 
 /*

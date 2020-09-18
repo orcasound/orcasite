@@ -32,6 +32,12 @@ import NotificationIcon from "@material-ui/icons/Notifications"
 
 import OrcasoundLogo from "../../static/orcasound-logo.png"
 import OrcaImage from  "../../static/spyhops_ship_updated.jpg"
+//import OtherLogo from "../../static/asset_3.svg"
+
+//import OtherLogo from "Asset_3.svg"
+
+import OtherLogo from "./OtherIcon"
+
 
 import FormDialog from "./FormDialog.js"
 
@@ -185,11 +191,12 @@ const NewHomeSiteMenu = () => {
       <Grid item xs={6}>
           <About />
            <Box className={classes.frontPageOrcaImageBox}>
-            <CardMedia
+           {<CardMedia
               component="img"
               alt="Orca Image"
-              image={OrcaImage}
-            />
+              image={OtherLogo}
+            />}
+          <OtherLogo/>
           </Box>
 
       </Grid>

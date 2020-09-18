@@ -8,7 +8,13 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { mergeClasses } from '@material-ui/styles';
 
+import OtherLogo from '../../static/asset_3.svg'
+
+import OrcasoundLogo from "../../static/orcasound-logo.png"
+
 import { Link as RouterLink } from "react-router-dom"
+
+import { SvgIcon } from '@material-ui/core';
 
 import {
   makeStyles,
@@ -81,12 +87,13 @@ export default function FormDialog() {
         Subscribe to hydrophones
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+        <DialogTitle id="form-dialog-title">What did you hear?</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          {<DialogContentText>
             To subscribe to this website, please enter your email address here. We will send updates
             occasionally.
-          </DialogContentText>
+          </DialogContentText>}
+          <img src={OrcasoundLogo} width="50px" height="50px"/>
           <TextField
             autoFocus
             margin="dense"
