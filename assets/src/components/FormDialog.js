@@ -8,7 +8,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { mergeClasses } from '@material-ui/styles';
 
-import OtherLogo from '../../static/asset_3.svg'
+import OtherLogo from './Asset3.svg'
 
 import OrcasoundLogo from "../../static/orcasound-logo.png"
 

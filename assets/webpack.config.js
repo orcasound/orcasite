@@ -49,6 +49,17 @@ module.exports = (env, argv) => {
 
     module: {
       rules: [
+
+        {
+          test: /\.svg$/,
+          use: ['@svgr/webpack'],
+        },
+        
+       // {
+       //   test: /\.svg$/,
+       //   loader: 'svg-inline-loader'
+       // },
+  
         {
           test: /\.(jsx?)$/,
           exclude: /node_modules/,
@@ -58,35 +69,38 @@ module.exports = (env, argv) => {
         },
 
         {
-          test: /\.(gif|png|jpe?g|svg)$/i,
+          
+          test: /\.(gif|png|jpe?g|)$/i,
+          //test: /\.(gif|png|jpe?g|svg)$/i,
           exclude: /node_modules/,
           use: [
             "file-loader?name=images/[name].[ext]",
-           // {
-           //   loader: "image-webpack-loader",
-           //   options: {
-           //     query: {
-                  //mozjpeg: {
-                  //  progressive: true
-                  //},
-                  //gifsicle: {
-                  //  interlaced: true
-                  //},
-                  //optipng: {
-                  //  optimizationLevel: 7
-                  //},
-                  //pngquant: {
-                  //  quality: "65-90",
-                  //  speed: 4
-                  //}
-            //    }
-            //  }
-            // }
+            {
+              loader: "image-webpack-loader",
+              options: {
+                query: {
+                  mozjpeg: {
+                    progressive: true
+                  },
+                  gifsicle: {
+                    interlaced: true
+                  },
+                  optipng: {
+                    optimizationLevel: 7
+                  },
+                  pngquant: {
+                    quality: "65-90",
+                    speed: 4
+                  }
+                }
+              }
+             }
           ]
         },
 
         {
-          test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+          test: /\.(ttf|woff2?|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+          //test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
           exclude: /node_modules/,
           query: { name: "fonts/[hash].[ext]" },
           loader: "file-loader"
