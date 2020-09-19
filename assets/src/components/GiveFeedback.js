@@ -63,6 +63,7 @@ const GiveFeedback = () => {
               rel="noopener"
               rel="noreferrer"
               className={classes.link}
+              onClick={() => { gtag('config', "feedback_link_pressed") }}
             >
               Give Feedback
             </Link>

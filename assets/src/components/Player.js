@@ -188,11 +188,17 @@ class Player extends Component {
                 autoplay={this.props.autoplay}
                 onReady={this.setControls}
                 onLoading={() => this.setState({ isLoading: true })}
-                onPlaying={() =>
-                  this.setState({ isLoading: false, isPlaying: true })
+                onPlaying={() => 
+                  {
+                    this.setState({ isLoading: false, isPlaying: true })
+                    gtag('config', "player_started");
+                  }
                 }
-                onPaused={() =>
-                  this.setState({ isLoading: false, isPlaying: false })
+                onPaused={() => 
+                  {
+                    gtag('config', "player_paused");
+                    this.setState({ isLoading: false, isPlaying: false })
+                  }
                 }
                 onLatencyUpdate={(newestLatency, playerTime) =>
                   this.setState({
