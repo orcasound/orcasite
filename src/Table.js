@@ -38,13 +38,15 @@ export default function SimpleTable() {
   const classes = useStyles();
 
   return (
+    <>
+
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>TIME</TableCell>
-            <TableCell align="right">SOUND</TableCell>
-            <TableCell align="right">ACTION</TableCell>
+            <TableCell align="left">SOUND</TableCell>
+            <TableCell align="left">ACTION</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -53,12 +55,12 @@ export default function SimpleTable() {
               <TableCell component="th" scope="row">
                 {row.time}
               </TableCell>
-              <TableCell align="right">
-                  <img src={row.imageSrc} />
+              <TableCell align="left">
+                   A user heard a{row.eventTypeStr == "orca" ? "n" : ""} {row.eventTypeStr}
+                  <img src={row.imageSrc} width="50px" height="50px" />
               </TableCell>
 
-              <TableCell align="right">
-                  A user heard a{row.eventTypeStr == "orca" ? "n" : ""} {row.eventTypeStr}
+              <TableCell align="left">
                   <IconButton color="secondary" aria-label="add an alarm">
                     <PlayCircleOutlineIcon />
                 </IconButton>
@@ -78,5 +80,47 @@ export default function SimpleTable() {
         </TableBody>
       </Table>
     </TableContainer>
+
+    <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+            <TableRow>
+                <TableCell>TIME</TableCell>
+                <TableCell align="right">
+                    SOUND ACTION
+                </TableCell>
+            </TableRow>
+            </TableHead>
+            <TableBody>
+            {rows.map((row) => (
+                <TableRow key={row.name}>
+                    <TableCell component="th" scope="row">
+                        {row.time}
+                    </TableCell>
+                    <TableCell align="right">
+                        <img src={row.imageSrc} width="50px" height="50px" />
+
+                        A user heard a{row.eventTypeStr == "orca" ? "n" : ""} {row.eventTypeStr}
+                        <IconButton color="secondary" aria-label="add an alarm">
+                            <PlayCircleOutlineIcon />
+                        </IconButton>
+                        <IconButton color="secondary" aria-label="add an alarm">
+                            <ThumbUpIcon />
+                        </IconButton>
+                        <IconButton color="secondary" aria-label="add an alarm">
+                            <ShareIcon />
+                        </IconButton>
+                        <IconButton color="secondary" aria-label="add an alarm">
+                            <DownloadIcon />
+                        </IconButton>
+
+                    </TableCell>
+                </TableRow>
+            ))}
+            </TableBody>
+        </Table>
+    </TableContainer>
+
+    </>
   );
 }
