@@ -40,6 +40,7 @@ export default class DetectionDialog extends Component {
     description: ""
   }
   handleClickOpen = () => {
+    gtag('config', "i_hear_something_interesting_button_pressed")
     this.setState({ open: true })
   }
 
@@ -129,6 +130,7 @@ export default class DetectionDialog extends Component {
                   <Button
                     onClick={() => {
                       this.onDetect(submitDetection)
+                      gtag('config', "detection_submitted")
                     }}
                     color="secondary"
                   >
