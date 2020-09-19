@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Table from "./Table"
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         >
           Learn React
         </a>
-      </header>
+        </header>
+        <Table/>
     </div>
   );
 }
