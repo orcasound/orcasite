@@ -98,6 +98,16 @@ class Player extends Component {
     ]
   }
 
+  handlePlayArrowPress = () => {
+    window.gtag('event', "player_started", { 'event_category': 'custom' });
+    console.log("player started");
+  }
+
+  handlePauseArrowPress = () => {
+    window.gtag('event', "player_paused",  { 'event_category': 'custom' });
+    console.log("player paused");
+  }
+
   getTotalLatency = () => {
     return (
       Math.floor(Date.now() / 1000) -
@@ -168,8 +178,8 @@ class Player extends Component {
           >
             <StyledButtonContainer active={isPlaying}>
               <Fab color="secondary" onClick={playPause}>
-                {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
-                {isPlaying && <Pause className="icon" fontSize="large" />}
+                {!isPlaying && <PlayArrow className="icon" fontSize="large" onClick={this.handlePlayArrowPress}/>}
+                {isPlaying && <Pause className="icon" fontSize="large" onClick={this.handlePauseArrowPress} />}
               </Fab>
 
               {isPlaying && (
@@ -191,12 +201,10 @@ class Player extends Component {
                 onPlaying={() => 
                   {
                     this.setState({ isLoading: false, isPlaying: true })
-                    gtag('config', "player_started");
                   }
                 }
                 onPaused={() => 
                   {
-                    gtag('config', "player_paused");
                     this.setState({ isLoading: false, isPlaying: false })
                   }
                 }
