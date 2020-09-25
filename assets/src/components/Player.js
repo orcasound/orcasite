@@ -99,13 +99,15 @@ class Player extends Component {
   }
 
   handlePlayArrowPress = () => {
-    window.gtag('event', "player_started", { 'event_category': 'custom' });
+    window.gtag('event', "player_started @" + this.state.currentFeed.slug, { 'event_category': 'custom' });
     console.log("player started");
+    console.log("current feed = " + this.state.currentFeed.slug);
   }
 
   handlePauseArrowPress = () => {
-    window.gtag('event', "player_paused",  { 'event_category': 'custom' });
+    window.gtag('event', "player_paused @" + this.state.currentFeed.slug,  { 'event_category': 'custom' });
     console.log("player paused");
+    console.log("current feed = " + this.state.currentFeed.slug);
   }
 
   getTotalLatency = () => {
