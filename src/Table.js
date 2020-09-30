@@ -1,7 +1,7 @@
 import React from "react"
 
 import {GetApp as DownloadIcon, Share as ShareIcon, PlayCircleOutline as PlayCircleOutlineIcon, ThumbUp as ThumbUpIcon, Alarm as AlarmIcon, Delete as DeleteIcon, AddShoppingCart as AddShoppingCartIcon} from "@material-ui/icons"
-import {makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Paper} from "@material-ui/core"
+import {makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Paper, Box} from "@material-ui/core"
 
 //import { makeStyles } from '@material-ui/core/styles';
 //import Table from '@material-ui/core/Table';
@@ -39,6 +39,81 @@ export default function SimpleTable() {
 
   return (
     <>
+
+
+      <Box display="flex" flexDirection="row">
+
+        <Box display="flex" flexDirection="column" flexGrow={1}>
+          <Box ml={3} bgcolor="grey.300" width="100%">Time</Box>
+          <Box border="3px solid black" >Detection 1</Box>
+          <Box border="3px solid black" >Detection 2</Box>
+          <Box border="3px solid black" >Detection 3</Box>
+        </Box>
+
+        <Box flexGrow={5}>
+        
+          <Box display="flex" flexDirection="row" >
+            <Box bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Sound</Box>
+            <Box bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Action</Box>
+          </Box>
+
+          <Box display="flex" flexDirection="column">
+
+            <Box display="flex" flexDirection="row">
+              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
+                A user heard an orca
+              </Box>
+              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
+                Press a button!
+              </Box>
+            </Box>
+
+            <Box display="flex" flexDirection="row">
+              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
+                A user heard a passing ship!
+              </Box>
+              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
+                Press a button!
+              </Box>
+            </Box>
+
+            <Box display="flex" flexDirection="row">
+              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
+                A user heard a mystery sound
+              </Box>
+              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
+                Press a button!
+              </Box>
+            </Box>
+
+          </Box>
+
+        </Box>
+
+      </Box>
+
+
+    <div style={{ width: "100%" }}>
+      <Box
+        display="flex"
+        flexDirection="row"
+        p={1}
+        m={1}
+        bgcolor="background.paper"
+      >
+        <Box p={1} bgcolor="grey.300" flexGrow={1} ml={1}>
+          Item 1
+        </Box>
+        <Box p={1} bgcolor="grey.300" flexGrow={1} ml={1}>
+          Item 2
+        </Box>
+        <Box p={1} bgcolor="grey.300" flexGrow={1} ml={1}>
+          Item 3
+        </Box>
+      </Box>
+    </div>
+
+
 
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
