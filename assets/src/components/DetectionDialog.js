@@ -41,7 +41,7 @@ export default class DetectionDialog extends Component {
   }
 
   handleClickOpen = () => {
-    gtag('custom', "i_hear_something_interesting_button_pressed @" + this.props.feed.slug)
+    gtag('event', "i_hear_something_interesting_button_pressed @" + this.props.feed.slug, {'event_category' : 'custom'})
     this.setState({ open: true })
   }
 

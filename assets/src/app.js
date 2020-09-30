@@ -83,8 +83,6 @@ if (true) {
 
 */
 
-
-
 render(
   <ApolloProvider client={apolloClient}>
     <Root />

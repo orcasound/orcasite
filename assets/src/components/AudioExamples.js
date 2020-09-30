@@ -1,22 +1,20 @@
 import React from "react"
 import { Typography, Box, Grid, Avatar } from "@material-ui/core"
 import wave from "../../static/wave-orca.png"
+import { getArgumentValues } from "graphql/execution/values";
 
 class AudioExamples extends React.Component {
 
   constructor(props) {
     super(props);
-    //this.OrcaCallsRef = React.createRef(); 
   }
 
-  myFunction() {
-    console.log("Audio play button pressed!")
+  handleHomepagePlayButtonPressed() {
+    gtag('event', 'play_button_pressed @ ' + this.title_str  + ' player, homepage', {'event_category' : 'custom'})
   }
-
-  componentDidMount() {
-    //console.log(this.OrcaCalls)
-    //console.log("got here!!");
-    //this.OrcaCalls.addEventListener("ended", () => { console.log("Orca Calls player stopped...") } )
+  
+  handleHomepagePauseButtonPressed() {
+    gtag('event', 'pause_button_pressed @ ' + this.title_str  + ' player, homepage', {'event_category' : 'custom'})
   }
 
   render() {
@@ -91,7 +89,10 @@ class AudioExamples extends React.Component {
               </Grid>
               <Grid item xs={12}>
                 <Box ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}>
-                <audio controls onPlay={this.myFunction} src={example.audio} id={example.title.split(" ").join("") + "Player"} />
+                  <audio controls 
+                         onPlay={this.handleHomepagePlayButtonPressed.bind({title_str: example.title})} 
+                         onPause={this.handleHomepagePauseButtonPressed.bind({title_str: example.title})} 
+                         src={example.audio} id={example.title.split(" ").join("") + "Player"} />
                 </Box>
               </Grid>
             </Grid>

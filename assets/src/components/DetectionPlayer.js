@@ -14,7 +14,6 @@ import "styles/player.scss"
 const Hidden = styled.div`
   display: none;
 `
-
 const Player = styled.div`
   display: flex;
   align-items: center;
@@ -108,7 +107,7 @@ export default class DetectionPlayer extends Component {
           <Slider
             step={0.1}
             max={this.state.duration}
-            value={this.state.playerTime}
+            value={this.state.playerTime} 
             marks={marks}
             onChange={this.onSliderChange}
             onChangeCommitted={this.onSliderChangeCommitted}

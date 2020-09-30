@@ -56,6 +56,11 @@ const SiteMenu = () => {
 
   return (
     <Paper elevation={0} square>
+
+      <div style={{backgroundColor: "blue"}}>
+          <h1 style={{textAlign: "center", color: " #FA4616"}}>live.orcasound.net will be down for scheduled maintenance from 10:00AM - 12:00PM PDT Friday</h1>
+      </div>
+
       <AppBar position="static" color="inherit">
         <Toolbar>
           <Typography component="h1" variant="h1">

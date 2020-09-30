@@ -1,0 +1,1 @@
+Uncaught (in promise) DOMException: The play() request was interrupted by a call to pause().
