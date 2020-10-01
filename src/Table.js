@@ -44,45 +44,45 @@ export default function SimpleTable() {
       <Box display="flex" flexDirection="row">
 
         <Box display="flex" flexDirection="column" flexGrow={1}>
-          <Box ml={3} bgcolor="grey.300" width="100%">Time</Box>
-          <Box border="3px solid black" >Detection 1</Box>
-          <Box border="3px solid black" >Detection 2</Box>
-          <Box border="3px solid black" >Detection 3</Box>
+          <Box mb={1} bgcolor="grey.300" width="100%">Time</Box>
+          <Box mb={1} >Detection 1</Box>
+          <Box mb={1} >Detection 2</Box>
+          <Box mb={1} >Detection 3</Box>
         </Box>
 
         <Box flexGrow={5}>
         
-          <Box display="flex" flexDirection="row" >
+          <Box display="flex" flexDirection="row"  mb={1} >
             <Box bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Sound</Box>
             <Box bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Action</Box>
           </Box>
 
           <Box display="flex" flexDirection="column">
 
-            <Box display="flex" flexDirection="row">
-              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
-                A user heard an orca
+            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+              <Box flexGrow={1} textAlign="left">
+                <Box>A user heard an orca</Box>
               </Box>
-              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
-                Press a button!
-              </Box>
-            </Box>
-
-            <Box display="flex" flexDirection="row">
-              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
-                A user heard a passing ship!
-              </Box>
-              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
-                Press a button!
+              <Box flexGrow={1} textAlign="left">
+                <Box>Press a button!</Box>
               </Box>
             </Box>
 
-            <Box display="flex" flexDirection="row">
-              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
-                A user heard a mystery sound
+            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+              <Box flexGrow={1} textAlign="left" flexWrap="wrap">
+                <Box>A user heard a passing ship!sdfjksdsdkjjklfdsjklfd</Box>
               </Box>
-              <Box bgcolor="grey.300" flexGrow={1} mr={1} textAlign="left">
-                Press a button!
+              <Box flexGrow={1} textAlign="left" justifyContent="flex-start">
+                <Box>Press a button!</Box>
+              </Box>
+            </Box>
+
+            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+              <Box flexGrow={1} textAlign="left" justifyContent="flex-start">
+                <Box>A user heard a mystery sound</Box>
+              </Box>
+              <Box flexGrow={1} textAlign="left" justifyContent="flex-start">
+                <Box>Press a button!</Box>
               </Box>
             </Box>
 
