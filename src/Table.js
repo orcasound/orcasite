@@ -21,6 +21,7 @@ const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
+  /* Source: http://snipplr.com/view/10979/css-cross-browser-word-wrap */
 });
 
 function createData(time, eventTypeStr, imageSrc) {
@@ -60,29 +61,29 @@ export default function SimpleTable() {
           <Box display="flex" flexDirection="column">
 
             <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-              <Box flexGrow={1} textAlign="left">
-                <Box>A user heard an orca</Box>
+              <Box flexGrow={1} textAlign="left" width="100%">
+                A user heard an orca
               </Box>
-              <Box flexGrow={1} textAlign="left">
-                <Box>Press a button!</Box>
-              </Box>
-            </Box>
-
-            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-              <Box flexGrow={1} textAlign="left" flexWrap="wrap">
-                <Box>A user heard a passing ship!sdfjksdsdkjjklfdsjklfd</Box>
-              </Box>
-              <Box flexGrow={1} textAlign="left" justifyContent="flex-start">
-                <Box>Press a button!</Box>
+              <Box flexGrow={1} textAlign="left" width="100%">
+                Press a button!
               </Box>
             </Box>
 
             <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-              <Box flexGrow={1} textAlign="left" justifyContent="flex-start">
-                <Box>A user heard a mystery sound</Box>
+              <Box flexGrow={1} textAlign="left" width="100%" >
+                <Box class="wordwrap">A user heard a pasdfsdksjldfjlskldfjfsdfsdfsdfsdf</Box>
               </Box>
-              <Box flexGrow={1} textAlign="left" justifyContent="flex-start">
-                <Box>Press a button!</Box>
+              <Box flexGrow={1} textAlign="left" width="100%">
+                Press a button!
+              </Box>
+            </Box>
+
+            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+              <Box flexGrow={1} textAlign="left"  width="100%">
+                A user heard a mystery sound
+              </Box>
+              <Box flexGrow={1} textAlign="left"  width="100%">
+                Press a button!
               </Box>
             </Box>
 
