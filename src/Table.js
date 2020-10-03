@@ -1,6 +1,6 @@
 import React from "react"
 
-import {GetApp as DownloadIcon, Share as ShareIcon, PlayCircleOutline as PlayCircleOutlineIcon, ThumbUp as ThumbUpIcon, Alarm as AlarmIcon, Delete as DeleteIcon, AddShoppingCart as AddShoppingCartIcon} from "@material-ui/icons"
+import {GetAppOutlined as DownloadIcon, ShareOutlined as ShareIcon, PlayCircleOutline as PlayCircleOutlineIcon, ThumbUpOutlined as ThumbUpIcon, Alarm as AlarmIcon, Delete as DeleteIcon, AddShoppingCart as AddShoppingCartIcon} from "@material-ui/icons"
 import {makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Paper, Box, ThemeProvider} from "@material-ui/core"
 
 import { createMuiTheme, makeStyle} from '@material-ui/core/styles';
@@ -52,6 +52,16 @@ const theme = createMuiTheme({
         color: '#678AAB',
       }
     },
+    //MuiButton: { //purplebutton
+    //  colorInherit: {
+    //    color: '#7474F9', 
+    //  },
+    //  colorPrimary: {
+    //    color: '#9090FA'
+    //  },
+    //  colorSecondary: {
+    //    color: '#ACACFB',
+    //  },
   },
 
     //link: { (ASK DESIGN TEAM ABOUT WHAT LINKS THEY'RE INTERESTED IN APPLYING THESE COLORS TO)
@@ -129,13 +139,14 @@ export default function SimpleTable() {
                 A user heard an orca
               </Box>
               <Box flexGrow={1} textAlign="left" width="100%">
-                <IconButton color="inherit" aria-label="huh">
+                
+                <IconButton boxShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', /*boxShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'*/}} color="inherit" aria-label="huh">
                   <PlayCircleOutlineIcon />
                 </IconButton>             
-                <IconButton color="primary" aria-label="huh">
+                <IconButton color="inherit" aria-label="huh" style={{backgroundColor: 'white'}}>
                   <ThumbUpIcon  />  
                 </IconButton>      
-                <IconButton color="secondary" aria-label="huh">
+                <IconButton color="inherit" aria-label="huh">
                   <ShareIcon />
                 </IconButton>      
                 <IconButton color="inherit" aria-label="huh">
