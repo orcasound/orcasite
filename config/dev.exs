@@ -7,14 +7,19 @@ use Mix.Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :orcasite, OrcasiteWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: 8080],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    npm: ["run", "watch",
-    cd: Path.expand("../assets", __DIR__)
-  ]]
+    node: [
+      "node_modules/webpack/bin/webpack.js",
+      "--mode",
+      "development",
+      "--watch-stdin",
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
 
 # ## SSL Support
 #
@@ -63,3 +68,6 @@ config :orcasite, Orcasite.Repo,
   types: Orcasite.PostgresTypes
 
 config :orcasite, :orcasite_s3_url, (System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite")
+
+ga_tracking_id = if (System.get_env("ENABLE_PRODUCTION_ANALYTICS") == "true"), do: System.get_env("PROD_GA_TRACKING_ID"), else: "UA-179943728-1"
+config :orcasite, :ga_tracking_id, ga_tracking_id

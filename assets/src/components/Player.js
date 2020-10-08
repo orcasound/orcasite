@@ -92,6 +92,18 @@ class Player extends Component {
     console.log("Total Latency = ", Math.round(this.getTotalLatency()))
   )
 
+  handlePlayArrowPress = () => {
+    window.gtag('event', "player_started @" + this.state.currentFeed.slug, { 'event_category': 'custom' });
+    //console.log("player started");
+    //console.log("current feed = " + this.state.currentFeed.slug);
+  }
+
+  handlePauseArrowPress = () => {
+    window.gtag('event', "player_paused @" + this.state.currentFeed.slug,  { 'event_category': 'custom' });
+    //console.log("player paused");
+    //console.log("current feed = " + this.state.currentFeed.slug);
+  }
+
   getStreamLatency = () => {
     return this.state.debugInfo.latencyHistory[
       this.state.debugInfo.latencyHistory.length - 1
@@ -165,8 +177,8 @@ class Player extends Component {
           >
             <StyledButtonContainer active={isPlaying}>
               <Fab color="secondary" onClick={playPause}>
-                {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
-                {isPlaying && <Pause className="icon" fontSize="large" />}
+                {!isPlaying && <PlayArrow className="icon" fontSize="large" onClick={this.handlePlayArrowPress}/>}
+                {isPlaying && <Pause className="icon" fontSize="large"  onClick={this.handlePauseArrowPress}/>}
               </Fab>
 
               {isPlaying && (

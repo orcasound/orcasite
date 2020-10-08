@@ -42,7 +42,8 @@ module.exports = (env, argv) => {
       host: "0.0.0.0",
       headers: {
         "Access-Control-Allow-Origin": "*"
-      }
+      },
+      hot: true
     },
 
     module: {
@@ -151,14 +152,14 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         ENV: {
           DEVELOPMENT: isDev,
+          GA_TRACKING_ID: JSON.stringify(
+            process.env.ENABLE_PROD_ANALYTICS ? process.env.PROD_GA_TRACKING_ID : "UA-179943728-1"
+          ),
           S3_BUCKET: JSON.stringify(
             process.env.S3_BUCKET || "streaming-orcasound-net"
           ),
           SHOW_PLAYER_DEBUG_INFO: process.env.SHOW_PLAYER_DEBUG_INFO || isDev,
           ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
-          GOOGLE_ANALYTICS_ID: JSON.stringify(
-            process.env.GOOGLE_ANALYTICS_ID || ""
-          ),
           FEATURE_ACTIVITY_BUTTON: process.env.FEATURE_ACTIVITY_BUTTON || isDev
         },
         "process.env": {

@@ -9,6 +9,7 @@ import Home from "./Home"
 import Admin from "./admin/Dashboard"
 import DynamicFeed from "./DynamicFeed"
 import Login from "./Login"
+import GoogleAnalytics from "./GoogleAnalytics"
 
 const Root = props => {
   return (
@@ -31,6 +32,7 @@ const Root = props => {
 
         <Route path="/:feedSlug" component={Home} />
       </Switch>
+      <GoogleAnalytics />
     </BrowserRouter>
   )
 }
