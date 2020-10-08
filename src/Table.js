@@ -116,38 +116,28 @@ export default function SimpleTable() {
   return (
     <>
 
-    {/*
-    <div display="flex" flexDirection="row">
-
-      <div display="flex" flexDirection="column" flexGrow={1}>
-        <div mb={1} bgcolor="grey.300" width="100%">Time</div>
-        <div mb={1} >9:00 AM August 13 2020</div>
-        <div mb={1} >1:29 PM August 02 2020</div>
-        <div mb={1} >6:29 AM July 30 2020</div>
-        <div mb={1} >6:25 AM July 30 2020</div>
+    <div style={{display: "flex", flexDirection: "column"}}>
+        
+      <div style={{display: "flex", flexDirection: "row"}}>
+        <div style={{backgroundColor:"grey", width:"100%", textAlign:"left", width:"25%"}}>Time</div>
+        <div style={{backgroundColor: "grey", width:"100%", textAlign:"left", width:"37.5%"}}>Sound</div>
+        <div style={{backgroundColor: "grey", width:"100%", textAlign:"left", width:"37.5%"}}>Action</div>
       </div>
 
-      <div flexGrow={5}>
-      
-        <div display="flex" flexDirection="row"  mb={1} >
-          <div bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Sound</div>
-          <div bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Action</div>
-        </div>
+      <div display="flex" flexDirection="column">
 
-        <div display="flex" flexDirection="column">
-
-          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-            <div flexGrow={1} textAlign="left" width="100%">
+        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"3px"}} >
+          <div style={{wordWrap: "break-word", width:"25%"}}>9:00 AM August 13 2020</div>
+          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor: "#ccc", borderRadius:"3px", width:"75%"}}>              
+            <div style={{textAlign:"left", width:"100%"}}>
               A user heard an orca
             </div>
-            <div flexGrow={1} textAlign="left" width="100%">
-              
-
-              <IconButton divShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', divShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'}} color="inherit" aria-label="huh">
+            <div style={{textAlign:"left", width:"100%"}}>
+              <IconButton boxShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', /*boxShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'*/}} color="inherit" aria-label="huh">
                 <PlayCircleOutlineIcon />
               </IconButton>             
               <IconButton color="inherit" aria-label="huh" style={{backgroundColor: 'white'}}>
-                <ThumbUpIcon  />  
+                <ThumbUpIcon />  
               </IconButton>      
               <IconButton color="inherit" aria-label="huh">
                 <ShareIcon />
@@ -157,41 +147,47 @@ export default function SimpleTable() {
               </IconButton>
             </div>
           </div>
+        </div>
 
-          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-            <div flexGrow={1} textAlign="left" width="100%" >
-              <div class="wordwrap">A user heard a ship</div>
+        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px", marginTop:"15px"}}>
+          <div style={{wordWrap: "break-word", width:"25%"}}>1:29 PM August 02 2020</div>
+          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor:"#ccc", borderRadius:"3px", width:"75%"}}>
+            <div style={{textAlign:"left", width:"100%"}}>
+              A user heard a ship
             </div>
-            <div flexGrow={1} textAlign="left" width="100%">
+            <div  style={{textAlign:"left", width:"100%"}}>
               Press a button!
             </div>
           </div>
+        </div>
 
-          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-            <div flexGrow={1} textAlign="left"  width="100%">
+        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px"}}>
+          <div style={{wordWrap: "break-word", width:"25%"}}>6:29 AM July 30 2020</div>
+          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor: "#ccc", borderRadius:"3px", width:"75%"}} >
+            <div style={{textAlign:"left", width:"100%"}}>
               A user heard a fish
             </div>
-            <div flexGrow={1} textAlign="left"  width="100%">
+            <div style={{textAlign:"left", width:"100%"}}>
               Press a button!
             </div>
           </div>
-          
-          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-            <div flexGrow={1} textAlign="left"  width="100%">
+        </div>
+        
+        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px"}}>
+          <div style={{wordWrap: "break-word", width:"25%"}}>6:25 AM July 30 2020</div>
+          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor: "#ccc", borderRadius:"3px", width:"75%"}}> 
+            <div style={{textAlign:"left", width:"100%"}}>
               A user heard a mystery sound
             </div>
-            <div flexGrow={1} textAlign="left"  width="100%">
+            <div  style={{textAlign:"left", width:"100%"}}>
               Press a button!
             </div>
           </div>
-
         </div>
 
       </div>
 
     </div>
-    */}
-
 
     <ThemeProvider theme={theme} >
 
