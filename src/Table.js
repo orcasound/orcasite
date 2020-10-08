@@ -118,17 +118,17 @@ export default function SimpleTable() {
 
     <div style={{display: "flex", flexDirection: "column"}}>
         
-      <div style={{display: "flex", flexDirection: "row"}}>
-        <div style={{backgroundColor:"grey", width:"100%", textAlign:"left", width:"25%"}}>Time</div>
-        <div style={{backgroundColor: "grey", width:"100%", textAlign:"left", width:"37.5%"}}>Sound</div>
-        <div style={{backgroundColor: "grey", width:"100%", textAlign:"left", width:"37.5%"}}>Action</div>
+      <div style={{display: "flex", flexDirection: "row", backgroundColor: "#E5E5E5"}}>
+        <div style={{width:"100%", textAlign:"left", width:"25%"}}>Time</div>
+        <div style={{width:"100%", textAlign:"left", width:"37.5%"}}>Sound</div>
+        <div style={{width:"100%", textAlign:"left", width:"37.5%"}}>Action</div>
       </div>
 
       <div display="flex" flexDirection="column">
 
-        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"3px"}} >
+        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px", marginTop:"15px"}} >
           <div style={{wordWrap: "break-word", width:"25%"}}>9:00 AM August 13 2020</div>
-          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor: "#ccc", borderRadius:"3px", width:"75%"}}>              
+          <div className="record" style={{display: "flex", flexDirection: "row", backgroundColor: "#E9E9E9", borderRadius:"3px", width:"75%"}}>              
             <div style={{textAlign:"left", width:"100%"}}>
               A user heard an orca
             </div>
@@ -149,9 +149,9 @@ export default function SimpleTable() {
           </div>
         </div>
 
-        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px", marginTop:"15px"}}>
+        <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px"}}>
           <div style={{wordWrap: "break-word", width:"25%"}}>1:29 PM August 02 2020</div>
-          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor:"#ccc", borderRadius:"3px", width:"75%"}}>
+          <div className="record" style={{display: "flex", flexDirection: "row", backgroundColor:"#E5E5E5", borderRadius:"3px", width:"75%"}}>
             <div style={{textAlign:"left", width:"100%"}}>
               A user heard a ship
             </div>
@@ -163,7 +163,7 @@ export default function SimpleTable() {
 
         <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px"}}>
           <div style={{wordWrap: "break-word", width:"25%"}}>6:29 AM July 30 2020</div>
-          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor: "#ccc", borderRadius:"3px", width:"75%"}} >
+          <div className="record" style={{display: "flex", flexDirection: "row", borderRadius:"3px", width:"75%"}} >
             <div style={{textAlign:"left", width:"100%"}}>
               A user heard a fish
             </div>
@@ -175,7 +175,7 @@ export default function SimpleTable() {
         
         <div style={{display:"flex", width:"100%",flexDirection: "row", marginBottom:"15px"}}>
           <div style={{wordWrap: "break-word", width:"25%"}}>6:25 AM July 30 2020</div>
-          <div className="shadow" style={{display: "flex", flexDirection: "row", backgroundColor: "#ccc", borderRadius:"3px", width:"75%"}}> 
+          <div className="record" style={{display: "flex", flexDirection: "row", borderRadius:"3px", width:"75%"}}> 
             <div style={{textAlign:"left", width:"100%"}}>
               A user heard a mystery sound
             </div>
