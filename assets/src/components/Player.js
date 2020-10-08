@@ -1,6 +1,8 @@
 import React, { Component } from "react"
-import { Fab, Box } from "@material-ui/core"
-import { PlayArrow, Pause } from "@material-ui/icons"
+import { Fab, Box, Grid, Slider } from "@material-ui/core"
+import { PlayArrow, Pause, VolumeUp, VolumeDown } from "@material-ui/icons"
+
+
 
 import MediaStreamer from "./MediaStreamer"
 import DetectionDialog from "./DetectionDialog"
@@ -21,6 +23,15 @@ const StyledButtonContainer = styled.div`
   background: ${props => (props.active ? "#007166" : "transparent")};
   box-shadow: ${props => (props.active ? "0 0.125rem 0.25rem 0" : "none")};
   border-radius: 2.0625rem;
+  min-width: 21.0625rem;
+  max-width: 28.125rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+`
+const VolumeContainer = styled.div`
+  visibility: ${props => (props.active ? "visible" : "hidden")};
   min-width: 21.0625rem;
   max-width: 28.125rem;
   display: flex;
@@ -53,7 +64,8 @@ class Player extends Component {
       play: () => {},
       pause: () => {},
       playPause: () => {},
-      getPLayerTime: () => {}
+      getPlayerTime: () => {},
+      setVolume: () => {},
     }
   }
 
@@ -140,6 +152,7 @@ class Player extends Component {
 
   setControls = controls => this.setState({ isLoading: false, ...controls })
 
+
   render() {
     const {
       hlsURI,
@@ -148,7 +161,8 @@ class Player extends Component {
       timestamp,
       isLoading,
       isPlaying,
-      getPlayerTime
+      getPlayerTime,
+      setVolume
     } = this.state
 
     const awsConsoleUri = this.getAwsConsoleUri(
@@ -156,6 +170,10 @@ class Player extends Component {
       currentFeed.nodeName,
       ENV.S3_BUCKET
     )
+
+    const handleVolumeChange = (e, newValue) => {
+      setVolume(newValue);
+    };
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
@@ -220,6 +238,19 @@ class Player extends Component {
                 }
               />
             )}
+            <VolumeContainer active={isPlaying}>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <VolumeDown />
+                </Grid>
+                <Grid item xs>
+                  <Slider defaultValue={100} onChange={handleVolumeChange} aria-labelledby="continuous-slider" />
+                </Grid>
+                <Grid item>
+                  <VolumeUp />
+                </Grid>
+              </Grid>
+            </VolumeContainer>  
           </Box>
         </PlayerContainer>
       )
