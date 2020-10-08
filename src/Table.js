@@ -114,71 +114,153 @@ export default function SimpleTable() {
   const classes = useStyles();
 
   return (
+    <>
+
+    {/*
+    <div display="flex" flexDirection="row">
+
+      <div display="flex" flexDirection="column" flexGrow={1}>
+        <div mb={1} bgcolor="grey.300" width="100%">Time</div>
+        <div mb={1} >9:00 AM August 13 2020</div>
+        <div mb={1} >1:29 PM August 02 2020</div>
+        <div mb={1} >6:29 AM July 30 2020</div>
+        <div mb={1} >6:25 AM July 30 2020</div>
+      </div>
+
+      <div flexGrow={5}>
+      
+        <div display="flex" flexDirection="row"  mb={1} >
+          <div bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Sound</div>
+          <div bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Action</div>
+        </div>
+
+        <div display="flex" flexDirection="column">
+
+          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+            <div flexGrow={1} textAlign="left" width="100%">
+              A user heard an orca
+            </div>
+            <div flexGrow={1} textAlign="left" width="100%">
+              
+
+              <IconButton divShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', divShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'}} color="inherit" aria-label="huh">
+                <PlayCircleOutlineIcon />
+              </IconButton>             
+              <IconButton color="inherit" aria-label="huh" style={{backgroundColor: 'white'}}>
+                <ThumbUpIcon  />  
+              </IconButton>      
+              <IconButton color="inherit" aria-label="huh">
+                <ShareIcon />
+              </IconButton>      
+              <IconButton color="inherit" aria-label="huh">
+                <DownloadIcon  />
+              </IconButton>
+            </div>
+          </div>
+
+          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+            <div flexGrow={1} textAlign="left" width="100%" >
+              <div class="wordwrap">A user heard a ship</div>
+            </div>
+            <div flexGrow={1} textAlign="left" width="100%">
+              Press a button!
+            </div>
+          </div>
+
+          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+            <div flexGrow={1} textAlign="left"  width="100%">
+              A user heard a fish
+            </div>
+            <div flexGrow={1} textAlign="left"  width="100%">
+              Press a button!
+            </div>
+          </div>
+          
+          <div display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
+            <div flexGrow={1} textAlign="left"  width="100%">
+              A user heard a mystery sound
+            </div>
+            <div flexGrow={1} textAlign="left"  width="100%">
+              Press a button!
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    */}
+
+
     <ThemeProvider theme={theme} >
-      <Box display="flex" flexDirection="row">
 
-        <Box display="flex" flexDirection="column" flexGrow={1}>
-          <Box mb={1} bgcolor="grey.300" width="100%">Time</Box>
-          <Box mb={1} >9:00 AM August 13 2020</Box>
-          <Box mb={1} >1:29 PM August 02 2020</Box>
-          <Box mb={1} >6:29 AM July 30 2020</Box>
-          <Box mb={1} >6:25 AM July 30 2020</Box>
-        </Box>
-
-        <Box flexGrow={5}>
+        <Box display="flex" flexDirection="column">
         
           <Box display="flex" flexDirection="row"  mb={1} >
-            <Box bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Sound</Box>
-            <Box bgcolor="grey.300" width="100%" textAlign="left" flexGrow={1}>Action</Box>
+            <Box bgcolor="grey.300" width="100%" textAlign="left" width="25%">Time</Box>
+            <Box bgcolor="grey.300" width="100%" textAlign="left" width="37.5%">Sound</Box>
+            <Box bgcolor="grey.300" width="100%" textAlign="left" width="37.5%">Action</Box>
           </Box>
 
           <Box display="flex" flexDirection="column">
 
-            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-              <Box flexGrow={1} textAlign="left" width="100%">
-                A user heard an orca
-              </Box>
-              <Box flexGrow={1} textAlign="left" width="100%">
-                
-                <IconButton boxShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', /*boxShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'*/}} color="inherit" aria-label="huh">
-                  <PlayCircleOutlineIcon />
-                </IconButton>             
-                <IconButton color="inherit" aria-label="huh" style={{backgroundColor: 'white'}}>
-                  <ThumbUpIcon  />  
-                </IconButton>      
-                <IconButton color="inherit" aria-label="huh">
-                  <ShareIcon />
-                </IconButton>      
-                <IconButton color="inherit" aria-label="huh">
-                  <DownloadIcon  />
-                </IconButton>
-              </Box>
-            </Box>
-
-            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-              <Box flexGrow={1} textAlign="left" width="100%" >
-                <Box class="wordwrap">A user heard a ship</Box>
-              </Box>
-              <Box flexGrow={1} textAlign="left" width="100%">
-                Press a button!
+            <Box display="flex" flexGrow={1} width="100%" flexDirection="row" >
+              <Box mb={1} className="timeCell" style={{wordwrap: "break-word"}} width="25%">9:00 AM August 13 2020</Box>
+              <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={5} borderRadius={3} boxShadow={2} width="75%">              
+                <Box flexGrow={1} textAlign="left" width="100%">
+                  A user heard an orca
+                </Box>
+                <Box flexGrow={1} textAlign="left" width="100%">
+                  <IconButton boxShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', /*boxShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'*/}} color="inherit" aria-label="huh">
+                    <PlayCircleOutlineIcon />
+                  </IconButton>             
+                  <IconButton color="inherit" aria-label="huh" style={{backgroundColor: 'white'}}>
+                    <ThumbUpIcon />  
+                  </IconButton>      
+                  <IconButton color="inherit" aria-label="huh">
+                    <ShareIcon />
+                  </IconButton>      
+                  <IconButton color="inherit" aria-label="huh">
+                    <DownloadIcon  />
+                  </IconButton>
+                </Box>
               </Box>
             </Box>
 
-            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-              <Box flexGrow={1} textAlign="left"  width="100%">
-                A user heard a fish
+            <Box display="flex" flexGrow={1} width="100%" flexDirection="row">
+              <Box mb={1} className="timeCell" style={{wordwrap: "break-word"}} width="25%">1:29 PM August 02 2020</Box>
+              <Box display="flex"  flexDirection="row" bgcolor="grey.300" ml={1} mb={5} borderRadius={3} boxShadow={2} width="75%">
+                <Box textAlign="left" width="100%" >
+                  <Box class="wordwrap">A user heard a ship</Box>
+                </Box>
+                <Box textAlign="left" width="100%">
+                  Press a button!
+                </Box>
               </Box>
-              <Box flexGrow={1} textAlign="left"  width="100%">
-                Press a button!
+            </Box>
+
+            <Box display="flex" flexgrow={1} width="100%" flexDirection="row">
+              <Box mb={1} className="timeCell" style={{wordwrap: "break-word"}} width="25%">6:29 AM July 30 2020</Box>
+              <Box  display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={5} borderRadius={3} boxShadow={2} width="75%">
+                <Box textAlign="left"  width="100%">
+                  A user heard a fish
+                </Box>
+                <Box textAlign="left"  width="100%">
+                  Press a button!
+                </Box>
               </Box>
             </Box>
             
-            <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={1}>
-              <Box flexGrow={1} textAlign="left"  width="100%">
-                A user heard a mystery sound
-              </Box>
-              <Box flexGrow={1} textAlign="left"  width="100%">
-                Press a button!
+            <Box display="flex" width="100%" flexDirection="row">
+              <Box mb={1} className="timeCell" style={{wordwrap: "break-word"}} width="25%">6:25 AM July 30 2020</Box>
+              <Box display="flex" flexDirection="row" bgcolor="grey.300" ml={1} mb={5} borderRadius={3} boxShadow={2} width="75%"> 
+                <Box textAlign="left"  width="100%">
+                  A user heard a mystery sound
+                </Box>
+                <Box  textAlign="left"  width="100%">
+                  Press a button!
+                </Box>
               </Box>
             </Box>
 
@@ -186,8 +268,7 @@ export default function SimpleTable() {
 
         </Box>
 
-      </Box>
-
+    </ThemeProvider>
 
     <div style={{ width: "100%" }}>
       <Box
@@ -292,6 +373,6 @@ export default function SimpleTable() {
         </Table>
     </TableContainer>
 
-  </ThemeProvider>
+  </>
   );
 }

@@ -7,11 +7,31 @@
   pointer-events: none;
 }
 
+/*
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
+
+@media only screen and (min-width: 400px) and (max-width: 599px) {  
+  .timeCell {
+    width: 200px;
+  }
+}
+
+@media only screen and (min-width: 600px) and (max-width: 799px) {  
+  .timeCell {
+    width: 300px;
+  }
+}
+
+@media only screen and (min-width: 800px) {  
+  .timeCell {
+    width: 400px;
+  }
+}
+*/
 
 .wordwrap { 
   white-space: pre-wrap;      /* CSS3 */   
