@@ -52,7 +52,7 @@ export default class DetectionDialog extends Component {
       this.onDetect(submitDetection)
     }
   }
-
+  
   handleClose = () => {
     this.setState({
       open: false,
@@ -69,9 +69,11 @@ export default class DetectionDialog extends Component {
       timestamp: playlistTimestamp,
       isPlaying,
       getPlayerTime,
-      listenerCount,
     } = this.props
 
+    const desc = "Testing"
+    const type = "Orca"
+  
     const playerOffset = getPlayerTime()
     const { description } = this.state
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
@@ -80,8 +82,9 @@ export default class DetectionDialog extends Component {
           feedId,
           playlistTimestamp,
           playerOffset,
-          description,
-          listenerCount
+          desc,
+          type
+           // TODO FIX THIS FOR THE OTHER TYPES
         }
       })
     }

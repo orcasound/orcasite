@@ -1,0 +1,7 @@
+What is the difference between grid computing and cloud computing?
+In reliability, availability, commodity, scalability, computing speed, programmability, etc.
+
+
+2.Besides limited scalability, why couldn’t shared-memory programming gain the popularity as compared to 
+message-passing or paradigm-oriented programming?From the viewpoints of operating systems, compilers, 
+software productivity, maintainability, traceability, visibility, etc. 

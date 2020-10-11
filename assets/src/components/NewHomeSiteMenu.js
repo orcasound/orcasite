@@ -118,6 +118,72 @@ const NewHomeSiteMenu = () => {
         <Toolbar variant="dense">
           <Box flexGrow={1}>
 
+            <Box display="flex" flexDirection="column" justifyContent="center">
+              <Box display="flex" flexDirection="row">
+
+                <img
+                  alt="Orcasound Logo"
+                  src={OrcasoundLogo}
+                  style={{width: "110px", height: "110px"}}
+                />
+
+                <Box display="flex" flexDirection="column" justifyContent="center">
+                  <a
+                    href="/"
+                    underline="none"
+                  >
+                    <h1 style={{fontFamily: "Mukta"}}>Orcasound</h1>
+                  </a>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box display="flex" flexDirection="column" justifyContent="center">
+            <div style={{display:"flex", flexDirection:"row"}}>
+              <div style={{fontFamily: "Montserrat", fontWeight: "400", fontStyle: "normal", fontSize: "20px", lineHeight: "28px"}}>             
+                <a href={"/listen"} className={classes.navBarLink}>
+                  Listen
+                </a>
+              </div>
+              <div color="inherit" style={{fontFamily: "Montserrat", fontWeight: "400", fontStyle: "normal", fontSize: "20px", lineHeight: "28px"}}>
+                <a href={"/learn"} className={classes.navBarLink}>
+                  Learn
+                  </a>
+              </div>
+              <div color="inherit" style={{fontFamily: "Montserrat", fontWeight: "400", fontStyle: "normal", fontSize: "20px", lineHeight: "28px"}}>
+                <a href={"/projects"} className={classes.navBarLink}>
+                  Projects
+                </a>
+              </div>
+              <div className={classes.navBarIcondiv} color="inherit" style={{fontFamily: "Montserrat", fontWeight: "400", fontStyle: "normal", fontSize: "20px", lineHeight: "28px"}}>
+                <a className={classes.navBarLink}>
+                    Blogs
+                </a>
+              </div>
+              <div className={classes.navBarIcondiv} color="inherit" style={{fontFamily: "Montserrat", fontWeight: "400", fontStyle: "normal", fontSize: "20px", lineHeight: "28px"}}>
+                <a href="/about" className={classes.navBarLink}>
+                  About
+                </a>
+              </div>
+              <div className={classes.navBarIcondiv} color="inherit" style={{fontFamily: "Montserrat", fontWeight: "400", fontStyle: "normal", fontSize: "20px", lineHeight: "28px"}}>
+                <a href={"/support"} className={classes.navBarLink}>
+                  Support
+                </a>
+              </div>
+              <FormDialog />
+            </div>
+        </Box>
+
+        </Toolbar>
+      </AppBar>
+    </Paper>  
+    {/*
+    <Paper elevation={0} square>
+      <AppBar position="static" color="inherit" className={classes.appBar}>
+        <Toolbar variant="dense">
+          <Box flexGrow={1}>
+
           <Box display="flex" flexDirection="column" justifyContent="center">
             <Box display="flex" flexDirection="row">
 
@@ -187,6 +253,7 @@ const NewHomeSiteMenu = () => {
         </Toolbar>
       </AppBar>
     </Paper>
+     */}
     <Grid container spacing={1}>
       <Grid item xs={6}>
           <About />

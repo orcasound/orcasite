@@ -1,0 +1,13 @@
+- Why would you sign up for the product? - What excites you?
+
+If it could give me recommendations on how to improve my existing projects
+that would be cool. If it could point me towards some articles which
+are relevant to my projects that would be cool also. 
+
+- Why wouldn’t you sign up for the product? - What can be improved?
+
+You mention that the early access is free, but is the product still free 
+even if the early access period is over? Another thing, there's only a link 
+to the SuperDev product for Swift, but what about for the other programming 
+languages? Another thing: to make the lives of people easier, you could add 
+a page to the website which describes how to install and configure SuperDev. 

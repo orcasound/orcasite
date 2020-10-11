@@ -18,10 +18,13 @@ defmodule OrcasiteWeb.Resolvers.Detection do
         %{
           feed_id: feed_id,
           playlist_timestamp: _playlist_timestamp,
-          player_offset: _player_offset
+          player_offset: _player_offset,
+          # description: _description,
+          # type: _type
         } = detection_attrs,
         %{context: %{remote_ip: remote_ip}}
       ) do
+    IO.puts("Got here....")
     # Store new detection
     source_ip =
       remote_ip
@@ -31,7 +34,7 @@ defmodule OrcasiteWeb.Resolvers.Detection do
     with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, lockout_seconds()) do
       detection_attrs
       |> Map.put(:source_ip, source_ip)
-      |> Radio.create_detection_with_candidate()
+      |> Radio.create_detection_with_candidate() # formerly create_detection_with_candidate()
       |> case do
         {:ok, detection} ->
           {:ok,

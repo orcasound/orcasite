@@ -75,7 +75,7 @@ defmodule OrcasiteWeb.Schema do
       arg(:feed_id, :id)
       arg(:playlist_timestamp, :string)
       arg(:player_offset, :decimal)
-      arg(:listener_count, :integer)
+      arg(:type, :string)
       arg(:description, :string)
 
       resolve(&Resolvers.Detection.create/2)
