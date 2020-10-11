@@ -71,7 +71,7 @@ export default class DetectionDialog extends Component {
       getPlayerTime,
     } = this.props
 
-    const desc = "Testing"
+    //const desc = "Testing"
     const type = "Orca"
   
     const playerOffset = getPlayerTime()
@@ -82,7 +82,7 @@ export default class DetectionDialog extends Component {
           feedId,
           playlistTimestamp,
           playerOffset,
-          desc,
+          description,
           type
            // TODO FIX THIS FOR THE OTHER TYPES
         }

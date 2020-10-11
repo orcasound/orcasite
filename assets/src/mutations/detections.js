@@ -6,13 +6,13 @@ export const SUBMIT_DETECTION = gql`
     $playlistTimestamp: String!
     $playerOffset: Decimal!
     $description: String!
-    $type: String
+    $type: String!
   ) {
     submitDetection(
       feedId: $feedId
       playlistTimestamp: $playlistTimestamp
       playerOffset: $playerOffset
-      type: $String
+      type: $type
       description: $description
     ) {
       detection {

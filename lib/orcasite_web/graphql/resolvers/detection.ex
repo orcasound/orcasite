@@ -19,8 +19,8 @@ defmodule OrcasiteWeb.Resolvers.Detection do
           feed_id: feed_id,
           playlist_timestamp: _playlist_timestamp,
           player_offset: _player_offset,
-          # description: _description,
-          # type: _type
+          description: _description,
+          type: _type
         } = detection_attrs,
         %{context: %{remote_ip: remote_ip}}
       ) do

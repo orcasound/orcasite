@@ -11,8 +11,8 @@ defmodule OrcasiteWeb.Types.Detection do
     field(:playlist_timestamp, :integer)
     field(:source_ip, :string)
     field(:player_offset, :decimal)
-    field(:listener_count, :integer)
     field(:timestamp, :datetime)
+    field(:type, :string)
   end
 
   object :detection_with_lockout do
