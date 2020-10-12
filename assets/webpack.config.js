@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
   // See:
   // https://github.com/videojs/videojs-contrib-hls/issues/600
   // https://github.com/video-dev/hls.js/issues/187
-  const devtool = isDev ? "eval-source-map" : false
+  const devtool = false; // isDev ? "eval-source-map" : false
 
   return {
     devtool: devtool,
@@ -35,7 +35,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, "../priv/static"),
       filename: "js/[name].js",
-      publicPath: isDev ? "http://localhost:4000/" : "/",      
+      publicPath: isDev ? "http://localhost:4000/" : "/",
     },
 
     devServer: {
@@ -44,7 +44,7 @@ module.exports = (env, argv) => {
       headers: {
         "Access-Control-Allow-Origin": "*"
       },
-      //hot: true
+      hot: true
     },
 
     module: {
@@ -160,6 +160,10 @@ module.exports = (env, argv) => {
     },
 
     plugins: [
+      new webpack.SourceMapDevToolPlugin({
+        fileContext: "../priv/static/js",
+        filename: "../priv/static/js/[file].map"
+      }),
       new MiniCssExtractPlugin({
         filename: "css/[name].css",
         allChunks: true

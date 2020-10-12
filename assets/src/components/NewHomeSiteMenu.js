@@ -274,7 +274,6 @@ const NewHomeSiteMenu = () => {
       </Grid>
     </Grid>
 
-     <p>
       <Query query={LIST_DETECTIONS}>
         {({data, loading, error}) => {
             if (loading) {
@@ -284,18 +283,20 @@ const NewHomeSiteMenu = () => {
             if (error || !data) {
               return <div>Error detections data not available</div>
             }
-    
+   
             return (
               <>
                 <p>
-                  haha got here
+                  Detections:
                 </p>
+                <>
+                  {/*data*/}
+                </>
               </>
             )
     
           }}
       </Query>
-    </p>
 
     </>
   )
