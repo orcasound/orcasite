@@ -1,0 +1,35 @@
+{
+  "name": "phoenix",
+  "version": "1.4.9",
+  "description": "The official JavaScript client for the Phoenix web framework.",
+  "license": "MIT",
+  "main": "./priv/static/phoenix.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/phoenixframework/phoenix.git"
+  },
+  "author": "Chris McCord <chris@chrismccord.com> (http://www.phoenixframework.org)",
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "documentation": "^9.0.0-alpha.0",
+    "expose-loader": "^0.7.5",
+    "growl": "~> 1.10.0",
+    "jsdom": "9.8.3",
+    "jsdom-global": "2.1.0",
+    "mocha": "^5.2.0",
+    "mock-socket": "^6.0.1",
+    "sinon": "^1.17.6",
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "test": "mocha ./test/**/*.js --exit --compilers js:@babel/register -r jsdom-global/register",
+    "docs": "documentation build js/phoenix.js -f html -o ../doc/js",
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch"
+  }
+}

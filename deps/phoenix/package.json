@@ -1,0 +1,19 @@
+{
+  "name": "phoenix",
+  "version": "1.4.9",
+  "description": "The official JavaScript client for the Phoenix web framework.",
+  "license": "MIT",
+  "main": "./priv/static/phoenix.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/phoenixframework/phoenix.git"
+  },
+  "author": "Chris McCord <chris@chrismccord.com> (http://www.phoenixframework.org)",
+  "files": [
+    "README.md",
+    "LICENSE.md",
+    "package.json",
+    "priv/static/phoenix.js",
+    "assets/js/phoenix.js"
+  ]
+}

@@ -1,0 +1,6 @@
+{"1.1.0",
+[{<<"poolboy">>,{pkg,<<"poolboy">>,<<"1.5.2">>},0}]}.
+[
+{pkg_hash,[
+ {<<"poolboy">>, <<"392B007A1693A64540CEAD79830443ABF5762F5D30CF50BC95CB2C1AAAFA006B">>}]}
+].

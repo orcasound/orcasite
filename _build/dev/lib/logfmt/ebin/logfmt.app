@@ -1,0 +1,13 @@
+{application,logfmt,
+             [{applications,[kernel,stdlib,elixir,logger]},
+              {description,"Logfmt is a module for encoding and decoding logfmt-style log lines.\n"},
+              {modules,['Elixir.Logfmt','Elixir.Logfmt.Decoder',
+                        'Elixir.Logfmt.Encoder','Elixir.Logfmt.ValueEncoder',
+                        'Elixir.Logfmt.ValueEncoder.Atom',
+                        'Elixir.Logfmt.ValueEncoder.BitString',
+                        'Elixir.Logfmt.ValueEncoder.Float',
+                        'Elixir.Logfmt.ValueEncoder.Integer',
+                        'Elixir.Logfmt.ValueEncoder.PID',
+                        'Elixir.Logfmt.ValueEncoder.Reference']},
+              {registered,[]},
+              {vsn,"3.3.0"}]}.

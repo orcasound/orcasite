@@ -127,7 +127,8 @@ class SimpleTable extends React.Component {
           <div style={{width:"100%", textAlign:"left", width:"37.5%"}}>Action</div>
         </div>
 
-        <div display="flex" flexDirection="column">
+        {/*<div display="flex" flexDirection="column">*/}
+        <div style={{display: "block", overflow: "scroll", height: "200px"}}>
 
           <div style={{display:"flex", width:"100%", height: "64px", flexDirection: "row", marginBottom:"15px", marginTop:"15px"}} >
             <div style={{wordWrap: "break-word", width:"25%"}}>9:00 AM August 13 2020</div>
@@ -196,6 +197,7 @@ class SimpleTable extends React.Component {
 
       </div>
 
+      {/*
       <ThemeProvider theme={theme} >
 
           <Box display="flex" flexDirection="column">
@@ -215,7 +217,7 @@ class SimpleTable extends React.Component {
                     A user heard an orca
                   </Box>
                   <Box flexGrow={1} textAlign="left" width="100%">
-                    <IconButton boxShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', /*boxShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'*/}} color="inherit" aria-label="huh">
+                    <IconButton boxShadow={6} style={{width: '32px', height: '32px', backgroundColor: 'white', boxShadow: '2px 3px 2px rgba(0,0,0,.2), -1px 1px 2px rgba(0,0,0,.2)'}} color="inherit" aria-label="huh">
                       <PlayCircleOutlineIcon />
                     </IconButton>             
                     <IconButton color="inherit" aria-label="huh" style={{backgroundColor: 'white'}}>
@@ -376,9 +378,13 @@ class SimpleTable extends React.Component {
           </Table>
       </TableContainer>
 
+              */}
+
     </>
     );
   }
 }
+
+
 
 export default  SimpleTable
