@@ -16,9 +16,15 @@ defmodule OrcasiteWeb.Resolvers.Detection do
   end
 
   def list_candidates(_,_) do
-    IO.puts("got here")
+    IO.puts("...candidates..")
     {:ok, Paginated.format(Radio.list_candidates())}
   end
+
+  def list_detections(_,_) do
+    IO.puts("...list_detections...")
+    {:ok, Paginated.format(Radio.list_detections())}
+  end
+
 
   #def list_candidates(_, _), do
   #  {:error, :not_authorized}

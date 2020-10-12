@@ -36,6 +36,7 @@ module.exports = (env, argv) => {
       path: path.resolve(__dirname, "../priv/static"),
       filename: "js/[name].js",
       publicPath: isDev ? "http://localhost:4000/" : "/",
+      //devtoolModuleFilenameTemplate: '[absolute-resource-path]'
     },
 
     devServer: {
@@ -162,7 +163,9 @@ module.exports = (env, argv) => {
     plugins: [
       new webpack.SourceMapDevToolPlugin({
         fileContext: "../priv/static/js",
-        filename: "../priv/static/js/[file].map"
+        filename: "../priv/static/js/[file].map",
+        //moduleFilenameTemplate: 'assets/[resource-path]',
+        //moduleFilenameTemplate: 'file://[absolute-resource-path]'
       }),
       new MiniCssExtractPlugin({
         filename: "css/[name].css",

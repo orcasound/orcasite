@@ -26,10 +26,10 @@ defmodule OrcasiteWeb.Schema do
     #end
 
     # TODO: fix what happens if an admin is logged in and tries to list the detections
-    @desc "List detections"
+    @desc "List detections, paginated"
     field :detections, list_of(:detection) do
       arg(:pagination, :pagination)
-      resolve(&Resolvers.Detection.list_candidates/2)
+      resolve(&Resolvers.Detection.list_detections/2)
     end
 
     @desc "List candidates, paginated"

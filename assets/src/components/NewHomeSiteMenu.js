@@ -283,6 +283,8 @@ const NewHomeSiteMenu = () => {
             if (error || !data) {
               return <div>Error detections data not available</div>
             }
+
+            debugger;
    
             return (
               <>
