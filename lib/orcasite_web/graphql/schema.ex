@@ -20,9 +20,16 @@ defmodule OrcasiteWeb.Schema do
       resolve(&Resolvers.Feed.show/2)
     end
 
+    #@desc "List detections"
+    #field :detections, list_of(:detection) do
+    #  resolve(&Resolvers.Detection.index/2)
+    #end
+
+    # TODO: fix what happens if an admin is logged in and tries to list the detections
     @desc "List detections"
     field :detections, list_of(:detection) do
-      resolve(&Resolvers.Detection.index/2)
+      arg(:pagination, :pagination)
+      resolve(&Resolvers.Detection.list_candidates/2)
     end
 
     @desc "List candidates, paginated"

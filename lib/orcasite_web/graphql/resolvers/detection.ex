@@ -6,13 +6,23 @@ defmodule OrcasiteWeb.Resolvers.Detection do
     {:ok, Radio.list_detections()}
   end
 
-  def index(_, _), do: {:error, :not_authorized}
+  def index(_, _) do
+    IO.puts("in index() in detection.ex")
+    {:error, :not_authorized}
+  end
 
   def list_candidates(args, %{context: %{current_user: %{admin: true}}}) do
     {:ok, Paginated.format(Radio.list_candidates(args))}
   end
 
-  def list_candidates(_, _), do: {:error, :not_authorized}
+  def list_candidates(_,_) do
+    IO.puts("got here")
+    {:ok, Paginated.format(Radio.list_candidates())}
+  end
+
+  #def list_candidates(_, _), do
+  #  {:error, :not_authorized}
+  #end
 
   def create(
         %{

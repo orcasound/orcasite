@@ -4,6 +4,7 @@ defmodule OrcasiteWeb.Resolvers.Accounts do
 
   def current_user(_params, %{context: %{current_user: current_user}}), do: {:ok, current_user}
   def current_user(_params, _info), do: {:error, :not_authorized}
+  #def current_user(_params, _info), do: {:ok, "test_user"}
 
   def login(params, _info) do
     with {:ok, user} <- Accounts.authenticate(params),

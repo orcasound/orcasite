@@ -9,6 +9,12 @@ import About from "./About.js"
 
 import ListenPageRoot from "./ListenPageRoot.js"
 
+import { Query } from "react-apollo"
+
+import Loader from "components/Loader"
+
+import {LIST_DETECTIONS} from "../queries/detections"
+
 
 import {
   Paper,
@@ -267,6 +273,30 @@ const NewHomeSiteMenu = () => {
         <SimpleMap />
       </Grid>
     </Grid>
+
+     <p>
+      <Query query={LIST_DETECTIONS}>
+        {({data, loading, error}) => {
+            if (loading) {
+              return <Loader />
+            }
+
+            if (error || !data) {
+              return <div>Error detections data not available</div>
+            }
+    
+            return (
+              <>
+                <p>
+                  haha got here
+                </p>
+              </>
+            )
+    
+          }}
+      </Query>
+    </p>
+
     </>
   )
 }
