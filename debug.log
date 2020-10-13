@@ -1,3 +1,4 @@
 [0901/103000.978:ERROR:file_io.cc(90)] ReadExactly: expected 152, observed 40
 [0909/145329.167:ERROR:file_io.cc(90)] ReadExactly: expected 152, observed 40
 [0912/001131.420:ERROR:file_io.cc(90)] ReadExactly: expected 152, observed 0
+[1013/145726.223:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)
