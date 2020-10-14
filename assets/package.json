@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
+    "standalone_start": "webpack-dev-server --mode development --inspect --inline --stdin --colors --host localhost --public localhost:4005",
     "start": "npm run watch",
-    "watch": "MIX_ENV=dev webpack-dev-server --mode development --hot --inline --stdin --colors --host localhost --public localhost:4000",
+    "watch": "MIX_ENV=dev webpack-dev-server --mode development --hot --inspect --inline --stdin --colors --host localhost --public localhost:4000",
     "deploy": "MIX_ENV=prod webpack --mode production --env.prod"
   },
   "dependencies": {
@@ -88,8 +89,8 @@
     "styled-components-test-utils": "^1.0.2",
     "svg-inline-loader": "^0.8.2",
     "url-loader": "^2.1.0",
-    "webpack": "^4.40.0",
+    "webpack": "^4.44.2",
     "webpack-cli": "^3.3.8",
-    "webpack-dev-server": "^3.8.0"
+    "webpack-dev-server": "^3.11.0"
   }
 }

@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
   // See:
   // https://github.com/videojs/videojs-contrib-hls/issues/600
   // https://github.com/video-dev/hls.js/issues/187
-  const devtool = false; // isDev ? "eval-source-map" : false
+  const devtool = isDev ? "eval-source-map" : false
 
   return {
     devtool: devtool,
@@ -35,6 +35,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, "../priv/static"),
       filename: "js/[name].js",
+      //publicPath: isDev ? "http://localhost:4005/" : "/",
       publicPath: isDev ? "http://localhost:4000/" : "/",
       //devtoolModuleFilenameTemplate: '[absolute-resource-path]'
     },
@@ -161,12 +162,12 @@ module.exports = (env, argv) => {
     },
 
     plugins: [
-      new webpack.SourceMapDevToolPlugin({
-        fileContext: "../priv/static/js",
-        filename: "../priv/static/js/[file].map",
+      //new webpack.SourceMapDevToolPlugin({
+      //  fileContext: "../priv/static/js",
+      //  filename: "../priv/static/js/[file].map",
         //moduleFilenameTemplate: 'assets/[resource-path]',
         //moduleFilenameTemplate: 'file://[absolute-resource-path]'
-      }),
+      //}),
       new MiniCssExtractPlugin({
         filename: "css/[name].css",
         allChunks: true

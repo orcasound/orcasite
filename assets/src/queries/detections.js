@@ -9,6 +9,7 @@ export const LIST_DETECTIONS = gql`
       timestamp
       listenerCount
       description
+      type
       feed {
         id
         name
