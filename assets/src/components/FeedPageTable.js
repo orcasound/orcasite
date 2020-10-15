@@ -18,6 +18,9 @@ import { Query } from "react-apollo"
 import Loader from "./Loader"
 
 import { LIST_DETECTIONS } from "../queries/detections"
+import { LIST_DETECTIONS_FROM_FEED } from "../queries/detections"
+
+
 
 function createData(time, eventTypeStr, imageSrc) {
   return { time, eventTypeStr, imageSrc };
@@ -35,6 +38,7 @@ class FeedPageTable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {detections: null, feed: this.props.feed};
+    console.log("here")
   }
 
   componentDidMount() {
@@ -53,7 +57,7 @@ class FeedPageTable extends React.Component {
 
         <div style={{display: "block", overflow: "scroll", height: "200px"}}>
 
-          <Query query={LIST_DETECTIONS}>
+          <Query query={LIST_DETECTIONS_FROM_FEED} variables={{slug: this.state.feed.slug}}>
             {({data, loading, error}) => {
                 if (loading) {
                   return <Loader/>
@@ -68,7 +72,7 @@ class FeedPageTable extends React.Component {
                 debugger;
                 // at the moment, the most recent detection is at the end of the detections array
 
-                const detections = data.detections;
+                const detections = data.getDetectionsForFeed;
                 return (
                   <>
                     {detections

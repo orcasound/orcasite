@@ -25,6 +25,12 @@ defmodule OrcasiteWeb.Resolvers.Detection do
     {:ok, Paginated.format(Radio.list_detections())}
   end
 
+  def list_detections_for_feed(params, _) do
+    IO.puts("...list_detections for feed...")
+    IO.puts(Radio.get_feed_by_slug(params.slug).id)
+    IO.puts("hahaha")
+    {:ok, Paginated.format(Radio.list_detections_for_feed(Radio.get_feed_by_slug(params.slug).id))}
+  end
 
   #def list_candidates(_, _), do
   #  {:error, :not_authorized}
