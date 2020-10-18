@@ -35,7 +35,8 @@ defmodule Orcasite.Radio.Detection do
       :listener_count,
       :timestamp,
       :candidate_id,
-      :description
+      :description,
+      :type
     ])
     |> validate_required([:feed_id, :playlist_timestamp, :player_offset, :source_ip])
   end
