@@ -17,8 +17,7 @@ import MediaStreamer from "components/MediaStreamer"
 
 import Slider from "@material-ui/core/Slider"
 
-import { feedSrc } from "utils/feedStorage"
-
+import styled from "styled-components"
 
 const Hidden = styled.div`
   display: none;
@@ -80,11 +79,13 @@ class TableEntry extends React.Component {
       const open = Boolean(this.state.anchorEl);
 
       const nodeName = this.props.nodeName;
-      const timestamp = this.detection.timestamp;
+      const timestamp = this.props.detection.timestamp;
       const detection = this.props.detection;
 
       const startOffset  = Math.min(0, detection.playerOffset - 5);
-      const endOffset = detection.playerOffset + 5;
+      const endOffset = detection.playerOffset + 10;
+
+      const isPlaying = this.state.isPlaying;
 
       return(
           <>
@@ -96,7 +97,11 @@ class TableEntry extends React.Component {
               </div>
               <div style={{textAlign:"left", width:"100%"}}>
                 <Player>
-                  {!isPlaying && <PlayIcon onClick={this.handlePlayIconPress} /> }
+                  {!isPlaying && 
+                    <IconButton onClick={this.handlePlayIconPress} disableRipple={true} style={{color: "rgb(0,0,0,0)", width: '35px', height: '35px', backgroundColor: '#f5f5f5', boxShadow: "3px 3px 10px rgba(0, 0, 0, 0.2)"}}>
+                      <PlayIcon /> 
+                    </IconButton>    
+                  }
                   {isPlaying && 
                     <>
                       <Pause className="icon" fontSize="large" onClick={this.handlePauseIconPress} />
