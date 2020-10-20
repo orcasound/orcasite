@@ -77,8 +77,8 @@ class FeedPageTable extends React.Component {
                   <>
                     {detections
                       .reverse()
-                      .map(entry => (
-                        <TableEntry type={entry.type} dateTime={entry.timestamp}/>
+                      .map(detection => (
+                        <TableEntry type={detection.type} dateTime={detection.timestamp} detection={detection} nodeName={this.state.feed.nodeName}/>
                       ))
                     }
                   </>
