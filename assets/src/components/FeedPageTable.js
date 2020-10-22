@@ -63,13 +63,10 @@ class FeedPageTable extends React.Component {
                   return <Loader/>
                 }
 
-                debugger;
-
                 if (error || !data) {
                   return <div>Error detections data not available</div>
                 }
 
-                debugger;
                 // at the moment, the most recent detection is at the end of the detections array
 
                 const detections = data.getDetectionsForFeed;

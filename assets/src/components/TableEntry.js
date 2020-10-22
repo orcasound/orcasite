@@ -1,4 +1,4 @@
-import React from "react"
+import React, { createRef } from "react"
 
 import LikeIcon from "./icons/LikeIcon.js"
 import PlayIcon from "./icons/PlayIcon.js"
@@ -23,7 +23,7 @@ const Hidden = styled.div`
   display: none;
 `
 
-const Player = styled.div`
+const PlayerDiv = styled.div`
   display: flex;
   align-items: center;
 `
@@ -50,6 +50,11 @@ class TableEntry extends React.Component {
       this.setState({anchorEl: null});
     }
 
+    setControls = controls => {
+      debugger;
+      this.setState({ isLoading: false, ...controls })
+    }
+
     formattedSeconds = seconds => {
       const mm = Math.floor(seconds / 60)
       const ss = seconds % 60
@@ -64,11 +69,23 @@ class TableEntry extends React.Component {
         type: this.props.type,
         dateTime: this.props.dateTime,
         anchorEl: null,
-        playerTime: this.props.playerTime,
-        isLoading: false,
-        isPlaying: false,
+
         playerTime: 0,
+        isPlaying: false,
+        isLoading: false,
+
+        playPause: () => {
+          if (this.state.isPlaying) {
+            this.state.pause();
+          } else if (!this.state.isLoading && !this.state.isPlaying) {
+            this.state.play();
+          } else { // pass
+
+          }
+        }
       };
+
+      this.mediaStreamerRef = createRef();
     }
 
     componentDidMount() {
@@ -79,13 +96,15 @@ class TableEntry extends React.Component {
       const open = Boolean(this.state.anchorEl);
 
       const nodeName = this.props.nodeName;
-      const timestamp = this.props.detection.timestamp;
+      const timestamp = this.props.detection.playlistTimestamp;
       const detection = this.props.detection;
 
-      const startOffset  = Math.min(0, detection.playerOffset - 5);
-      const endOffset = detection.playerOffset + 10;
+      const startOffset  = Math.max(parseFloat(detection.playerOffset) - 5, 0);
+      const endOffset = parseFloat(detection.playerOffset) + 5;
 
       const isPlaying = this.state.isPlaying;
+
+      const duration =  (+endOffset) - (+startOffset);
 
       return(
           <>
@@ -96,15 +115,15 @@ class TableEntry extends React.Component {
                   A user heard a {this.state.type}
               </div>
               <div style={{textAlign:"left", width:"100%"}}>
-                <Player>
+                <PlayerDiv>
                   {!isPlaying && 
-                    <IconButton onClick={this.handlePlayIconPress} disableRipple={true} style={{color: "rgb(0,0,0,0)", width: '35px', height: '35px', backgroundColor: '#f5f5f5', boxShadow: "3px 3px 10px rgba(0, 0, 0, 0.2)"}}>
+                    <IconButton onClick={this.state.playPause /*this.handlePlayIconPress*/} disableRipple={true} style={{color: "rgb(0,0,0,0)", width: '35px', height: '35px', backgroundColor: '#f5f5f5', boxShadow: "3px 3px 10px rgba(0, 0, 0, 0.2)"}}>
                       <PlayIcon /> 
                     </IconButton>    
                   }
                   {isPlaying && 
                     <>
-                      <Pause className="icon" fontSize="large" onClick={this.handlePauseIconPress} />
+                      <Pause className="icon" fontSize="large" onClick={this.state.playPause /*this.handlePauseIconPress*/} />
                       <Popover
                         open={open}
                         anchorEl={this.state.anchorEl}
@@ -121,15 +140,14 @@ class TableEntry extends React.Component {
                       <SliderTime>
                         <Slider
                           step={0.1}
-                          max={this.state.duration}
+                          max={duration}
                           value={this.state.playerTime} 
-                          marks={marks}
                           onChange={this.onSliderChange}
                           onChangeCommitted={this.onSliderChangeCommitted}
                         />
                         <TimeDisplay>
                           <div>{this.formattedSeconds(this.state.playerTime.toFixed(0))}</div>
-                          <div>{this.formattedSeconds(this.state.duration.toFixed(0))}</div>
+                          <div>{this.formattedSeconds(duration.toFixed(0))}</div>
                         </TimeDisplay>
                       </SliderTime>
                     </Popover>
@@ -141,17 +159,22 @@ class TableEntry extends React.Component {
                       src={feedSrc(nodeName, timestamp)}
                       startOffset={startOffset}
                       endOffset={endOffset}
+                      onReady={this.setControls}
                       onLoading={() => this.setState({ isLoading: true })}
                       onPlaying={() =>
-                        this.setState({ isLoading: false, isPlaying: true })
+                        {
+                          this.setState({ isLoading: false, isPlaying: true });
+                        }
                       }
-                      onPaused={() =>
-                        this.setState({ isLoading: false, isPlaying: false })
+                      onPaused={() => 
+                        {
+                          this.setState({ isLoading: false, isPlaying: false })
+                        }
                       }
                       onTimeUpdate={playerTime => this.setState({ playerTime })}
                     />
                   </Hidden>
-                </Player>
+                </PlayerDiv>
                 {
                   /*
                   <IconButton onClick={this.playIconButtonClick} disableRipple={true} style={{color: "rgb(0,0,0,0)", width: '35px', height: '35px', backgroundColor: '#f5f5f5', boxShadow: "3px 3px 10px rgba(0, 0, 0, 0.2)"}}>
