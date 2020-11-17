@@ -101,8 +101,6 @@ const FeedPage = props => {
                 </Typography>
               )}
             </Paper>
-
-            <p> GOT HERE </p>
            <FeedPageTable feed={feed}/>
           </Paper>
         )

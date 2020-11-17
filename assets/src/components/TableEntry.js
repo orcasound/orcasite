@@ -22,9 +22,9 @@ import styled from "styled-components"
 const Hidden = styled.div`
   display: none;
 `
-
+// formerly was display=flex
 const PlayerDiv = styled.div`
-  display: flex;
+  display: inline;
   align-items: center;
 `
 const SliderTime = styled.div`
