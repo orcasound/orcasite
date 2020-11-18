@@ -176,7 +176,7 @@ module.exports = (env, argv) => {
         ENV: {
           DEVELOPMENT: isDev,
           S3_BUCKET: JSON.stringify(
-            process.env.S3_BUCKET || "streaming-orcasound-net"
+            "streaming-orcasound-net" //process.env.S3_BUCKET || "streaming-orcasound-net"
           ),
           SHOW_PLAYER_DEBUG_INFO: process.env.SHOW_PLAYER_DEBUG_INFO || isDev,
           ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
