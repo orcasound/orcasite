@@ -46,6 +46,10 @@ class FeedPageTable extends React.Component {
   }
 
   render() {
+
+    debugger;
+
+
     return (
       <div style={{display: "flex", flexDirection: "column"}}>
           
@@ -57,7 +61,7 @@ class FeedPageTable extends React.Component {
 
         <div style={{display: "block", overflow: "scroll", height: "200px"}}>
 
-          <Query query={LIST_DETECTIONS_FROM_FEED} variables={{slug: this.state.feed.slug}}>
+          <Query query={LIST_DETECTIONS} >
             {({data, loading, error}) => {
                 if (loading) {
                   return <Loader/>
@@ -69,14 +73,16 @@ class FeedPageTable extends React.Component {
 
                 // at the moment, the most recent detection is at the end of the detections array
 
-                const detections = data.getDetectionsForFeed;
+                const detections = data.detections;
                 return (
                   <>
                     {detections
                       .reverse()
-                      .map(detection => (
-                        <TableEntry key={detection.id} type={detection.type} dateTime={detection.timestamp} detection={detection} nodeName={this.state.feed.nodeName}/>
-                      ))
+                      .map(detection => {
+                        if (detection.feed.id == this.state.feed.id) { 
+                          return <TableEntry key={detection.id} type={detection.type} dateTime={detection.timestamp} detection={detection} nodeName={this.state.feed.nodeName}/>
+                        }
+                      })
                     }
                   </>
                 )
