@@ -43,7 +43,7 @@ config :orcasite, Orcasite.Repo,
 # Do not print debug messages in production
 # config :logger, level: :info, format: {Orcasite.Logger, :format}
 
-config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
+config :orcasite, :orcasite_s3_url, "https://s3-us-west-2.amazonaws.com/orcasite" #System.get_env("ORCASITE_S3_URL")
 
 #config :orcasite, OrcasiteWeb.Guardian,
 #  issuer: "orcasite",
