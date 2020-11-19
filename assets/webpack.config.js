@@ -43,7 +43,6 @@ module.exports = (env, argv) => {
       headers: {
         "Access-Control-Allow-Origin": "*"
       },
-      hot: true
     },
 
     module: {
