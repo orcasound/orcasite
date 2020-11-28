@@ -33,7 +33,7 @@ config :logger, level: :info, format: {Orcasite.Logger, :format}
 
 config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
 
-ga_tracking_code = if (System.get_env("ENABLE_PRODUCTION_ANALYTICS") == "true"), do: System.get_env("PROD_GA_TRACKING_ID"), else: UA-179943728-1
+ga_tracking_code = if (System.get_env("ENABLE_PROD_ANALYTICS") == "true"), do: System.get_env("PROD_GA_TRACKING_ID"), else: "UA-179943728-1"
 config :orcasite, :ga_tracking_id, ga_tracking_code
 
 config :orcasite, OrcasiteWeb.Guardian,

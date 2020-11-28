@@ -25,9 +25,27 @@
           'event_category': 'outbound',
           'event_label': url,
           'transport_type': 'beacon',
-          'event_callback': function(){document.location = url;}
+          //'event_callback': function(){document.location = url;}
         });
       }
+
+      // call this by adding the following attribute to the <a> tag: onmousedown="getOutboundLinkMouseDown(event, 'URL')"
+      var getOutboundLinkMouseDown = function(e, url) {
+        console.log("getOutboundLinkMouseDown being called....");
+        e = e || window.event;
+        switch (e.which) {
+          case 1: { // left mouse button press
+            getOutboundLink(url)
+            break;
+          }
+          case 2: break; // middle mouse button press
+          case 3: { // right mouse button press
+            getOutboundLink(url)
+            break;
+          }
+        }
+      }
+
     </script>
     <!-- end -->
 
