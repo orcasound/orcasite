@@ -182,13 +182,6 @@ module.exports = (env, argv) => {
           ),
           SHOW_PLAYER_DEBUG_INFO: process.env.SHOW_PLAYER_DEBUG_INFO || isDev,
           ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
-<<<<<<< HEAD
-=======
-          GOOGLE_ANALYTICS_ID: JSON.stringify("UA-178080782-1") //JSON.stringify(
-            //process.env.GOOGLE_ANALYTICS_ID || ""
-          //)
-          ,
->>>>>>> heroku-orcasound-staging/master
           FEATURE_ACTIVITY_BUTTON: process.env.FEATURE_ACTIVITY_BUTTON || isDev
         },
         "process.env": {
