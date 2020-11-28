@@ -12,6 +12,7 @@ defmodule Orcasite.Radio.Detection do
     field(:listener_count, :integer)
     field(:timestamp, :utc_datetime)
     field(:description, :string)
+    field(:type, :string)
 
     belongs_to(:feed, Feed)
     belongs_to(:candidate, Candidate)
@@ -19,6 +20,10 @@ defmodule Orcasite.Radio.Detection do
     timestamps()
   end
 
+  @spec changeset(
+          {map, map} | %{:__struct__ => atom | %{__changeset__: map}, optional(atom) => any},
+          :invalid | %{optional(:__struct__) => none, optional(atom | binary) => any}
+        ) :: Ecto.Changeset.t()
   @doc false
   def changeset(detection, attrs) do
     detection

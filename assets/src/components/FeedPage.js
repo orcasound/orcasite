@@ -8,6 +8,8 @@ import Player from "./Player"
 import FeedPresence from "./FeedPresence"
 import Loader from "./Loader"
 
+import FeedPageTable from "./FeedPageTable"
+
 const useStyles = makeStyles(theme => ({
   paper: {
     [theme.breakpoints.down("xs")]: {
@@ -99,6 +101,7 @@ const FeedPage = props => {
                 </Typography>
               )}
             </Paper>
+           <FeedPageTable feed={feed}/>
           </Paper>
         )
       }}

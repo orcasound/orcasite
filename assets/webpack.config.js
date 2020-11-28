@@ -14,7 +14,8 @@ const autoprefixer = require("autoprefixer")
  * Configuration
  **/
 module.exports = (env, argv) => {
-  const isDev = !(env && env.prod) && argv.mode !== "production"
+  //const isDev = !(env && env.prod) && argv.mode !== "production"
+  const isDev = true;
 
   // Turned off uglifying due to minimization of webworker inlining not having 'window' defined
   // See:
@@ -34,19 +35,36 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, "../priv/static"),
       filename: "js/[name].js",
-      publicPath: isDev ? "http://0.0.0.0:8080/" : "/"
+      //publicPath: isDev ? "http://localhost:4005/" : "/",
+      publicPath: isDev ? "http://localhost:4000/" : "/",
+      //devtoolModuleFilenameTemplate: '[absolute-resource-path]'
     },
 
     devServer: {
       disableHostCheck: true,
-      host: "0.0.0.0",
+      host: "localhost",
       headers: {
         "Access-Control-Allow-Origin": "*"
       },
+<<<<<<< HEAD
+=======
+      hot: true
+>>>>>>> heroku-orcasound-staging/master
     },
 
     module: {
       rules: [
+
+        {
+          test: /\.svg$/,
+          use: ['@svgr/webpack'],
+        },
+        
+       // {
+       //   test: /\.svg$/,
+       //   loader: 'svg-inline-loader'
+       // },
+  
         {
           test: /\.(jsx?)$/,
           exclude: /node_modules/,
@@ -56,7 +74,9 @@ module.exports = (env, argv) => {
         },
 
         {
-          test: /\.(gif|png|jpe?g|svg)$/i,
+          
+          test: /\.(gif|png|jpe?g|)$/i,
+          //test: /\.(gif|png|jpe?g|svg)$/i,
           exclude: /node_modules/,
           use: [
             "file-loader?name=images/[name].[ext]",
@@ -79,12 +99,13 @@ module.exports = (env, argv) => {
                   }
                 }
               }
-            }
+             }
           ]
         },
 
         {
-          test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+          test: /\.(ttf|woff2?|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+          //test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
           exclude: /node_modules/,
           query: { name: "fonts/[hash].[ext]" },
           loader: "file-loader"
@@ -144,6 +165,12 @@ module.exports = (env, argv) => {
     },
 
     plugins: [
+      //new webpack.SourceMapDevToolPlugin({
+      //  fileContext: "../priv/static/js",
+      //  filename: "../priv/static/js/[file].map",
+        //moduleFilenameTemplate: 'assets/[resource-path]',
+        //moduleFilenameTemplate: 'file://[absolute-resource-path]'
+      //}),
       new MiniCssExtractPlugin({
         filename: "css/[name].css",
         allChunks: true
@@ -155,10 +182,17 @@ module.exports = (env, argv) => {
             process.env.ENABLE_PROD_ANALYTICS ? process.env.PROD_GA_TRACKING_ID : "UA-179943728-1"
           ),
           S3_BUCKET: JSON.stringify(
-            process.env.S3_BUCKET || "streaming-orcasound-net"
+            "streaming-orcasound-net" //process.env.S3_BUCKET || "streaming-orcasound-net"
           ),
           SHOW_PLAYER_DEBUG_INFO: process.env.SHOW_PLAYER_DEBUG_INFO || isDev,
           ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
+<<<<<<< HEAD
+=======
+          GOOGLE_ANALYTICS_ID: JSON.stringify("UA-178080782-1") //JSON.stringify(
+            //process.env.GOOGLE_ANALYTICS_ID || ""
+          //)
+          ,
+>>>>>>> heroku-orcasound-staging/master
           FEATURE_ACTIVITY_BUTTON: process.env.FEATURE_ACTIVITY_BUTTON || isDev
         },
         "process.env": {

@@ -39,7 +39,6 @@ defmodule Orcasite.Mixfile do
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
@@ -50,6 +49,8 @@ defmodule Orcasite.Mixfile do
       # Authenitication library for admin dashboard
       {:guardian, "~> 1.0"},
       # Algorithm used by Comeonin to hash password
+      #{:bcrypt_elixir, " 0.12"},
+      #{:bcrypt, ">= 1.1.2"},
       {:bcrypt_elixir, "~>2.0"},
       # JSON parser, works with Absinthe out of the box
       {:poison, "~> 4.0"},

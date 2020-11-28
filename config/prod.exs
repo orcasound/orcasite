@@ -21,17 +21,29 @@ config :orcasite, OrcasiteWeb.Endpoint,
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Configure your database
+#config :orcasite, Orcasite.Repo,
+#  adapter: Ecto.Adapters.Postgres,
+#  url: System.get_env("DATABASE_URL"),
+#  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+#  ssl: true,
+#  types: Orcasite.PostgresTypes
+
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
-  url: System.get_env("DATABASE_URL"),
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  username: "jlcguunigrjccb", # System.get_env("POSTGRES_USER") || "postgres",
+  password: "dadcdb4491a1885281207bdd1599941cfca2ce0cde8fb637a79a629894a6efc1", # System.get_env("POSTGRES_PASSWORD") || "postgres",
+  database: "d20alaqc47mce9", # System.get_env("POSTGRES_DATABASE") || "orcasite_dev",
+  hostname: "ec2-50-16-196-138.compute-1.amazonaws.com", # System.get_env("POSTGRES_HOST") || "localhost",
+  port: 5432, # System.get_env("POSTGRES_PORT") || 5432,
+  pool_size: 1,
   ssl: true,
   types: Orcasite.PostgresTypes
 
-# Do not print debug messages in production
-config :logger, level: :info, format: {Orcasite.Logger, :format}
 
-config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
+# Do not print debug messages in production
+# config :logger, level: :info, format: {Orcasite.Logger, :format}
+
+config :orcasite, :orcasite_s3_url, "https://s3-us-west-2.amazonaws.com/orcasite" #System.get_env("ORCASITE_S3_URL")
 
 ga_tracking_code = if (System.get_env("ENABLE_PROD_ANALYTICS") == "true"), do: System.get_env("PROD_GA_TRACKING_ID"), else: "UA-179943728-1"
 config :orcasite, :ga_tracking_id, ga_tracking_code

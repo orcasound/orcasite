@@ -1,5 +1,24 @@
 import gql from "graphql-tag"
 
+export const LIST_DETECTIONS_FROM_FEED = gql`
+  query detections($slug: String!) {
+    getDetectionsForFeed(slug: $slug) {
+      id
+      playlistTimestamp
+      playerOffset
+      timestamp
+      listenerCount
+      description
+      type
+      feed {
+        id
+        name
+        slug
+      }
+    }
+  }
+`
+
 export const LIST_DETECTIONS = gql`
   {
     detections {
@@ -9,6 +28,7 @@ export const LIST_DETECTIONS = gql`
       timestamp
       listenerCount
       description
+      type
       feed {
         id
         name

@@ -26,15 +26,29 @@ const Root = props => {
           path="/register"
           render={props => <Login {...props} login={false} />}
         />
+
+        <Route exact path="/newhome" component={NewHome} />  
+        <Route exact path="/experimentgql" component={GQLExperiment} />  
+        
         <Route path="/dynamic/:feedSlug" component={DynamicFeed} />
 
         <AdminRoute path="/admin" component={Admin} />
 
+        <Route path="/listen" component={ListenPageRoot}/>
+        <Route path="/learn" component={LearnPageRoot}/>
+        <Route path="/projects" component={ProjectsPageRoot}/>
+        <Route path="/blogs" component={BlogsPageRoot}/>
+        <Route path="/about" component={AboutPageRoot}/>
+        <Route path="/support" component={SupportPageRoot}/>
+        <Route path="/subscribe" component={SubscribePageRoot}/>
+
+
         <Route path="/:feedSlug" component={Home} />
+
       </Switch>
       <GoogleAnalytics />
-    </BrowserRouter>
-  )
+    </BrowserRouter>  
+    )
 }
 
 export default hot(Root)

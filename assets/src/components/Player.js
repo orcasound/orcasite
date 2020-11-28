@@ -110,6 +110,18 @@ class Player extends Component {
     ]
   }
 
+  handlePlayArrowPress = () => {
+    window.gtag('event', "player_started @" + this.state.currentFeed.slug, { 'event_category': 'custom' });
+    console.log("player started");
+    console.log("current feed = " + this.state.currentFeed.slug);
+  }
+
+  handlePauseArrowPress = () => {
+    window.gtag('event', "player_paused @" + this.state.currentFeed.slug,  { 'event_category': 'custom' });
+    console.log("player paused");
+    console.log("current feed = " + this.state.currentFeed.slug);
+  }
+
   getTotalLatency = () => {
     return (
       Math.floor(Date.now() / 1000) -
@@ -125,6 +137,9 @@ class Player extends Component {
 
   fetchTimestamp = feed => {
     const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
+    if (feed == "undefined") { 
+      console.log("oops, feed is undefined here")
+    }
 
     const xhr = new XMLHttpRequest()
     this.setState({ currentXhr: xhr })
@@ -197,11 +212,15 @@ class Player extends Component {
                 autoplay={this.props.autoplay}
                 onReady={this.setControls}
                 onLoading={() => this.setState({ isLoading: true })}
-                onPlaying={() =>
-                  this.setState({ isLoading: false, isPlaying: true })
+                onPlaying={() => 
+                  {
+                    this.setState({ isLoading: false, isPlaying: true })
+                  }
                 }
-                onPaused={() =>
-                  this.setState({ isLoading: false, isPlaying: false })
+                onPaused={() => 
+                  {
+                    this.setState({ isLoading: false, isPlaying: false })
+                  }
                 }
                 onLatencyUpdate={(newestLatency, playerTime) =>
                   this.setState({

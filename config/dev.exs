@@ -55,12 +55,13 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("POSTGRES_USER") || "postgres",
-  password: System.get_env("POSTGRES_PASSWORD") || "postgres",
-  database: System.get_env("POSTGRES_DATABASE") || "orcasite_dev",
-  hostname: System.get_env("POSTGRES_HOST") || "localhost",
-  port: System.get_env("POSTGRES_PORT") || 5432,
-  pool_size: 10,
+  username: "jlcguunigrjccb", # System.get_env("POSTGRES_USER") || "postgres",
+  password: "dadcdb4491a1885281207bdd1599941cfca2ce0cde8fb637a79a629894a6efc1", # System.get_env("POSTGRES_PASSWORD") || "postgres",
+  database: "d20alaqc47mce9", # System.get_env("POSTGRES_DATABASE") || "orcasite_dev",
+  hostname: "ec2-50-16-196-138.compute-1.amazonaws.com", # System.get_env("POSTGRES_HOST") || "localhost",
+  port: 5432, # System.get_env("POSTGRES_PORT") || 5432,
+  pool_size: 1,
+  ssl: true,
   types: Orcasite.PostgresTypes
 
 config :orcasite, :orcasite_s3_url, (System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite")

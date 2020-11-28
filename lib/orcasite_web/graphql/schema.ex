@@ -20,9 +20,24 @@ defmodule OrcasiteWeb.Schema do
       resolve(&Resolvers.Feed.show/2)
     end
 
-    @desc "List detections"
+    #@desc "List detections"
+    #field :detections, list_of(:detection) do
+    #  resolve(&Resolvers.Detection.index/2)
+    #end
+
+     # TODO: fix what happens if an admin is logged in and tries to list the detections
+     @desc "List detections from feed, paginated"
+     field :get_detections_for_feed, list_of(:detection) do
+       # arg(:pagination, :pagination)
+       arg(:slug, :string)
+       resolve(&Resolvers.Detection.list_detections_for_feed/2)
+     end
+
+    # TODO: fix what happens if an admin is logged in and tries to list the detections
+    @desc "List detections, paginated"
     field :detections, list_of(:detection) do
-      resolve(&Resolvers.Detection.index/2)
+      arg(:pagination, :pagination)
+      resolve(&Resolvers.Detection.list_detections/2)
     end
 
     @desc "List candidates, paginated"
@@ -75,7 +90,7 @@ defmodule OrcasiteWeb.Schema do
       arg(:feed_id, :id)
       arg(:playlist_timestamp, :string)
       arg(:player_offset, :decimal)
-      arg(:listener_count, :integer)
+      arg(:type, :string)
       arg(:description, :string)
 
       resolve(&Resolvers.Detection.create/2)

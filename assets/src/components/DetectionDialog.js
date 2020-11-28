@@ -39,6 +39,7 @@ export default class DetectionDialog extends Component {
     submitted: false,
     description: ""
   }
+
   handleClickOpen = () => {
     gtag('event', "i_hear_something_interesting_button_pressed @" + this.props.feed.slug, {'event_category' : 'custom'})
     this.setState({ open: true })
@@ -51,7 +52,7 @@ export default class DetectionDialog extends Component {
       this.onDetect(submitDetection)
     }
   }
-
+  
   handleClose = () => {
     this.setState({
       open: false,
@@ -67,9 +68,11 @@ export default class DetectionDialog extends Component {
       timestamp: playlistTimestamp,
       isPlaying,
       getPlayerTime,
-      listenerCount
     } = this.props
 
+    //const desc = "Testing"
+    const type = "Orca"
+  
     const playerOffset = getPlayerTime()
     const { description } = this.state
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
@@ -79,7 +82,8 @@ export default class DetectionDialog extends Component {
           playlistTimestamp,
           playerOffset,
           description,
-          listenerCount
+          type
+           // TODO FIX THIS FOR THE OTHER TYPES
         }
       })
     }
