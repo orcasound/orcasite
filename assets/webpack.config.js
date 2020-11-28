@@ -46,10 +46,6 @@ module.exports = (env, argv) => {
       headers: {
         "Access-Control-Allow-Origin": "*"
       },
-<<<<<<< HEAD
-=======
-      hot: true
->>>>>>> heroku-orcasound-staging/master
     },
 
     module: {
