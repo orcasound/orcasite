@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 
 class GoogleAnalytics extends React.Component {
 
-    // track the initial page view of the home page
+    // track the initial page view
     componentDidMount() {
         gtag('config', `${ENV.GA_TRACKING_ID}`, {
             'page_title': document.title,
