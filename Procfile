@@ -1,1 +1,1 @@
-web: MIX_ENV=dev mix phx.server
+web: MIX_ENV=dev mix deps.get; mix phx.server
