@@ -9,7 +9,10 @@ import Home from "./Home"
 import Admin from "./admin/Dashboard"
 import DynamicFeed from "./DynamicFeed"
 import Login from "./Login"
+
 import GoogleAnalytics from "./GoogleAnalytics"
+
+import NewHome from "./NewHome"
 
 const Root = props => {
   return (
@@ -28,7 +31,6 @@ const Root = props => {
         />
 
         <Route exact path="/newhome" component={NewHome} />  
-        <Route exact path="/experimentgql" component={GQLExperiment} />  
         
         <Route path="/dynamic/:feedSlug" component={DynamicFeed} />
 
