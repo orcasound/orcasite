@@ -58,16 +58,6 @@
 
     <title>Orcasound - Listen for whales</title>
 
-    <!-- gtag scripts (for Google Analytics) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-178080782-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-178080782-1UA-178080782-1');
-    </script>
-
     <%= {:safe, css_link_tag(@conn)} %>
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <!-- jss-insertion-point -->
