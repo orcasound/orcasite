@@ -36,15 +36,6 @@ const Root = props => {
 
         <AdminRoute path="/admin" component={Admin} />
 
-        <Route path="/listen" component={ListenPageRoot}/>
-        <Route path="/learn" component={LearnPageRoot}/>
-        <Route path="/projects" component={ProjectsPageRoot}/>
-        <Route path="/blogs" component={BlogsPageRoot}/>
-        <Route path="/about" component={AboutPageRoot}/>
-        <Route path="/support" component={SupportPageRoot}/>
-        <Route path="/subscribe" component={SubscribePageRoot}/>
-
-
         <Route path="/:feedSlug" component={Home} />
 
       </Switch>
