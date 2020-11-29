@@ -6,11 +6,13 @@ class GoogleAnalytics extends React.Component {
     // track the initial page view of the home page
     componentDidMount() {
         debugger;
-        gtag('config', `${ENV.GA_TRACKING_ID}`, {
-            'page_title': document.title,
-            'page_location': window.location.href,
-            'page_path': location.pathname
-        });
+        if (location.pathname == "/") { // if we're viewing the home page....
+            gtag('config', `${ENV.GA_TRACKING_ID}`, {
+                'page_title': document.title,
+                'page_location': window.location.href,
+                'page_path': location.pathname
+            });
+        }
     }
 
     componentWillUpdate ({ location, history }) {
