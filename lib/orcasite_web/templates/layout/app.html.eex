@@ -8,7 +8,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config',  "<%= Application.get_env(:orcasite, :ga_tracking_id) %>");
+      //gtag('config',  "<%= Application.get_env(:orcasite, :ga_tracking_id) %>");
     </script>
     <!-- end -->
 

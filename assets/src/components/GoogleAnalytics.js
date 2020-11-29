@@ -3,16 +3,14 @@ import { withRouter } from 'react-router-dom';
 
 class GoogleAnalytics extends React.Component {
 
-    // track the initial page view of the home page
+    // track the initial page view, the first time the web application is loaded
     componentDidMount() {
         debugger;
-        if (location.pathname == "/") { // if we're viewing the home page....
-            gtag('config', `${ENV.GA_TRACKING_ID}`, {
-                'page_title': document.title,
-                'page_location': window.location.href,
-                'page_path': location.pathname
-            });
-        }
+        gtag('config', `${ENV.GA_TRACKING_ID}`, {
+            'page_title': document.title,
+            'page_location': window.location.href,
+            'page_path': location.pathname
+        });
     }
 
     componentWillUpdate ({ location, history }) {
