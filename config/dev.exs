@@ -65,5 +65,5 @@ config :orcasite, Orcasite.Repo,
 
 config :orcasite, :orcasite_s3_url, (System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite")
 
-GOOGLE_ANALYTICS_ID = if (System.get_env("ENABLE_PROD_ANALYTICS") == "true"), do: System.get_env("PROD_GOOGLE_ANALYTICS_ID"), else: "UA-179943728-1"
-config :orcasite, :google_analytics_id, GOOGLE_ANALYTICS_ID
+ga_tracking_code = if (System.get_env("ENABLE_PROD_ANALYTICS") == "true"), do: System.get_env("PROD_GOOGLE_ANALYTICS_ID"), else: "UA-179943728-1"
+config :orcasite, :google_analytics_id, ga_tracking_code
