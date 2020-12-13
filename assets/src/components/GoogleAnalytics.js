@@ -5,7 +5,7 @@ class GoogleAnalytics extends React.Component {
 
     // track the initial page view
     componentDidMount() {
-        gtag('config', `${ENV.GA_TRACKING_ID}`, {
+        gtag('config', `${ENV.GOOGLE_ANALYTICS_ID}`, {
             'page_title': document.title,
             'page_location': window.location.href,
             'page_path': location.pathname
@@ -21,7 +21,7 @@ class GoogleAnalytics extends React.Component {
 
         if (history.action === 'PUSH' &&
             typeof(gtag) === 'function') {
-            gtag('config', `${ENV.GA_TRACKING_ID}`, {
+            gtag('config', `${ENV.GOOGLE_ANALYTICS_ID}`, {
                 'page_title': document.title,
                 'page_location': window.location.href,
                 'page_path': location.pathname

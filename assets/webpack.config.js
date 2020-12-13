@@ -22,6 +22,8 @@ module.exports = (env, argv) => {
   // https://github.com/video-dev/hls.js/issues/187
   const devtool = isDev ? "eval-source-map" : false
 
+  const default_google_analytics_id = "UA-179943728-1"; // where the data gets sent for users that are interacting with the site and running the entire application, for development and testing purposes, on their local computer 
+
   return {
     devtool: devtool,
 
@@ -151,9 +153,12 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         ENV: {
           DEVELOPMENT: isDev,
-          GA_TRACKING_ID: JSON.stringify(
-            process.env.ENABLE_PROD_ANALYTICS ? process.env.PROD_GA_TRACKING_ID : "UA-179943728-1"
+          GOOGLE_ANALYTICS_ID: JSON.stringify(
+            process.env.ENABLE_PROD_ANALYTICS ? process.env.PROD_GOOGLE_ANALYTICS_ID : "UA-179943728-1"
           ),
+          DEFAULT_GOOGLE_ANALYTICS_ID: JSON.stringify(
+            process.env.DEFAULT_GOOGLE_ANALYTICS_ID != "" ? process.env.DEFAULT_GOOGLE_ANALYTICS_ID : default_google_analytics_id
+          ), 
           S3_BUCKET: JSON.stringify(
             process.env.S3_BUCKET || "streaming-orcasound-net"
           ),

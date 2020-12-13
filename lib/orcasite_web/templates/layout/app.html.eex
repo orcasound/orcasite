@@ -3,12 +3,12 @@
   <head>
 
     <!-- gtag scripts (for Google Analytics) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Application.get_env(:orcasite, :ga_tracking_id) %>" ></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Application.get_env(:orcasite, :google_analytics_id) %>" ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      //gtag('config',  "<%= Application.get_env(:orcasite, :ga_tracking_id) %>");
+      //gtag('config',  "<%= Application.get_env(:orcasite, :google_analytics_id) %>");
     </script>
     <!-- end -->
 
