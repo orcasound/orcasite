@@ -12,6 +12,12 @@
     </script>
     <!-- end -->
 
+    <script>
+      function getGoogleAnalyticsID() {
+        return "<%= Application.get_env(:orcasite, :google_analytics_id) %>"
+      }
+    </script>
+
     <!-- for tracking outbound link clicks in Google Analytics -->
     <script>
       /**
