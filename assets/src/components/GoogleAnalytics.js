@@ -5,6 +5,8 @@ class GoogleAnalytics extends React.Component {
 
     // track the initial page view
     componentDidMount() {
+        console.log("Google Analytics ID = " + ENV.GOOGLE_ANALYTICS_ID);
+
         gtag('config', `${ENV.GOOGLE_ANALYTICS_ID}`, {
             'page_title': document.title,
             'page_location': window.location.href,
@@ -12,7 +14,7 @@ class GoogleAnalytics extends React.Component {
         });
     }
 
-    componentWillUpdate ({ location, history }) {
+    UNSAFE_componentWillUpdate ({ location, history }) {
         const gtag = window.gtag;
 
         if (location.pathname === this.props.location.pathname) {

@@ -76,7 +76,7 @@ function AudioExamples(props) {
               <Box ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}>
                 <audio controls src={example.audio}
                         onPlay={() => gtag('event', 'play_button_pressed @ ' + example.title  + ' player, homepage', {'event_category' : 'custom'})}
-                        onPause={() => gtag('event', 'pause_button_pressed @ ' +  example.title  + ' player, homepage', {'event_category' : 'custom'})}
+                        // onPause={() => gtag('event', 'pause_button_pressed @ ' +  example.title  + ' player, homepage', {'event_category' : 'custom'})}
                 />
               </Box>
             </Grid>
