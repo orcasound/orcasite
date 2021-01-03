@@ -8,7 +8,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      //gtag('config',  "<%= Application.get_env(:orcasite, :google_analytics_id) %>");
     </script>
     <!-- end -->
 
@@ -31,7 +30,6 @@
           'event_category': 'outbound',
           'event_label': url,
           'transport_type': 'beacon',
-          //'event_callback': function(){document.location = url;}
         });
       }
 
