@@ -13,8 +13,9 @@ config :orcasite, OrcasiteWeb.Endpoint,
   check_origin: false,
   watchers: [
     npm: ["run", "watch",
-    cd: Path.expand("../assets", __DIR__)
-  ]]
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
 
 # ## SSL Support
 #
@@ -63,3 +64,7 @@ config :orcasite, Orcasite.Repo,
   types: Orcasite.PostgresTypes
 
 config :orcasite, :orcasite_s3_url, (System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite")
+
+default_google_analytics_id = if (System.get_env("DEFAULT_GOOGLE_ANALYTICS_ID") == "" || System.get_env("DEFAULT_GOOGLE_ANALYTICS_ID") == nil), do: "UA-178080782-1", else: System.get_env("DEFAULT_GOOGLE_ANALYTICS_ID")
+ga_tracking_code = if (System.get_env("ENABLE_PROD_ANALYTICS") == "true"), do: System.get_env("PROD_GOOGLE_ANALYTICS_ID"), else: default_google_analytics_id
+config :orcasite, :google_analytics_id, ga_tracking_code

@@ -2,7 +2,7 @@ import React from "react"
 import { Typography, Box, Grid, Avatar } from "@material-ui/core"
 import wave from "../../static/wave-orca.png"
 
-const AudioExamples = props => {
+const AudioExamples = (props) => {
   return (
     <Grid
       className="audio-example-section"
@@ -74,7 +74,19 @@ const AudioExamples = props => {
             </Grid>
             <Grid item xs={12}>
               <Box ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}>
-                <audio controls src={example.audio} />
+                <audio
+                  controls
+                  src={example.audio}
+                  onPlay={() =>
+                    gtag(
+                      "event",
+                      "play_button_pressed @ " +
+                        example.title +
+                        " player, homepage",
+                      { event_category: "custom" }
+                    )
+                  }
+                />
               </Box>
             </Grid>
           </Grid>
@@ -89,19 +101,19 @@ AudioExamples.defaultProps = {
     {
       title: "Orca Calls",
       audio:
-        "http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3"
+        "http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3",
     },
     {
       title: "Orca Clicks",
       audio:
-        "http://orcasound.net/data/product/SRKW/clicks/20190705-JK_varied_clicks-10sec.mp3"
+        "http://orcasound.net/data/product/SRKW/clicks/20190705-JK_varied_clicks-10sec.mp3",
     },
     {
       title: "Orca Whistles",
       audio:
-        "http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3"
-    }
-  ]
+        "http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3",
+    },
+  ],
 }
 
 export default AudioExamples

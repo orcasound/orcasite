@@ -91,6 +91,7 @@ const SiteMenu = () => {
               color="inherit"
               variant="inherit"
               className={classes.link}
+              onClick={() => { gtag('event', "get_notifications_button_pressed", {'event-category' : 'custom'}) }}
             >
               Get notified when there's whale activity
             </Link>

@@ -22,6 +22,9 @@ module.exports = (env, argv) => {
   // https://github.com/video-dev/hls.js/issues/187
   const devtool = isDev ? "eval-source-map" : false
 
+  // where the data gets sent for users that are interacting with the site and running the entire application, for development and testing purposes, on their local computer 
+  const DEFAULT_GOOGLE_ANALYTICS_ID = process.env.DEFAULT_GOOGLE_ANALYTICS_ID == "" || process.env.DEFAULT_GOOGLE_ANALYTICS_ID == null ? "UA-178080782-1" : process.env.DEFAULT_GOOGLE_ANALYTICS_ID;
+
   return {
     devtool: devtool,
 
@@ -42,7 +45,7 @@ module.exports = (env, argv) => {
       host: "0.0.0.0",
       headers: {
         "Access-Control-Allow-Origin": "*"
-      }
+      },
     },
 
     module: {
@@ -151,14 +154,17 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         ENV: {
           DEVELOPMENT: isDev,
+          GOOGLE_ANALYTICS_ID: JSON.stringify(
+            process.env.ENABLE_PROD_ANALYTICS ? process.env.PROD_GOOGLE_ANALYTICS_ID : DEFAULT_GOOGLE_ANALYTICS_ID
+          ),
+          DEFAULT_GOOGLE_ANALYTICS_ID: JSON.stringify(
+            DEFAULT_GOOGLE_ANALYTICS_ID
+          ), 
           S3_BUCKET: JSON.stringify(
             process.env.S3_BUCKET || "streaming-orcasound-net"
           ),
           SHOW_PLAYER_DEBUG_INFO: process.env.SHOW_PLAYER_DEBUG_INFO || isDev,
           ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
-          GOOGLE_ANALYTICS_ID: JSON.stringify(
-            process.env.GOOGLE_ANALYTICS_ID || ""
-          ),
           FEATURE_ACTIVITY_BUTTON: process.env.FEATURE_ACTIVITY_BUTTON || isDev
         },
         "process.env": {

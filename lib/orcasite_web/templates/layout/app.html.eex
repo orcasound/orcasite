@@ -1,6 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+    <!-- gtag scripts (for Google Analytics) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Application.get_env(:orcasite, :google_analytics_id) %>" ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    </script>
+    <!-- end -->
+
+    <script>
+      function getGoogleAnalyticsID() {
+        return "<%= Application.get_env(:orcasite, :google_analytics_id) %>"
+      }
+    </script>
+
+    <!-- for tracking outbound link clicks in Google Analytics -->
+    <script>
+      /**
+      * Function that registers a click on an outbound link in Analytics.
+      * This function takes a valid URL string as an argument, and uses that URL string
+      * as the event label. Setting the transport method to 'beacon' lets the hit be sent
+      * using 'navigator.sendBeacon' in browser that support it.
+      */
+      var getOutboundLink = function(url) {
+        gtag('event', 'click', {
+          'event_category': 'outbound',
+          'event_label': url,
+          'transport_type': 'beacon',
+        });
+      }
+
+      // call this by adding the following attribute to the <a> tag: onmousedown="getOutboundLinkMouseDown(event, 'URL')"
+      var getOutboundLinkMouseDown = function(e, url) {
+        console.log("getOutboundLinkMouseDown being called....");
+        e = e || window.event;
+        switch (e.which) {
+          case 1: { // left mouse button press
+            getOutboundLink(url)
+            break;
+          }
+          case 2: break; // middle mouse button press
+          case 3: { // right mouse button press
+            getOutboundLink(url)
+            break;
+          }
+        }
+      }
+
+    </script>
+    <!-- end -->
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
@@ -12,6 +64,7 @@
     <%= {:safe, css_link_tag(@conn)} %>
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <!-- jss-insertion-point -->
+
   </head>
 
   <body>

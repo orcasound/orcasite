@@ -17,8 +17,8 @@ const PlayerContainer = styled.div`
 `
 
 const StyledButtonContainer = styled.div`
-  background: ${props => (props.active ? "#007166" : "transparent")};
-  box-shadow: ${props => (props.active ? "0 0.125rem 0.25rem 0" : "none")};
+  background: ${(props) => (props.active ? "#007166" : "transparent")};
+  box-shadow: ${(props) => (props.active ? "0 0.125rem 0.25rem 0" : "none")};
   border-radius: 2.0625rem;
   min-width: 21.0625rem;
   max-width: 28.125rem;
@@ -30,7 +30,7 @@ const StyledButtonContainer = styled.div`
 
 class Player extends Component {
   static propTypes = {
-    feed: feedType
+    feed: feedType,
   }
 
   constructor(props) {
@@ -47,16 +47,16 @@ class Player extends Component {
       intervalId: null,
       debugInfo: {
         playerTime: 0,
-        latencyHistory: [0]
+        latencyHistory: [0],
       },
       play: () => {},
       pause: () => {},
       playPause: () => {},
-      getPLayerTime: () => {}
+      getPLayerTime: () => {},
     }
   }
 
-  isEmpty = object => Object.keys(object).length === 0
+  isEmpty = (object) => Object.keys(object).length === 0
 
   startTimestampFetcher = () => {
     var { currentFeed, intervalId } = this.state
@@ -92,6 +92,18 @@ class Player extends Component {
     console.log("Total Latency = ", Math.round(this.getTotalLatency()))
   )
 
+  handlePlayArrowPress = () => {
+    window.gtag("event", "player_started @" + this.state.currentFeed.slug, {
+      event_category: "custom",
+    })
+  }
+
+  handlePauseArrowPress = () => {
+    window.gtag("event", "player_paused @" + this.state.currentFeed.slug, {
+      event_category: "custom",
+    })
+  }
+
   getStreamLatency = () => {
     return this.state.debugInfo.latencyHistory[
       this.state.debugInfo.latencyHistory.length - 1
@@ -111,7 +123,7 @@ class Player extends Component {
   getAwsConsoleUri = (timestamp, nodeName, bucket) =>
     `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
 
-  fetchTimestamp = feed => {
+  fetchTimestamp = (feed) => {
     const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
@@ -124,7 +136,7 @@ class Player extends Component {
         if (timestamp != this.state.timestamp) {
           this.setState({
             timestamp: timestamp,
-            hlsURI: this.getHlsUri(timestamp, feed, ENV.S3_BUCKET)
+            hlsURI: this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
           })
           if (ENV.DEVELOPMENT)
             console.log(
@@ -137,7 +149,7 @@ class Player extends Component {
     xhr.send()
   }
 
-  setControls = controls => this.setState({ isLoading: false, ...controls })
+  setControls = (controls) => this.setState({ isLoading: false, ...controls })
 
   render() {
     const {
@@ -147,7 +159,7 @@ class Player extends Component {
       timestamp,
       isLoading,
       isPlaying,
-      getPlayerTime
+      getPlayerTime,
     } = this.state
 
     const awsConsoleUri = this.getAwsConsoleUri(
@@ -165,8 +177,20 @@ class Player extends Component {
           >
             <StyledButtonContainer active={isPlaying}>
               <Fab color="secondary" onClick={playPause}>
-                {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
-                {isPlaying && <Pause className="icon" fontSize="large" />}
+                {!isPlaying && (
+                  <PlayArrow
+                    className="icon"
+                    fontSize="large"
+                    onClick={this.handlePlayArrowPress}
+                  />
+                )}
+                {isPlaying && (
+                  <Pause
+                    className="icon"
+                    fontSize="large"
+                    onClick={this.handlePauseArrowPress}
+                  />
+                )}
               </Fab>
 
               {isPlaying && (
@@ -197,8 +221,8 @@ class Player extends Component {
                       playerTime: playerTime,
                       latencyHistory: this.state.debugInfo.latencyHistory.concat(
                         newestLatency
-                      )
-                    }
+                      ),
+                    },
                   })
                 }
               />

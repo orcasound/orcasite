@@ -33,6 +33,10 @@ config :logger, level: :info, format: {Orcasite.Logger, :format}
 
 config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
 
+default_google_analytics_id = if (System.get_env("DEFAULT_GOOGLE_ANALYTICS_ID") == "" || System.get_env("DEFAULT_GOOGLE_ANALYTICS_ID") == nil), do: "UA-178080782-1", else: System.get_env("DEFAULT_GOOGLE_ANALYTICS_ID")
+ga_tracking_code = if (System.get_env("ENABLE_PROD_ANALYTICS") == "true"), do: System.get_env("PROD_GOOGLE_ANALYTICS_ID"), else: default_google_analytics_id
+config :orcasite, :google_analytics_id, ga_tracking_code
+
 config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
   secret_key: System.get_env("GUARDIAN_SECRET_KEY")

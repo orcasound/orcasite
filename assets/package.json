@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "start": "npm run watch",
-    "watch": "MIX_ENV=dev webpack-dev-server --mode development --inline --hot --stdin --colors --host 0.0.0.0 --public localhost:8080",
+    "watch": "MIX_ENV=dev webpack-dev-server --mode development --inline --hot --stdin --colors --host 0.0.0.0 --public localhost:8080 --useLocalIp",
     "deploy": "MIX_ENV=prod webpack --mode production --env.prod"
   },
   "dependencies": {
