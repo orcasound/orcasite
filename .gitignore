@@ -4,7 +4,7 @@
 /deps
 /*.ez
 
-/priv/static/
+# /priv/static/
 /rel
 
 node_modules/

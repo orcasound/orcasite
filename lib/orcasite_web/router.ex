@@ -29,6 +29,13 @@ defmodule OrcasiteWeb.Router do
     forward "/", Absinthe.Plug.GraphiQL, schema: OrcasiteWeb.Schema, interface: :simple, json_codec: Jason
   end
 
+  scope "/webpush", OrcasiteWeb do
+    pipe_through :api
+    get "/hello", WebpushRouter, :index
+    post "/notifications/subscribe", WebpushRouter, :postsubsobject
+    get "/notifications/payload", WebpushRouter, :sendnotifications
+  end
+
   scope "/", OrcasiteWeb do
     pipe_through :browser # Use the default browser stack
     get("/*page", PageController, :index)
