@@ -26,6 +26,12 @@ config :logger, :console,
 
 config :orcasite, env: Mix.env()
 
+config :web_push_encryption, :vapid_details,
+  subject: "mailto:administrator@example.com",
+  public_key: "BItTHe7BXVxVxTWcwu-485CJ3ePaCQcoEbF_Qnlap5H9Do-J-hjnpD0VCcymjEt4JX5BkSHJrLfyGcwZ2XplZLs",
+  private_key: "v4oOsWwufaMaFelexFj8NjCVAkzMsP2Wni-14wyB_YM"
+
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
