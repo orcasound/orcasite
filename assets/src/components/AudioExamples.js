@@ -1,6 +1,7 @@
 import React from "react"
 import { Typography, Box, Grid, Avatar } from "@material-ui/core"
 import wave from "../../static/wave-orca.png"
+import analyticsEvents from "../utils/analyticsEvents"
 
 const AudioExamples = props => {
   return (
@@ -74,7 +75,13 @@ const AudioExamples = props => {
             </Grid>
             <Grid item xs={12}>
               <Box ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}>
-                <audio controls src={example.audio} />
+                <audio
+                  controls
+                  src={example.audio}
+                  onPlay={() =>
+                    analyticsEvents.about.sampleAudioPlayed(example.title)
+                  }
+                />
               </Box>
             </Grid>
           </Grid>

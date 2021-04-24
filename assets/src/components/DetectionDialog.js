@@ -14,6 +14,7 @@ import DialogContent from "@material-ui/core/DialogContent"
 import DialogTitle from "@material-ui/core/DialogTitle"
 
 import styled from "styled-components"
+import analyticsEvents from "../utils/analyticsEvents"
 
 const StyledActivityButton = styled(Button)`
   color: #ffffff;
@@ -41,6 +42,7 @@ export default class DetectionDialog extends Component {
   }
   handleClickOpen = () => {
     this.setState({ open: true })
+    analyticsEvents.detection.dialogOpened(this.props.feed.slug)
   }
 
   handleChange = e => this.setState({ description: e.target.value })
@@ -57,6 +59,7 @@ export default class DetectionDialog extends Component {
       submitted: false,
       description: ""
     })
+    analyticsEvents.detection.dialogClosed(this.props.feed.slug)
   }
 
   onDetect = submitDetection => {
@@ -80,6 +83,7 @@ export default class DetectionDialog extends Component {
           listenerCount
         }
       })
+      analyticsEvents.detection.submitted(this.props.feed.slug)
     }
   }
 

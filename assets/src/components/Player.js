@@ -9,6 +9,7 @@ import { feedType } from "../types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
 
 import styled from "styled-components"
+import analyticsEvents from "../utils/analyticsEvents"
 
 const PlayerContainer = styled.div`
   .video-js {
@@ -165,8 +166,24 @@ class Player extends Component {
           >
             <StyledButtonContainer active={isPlaying}>
               <Fab color="secondary" onClick={playPause}>
-                {!isPlaying && <PlayArrow className="icon" fontSize="large" />}
-                {isPlaying && <Pause className="icon" fontSize="large" />}
+                {!isPlaying && (
+                  <PlayArrow
+                    className="icon"
+                    fontSize="large"
+                    onClick={() =>
+                      analyticsEvents.stream.started(currentFeed.slug)
+                    }
+                  />
+                )}
+                {isPlaying && (
+                  <Pause
+                    className="icon"
+                    fontSize="large"
+                    onClick={() =>
+                      analyticsEvents.stream.paused(currentFeed.slug)
+                    }
+                  />
+                )}
               </Fab>
 
               {isPlaying && (
