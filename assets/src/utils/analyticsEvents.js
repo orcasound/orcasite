@@ -52,9 +52,8 @@ const nav = {
     ReactGA.event({ category: "Navigation", action: "About tab clicked" }),
   listenTabClicked: () =>
     ReactGA.event({ category: "Navigation", action: "Listen tab clicked" }),
-  feedSelected: (feedName) =>
-    ReactGA.event({
-      category: "Nav",
+  feedSelected: (feedName) => ReactGA.event({
+      category: "Navigation",
       action: "Feed selected",
       label: feedName,
     }),
