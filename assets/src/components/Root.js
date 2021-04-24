@@ -1,7 +1,9 @@
 import { hot } from "react-hot-loader/root"
 
 import React from "react"
-import { BrowserRouter, Switch, Route } from "react-router-dom"
+import { Router, Switch, Route } from "react-router-dom"
+import { createBrowserHistory } from 'history'
+import ReactGA from 'react-ga'
 
 import AdminRoute from "./AdminRoute"
 
@@ -10,9 +12,15 @@ import Admin from "./admin/Dashboard"
 import DynamicFeed from "./DynamicFeed"
 import Login from "./Login"
 
+const history = createBrowserHistory()
+history.listen((location, action) => {
+  ReactGA.set({ page: location.pathname });
+  ReactGA.pageview(location.pathname + location.search);
+});
+
 const Root = props => {
   return (
-    <BrowserRouter>
+    <Router history={history}>
       <Switch>
         <Route exact path="/" component={Home} />
         <Route
@@ -31,7 +39,7 @@ const Root = props => {
 
         <Route path="/:feedSlug" component={Home} />
       </Switch>
-    </BrowserRouter>
+    </Router>
   )
 }
 
