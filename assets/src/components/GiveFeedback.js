@@ -1,5 +1,6 @@
 import React from "react"
 import { AppBar, Button, Link, Grid, makeStyles } from "@material-ui/core"
+import analyticsEvents from "../utils/analyticsEvents"
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -63,6 +64,7 @@ const GiveFeedback = () => {
               rel="noopener"
               rel="noreferrer"
               className={classes.link}
+              onClick={analyticsEvents.form.feedbackButtonClicked}
             >
               Give Feedback
             </Link>

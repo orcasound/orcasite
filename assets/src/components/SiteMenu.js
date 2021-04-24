@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core"
 import NotificationIcon from "@material-ui/icons/Notifications"
 import FeedList from "./FeedList"
+import analyticsEvents from "../utils/analyticsEvents"
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -66,6 +67,7 @@ const SiteMenu = () => {
               underline="none"
               variant="inherit"
               className={classes.link}
+              onClick={analyticsEvents.nav.logoClicked}
             >
               <Box ml={1} pt={3}>
                 Orcasound
@@ -91,6 +93,7 @@ const SiteMenu = () => {
               color="inherit"
               variant="inherit"
               className={classes.link}
+              onClick={analyticsEvents.form.notificationSignupClicked}
             >
               Get notified when there's whale activity
             </Link>
@@ -114,6 +117,7 @@ const SiteMenu = () => {
           label="About"
           component={RouterLink}
           to="/"
+          onClick={analyticsEvents.nav.aboutTabClicked}
         />
         <Tab value="listen" label="Listen Live" component={FeedList} />
       </Tabs>

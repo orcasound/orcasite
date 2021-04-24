@@ -17,6 +17,7 @@ import { ArrowDropDown, Person } from "@material-ui/icons"
 import { feedType } from "types/feedType"
 import { storeCurrentFeed, getCurrentFeed } from "utils/feedStorage"
 import { LIST_FEEDS } from "../queries/feeds"
+import analyticsEvents from "../utils/analyticsEvents"
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -65,6 +66,7 @@ const FeedList = React.forwardRef((props, ref) => {
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen)
+    analyticsEvents.nav.listenTabClicked()
   }
 
   const handleClose = event => {
@@ -133,6 +135,7 @@ const FeedList = React.forwardRef((props, ref) => {
                                   key={feed.name}
                                   component={Link}
                                   to={`/${feed.slug}`}
+                                  onClick={() => analyticsEvents.nav.feedSelected(feed.name) }
                                 >
                                   {feed.name}
                                 </MenuItem>
