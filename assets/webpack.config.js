@@ -4,23 +4,23 @@
 /*
  * Modules
  **/
-const path = require("path");
-const webpack = require("webpack");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const autoprefixer = require("autoprefixer");
+const path = require("path")
+const webpack = require("webpack")
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const CopyWebpackPlugin = require("copy-webpack-plugin")
+const autoprefixer = require("autoprefixer")
 
 /*
  * Configuration
  **/
 module.exports = (env, argv) => {
-  const isDev = !(env && env.prod) && argv.mode !== 'production';
+  const isDev = !(env && env.prod) && argv.mode !== "production"
 
   // Turned off uglifying due to minimization of webworker inlining not having 'window' defined
   // See:
   // https://github.com/videojs/videojs-contrib-hls/issues/600
   // https://github.com/video-dev/hls.js/issues/187
-  const devtool = isDev ? "eval-source-map" : false;
+  const devtool = isDev ? "eval-source-map" : false
 
   return {
     devtool: devtool,
@@ -28,23 +28,20 @@ module.exports = (env, argv) => {
     context: __dirname,
 
     entry: {
-      app: [
-        "src/app.js",
-        "src/styles/app.scss"
-      ]
+      app: ["src/app.js", "src/styles/app.scss"]
     },
 
     output: {
       path: path.resolve(__dirname, "../priv/static"),
-      filename: 'js/[name].js',
-      publicPath: (isDev ? "http://0.0.0.0:8080/" : "/")
+      filename: "js/[name].js",
+      publicPath: isDev ? "http://0.0.0.0:8080/" : "/"
     },
 
     devServer: {
       disableHostCheck: true,
       host: "0.0.0.0",
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "*"
       }
     },
 
@@ -62,22 +59,22 @@ module.exports = (env, argv) => {
           test: /\.(gif|png|jpe?g|svg)$/i,
           exclude: /node_modules/,
           use: [
-            'file-loader?name=images/[name].[ext]',
+            "file-loader?name=images/[name].[ext]",
             {
-              loader: 'image-webpack-loader',
+              loader: "image-webpack-loader",
               options: {
                 query: {
                   mozjpeg: {
-                    progressive: true,
+                    progressive: true
                   },
                   gifsicle: {
-                    interlaced: true,
+                    interlaced: true
                   },
                   optipng: {
-                    optimizationLevel: 7,
+                    optimizationLevel: 7
                   },
                   pngquant: {
-                    quality: '65-90',
+                    quality: "65-90",
                     speed: 4
                   }
                 }
@@ -90,22 +87,27 @@ module.exports = (env, argv) => {
           test: /\.(ttf|woff2?|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
           exclude: /node_modules/,
           query: { name: "fonts/[hash].[ext]" },
-          loader: "file-loader",
+          loader: "file-loader"
         },
         {
-          test: /\.(css|scss)$/,
+          test: /\.(c|sc)ss$/,
           exclude: /node_modules\/(?!(video.js)\/).*/,
           use: [
-            'css-hot-loader',
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'postcss-loader',
             {
-              loader: 'sass-loader',
+              loader: MiniCssExtractPlugin.loader,
               options: {
-                includePaths: [
-                  path.resolve('node_modules/bootstrap/scss')
-                ],
+                hmr: process.env.NODE_ENV === "development",
+                reloadAll: true
+              }
+            },
+            "css-loader",
+            "postcss-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                sassOptions: {
+                  includePaths: [path.resolve("node_modules/bootstrap/scss")]
+                },
                 sourceMap: isDev
               }
             }
@@ -114,10 +116,14 @@ module.exports = (env, argv) => {
 
         {
           test: /\.swf$/,
-          loader: 'file-loader',
+          loader: "file-loader",
           query: {
-              name: 'static/media/[name].[ext]'
+            name: "static/media/[name].[ext]"
           }
+        },
+        {
+          test: /\.css$/i,
+          use: ["style-loader", "css-loader"]
         }
       ]
     },
@@ -126,15 +132,14 @@ module.exports = (env, argv) => {
       modules: ["node_modules", __dirname],
       extensions: [".mjs", ".js", ".json", ".jsx", ".css", ".scss"],
       alias: {
-        components: path.resolve(__dirname, 'src/components/'),
-        contexts: path.resolve(__dirname, 'src/contexts/'),
-        images: path.resolve(__dirname, 'src/images/'),
-        mutations: path.resolve(__dirname, 'src/mutations/'),
-        queries: path.resolve(__dirname, 'src/queries/'),
-        styles: path.resolve(__dirname, 'src/styles/'),
-        types: path.resolve(__dirname, 'src/types/'),
-        utils: path.resolve(__dirname, 'src/utils/'),
-
+        components: path.resolve(__dirname, "src/components/"),
+        contexts: path.resolve(__dirname, "src/contexts/"),
+        images: path.resolve(__dirname, "src/images/"),
+        mutations: path.resolve(__dirname, "src/mutations/"),
+        queries: path.resolve(__dirname, "src/queries/"),
+        styles: path.resolve(__dirname, "src/styles/"),
+        types: path.resolve(__dirname, "src/types/"),
+        utils: path.resolve(__dirname, "src/utils/")
       }
     },
 
@@ -146,23 +151,28 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         ENV: {
           DEVELOPMENT: isDev,
-          S3_BUCKET: JSON.stringify(process.env.S3_BUCKET || 'streaming-orcasound-net'),
-          SHOW_PLAYER_DEBUG_INFO: (process.env.SHOW_PLAYER_DEBUG_INFO || isDev),
+          S3_BUCKET: JSON.stringify(
+            process.env.S3_BUCKET || "streaming-orcasound-net"
+          ),
+          SHOW_PLAYER_DEBUG_INFO: process.env.SHOW_PLAYER_DEBUG_INFO || isDev,
           ENV_NAME: JSON.stringify(process.env.ENV_NAME || ""),
-          GOOGLE_ANALYTICS_ID: JSON.stringify(process.env.GOOGLE_ANALYTICS_ID || ""),
-          FEATURE_ACTIVITY_BUTTON: (process.env.FEATURE_ACTIVITY_BUTTON || isDev)
+          GOOGLE_ANALYTICS_ID: JSON.stringify(
+            process.env.GOOGLE_ANALYTICS_ID || ""
+          ),
+          FEATURE_ACTIVITY_BUTTON: process.env.FEATURE_ACTIVITY_BUTTON || isDev
         },
-        'process.env': {
+        "process.env": {
           // defaults the environment to development if not specified
-          NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
-        },
+          NODE_ENV: JSON.stringify(process.env.NODE_ENV || "development")
+        }
       }),
 
-      new CopyWebpackPlugin([{
-        from: "./static",
-        to: path.resolve(__dirname, "../priv/static")
-      }])
+      new CopyWebpackPlugin([
+        {
+          from: "./static",
+          to: path.resolve(__dirname, "../priv/static")
+        }
+      ])
     ]
-  };
-
-};
+  }
+}

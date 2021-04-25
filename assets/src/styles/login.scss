@@ -1,0 +1,26 @@
+@import "variables";
+
+.login {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'header' '.';
+
+  .login-form {
+    min-width: 320px;
+    max-width: 640px;
+    padding: 0 15px;
+
+    @media (min-width: map-get($grid-breakpoints, "md")) {
+      min-width: 480px;
+    }
+
+    align-self: center;
+    justify-self: center;
+
+    button {
+      transition: width 0.3s;
+    }
+  }
+}

@@ -1,22 +1,37 @@
-import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
+import React, { Component } from "react"
+import { Fab, Box } from "@material-ui/core"
+import { PlayArrow, Pause } from "@material-ui/icons"
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faPlay, faPause, faSpinner} from '@fortawesome/free-solid-svg-icons'
+import MediaStreamer from "./MediaStreamer"
+import DetectionDialog from "./DetectionDialog"
 
-import MediaStreamer from './MediaStreamer'
-import DetectButton from './DetectButton'
-import FeedPresence from './FeedPresence'
+import { feedType } from "../types/feedType"
+import { storeCurrentFeed, getCurrentFeed } from "../utils/feedStorage"
 
-import {feedType} from 'types/feedType'
-import {storeCurrentFeed, getCurrentFeed} from 'utils/feedStorage'
-import classNames from 'classnames'
+import styled from "styled-components"
+import analyticsEvents from "../utils/analyticsEvents"
 
-import 'styles/player.scss'
+const PlayerContainer = styled.div`
+  .video-js {
+    display: none;
+  }
+`
 
-export default class Player extends Component {
+const StyledButtonContainer = styled.div`
+  background: ${props => (props.active ? "#007166" : "transparent")};
+  box-shadow: ${props => (props.active ? "0 0.125rem 0.25rem 0" : "none")};
+  border-radius: 2.0625rem;
+  min-width: 21.0625rem;
+  max-width: 28.125rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+`
+
+class Player extends Component {
   static propTypes = {
-    feed: feedType,
+    feed: feedType
   }
 
   constructor(props) {
@@ -27,35 +42,35 @@ export default class Player extends Component {
 
     this.state = {
       currentFeed,
-      timestamp: '',
+      timestamp: "",
       isLoading: true,
       isPlaying: false,
       intervalId: null,
       debugInfo: {
         playerTime: 0,
-        latencyHistory: [0],
+        latencyHistory: [0]
       },
       play: () => {},
       pause: () => {},
       playPause: () => {},
-      getPlayerTime: () => {},
+      getPLayerTime: () => {}
     }
   }
 
   isEmpty = object => Object.keys(object).length === 0
 
   startTimestampFetcher = () => {
-    var {currentFeed, intervalId} = this.state
+    var { currentFeed, intervalId } = this.state
 
     this.clearInterval()
     if (currentFeed && Object.keys(currentFeed).length > 0) {
       this.fetchTimestamp(currentFeed.nodeName)
       intervalId = setInterval(
         () => this.fetchTimestamp(currentFeed.nodeName),
-        10000,
+        10000
       )
 
-      this.setState({intervalId})
+      this.setState({ intervalId })
     }
   }
 
@@ -68,32 +83,14 @@ export default class Player extends Component {
   }
 
   clearInterval = () => {
-    const {intervalId, currentXhr} = this.state
+    const { intervalId, currentXhr } = this.state
     if (currentXhr) currentXhr.abort()
     if (intervalId) clearInterval(intervalId)
   }
 
-  playIconOpts = ({isLoading, isPlaying}) => {
-    if (isLoading) return {icon: faSpinner, pulse: true}
-    if (isPlaying) return {icon: faPause}
-    return {icon: faPlay}
-  }
-
-  debugInfo = (hlsUri, awsConsoleUri) => (
-    <div className="">
-      <span className="mr-2" title="Stream Latency">
-        {Math.round(this.getStreamLatency())}
-      </span>
-      <span className="mr-2" title="Total Latency">
-        {Math.round(this.getTotalLatency())}
-      </span>
-      <a href={hlsUri} className="mx-2" target="_blank">
-        HLS
-      </a>
-      <a href={awsConsoleUri} className="mx-2" target="_blank">
-        AWS
-      </a>
-    </div>
+  debugInfo = (hlsURI, awsConsoleUri) => (
+    console.log("Stream Latency = ", Math.round(this.getStreamLatency())),
+    console.log("Total Latency = ", Math.round(this.getTotalLatency()))
   )
 
   getStreamLatency = () => {
@@ -105,7 +102,7 @@ export default class Player extends Component {
   getTotalLatency = () => {
     return (
       Math.floor(Date.now() / 1000) -
-      (+this.state.timestamp + this.state.debugInfo.playerTime)
+      (+this.state.timestamp + this.startTimestampFetcher.debugInfo.playerTime)
     )
   }
 
@@ -116,26 +113,24 @@ export default class Player extends Component {
     `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
 
   fetchTimestamp = feed => {
-    const timestampURI = `https://s3-us-west-2.amazonaws.com/${
-      ENV.S3_BUCKET
-    }/${feed}/latest.txt`
+    const timestampURI = `https://s3-us-west-2.amazonaws.com/${ENV.S3_BUCKET}/${feed}/latest.txt`
 
     const xhr = new XMLHttpRequest()
-    this.setState({currentXhr: xhr})
-    xhr.open('GET', timestampURI)
+    this.setState({ currentXhr: xhr })
+    xhr.open("GET", timestampURI)
     xhr.onload = () => {
       if (xhr.status === 200) {
         const timestamp = xhr.responseText.trim()
-        if (ENV.DEVELOPMENT) console.log('Latest timestamp: ' + timestamp)
+        if (ENV.DEVELOPMENT) console.log("Latest timestamp: " + timestamp)
         if (timestamp != this.state.timestamp) {
           this.setState({
             timestamp: timestamp,
-            hlsURI: this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
+            hlsURI: this.getHlsUri(timestamp, feed, ENV.S3_BUCKET)
           })
           if (ENV.DEVELOPMENT)
             console.log(
-              'New stream instance: ' +
-                this.getHlsUri(timestamp, feed, ENV.S3_BUCKET),
+              "New stream instance: " +
+                this.getHlsUri(timestamp, feed, ENV.S3_BUCKET)
             )
         }
       }
@@ -143,7 +138,7 @@ export default class Player extends Component {
     xhr.send()
   }
 
-  setControls = controls => this.setState({isLoading: false, ...controls})
+  setControls = controls => this.setState({ isLoading: false, ...controls })
 
   render() {
     const {
@@ -153,70 +148,83 @@ export default class Player extends Component {
       timestamp,
       isLoading,
       isPlaying,
-      getPlayerTime,
+      getPlayerTime
     } = this.state
 
     const awsConsoleUri = this.getAwsConsoleUri(
       timestamp,
       currentFeed.nodeName,
-      ENV.S3_BUCKET,
+      ENV.S3_BUCKET
     )
 
     if (currentFeed && Object.keys(currentFeed).length !== 0) {
       return (
-        <div className="player">
-          <FontAwesomeIcon
-            size="3x"
-            {...this.playIconOpts(this.state)}
-            className={classNames('m-3', {clickable: !isLoading})}
-            onClick={playPause}
-          />
-          {currentFeed.slug && (
-            <Link to={currentFeed.slug} className="text-light my-3">
-              {currentFeed.name}
-            </Link>
-          )}
-          {hlsURI && (
-            <MediaStreamer
-              src={hlsURI}
-              autoplay={this.props.autoplay}
-              onReady={this.setControls}
-              onLoading={() => this.setState({isLoading: true})}
-              onPlaying={() =>
-                this.setState({isLoading: false, isPlaying: true})
-              }
-              onPaused={() =>
-                this.setState({isLoading: false, isPlaying: false})
-              }
-              onLatencyUpdate={(newestLatency, playerTime) =>
-                this.setState({
-                  debugInfo: {
-                    playerTime: playerTime,
-                    latencyHistory: this.state.debugInfo.latencyHistory.concat(
-                      newestLatency,
-                    ),
-                  },
-                })
-              }
-            />
-          )}
-          <div className="ml-auto d-flex pr-3">
-            {ENV.SHOW_PLAYER_DEBUG_INFO &&
-              this.debugInfo(hlsURI, awsConsoleUri)}
-            <FeedPresence feed={currentFeed} className="ml-2" />
-          </div>
-          {ENV.FEATURE_ACTIVITY_BUTTON && (
-            <DetectButton
-              isPlaying={isPlaying}
-              feed={currentFeed}
-              getPlayerTime={getPlayerTime}
-              timestamp={timestamp}
-            />
-          )}
-        </div>
+        <PlayerContainer>
+          <Box
+            mt={{ xs: -3.5, sm: -3.5 }}
+            ml={{ xs: 3, sm: 9, md: 12, lg: 20 }}
+          >
+            <StyledButtonContainer active={isPlaying}>
+              <Fab color="secondary" onClick={playPause}>
+                {!isPlaying && (
+                  <PlayArrow
+                    className="icon"
+                    fontSize="large"
+                    onClick={() =>
+                      analyticsEvents.stream.started(currentFeed.slug)
+                    }
+                  />
+                )}
+                {isPlaying && (
+                  <Pause
+                    className="icon"
+                    fontSize="large"
+                    onClick={() =>
+                      analyticsEvents.stream.paused(currentFeed.slug)
+                    }
+                  />
+                )}
+              </Fab>
+
+              {isPlaying && (
+                <DetectionDialog
+                  isPlaying={isPlaying}
+                  feed={currentFeed}
+                  timestamp={timestamp}
+                  getPlayerTime={getPlayerTime}
+                  listenerCount={this.props.listenerCount}
+                />
+              )}
+            </StyledButtonContainer>
+            {hlsURI && (
+              <MediaStreamer
+                src={hlsURI}
+                autoplay={this.props.autoplay}
+                onReady={this.setControls}
+                onLoading={() => this.setState({ isLoading: true })}
+                onPlaying={() =>
+                  this.setState({ isLoading: false, isPlaying: true })
+                }
+                onPaused={() =>
+                  this.setState({ isLoading: false, isPlaying: false })
+                }
+                onLatencyUpdate={(newestLatency, playerTime) =>
+                  this.setState({
+                    debugInfo: {
+                      playerTime: playerTime,
+                      latencyHistory: this.state.debugInfo.latencyHistory.concat(
+                        newestLatency
+                      )
+                    }
+                  })
+                }
+              />
+            )}
+          </Box>
+        </PlayerContainer>
       )
     }
-
-    return <div className="player" />
   }
 }
+
+export default Player

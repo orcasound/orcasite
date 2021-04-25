@@ -1,4 +1,4 @@
-export const AUTH_TOKEN = 'auth_token'
+export const AUTH_TOKEN = "orcasound:auth_token"
 
 export const getToken = () => {
   return localStorage.getItem(AUTH_TOKEN)

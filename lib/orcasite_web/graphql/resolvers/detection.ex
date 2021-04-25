@@ -1,7 +1,20 @@
 defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.Radio
+  alias OrcasiteWeb.Paginated
 
-  def submit(
+  def index(_, %{context: %{current_user: %{admin: true}}}) do
+    {:ok, Radio.list_detections()}
+  end
+
+  def index(_, _), do: {:error, :not_authorized}
+
+  def list_candidates(args, %{context: %{current_user: %{admin: true}}}) do
+    {:ok, Paginated.format(Radio.list_candidates(args))}
+  end
+
+  def list_candidates(_, _), do: {:error, :not_authorized}
+
+  def create(
         %{
           feed_id: feed_id,
           playlist_timestamp: _playlist_timestamp,
@@ -18,7 +31,7 @@ defmodule OrcasiteWeb.Resolvers.Detection do
     with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, lockout_seconds()) do
       detection_attrs
       |> Map.put(:source_ip, source_ip)
-      |> Radio.create_detection()
+      |> Radio.create_detection_with_candidate()
       |> case do
         {:ok, detection} ->
           {:ok,

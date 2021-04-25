@@ -3,7 +3,17 @@ defmodule OrcasiteWeb.Types.Account do
 
   @desc "A user"
   object :user do
-    field :id, :id # clients can get the user id
-    field :name, :string # clients can also ask for the name field
+    field(:id, :id)
+    field(:admin, :boolean)
+    field(:first_name, :string)
+    field(:last_name, :string)
+    field(:auth_token, :string)
+    field(:email, :string)
+  end
+
+  @desc "Pagination version of candidates"
+  object :users do
+    field(:meta, :pagination_meta)
+    field(:entries, list_of(:user))
   end
 end

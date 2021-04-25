@@ -1,8 +1,25 @@
-import React, {Component} from 'react'
+import React, { Component } from "react"
 
-import videojs from 'video.js'
+import { bool, string, func, number } from "prop-types"
+
+import videojs from "video.js"
+import "videojs-offset"
 
 export default class MediaStreamer extends Component {
+  static propTypes = {
+    src: string.isRequired,
+    autoplay: bool,
+
+    startOffset: number,
+    endOffset: number,
+
+    onReady: func,
+    onPlaying: func,
+    onPaused: func,
+    onTimeUpdate: func,
+    onLatencyUpdate: func
+  }
+
   componentDidMount() {
     this.setupPlayer()
   }
@@ -26,8 +43,8 @@ export default class MediaStreamer extends Component {
 
     var options = {
       hls: {
-        overrideNative: true,
-      },
+        overrideNative: true
+      }
     }
 
     this.player = videojs(this.audioNode, {
@@ -37,33 +54,50 @@ export default class MediaStreamer extends Component {
       sources: [
         {
           src: this.props.src,
-          type: 'application/x-mpegurl',
-        },
-      ],
+          type: "application/x-mpegurl"
+        }
+      ]
     })
 
+    if (this.props.startOffset && this.props.endOffset) {
+      this.player.offset({
+        start: this.props.startOffset,
+        end: this.props.endOffset,
+        restart_beginning: true
+      })
+    }
+
     this.player.ready(() => {
-      this.props.onReady(this.controls)
-      this.player.tech().on('retryplaylist', e => {
+      this.props.onReady && this.props.onReady(this.controls)
+      this.player.tech().on("retryplaylist", e => {
         if (this.getLatency() < MAX_LATENCY) {
           this.rewind(RETRY_REWIND_AMOUNT)
         }
       })
       this.latencyUpdateInterval = setInterval(() => {
-        this.props.onLatencyUpdate(this.getLatency(), this.player.currentTime())
+        this.props.onLatencyUpdate &&
+          this.props.onLatencyUpdate(
+            this.getLatency(),
+            this.player.currentTime()
+          )
       }, 1000)
     })
 
-    this.player.on('playing', e => {
-      this.props.onPlaying()
+    this.player.on("playing", e => {
+      this.props.onPlaying && this.props.onPlaying()
     })
 
-    this.player.on('pause', () => {
-      this.props.onPaused()
+    this.player.on("pause", () => {
+      this.props.onPaused && this.props.onPaused()
     })
 
-    this.player.on('waiting', () => {
-      this.props.onLoading()
+    this.player.on("waiting", () => {
+      this.props.onLoading && this.props.onLoading()
+    })
+
+    this.player.on("timeupdate", () => {
+      this.props.onTimeUpdate &&
+        this.props.onTimeUpdate(this.player.currentTime())
     })
   }
 
@@ -91,6 +125,10 @@ export default class MediaStreamer extends Component {
     }
   }
 
+  setPlayerTime = time => {
+    if (this.player) this.player.currentTime(time)
+  }
+
   seekToLive = (secondsFromLive = 30) => {
     if (this.player && this.player.readyState() > 0) {
       this.player.currentTime(this.player.seekable().end(0) - secondsFromLive)
@@ -116,6 +154,7 @@ export default class MediaStreamer extends Component {
     pause: this.pause,
     playPause: this.playPause,
     getPlayerTime: this.getPlayerTime,
+    setPlayerTime: this.setPlayerTime
   }
 
   render() {

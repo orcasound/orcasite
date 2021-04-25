@@ -26,9 +26,15 @@ defmodule OrcasiteWeb.Types.Feed do
       end)
     end
 
+    field :map_url, :string do
+      resolve(fn %{node_name: node_name}, _, _ ->
+        {:ok, feed_s3_url(node_name, "map.png")}
+      end)
+    end
+
     field :intro_html, :string do
       resolve(fn %{node_name: node_name}, _, _ ->
-        with intro_url <- feed_s3_url(node_name, "intro.html")  |> to_charlist(),
+        with intro_url <- feed_s3_url(node_name, "intro.html") |> to_charlist(),
              {:ok, {{_, 200, _}, _, resp}} <- :httpc.request(intro_url) do
           intro_html =
             resp
