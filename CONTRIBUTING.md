@@ -50,8 +50,6 @@ If you're new to Elixir (or JS and React), that's no problem! Here are some reso
 Some of these are convenient for reference
 
 - [Evercam](https://github.com/evercam/evercam-server/) - Good example of supervision trees
-- [EmCasa backend](https://github.com/emcasa/backend/) - Elixir backend for React app
-- [EmCasa frontend](https://github.com/emcasa/frontend/) - React frontend for Elixir app
 
 ## Code of Conduct
 

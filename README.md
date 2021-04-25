@@ -8,13 +8,15 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 
 ## Getting started
 
-#### Quick Start: 
+#### Quick Start (e.g. at hackathons):
 - Load the Docker Configuration `docker-compose pull && docker-compose up`
 - Navigate to a new terminal in the same directory 
 - Stop the containers by running `docker-compose stop`
 - Install the hex and npm dependencies by running `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
 - Restart your containers by running `docker-compose up`
 - Navigate to localhost:4000 to view the React app
+
+Note: this assumes you have installed [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 ## Detailed Setup
 
@@ -24,13 +26,13 @@ To access the site, run `docker-compose pull && docker-compose up` and wait unti
 
 Note:  The first time you load the docker configuration you will need to install the dependencies.  Leave the `phoenix_1` server running while navigating to a new command line tab inside the same directory.  Then run `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"` which will install the node modules and hex dependencies.  Now, navigate to `localhost:4000` to view the running application.  
 
-##### Flexible
+##### Flexible method (e.g. longer-term development)
 
-If you would like a more flexible setup, you can install the dependencies [directly on your machine](#set-up-manually).
+If you would like a more flexible method, you can [install the dependencies directly on your machine](#set-up-manually).
 
 ## Running in Docker
 
-Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both `docker` and `docker-compose` installed on your machine.
+Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/) installed on your machine.
 
 Once you clone the repository, you can just run docker-compose in the root directory. To avoid building locally you can use the `pull` command first to grab the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite). Combining both commands into one line:
 
