@@ -22,7 +22,7 @@
         "heroku-postgresql:hobby-dev"
       ],
       "scripts": {
-        "postdeploy": "POOL_SIZE=2 mix ecto.migrate && mix run priv/repo/seeds.exs"
+        "postdeploy": "POOL_SIZE=2 mix ecto.migrate && mix run priv/repo/seeds.exs && export HOST_URL=orcasite-test-${HEROKU_APP_NAME}.herokuapp.com && export URLS='//${HOST_URL}'"
       }
     }
   }
