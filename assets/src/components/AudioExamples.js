@@ -96,17 +96,17 @@ AudioExamples.defaultProps = {
     {
       title: "Orca Calls",
       audio:
-        "http://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3"
+        "https://www.orcasound.net/data/product/SRKW/orcasite/call-examples.mp3"
     },
     {
       title: "Orca Clicks",
       audio:
-        "http://orcasound.net/data/product/SRKW/clicks/20190705-JK_varied_clicks-10sec.mp3"
+        "https://orcasound.net/data/product/SRKW/clicks/20190705-JK_varied_clicks-10sec.mp3"
     },
     {
       title: "Orca Whistles",
       audio:
-        "http://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3"
+        "https://www.orcasound.net/data/product/SRKW/orcasite/whistle-examples.mp3"
     }
   ]
 }
