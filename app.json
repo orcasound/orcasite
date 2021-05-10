@@ -1,0 +1,29 @@
+{
+  "name": "Orcasite",
+  "website": "https://live.orcasound.net/",
+  "repository": "https://github.com/orcasound/orcasite",
+  "environments": {
+    "review": {
+      "buildpacks": [
+        {
+          "url": "https://github.com/HashNuke/heroku-buildpack-elixir"
+        },
+        {
+          "url": "https://github.com/gjaldon/heroku-buildpack-phoenix-static"
+        }
+      ],
+      "formation": {
+        "web": {
+          "quantity": 1,
+          "size": "hobby"
+        }
+      },
+      "addons": [
+        "heroku-postgresql:hobby-dev"
+      ],
+      "scripts": {
+        "postdeploy": "POOL_SIZE=2 mix ecto.migrate && mix run priv/repo/seeds.exs"
+      }
+    }
+  }
+}
