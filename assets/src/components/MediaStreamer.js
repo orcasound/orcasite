@@ -83,7 +83,7 @@ export default class MediaStreamer extends Component {
       }, 1000)
     })
 
-    this.player.on("playing", e => {
+    this.player.on("playing", () => {
       this.props.onPlaying && this.props.onPlaying()
     })
 
@@ -149,12 +149,19 @@ export default class MediaStreamer extends Component {
     }
   }
 
+  setVolume = volume => {
+    if (this.player) {
+      this.player.volume((volume/100))
+    }
+  }
+
   controls = {
     play: this.play,
     pause: this.pause,
     playPause: this.playPause,
     getPlayerTime: this.getPlayerTime,
-    setPlayerTime: this.setPlayerTime
+    setPlayerTime: this.setPlayerTime,
+    setVolume: this.setVolume
   }
 
   render() {
