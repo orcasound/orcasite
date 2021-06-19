@@ -20,7 +20,7 @@ defmodule Orcasite.Mixfile do
   def application do
     [
       mod: {Orcasite.Application, []},
-      extra_applications: [:logger, :runtime_tools, :scrivener_ecto]
+      extra_applications: [:logger, :runtime_tools, :scrivener_ecto, :bamboo]
     ]
   end
 
@@ -56,7 +56,9 @@ defmodule Orcasite.Mixfile do
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 3.0"},
       {:jason, "~> 1.1"},
-      {:scrivener_ecto, "~> 2.0"}
+      {:scrivener_ecto, "~> 2.0"},
+      # Library for sending mails
+      {:bamboo, "~> 2.1.0"}
     ]
   end
 

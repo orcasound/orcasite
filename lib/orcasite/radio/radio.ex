@@ -5,7 +5,8 @@ defmodule Orcasite.Radio do
 
   import Ecto.Query, warn: false
   alias Orcasite.Repo
-  alias Orcasite.Radio.{Feed, Detection, Candidate}
+  alias Orcasite.Radio.{Feed, Detection, Candidate, MailToModerators}
+  alias Orcasite.{Email,Mailer}
 
   def list_feeds do
     Repo.all(Feed)
@@ -89,6 +90,7 @@ defmodule Orcasite.Radio do
          }) do
       {:ok, detection}
     end
+    MailToModerators.send_email_to_moderators()
   end
 
   def datetime_min(time_1, time_2) do
