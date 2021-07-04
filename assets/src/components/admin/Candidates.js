@@ -47,6 +47,23 @@ export default class Candidates extends Component {
   handleModalClose = () =>
     this.setState({ detectionModalOpen: false, detections: [] })
 
+  handleNotifyClick = ({ feed }) => () => {
+    var formdata = new FormData();
+    formdata.append("hydrophone", feed.slug);
+    formdata.append("url", `https://live.orcasound.net/${feed.slug}`);
+
+    var requestOptions = {
+      method: 'POST',
+      body: formdata,
+      redirect: 'follow'
+    };
+
+    fetch("Webhook-url", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+  }
+
   render() {
     const { rowOptions, detectionModalOpen, detections, feed } = this.state
     return (
@@ -121,6 +138,13 @@ export default class Candidates extends Component {
                             onClick={this.handleCandidateClick(candidate)}
                           >
                             View
+                          </Button>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            onClick={this.handleNotifyClick(candidate)}
+                          >
+                            Notify
                           </Button>
                         </TableCell>
                       </TableRow>
