@@ -29,7 +29,9 @@ export default class Candidates extends Component {
     rowOptions: [10, 25, 50, 100],
     detectionModalOpen: false,
     detections: [],
-    feed: null
+    feed: null,
+    notifyModalOpen: false,
+    confirmNode: null
   }
 
   static defaultProps = {
@@ -47,25 +49,33 @@ export default class Candidates extends Component {
   handleModalClose = () =>
     this.setState({ detectionModalOpen: false, detections: [] })
 
-  handleNotifyClick = ({ feed }) => () => {
-    var formdata = new FormData();
-    formdata.append("hydrophone", feed.slug);
-    formdata.append("url", `https://live.orcasound.net/${feed.slug}`);
+  handleNotifyClick = ({ feed }) => () =>
+    this.setState({ notifyModalOpen: true, confirmNode: feed.slug })
+
+  handleNotifyConfirmClick = (confirmNode) => () => {
+    var formdata = new FormData()
+    formdata.append("hydrophone", confirmNode)
+    formdata.append("url", `https://live.orcasound.net/${confirmNode}`)
 
     var requestOptions = {
       method: 'POST',
       body: formdata,
       redirect: 'follow'
-    };
+    }
 
-    fetch("Webhook-url", requestOptions)
+    fetch("webhook-url", requestOptions)
       .then(response => response.text())
       .then(result => console.log(result))
-      .catch(error => console.log('error', error));
+      .catch(error => console.log('error', error))
+
+    this.setState({ notifyModalOpen: false, confirmNode: null })
   }
 
+  handleNotifyModalClose = () =>
+    this.setState({ notifyModalOpen: false, confirmNode: null })
+
   render() {
-    const { rowOptions, detectionModalOpen, detections, feed } = this.state
+    const { rowOptions, detectionModalOpen, detections, feed, notifyModalOpen, confirmNode } = this.state
     return (
       <div className="admin-candidates px-5">
         <h2>Candidates</h2>
@@ -102,6 +112,25 @@ export default class Candidates extends Component {
                 >
                   <Paper classes={{ root: "p-5" }}>
                     <Detections detections={detections} feed={feed} />
+                  </Paper>
+                </Modal>
+                <Modal
+                  open={notifyModalOpen}
+                  onClose={this.handleNotifyModalClose}
+                  className="p-4"
+                >
+                  <Paper classes={{ root: "p-5" }}>
+                    {`Are you sure you want to notify subscribers to listen for ${confirmNode}?`}
+                    <Button
+                      onClick={this.handleNotifyConfirmClick(confirmNode)}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      onClick={this.handleNotifyModalClose}
+                    >
+                      No
+                    </Button>
                   </Paper>
                 </Modal>
                 <Table>
