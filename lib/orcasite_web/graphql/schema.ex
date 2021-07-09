@@ -2,7 +2,7 @@ defmodule OrcasiteWeb.Schema do
   use Absinthe.Schema
 
   import_types(Absinthe.Type.Custom)
-  import_types(OrcasiteWeb.Types.{JSON, Account, Feed, Detection, Pagination})
+  import_types(OrcasiteWeb.Types.{JSON, Account, Feed, Detection, Pagination, NotificationEvent})
 
   alias OrcasiteWeb.Resolvers
 
@@ -35,6 +35,11 @@ defmodule OrcasiteWeb.Schema do
     field :users, :users do
       arg(:pagination, :pagination)
       resolve(&Resolvers.Accounts.list_users/2)
+    end
+
+    @desc "List notifications"
+    field :notification_events, list_of(:notification_event) do
+      resolve(&Resolvers.NotificationEvent.index/2)
     end
   end
 
@@ -79,6 +84,14 @@ defmodule OrcasiteWeb.Schema do
       arg(:description, :string)
 
       resolve(&Resolvers.Detection.create/2)
+    end
+
+    @desc "Create notification event"
+    field :create_notification_event, :notification_event do
+      arg(:candidate_id, :integer)
+      arg(:notified_at, :datetime)
+      arg(:notified_by, :string)
+      resolve(&Resolvers.NotificationEvent.create_notification/2)
     end
   end
 end
