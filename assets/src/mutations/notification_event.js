@@ -1,13 +1,16 @@
 import gql from "graphql-tag"
 
-export const SUBMIT_DETECTION = gql`
-  mutation createNotificationEvent(
-    $candidateId: ID! 
-    $notifiedBy: String!
+export const CREATE_NOTIFICATION = gql`
+mutation createNotificationEvent(
+  $candidateId: ID! 
+  $notifiedBy: String!
 ) {
-    createNotificationEvent(
-        candidateId: $candidateId
-        notifiedBy: $notifiedBy
-    )
+  createNotificationEvent(
+      candidateId: $candidateId
+      notifiedBy: $notifiedBy
+  ) {
+    candidateId
+    notifiedBy
   }
+}
 `

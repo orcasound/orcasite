@@ -7,7 +7,7 @@ defmodule OrcasiteWeb.Resolvers.NotificationEvent do
         Notifications.create_notification_event(params) 
     end
 
-    def index(_, %{context: %{current_user: %{admin: true}}}) do
+    def index(_, _) do
         {:ok, Notifications.list_notification_event()}
     end
 end

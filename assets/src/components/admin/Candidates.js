@@ -24,6 +24,10 @@ import {
   onChangeRowsPerPage
 } from "utils/pagination"
 
+import { Mutation } from "react-apollo"
+import { CREATE_NOTIFICATION } from "mutations/notification_event"
+import { CURRENT_USER } from "queries/users"
+
 export default class Candidates extends Component {
   state = {
     rowOptions: [10, 25, 50, 100],
@@ -31,7 +35,8 @@ export default class Candidates extends Component {
     detections: [],
     feed: null,
     notifyModalOpen: false,
-    confirmNode: null
+    confirmNode: null,
+    candidateId: null
   }
 
   static defaultProps = {
@@ -49,10 +54,11 @@ export default class Candidates extends Component {
   handleModalClose = () =>
     this.setState({ detectionModalOpen: false, detections: [] })
 
-  handleNotifyClick = ({ feed }) => () =>
-    this.setState({ notifyModalOpen: true, confirmNode: feed.slug })
+  handleNotifyClick = ({ feed, id }) => () =>
+    this.setState({ notifyModalOpen: true, confirmNode: feed.slug, candidateId: id })
 
-  handleNotifyConfirmClick = (confirmNode) => () => {
+  handleNotifyConfirmClick = (confirmNode, CreateNotification, data) => () => {
+
     var formdata = new FormData()
     formdata.append("hydrophone", confirmNode)
     formdata.append("url", `https://live.orcasound.net/${confirmNode}`)
@@ -64,15 +70,22 @@ export default class Candidates extends Component {
     }
 
     fetch("webhook-url", requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(result))
-      .catch(error => console.log('error', error))
+      .then(response => {
+        if (response.ok) {
+          CreateNotification({
+            variables: { candidateId: parseInt(this.state.candidateId), notifiedBy: data.currentUser.email }
+          })
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
 
-    this.setState({ notifyModalOpen: false, confirmNode: null })
+    this.handleNotifyModalClose()
   }
 
   handleNotifyModalClose = () =>
-    this.setState({ notifyModalOpen: false, confirmNode: null })
+    this.setState({ notifyModalOpen: false, confirmNode: null, candidateId: null })
 
   render() {
     const { rowOptions, detectionModalOpen, detections, feed, notifyModalOpen, confirmNode } = this.state
@@ -121,11 +134,19 @@ export default class Candidates extends Component {
                 >
                   <Paper classes={{ root: "p-5" }}>
                     {`Are you sure you want to notify subscribers to listen for ${confirmNode}?`}
-                    <Button
-                      onClick={this.handleNotifyConfirmClick(confirmNode)}
-                    >
-                      Yes
-                    </Button>
+                    <Mutation mutation={CREATE_NOTIFICATION}>
+                      {(CreateNotification, { data }) => (
+                        <Query query={CURRENT_USER}>
+                          {({ data, error, loading }) => {
+                            return (<Button
+                              onClick={this.handleNotifyConfirmClick(confirmNode, CreateNotification, data)}
+                            >
+                              Yes
+                            </Button>)
+                          }}
+                        </Query>
+                      )}
+                    </Mutation>
                     <Button
                       onClick={this.handleNotifyModalClose}
                     >
