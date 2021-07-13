@@ -38,6 +38,11 @@ defmodule OrcasiteWeb.Router do
     )
   end
 
+  scope "/mail", Orcasite do
+    pipe_through :api
+    get "/subscribers", MailController, :send_mail_to_subscribers
+  end
+
   scope "/", OrcasiteWeb do
     # Use the default browser stack
     pipe_through(:browser)
