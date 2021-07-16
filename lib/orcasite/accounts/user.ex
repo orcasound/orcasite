@@ -19,7 +19,7 @@ defmodule Orcasite.Accounts.User do
 
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:email, :first_name, :last_name])
+    |> cast(attrs, [:email, :first_name, :last_name, :admin])
     |> validate_required([:email])
     |> update_change(:email, &String.downcase/1)
     |> validate_format(:email, ~r/^.+@.+$/)

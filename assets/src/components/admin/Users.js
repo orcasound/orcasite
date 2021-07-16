@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Query } from "react-apollo"
+import { Mutation, Query } from "react-apollo"
 
 import Paper from "@material-ui/core/Paper"
 import Table from "@material-ui/core/Table"
@@ -15,6 +15,7 @@ import Loader from "components/Loader"
 import EditRecord from "./EditRecord"
 
 import { LIST_USERS } from "queries/users"
+import { UPDATE_USER } from "mutations/user"
 
 import {
   page,
@@ -34,8 +35,10 @@ export default class Users extends Component {
     pageSize: 10
   }
 
-  handleEditClick = user => e => {
-    this.setState({ user, isEditing: true })
+  handleChangeRoleClick = ( user, UpdateUser ) => e => {
+    UpdateUser({
+      variables: { id: parseInt(user.id), admin: user.admin }
+    })
   }
 
   onClose = () => this.setState({ isEditing: false })
@@ -84,25 +87,29 @@ export default class Users extends Component {
                       <TableCell>ID</TableCell>
                       <TableCell>Email</TableCell>
                       <TableCell align="right">Admin</TableCell>
-                      {/* <TableCell align="right">Actions</TableCell> */}
+                      <TableCell align="right">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {users.entries.map(user => (
-                      <TableRow key={user.email} hover={true}>
+                      <TableRow key={user.email+user.admin} hover={true}>
                         <TableCell>{user.id}</TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell align="right">
-                          {(user.admin && "Yes") || "-"}
+                          {(user.admin && "Yes") || "No"}
                         </TableCell>
-                        {/* <TableCell align="right">
+                        <TableCell align="right">
+                          <Mutation mutation={UPDATE_USER}>
+                          {(UpdateUser, { data }) => (
                             <Button
-                            variant="text"
-                            onClick={this.handleEditClick(user)}
+                              variant="text"
+                              onClick={this.handleChangeRoleClick(user, UpdateUser)}
                             >
-                            Edit
+                              Change Role
                             </Button>
-                            </TableCell> */}
+                          )}
+                          </Mutation>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

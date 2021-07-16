@@ -65,7 +65,7 @@ defmodule OrcasiteWeb.Schema do
 
     @desc "Update user details"
     field :update_user, :user do
-      arg(:id)
+      arg(:id, :id)
       arg(:admin, :boolean)
       resolve(&Resolvers.Accounts.update_user/2)
     end

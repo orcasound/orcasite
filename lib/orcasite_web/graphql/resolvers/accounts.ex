@@ -45,7 +45,7 @@ defmodule OrcasiteWeb.Resolvers.Accounts do
 
   def update_user(%{id: user_id, admin: admin}, %{context: %{current_user: current_user}}) do
     with user <- Accounts.get_user!(user_id),
-         {:ok, user} <- Accounts.update_user(user, %{admin: admin}, current_user) do
+         {:ok, user} <- Accounts.update_user(user, %{admin: !admin}, current_user) do
       {:ok, user}
     else
       error -> error
