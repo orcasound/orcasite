@@ -162,6 +162,7 @@ export default class Candidates extends Component {
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
                       <TableCell align="right">Descriptions</TableCell>
+                      <TableCell align="right">Notified by</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -183,6 +184,9 @@ export default class Candidates extends Component {
                             .slice(0, 3)
                             .join(", ")}
                         </TableCell>
+                        <TableCell align="right">
+                        {(candidate.notificationEvents)?candidate.notificationEvents.notifiedBy:"-"}
+                        </TableCell>
                         <TableCell align="center">
                           <Button
                             onClick={this.handleCandidateClick(candidate)}
@@ -193,6 +197,7 @@ export default class Candidates extends Component {
                         <TableCell align="center">
                           <Button
                             onClick={this.handleNotifyClick(candidate)}
+                            disabled={(candidate.notificationEvents)?true:false}
                           >
                             Notify
                           </Button>
