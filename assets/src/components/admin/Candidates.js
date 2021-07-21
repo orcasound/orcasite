@@ -24,12 +24,19 @@ import {
   onChangeRowsPerPage
 } from "utils/pagination"
 
+import { Mutation } from "react-apollo"
+import { CREATE_NOTIFICATION } from "mutations/notification_event"
+import { CURRENT_USER } from "queries/users"
+
 export default class Candidates extends Component {
   state = {
     rowOptions: [10, 25, 50, 100],
     detectionModalOpen: false,
     detections: [],
-    feed: null
+    feed: null,
+    notifyModalOpen: false,
+    confirmNode: null,
+    candidateId: null
   }
 
   static defaultProps = {
@@ -47,8 +54,41 @@ export default class Candidates extends Component {
   handleModalClose = () =>
     this.setState({ detectionModalOpen: false, detections: [] })
 
+  handleNotifyClick = ({ feed, id }) => () =>
+    this.setState({ notifyModalOpen: true, confirmNode: feed.slug, candidateId: id })
+
+  handleNotifyConfirmClick = (confirmNode, CreateNotification, data) => () => {
+
+    var formdata = new FormData()
+    formdata.append("hydrophone", confirmNode)
+    formdata.append("url", `https://live.orcasound.net/${confirmNode}`)
+
+    var requestOptions = {
+      method: 'POST',
+      body: formdata,
+      redirect: 'follow'
+    }
+
+    fetch("webhook-url", requestOptions)
+      .then(response => {
+        if (response.ok) {
+          CreateNotification({
+            variables: { candidateId: parseInt(this.state.candidateId), notifiedBy: data.currentUser.email }
+          })
+        }
+      })
+      .catch(error => {
+        console.log('error', error)
+      })
+
+    this.handleNotifyModalClose()
+  }
+
+  handleNotifyModalClose = () =>
+    this.setState({ notifyModalOpen: false, confirmNode: null, candidateId: null })
+
   render() {
-    const { rowOptions, detectionModalOpen, detections, feed } = this.state
+    const { rowOptions, detectionModalOpen, detections, feed, notifyModalOpen, confirmNode } = this.state
     return (
       <div className="admin-candidates px-5">
         <h2>Candidates</h2>
@@ -87,6 +127,33 @@ export default class Candidates extends Component {
                     <Detections detections={detections} feed={feed} />
                   </Paper>
                 </Modal>
+                <Modal
+                  open={notifyModalOpen}
+                  onClose={this.handleNotifyModalClose}
+                  className="p-4"
+                >
+                  <Paper classes={{ root: "p-5" }}>
+                    {`Are you sure you want to notify subscribers to listen for ${confirmNode}?`}
+                    <Mutation mutation={CREATE_NOTIFICATION}>
+                      {(CreateNotification, { data }) => (
+                        <Query query={CURRENT_USER}>
+                          {({ data, error, loading }) => {
+                            return (<Button
+                              onClick={this.handleNotifyConfirmClick(confirmNode, CreateNotification, data)}
+                            >
+                              Yes
+                            </Button>)
+                          }}
+                        </Query>
+                      )}
+                    </Mutation>
+                    <Button
+                      onClick={this.handleNotifyModalClose}
+                    >
+                      No
+                    </Button>
+                  </Paper>
+                </Modal>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -95,6 +162,7 @@ export default class Candidates extends Component {
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
                       <TableCell align="right">Descriptions</TableCell>
+                      <TableCell align="right">Notified by</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -116,11 +184,22 @@ export default class Candidates extends Component {
                             .slice(0, 3)
                             .join(", ")}
                         </TableCell>
+                        <TableCell align="right">
+                        {(candidate.notificationEvents)?candidate.notificationEvents.notifiedBy:"-"}
+                        </TableCell>
                         <TableCell align="center">
                           <Button
                             onClick={this.handleCandidateClick(candidate)}
                           >
                             View
+                          </Button>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            onClick={this.handleNotifyClick(candidate)}
+                            disabled={(candidate.notificationEvents)?true:false}
+                          >
+                            Notify
                           </Button>
                         </TableCell>
                       </TableRow>

@@ -176,7 +176,7 @@ defmodule Orcasite.Radio do
   def list_candidates(params \\ %{pagination: %{page: 1, page_size: 10}}) do
     Candidate
     |> order_by(desc: :inserted_at)
-    |> preload([:feed, :detections])
+    |> preload([:feed, :detections, :notification_events])
     |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
   end
 

@@ -3,6 +3,7 @@ defmodule Orcasite.Radio.Candidate do
   import Ecto.Changeset
 
   alias Orcasite.Radio.{Detection, Feed}
+  alias Orcasite.Notifications.NotificationEvents
 
   schema "candidates" do
     field(:detection_count, :integer)
@@ -11,6 +12,7 @@ defmodule Orcasite.Radio.Candidate do
 
     has_many(:detections, Detection)
     belongs_to(:feed, Feed)
+    has_one(:notification_events, NotificationEvents, references: :id, foreign_key: :id)
 
     timestamps()
   end

@@ -47,6 +47,10 @@ export const LIST_CANDIDATES = gql`
           slug
           nodeName
         }
+        notificationEvents{
+          candidateId
+          notifiedBy
+        }
       }
     }
   }

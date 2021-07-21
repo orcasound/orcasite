@@ -28,6 +28,7 @@ defmodule OrcasiteWeb.Types.Detection do
     field(:detection_count, :integer)
     field(:detections, list_of(:detection))
     field(:feed, :feed)
+    field(:notification_events, :notification_event)
   end
 
   @desc "Pagination version of candidates"
