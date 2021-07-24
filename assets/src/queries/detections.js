@@ -50,6 +50,7 @@ export const LIST_CANDIDATES = gql`
         notificationEvents{
           candidateId
           notifiedBy
+          notifiedAt
         }
       }
     }

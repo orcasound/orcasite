@@ -163,6 +163,7 @@ export default class Candidates extends Component {
                       <TableCell align="right">Timestamp</TableCell>
                       <TableCell align="right">Descriptions</TableCell>
                       <TableCell align="right">Notified by</TableCell>
+                      <TableCell align="right">Notified at</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -186,6 +187,9 @@ export default class Candidates extends Component {
                         </TableCell>
                         <TableCell align="right">
                         {(candidate.notificationEvents)?candidate.notificationEvents.notifiedBy:"-"}
+                        </TableCell>
+                        <TableCell align="right">
+                        {(candidate.notificationEvents)?formatTimestamp(candidate.notificationEvents.notifiedAt):"-"}
                         </TableCell>
                         <TableCell align="center">
                           <Button
