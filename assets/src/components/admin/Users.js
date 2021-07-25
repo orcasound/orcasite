@@ -16,6 +16,7 @@ import EditRecord from "./EditRecord"
 
 import { LIST_USERS } from "queries/users"
 import { UPDATE_USER } from "mutations/user"
+import { CURRENT_USER } from "queries/users"
 
 import {
   page,
@@ -81,51 +82,58 @@ export default class Users extends Component {
                     editableFields={this.state.editableFields}
                   />
                 )}
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>ID</TableCell>
-                      <TableCell>Email</TableCell>
-                      <TableCell align="right">Admin</TableCell>
-                      <TableCell align="right">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {users.entries.map(user => (
-                      <TableRow key={user.email+user.admin} hover={true}>
-                        <TableCell>{user.id}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell align="right">
-                          {(user.admin && "Yes") || "No"}
-                        </TableCell>
-                        <TableCell align="right">
-                          <Mutation mutation={UPDATE_USER}>
-                          {(UpdateUser, { data }) => (
-                            <Button
-                              variant="text"
-                              onClick={this.handleChangeRoleClick(user, UpdateUser)}
-                            >
-                              Change Role
-                            </Button>
-                          )}
-                          </Mutation>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        count={totalEntries}
-                        page={currentPage - 1}
-                        rowsPerPage={pageSize(this.props)}
-                        onChangePage={onChangePage(this.props, 1)}
-                        onChangeRowsPerPage={onChangeRowsPerPage(this.props)}
-                        rowsPerPageOptions={this.state.rowOptions}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
+                <Query query={CURRENT_USER}>
+                  {({ data, error, loading }) => {
+                    const currentuser = data.currentUser
+
+                    return (<Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>ID</TableCell>
+                          <TableCell>Email</TableCell>
+                          <TableCell align="right">Admin</TableCell>
+                          <TableCell align="right">Actions</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {users.entries.map(user => (
+                          <TableRow key={user.email + user.admin} hover={true}>
+                            <TableCell>{user.id}</TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell align="right">
+                              {(user.admin && "Yes") || "No"}
+                            </TableCell>
+                            <TableCell align="right">
+                              <Mutation mutation={UPDATE_USER}>
+                                {(UpdateUser, { data }) => (
+                                  <Button
+                                    variant="text"
+                                    onClick={this.handleChangeRoleClick(user, UpdateUser)}
+                                    disabled={(user.id == currentuser.id) ? true : false}
+                                  >
+                                    Change Role
+                                  </Button>
+                                )}
+                              </Mutation>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                      <TableFooter>
+                        <TableRow>
+                          <TablePagination
+                            count={totalEntries}
+                            page={currentPage - 1}
+                            rowsPerPage={pageSize(this.props)}
+                            onChangePage={onChangePage(this.props, 1)}
+                            onChangeRowsPerPage={onChangeRowsPerPage(this.props)}
+                            rowsPerPageOptions={this.state.rowOptions}
+                          />
+                        </TableRow>
+                      </TableFooter>
+                    </Table>)
+                  }}
+                </Query>
               </Paper>
             )
           }}
