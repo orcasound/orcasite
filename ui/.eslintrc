@@ -3,6 +3,7 @@
   "extends": ["next", "next/core-web-vitals", "prettier"],
   "plugins": ["simple-import-sort"],
   "rules": {
+    "prefer-const": "warn",
     "simple-import-sort/imports": "warn",
     "simple-import-sort/exports": "warn",
     "import/no-unused-modules": [
