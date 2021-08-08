@@ -54,25 +54,14 @@ defmodule Orcasite.RadioTest do
       assert {:error, %Ecto.Changeset{}} = Radio.update_feed(feed, @invalid_attrs)
       assert feed == Radio.get_feed!(feed.id)
     end
-
-    test "delete_feed/1 deletes the feed" do
-      feed = feed_fixture()
-      assert {:ok, %Feed{}} = Radio.delete_feed(feed)
-      assert_raise Ecto.NoResultsError, fn -> Radio.get_feed!(feed.id) end
-    end
-
-    test "change_feed/1 returns a feed changeset" do
-      feed = feed_fixture()
-      assert %Ecto.Changeset{} = Radio.change_feed(feed)
-    end
   end
 
   describe "detections" do
     alias Orcasite.Radio.Detection
 
-    @valid_attrs %{source_ip: "some source_ip", playlist_timestamp: 42, time: "2010-04-17 14:00:00.000000Z"}
-    @update_attrs %{source_ip: "some updated source_ip", playlist_timestamp: 43, time: "2011-05-18 15:01:01.000000Z"}
-    @invalid_attrs %{source_ip: nil, playlist_timestamp: nil, time: nil}
+    @valid_attrs %{source_ip: "some source_ip", playlist_timestamp: 42, player_offset: Decimal.new("21421.678924"), feed_id: 1}
+    @update_attrs %{source_ip: "some updated source_ip", playlist_timestamp: 43, player_offset: Decimal.new("21421.678924"), feed_id: 1}
+    @invalid_attrs %{source_ip: nil, playlist_timestamp: nil, player_offset: nil, feed_id: nil}
 
     def detection_fixture(attrs \\ %{}) do
       {:ok, detection} =
@@ -97,7 +86,8 @@ defmodule Orcasite.RadioTest do
       assert {:ok, %Detection{} = detection} = Radio.create_detection(@valid_attrs)
       assert detection.source_ip == "some source_ip"
       assert detection.playlist_timestamp == 42
-      assert detection.time == DateTime.from_naive!(~N[2010-04-17 14:00:00.000000Z], "Etc/UTC")
+      assert detection.player_offset == Decimal.new("21421.678924")
+      assert detection.feed_id == 1
     end
 
     test "create_detection/1 with invalid data returns error changeset" do
@@ -110,7 +100,8 @@ defmodule Orcasite.RadioTest do
       assert %Detection{} = detection
       assert detection.source_ip == "some updated source_ip"
       assert detection.playlist_timestamp == 43
-      assert detection.time == DateTime.from_naive!(~N[2011-05-18 15:01:01.000000Z], "Etc/UTC")
+      assert detection.player_offset == Decimal.new("21421.678924")
+      assert detection.feed_id == 1
     end
 
     test "update_detection/2 with invalid data returns error changeset" do
@@ -118,16 +109,34 @@ defmodule Orcasite.RadioTest do
       assert {:error, %Ecto.Changeset{}} = Radio.update_detection(detection, @invalid_attrs)
       assert detection == Radio.get_detection!(detection.id)
     end
+  end
 
-    test "delete_detection/1 deletes the detection" do
-      detection = detection_fixture()
-      assert {:ok, %Detection{}} = Radio.delete_detection(detection)
-      assert_raise Ecto.NoResultsError, fn -> Radio.get_detection!(detection.id) end
+  describe "notification_events" do
+    alias Orcasite.Notifications
+    alias Orcasite.Notifications.NotificationEvents
+
+    @valid_attrs %{candidate_id: 1, notified_by: "some email"}
+    @update_attrs %{candidate_id: 1, notified_by: "some email"}
+    @invalid_attrs %{candidate_id: nil, notified_by: nil}
+
+    def notification_events_fixture(attrs \\ %{}) do
+      {:ok, notification_events} =
+        attrs
+        |> Map.merge(@valid_attrs)
+        |> Notifications.create_notification_event()
+
+      notification_events
     end
 
-    test "change_detection/1 returns a detection changeset" do
-      detection = detection_fixture()
-      assert %Ecto.Changeset{} = Radio.change_detection(detection)
+    test "list_notification_event/0 returns all notification_events" do
+      notification_event = notification_events_fixture()
+      assert Notifications.list_notification_event() == [notification_event]
+    end
+
+    test "create_notification_event/1 with valid data creates a notification_event" do
+      assert {:ok, %NotificationEvents{} = notification_event} = Notifications.create_notification_event(@valid_attrs)
+      assert notification_event.candidate_id == 1
+      assert notification_event.notified_by == "some email"
     end
   end
 end

@@ -12,9 +12,14 @@ config :logger, level: :warn
 # Configure your database
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: System.get_env("POSTGRES_USER") || "postgres",
+  password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   database: "orcasite_test",
-  hostname: "localhost",
+  hostname: System.get_env("POSTGRES_HOST") || "localhost",
+  port: System.get_env("POSTGRES_PORT") || 5432,
   pool: Ecto.Adapters.SQL.Sandbox,
   types: Orcasite.PostgresTypes
+
+# Configures the test mail adapter
+config :orcasite, Orcasite.Mailer,
+  adapter: Bamboo.TestAdapter
