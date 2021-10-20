@@ -1,11 +1,8 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
 
-  pipeline :browser do
+  pipeline :nextjs do
     plug(:accepts, ["html"])
-    plug(:fetch_session)
-    plug(:fetch_flash)
-    plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
   end
 
@@ -38,9 +35,8 @@ defmodule OrcasiteWeb.Router do
     )
   end
 
-  scope "/", OrcasiteWeb do
-    # Use the default browser stack
-    pipe_through(:browser)
-    get("/*page", PageController, :index)
+  scope "/" do
+    pipe_through [:nextjs]
+    forward("/", ReverseProxyPlug, upstream: "http://localhost:3000")
   end
 end

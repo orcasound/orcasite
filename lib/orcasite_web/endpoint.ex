@@ -8,7 +8,6 @@ defmodule OrcasiteWeb.Endpoint do
                     else
                       false
                     end
-          
     ]
   )
 
@@ -51,6 +50,10 @@ defmodule OrcasiteWeb.Endpoint do
     key: "_orcasite_key",
     signing_salt: "uSUTZKtc"
   )
+
+  if Mix.env == :dev do
+    plug(Corsica, origins: ["http://localhost:3000", "http://0.0.0.0:4000"])
+  end
 
   plug(OrcasiteWeb.Router)
 
