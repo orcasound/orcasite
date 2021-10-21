@@ -8,7 +8,6 @@ defmodule OrcasiteWeb.Endpoint do
                     else
                       false
                     end
-          
     ]
   )
 
@@ -33,15 +32,6 @@ defmodule OrcasiteWeb.Endpoint do
 
   plug(Plug.RequestId)
   plug(Orcasite.Logger)
-
-  plug(Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
-    pass: ["*/*"],
-    json_decoder: Jason
-  )
-
-  plug(Plug.MethodOverride)
-  plug(Plug.Head)
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.

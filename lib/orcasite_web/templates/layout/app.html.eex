@@ -8,16 +8,10 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Orcasound - Listen for whales</title>
-    <%= {:safe, css_link_tag(@conn)} %>
-    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-    <!-- jss-insertion-point -->
+    <title>Orcasound API</title>
   </head>
 
   <body>
     <%= render @view_module, @view_template, assigns %>
-    <div id="root"></div>
-
-    <%= {:safe, js_script_tag(@conn)} %>
   </body>
 </html>

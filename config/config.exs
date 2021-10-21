@@ -15,8 +15,11 @@ config :orcasite,
 config :orcasite, OrcasiteWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3",
-  render_errors: [view: OrcasiteWeb.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: OrcasiteWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Orcasite.PubSub, adapter: Phoenix.PubSub.PG2]
+
+# Configure reverse proxy to use HTTPoison as http client
+config :reverse_proxy_plug, :http_client, ReverseProxyPlug.HTTPClient.Adapters.HTTPoison
 
 # Configures Elixir's Logger
 config :logger, :console,

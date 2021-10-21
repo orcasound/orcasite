@@ -56,7 +56,10 @@ defmodule Orcasite.Mixfile do
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 3.0"},
       {:jason, "~> 1.1"},
-      {:scrivener_ecto, "~> 2.0"}
+      {:scrivener_ecto, "~> 2.0"},
+      # Reverse proxy for proxying to nextjs app
+      {:reverse_proxy_plug, "~> 2.1"},
+      {:httpoison, "~> 1.8"}
     ]
   end
 
