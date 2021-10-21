@@ -37,6 +37,7 @@ defmodule OrcasiteWeb.Router do
 
   scope "/" do
     pipe_through [:nextjs]
-    forward("/", ReverseProxyPlug, upstream: "http://localhost:3000")
+    ui_port = System.get_env("UI_PORT") || "3000"
+    forward("/", ReverseProxyPlug, upstream: "http://localhost:#{ui_port}")
   end
 end
