@@ -51,10 +51,6 @@ defmodule OrcasiteWeb.Endpoint do
     signing_salt: "uSUTZKtc"
   )
 
-  if Mix.env == :dev do
-    plug(Corsica, origins: ["http://localhost:3000", "http://0.0.0.0:4000"])
-  end
-
   plug(OrcasiteWeb.Router)
 
   @doc """

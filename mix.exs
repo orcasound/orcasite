@@ -59,8 +59,7 @@ defmodule Orcasite.Mixfile do
       {:scrivener_ecto, "~> 2.0"},
       # Reverse proxy for proxying to nextjs app
       {:reverse_proxy_plug, "~> 2.1"},
-      {:httpoison, "~> 1.8"},
-      {:corsica, "~> 1.0", only: [:dev]},
+      {:httpoison, "~> 1.8"}
     ]
   end
 
