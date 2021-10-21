@@ -1,2 +1,11 @@
-<p>API is running</p>
-<a href="/graphiql">graphiql</a>
+<p>API is running: <a href="/graphiql">graphiql</a></p>
+
+<%= if Mix.env() == :dev do %>
+<p>Looking for the UI?</p>
+<p>Open a new shell, navigate to the project root directory, and try this:</p>
+<pre>
+> cd ui/
+> npm run dev
+</pre>
+<p>The UI should now be running: <a href="http://localhost:3000">http://localhost:3000</a> by default</p>
+<% end %>
