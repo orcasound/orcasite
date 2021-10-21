@@ -6,6 +6,14 @@ defmodule OrcasiteWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :browser do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_flash)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :authorized do
     plug(OrcasiteWeb.Auth.AuthAccessPipeline)
   end
@@ -36,8 +44,14 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
-    pipe_through [:nextjs]
-    ui_port = System.get_env("UI_PORT") || "3000"
-    forward("/", ReverseProxyPlug, upstream: "http://localhost:#{ui_port}")
+    if Mix.env() == :dev do
+      # Use the default browser stack
+      pipe_through(:browser)
+      get("/*page", OrcasiteWeb.PageController, :index)
+    else
+      pipe_through(:nextjs)
+      ui_port = System.get_env("UI_PORT") || "3000"
+      forward("/", ReverseProxyPlug, upstream: "http://localhost:#{ui_port}")
+    end
   end
 end
