@@ -10,7 +10,7 @@
       "warn",
       {
         "unusedExports": true,
-        "ignoreExports": ["pages"] // pages are automatically imported by nextjs
+        "ignoreExports": ["src/pages"] // pages are automatically imported by nextjs
       }
     ]
   },
