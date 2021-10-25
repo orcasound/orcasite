@@ -42,6 +42,11 @@ defmodule OrcasiteWeb.Endpoint do
     signing_salt: "uSUTZKtc"
   )
 
+  # Allow cross-origin requests in dev
+  if Mix.env == :dev do
+    plug(Corsica, origins: "*", allow_headers: :all)
+  end
+
   plug(OrcasiteWeb.Router)
 
   @doc """
