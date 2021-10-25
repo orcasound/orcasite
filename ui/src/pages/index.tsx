@@ -1,6 +1,7 @@
-import { gql, request } from 'graphql-request'
 import Head from 'next/head'
 import Link from 'next/link'
+
+import { listFeeds } from '../queries/feed'
 
 export default function Home({ feeds }: { feeds: any }) {
   return (
@@ -27,22 +28,7 @@ export default function Home({ feeds }: { feeds: any }) {
   )
 }
 
-const API_ENDPOINT_STATIC = 'http://live.orcasound.net/graphql'
-
-const LIST_FEEDS = gql`
-  {
-    feeds {
-      id
-      name
-      slug
-      nodeName
-      thumbUrl
-      mapUrl
-    }
-  }
-`
-
 export async function getStaticProps() {
-  const response = await request(API_ENDPOINT_STATIC, LIST_FEEDS)
+  const response = await listFeeds()
   return { props: { feeds: response.feeds } }
 }
