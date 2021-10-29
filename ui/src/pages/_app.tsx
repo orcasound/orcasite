@@ -5,6 +5,8 @@ import { useState } from 'react'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 function MyApp({ Component, pageProps }: AppProps) {
+  // Configure react-query using the hydration setup
+  // https://react-query.tanstack.com/guides/ssr#using-hydration
   const [queryClient] = useState(() => new QueryClient())
 
   return (

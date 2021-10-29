@@ -1,5 +1,6 @@
 import { gql, request } from 'graphql-request'
 
+// TODO: get API URL from env
 const API_ENDPOINT_STATIC = 'http://live.orcasound.net/graphql'
 
 const LIST_FEEDS = gql`
