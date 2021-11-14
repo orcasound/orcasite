@@ -1,0 +1,13 @@
+overwrite: true
+schema: 'http://localhost:4000/graphql'
+documents:
+  - 'src/**/*.graphql'
+  - 'src/**/*.ts'
+hooks:
+  afterAllFileWrite:
+    - prettier --write
+generates:
+  src/generated/types.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
