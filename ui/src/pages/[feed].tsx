@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 
 import { Feed } from '../generated/types'
-import { api } from '../queries/feed'
+import API from '../graphql/apiClient'
 
 export default function FeedPage({ feed }: { feed: Feed }) {
   return (
@@ -38,7 +38,7 @@ export default function FeedPage({ feed }: { feed: Feed }) {
 }
 
 export async function getStaticPaths() {
-  const response = await api.feeds()
+  const response = await API.feeds()
   return {
     paths: response.feeds.map((feed) => ({ params: { feed: feed.slug } })),
     fallback: 'blocking',
@@ -46,7 +46,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: { params: { feed: string } }) {
-  const response = await api.feed({ slug: params.feed })
+  const response = await API.feed({ slug: params.feed })
 
   if (!response.feed) {
     return {

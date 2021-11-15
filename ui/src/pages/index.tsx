@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 
 import { Feed } from '../generated/types'
-import { api } from '../queries/feed'
+import API from '../graphql/apiClient'
 
 export default function HomePage({ feeds }: { feeds: Feed[] }) {
   return (
@@ -30,6 +30,6 @@ export default function HomePage({ feeds }: { feeds: Feed[] }) {
 }
 
 export async function getStaticProps() {
-  const response = await api.feeds()
+  const response = await API.feeds()
   return { props: { feeds: response.feeds } }
 }

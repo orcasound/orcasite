@@ -185,21 +185,6 @@ export type Users = {
   meta?: Maybe<PaginationMeta>
 }
 
-export type FeedsQueryVariables = Exact<{ [key: string]: never }>
-
-export type FeedsQuery = {
-  __typename?: 'RootQueryType'
-  feeds: Array<{
-    __typename?: 'Feed'
-    id: string
-    name: string
-    slug: string
-    nodeName: string
-    thumbUrl: string
-    mapUrl: string
-  }>
-}
-
 export type FeedQueryVariables = Exact<{
   slug: Scalars['String']
 }>
@@ -219,18 +204,21 @@ export type FeedQuery = {
   }
 }
 
-export const FeedsDocument = gql`
-  query feeds {
-    feeds {
-      id
-      name
-      slug
-      nodeName
-      thumbUrl
-      mapUrl
-    }
-  }
-`
+export type FeedsQueryVariables = Exact<{ [key: string]: never }>
+
+export type FeedsQuery = {
+  __typename?: 'RootQueryType'
+  feeds: Array<{
+    __typename?: 'Feed'
+    id: string
+    name: string
+    slug: string
+    nodeName: string
+    thumbUrl: string
+    mapUrl: string
+  }>
+}
+
 export const FeedDocument = gql`
   query feed($slug: String!) {
     feed(slug: $slug) {
@@ -240,6 +228,18 @@ export const FeedDocument = gql`
       nodeName
       locationPoint
       introHtml
+      thumbUrl
+      mapUrl
+    }
+  }
+`
+export const FeedsDocument = gql`
+  query feeds {
+    feeds {
+      id
+      name
+      slug
+      nodeName
       thumbUrl
       mapUrl
     }
@@ -258,19 +258,6 @@ export function getSdk(
   withWrapper: SdkFunctionWrapper = defaultWrapper
 ) {
   return {
-    feeds(
-      variables?: FeedsQueryVariables,
-      requestHeaders?: Dom.RequestInit['headers']
-    ): Promise<FeedsQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<FeedsQuery>(FeedsDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'feeds'
-      )
-    },
     feed(
       variables: FeedQueryVariables,
       requestHeaders?: Dom.RequestInit['headers']
@@ -282,6 +269,19 @@ export function getSdk(
             ...wrappedRequestHeaders,
           }),
         'feed'
+      )
+    },
+    feeds(
+      variables?: FeedsQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<FeedsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<FeedsQuery>(FeedsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'feeds'
       )
     },
   }
