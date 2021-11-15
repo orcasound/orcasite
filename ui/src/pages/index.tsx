@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Feed } from '../generated/types'
 import { listFeeds } from '../queries/feed'
 
-export default function Home({ feeds }: { feeds: Feed[] }) {
+export default function HomePage({ feeds }: { feeds: Feed[] }) {
   return (
     <div>
       <Head>

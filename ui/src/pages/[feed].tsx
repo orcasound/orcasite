@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Feed } from '../generated/types'
 import { getFeed, listFeeds } from '../queries/feed'
 
-export default function Feed({ feed }: { feed: Feed }) {
+export default function FeedPage({ feed }: { feed: Feed }) {
   return (
     <div>
       <Head>
