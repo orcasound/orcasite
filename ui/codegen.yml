@@ -5,7 +5,7 @@ documents:
   - 'src/**/*.ts'
 hooks:
   afterAllFileWrite:
-    - prettier --write
+    - 'prettier --write'
 generates:
   src/generated/types.ts:
     plugins:
