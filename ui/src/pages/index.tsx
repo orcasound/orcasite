@@ -1,9 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link'
 
-import { listFeeds } from '../queries/feed'
+import { Feed } from '../generated/types'
+import API from '../graphql/apiClient'
 
-export default function Home({ feeds }: { feeds: any }) {
+export default function HomePage({ feeds }: { feeds: Feed[] }) {
   return (
     <div>
       <Head>
@@ -11,7 +12,7 @@ export default function Home({ feeds }: { feeds: any }) {
       </Head>
 
       <main>
-        {feeds.map((feed: any) => (
+        {feeds.map((feed) => (
           <div key={feed.id}>
             <Link
               href={{
@@ -29,6 +30,6 @@ export default function Home({ feeds }: { feeds: any }) {
 }
 
 export async function getStaticProps() {
-  const response = await listFeeds()
+  const response = await API.feeds()
   return { props: { feeds: response.feeds } }
 }

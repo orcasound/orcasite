@@ -1,0 +1,10 @@
+query feeds {
+  feeds {
+    id
+    name
+    slug
+    nodeName
+    thumbUrl
+    mapUrl
+  }
+}
