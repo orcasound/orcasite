@@ -72,14 +72,14 @@ export type DetectionWithLockout = {
 
 export type Feed = {
   __typename?: 'Feed'
-  id?: Maybe<Scalars['ID']>
-  introHtml?: Maybe<Scalars['String']>
-  locationPoint?: Maybe<Scalars['Json']>
-  mapUrl?: Maybe<Scalars['String']>
-  name?: Maybe<Scalars['String']>
-  nodeName?: Maybe<Scalars['String']>
-  slug?: Maybe<Scalars['String']>
-  thumbUrl?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  introHtml: Scalars['String']
+  locationPoint: Scalars['Json']
+  mapUrl: Scalars['String']
+  name: Scalars['String']
+  nodeName: Scalars['String']
+  slug: Scalars['String']
+  thumbUrl: Scalars['String']
 }
 
 /** Pagination options */
@@ -145,9 +145,9 @@ export type RootQueryType = {
   /** List detections */
   detections?: Maybe<Array<Maybe<Detection>>>
   /** Get a feed */
-  feed?: Maybe<Feed>
+  feed: Feed
   /** Get a list of feeds */
-  feeds?: Maybe<Array<Maybe<Feed>>>
+  feeds: Array<Feed>
   /** List users, paginated */
   users?: Maybe<Users>
 }
@@ -186,22 +186,15 @@ export type FeedsQueryVariables = Exact<{ [key: string]: never }>
 
 export type FeedsQuery = {
   __typename?: 'RootQueryType'
-  feeds?:
-    | Array<
-        | {
-            __typename?: 'Feed'
-            id?: string | null | undefined
-            name?: string | null | undefined
-            slug?: string | null | undefined
-            nodeName?: string | null | undefined
-            thumbUrl?: string | null | undefined
-            mapUrl?: string | null | undefined
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined
+  feeds: Array<{
+    __typename?: 'Feed'
+    id: string
+    name: string
+    slug: string
+    nodeName: string
+    thumbUrl: string
+    mapUrl: string
+  }>
 }
 
 export type FeedQueryVariables = Exact<{
@@ -210,18 +203,15 @@ export type FeedQueryVariables = Exact<{
 
 export type FeedQuery = {
   __typename?: 'RootQueryType'
-  feed?:
-    | {
-        __typename?: 'Feed'
-        id?: string | null | undefined
-        name?: string | null | undefined
-        slug?: string | null | undefined
-        nodeName?: string | null | undefined
-        locationPoint?: any | null | undefined
-        introHtml?: string | null | undefined
-        thumbUrl?: string | null | undefined
-        mapUrl?: string | null | undefined
-      }
-    | null
-    | undefined
+  feed: {
+    __typename?: 'Feed'
+    id: string
+    name: string
+    slug: string
+    nodeName: string
+    locationPoint: any
+    introHtml: string
+    thumbUrl: string
+    mapUrl: string
+  }
 }
