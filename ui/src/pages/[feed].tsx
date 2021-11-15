@@ -1,9 +1,10 @@
 import Head from 'next/head'
 import Image from 'next/image'
 
+import { Feed } from '../generated/types'
 import { getFeed, listFeeds } from '../queries/feed'
 
-export default function Feed({ feed }: any) {
+export default function Feed({ feed }: { feed: Feed }) {
   return (
     <div>
       <Head>
@@ -39,12 +40,12 @@ export default function Feed({ feed }: any) {
 export async function getStaticPaths() {
   const response = await listFeeds()
   return {
-    paths: response.feeds.map((feed: any) => ({ params: { feed: feed.slug } })),
+    paths: response.feeds.map((feed) => ({ params: { feed: feed.slug } })),
     fallback: 'blocking',
   }
 }
 
-export async function getStaticProps({ params }: any) {
+export async function getStaticProps({ params }: { params: { feed: string } }) {
   const response = await getFeed(params.feed)
 
   if (!response.feed) {

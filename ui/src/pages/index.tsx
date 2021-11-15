@@ -1,9 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link'
 
+import { Feed } from '../generated/types'
 import { listFeeds } from '../queries/feed'
 
-export default function Home({ feeds }: { feeds: any }) {
+export default function Home({ feeds }: { feeds: Feed[] }) {
   return (
     <div>
       <Head>
@@ -11,7 +12,7 @@ export default function Home({ feeds }: { feeds: any }) {
       </Head>
 
       <main>
-        {feeds.map((feed: any) => (
+        {feeds.map((feed) => (
           <div key={feed.id}>
             <Link
               href={{
