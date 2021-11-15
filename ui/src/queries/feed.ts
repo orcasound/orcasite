@@ -4,7 +4,7 @@ import { gql, request } from 'graphql-request'
 const API_ENDPOINT_STATIC = 'http://live.orcasound.net/graphql'
 
 const LIST_FEEDS = gql`
-  {
+  query feeds {
     feeds {
       id
       name
