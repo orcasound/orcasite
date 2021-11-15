@@ -1,3 +1,6 @@
+import { GraphQLClient } from 'graphql-request'
+import * as Dom from 'graphql-request/dist/types.dom'
+import gql from 'graphql-tag'
 export type Maybe<T> = T | null
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K]
@@ -215,3 +218,72 @@ export type FeedQuery = {
     mapUrl: string
   }
 }
+
+export const FeedsDocument = gql`
+  query feeds {
+    feeds {
+      id
+      name
+      slug
+      nodeName
+      thumbUrl
+      mapUrl
+    }
+  }
+`
+export const FeedDocument = gql`
+  query feed($slug: String!) {
+    feed(slug: $slug) {
+      id
+      name
+      slug
+      nodeName
+      locationPoint
+      introHtml
+      thumbUrl
+      mapUrl
+    }
+  }
+`
+
+export type SdkFunctionWrapper = <T>(
+  action: (requestHeaders?: Record<string, string>) => Promise<T>,
+  operationName: string
+) => Promise<T>
+
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action()
+
+export function getSdk(
+  client: GraphQLClient,
+  withWrapper: SdkFunctionWrapper = defaultWrapper
+) {
+  return {
+    feeds(
+      variables?: FeedsQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<FeedsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<FeedsQuery>(FeedsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'feeds'
+      )
+    },
+    feed(
+      variables: FeedQueryVariables,
+      requestHeaders?: Dom.RequestInit['headers']
+    ): Promise<FeedQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<FeedQuery>(FeedDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        'feed'
+      )
+    },
+  }
+}
+export type Sdk = ReturnType<typeof getSdk>
