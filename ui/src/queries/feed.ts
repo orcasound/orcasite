@@ -1,6 +1,6 @@
-import { gql, request } from 'graphql-request'
+import { gql, GraphQLClient } from 'graphql-request'
 
-import { FeedQuery, FeedsQuery } from '../generated/types'
+import { getSdk } from '../generated/types'
 
 // TODO: get API URL from env
 const API_ENDPOINT_STATIC = 'http://live.orcasound.net/graphql'
@@ -33,12 +33,4 @@ const GET_FEED = gql`
   }
 `
 
-export function listFeeds() {
-  return request<FeedsQuery>(API_ENDPOINT_STATIC, LIST_FEEDS)
-}
-
-export function getFeed(slug: string) {
-  return request<FeedQuery>(API_ENDPOINT_STATIC, GET_FEED, {
-    slug: slug,
-  })
-}
+export const api = getSdk(new GraphQLClient(API_ENDPOINT_STATIC))

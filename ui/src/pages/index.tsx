@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 
 import { Feed } from '../generated/types'
-import { listFeeds } from '../queries/feed'
+import { api } from '../queries/feed'
 
 export default function HomePage({ feeds }: { feeds: Feed[] }) {
   return (
@@ -30,6 +30,6 @@ export default function HomePage({ feeds }: { feeds: Feed[] }) {
 }
 
 export async function getStaticProps() {
-  const response = await listFeeds()
+  const response = await api.feeds()
   return { props: { feeds: response.feeds } }
 }
