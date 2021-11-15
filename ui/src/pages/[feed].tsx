@@ -47,12 +47,6 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: { params: { feed: string } }) {
   const response = await API.feed({ slug: params.feed })
-
-  if (!response.feed) {
-    return {
-      notFound: true,
-    }
-  }
-
+  if (!response.feed) return { notFound: true }
   return { props: { feed: response.feed } }
 }
