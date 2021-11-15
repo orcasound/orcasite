@@ -11,10 +11,10 @@ defmodule OrcasiteWeb.Schema do
     field(:current_user, :user, resolve: &Resolvers.Accounts.current_user/2)
 
     @desc "Get a list of feeds"
-    field(:feeds, list_of(:feed), resolve: &Resolvers.Feed.index/2)
+    field(:feeds, non_null(list_of(non_null(:feed))), resolve: &Resolvers.Feed.index/2)
 
     @desc "Get a feed"
-    field :feed, :feed do
+    field :feed, non_null(:feed) do
       arg(:slug, :string)
 
       resolve(&Resolvers.Feed.show/2)
