@@ -1,6 +1,6 @@
 defmodule OrcasiteWeb.Types.Detection do
   @moduledoc """
-  GraphQL types for feeds
+  GraphQL types for detections
   """
   use Absinthe.Schema.Notation
 
