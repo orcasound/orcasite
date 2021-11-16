@@ -17,6 +17,7 @@
     "@emotion/server": "^11.4.0",
     "@emotion/styled": "^11.6.0",
     "@mui/material": "^5.1.0",
+    "clsx": "^1.1.1",
     "graphql": "^15.6.1",
     "graphql-request": "^3.6.1",
     "next": "11.0.1",
