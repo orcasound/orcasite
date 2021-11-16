@@ -12,6 +12,11 @@
     "codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
+    "@emotion/cache": "^11.6.0",
+    "@emotion/react": "^11.6.0",
+    "@emotion/server": "^11.4.0",
+    "@emotion/styled": "^11.6.0",
+    "@mui/material": "^5.1.0",
     "graphql": "^15.6.1",
     "graphql-request": "^3.6.1",
     "next": "11.0.1",
