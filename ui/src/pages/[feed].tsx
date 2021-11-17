@@ -1,3 +1,4 @@
+import { Box, Container } from '@mui/material'
 import Head from 'next/head'
 import Image from 'next/image'
 
@@ -12,26 +13,34 @@ export default function FeedPage({ feed }: { feed: Feed }) {
       </Head>
 
       <main>
-        <h1>{feed.name}</h1>
-        <div style={{ position: 'relative', width: '100%', height: '15em' }}>
-          <Image
-            src={feed.thumbUrl}
-            layout="fill"
-            alt=""
-            objectFit="contain"
-            objectPosition="left"
-          />
-        </div>
-        <div dangerouslySetInnerHTML={{ __html: feed.introHtml }} />
-        <div style={{ position: 'relative', width: '100%', height: '15em' }}>
-          <Image
-            src={feed.mapUrl}
-            layout="fill"
-            alt=""
-            objectFit="contain"
-            objectPosition="left"
-          />
-        </div>
+        <Container maxWidth="sm">
+          <Box>
+            <h1>{feed.name}</h1>
+            <div
+              style={{ position: 'relative', width: '100%', height: '15em' }}
+            >
+              <Image
+                src={feed.thumbUrl}
+                layout="fill"
+                alt=""
+                objectFit="contain"
+                objectPosition="left"
+              />
+            </div>
+            <div dangerouslySetInnerHTML={{ __html: feed.introHtml }} />
+            <div
+              style={{ position: 'relative', width: '100%', height: '15em' }}
+            >
+              <Image
+                src={feed.mapUrl}
+                layout="fill"
+                alt=""
+                objectFit="contain"
+                objectPosition="left"
+              />
+            </div>
+          </Box>
+        </Container>
       </main>
     </div>
   )
