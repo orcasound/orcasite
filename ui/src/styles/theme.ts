@@ -28,10 +28,10 @@ const montserrat = 'Montserrat, Helvetica, Arial, sans-serif'
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#080d26',
+      main: '#1b2b7b',
     },
     secondary: {
-      main: '#1b2b7b',
+      main: '#080d26',
     },
     accent1: {
       main: '#008bdf',
@@ -68,6 +68,11 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiAppBar: {
+      defaultProps: {
+        color: 'secondary',
+      },
+    },
     MuiLink: {
       defaultProps: {
         // TODO: Remove the `.main` once this issue is fixed in MUI
