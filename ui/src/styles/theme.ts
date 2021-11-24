@@ -1,3 +1,7 @@
+// Self-hosted fonts using https://fontsource.org/
+import '@fontsource/mukta'
+import '@fontsource/montserrat'
+
 import { createTheme } from '@mui/material/styles'
 
 // Module augmentation for custom colors
@@ -16,6 +20,10 @@ declare module '@mui/material/styles' {
     accent4: PaletteOptions['primary']
   }
 }
+
+// Fonts with fallbacks
+const mukta = 'Mukta, Helvetica, Arial, sans-serif'
+const montserrat = 'Montserrat, Helvetica, Arial, sans-serif'
 
 const theme = createTheme({
   palette: {
@@ -48,6 +56,15 @@ const theme = createTheme({
     },
     success: {
       main: '#00c56f',
+    },
+  },
+  typography: {
+    fontFamily: mukta,
+    body1: {
+      fontFamily: montserrat,
+    },
+    body2: {
+      fontFamily: montserrat,
     },
   },
 })
