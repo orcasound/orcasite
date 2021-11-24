@@ -67,6 +67,15 @@ const theme = createTheme({
       fontFamily: montserrat,
     },
   },
+  components: {
+    MuiLink: {
+      defaultProps: {
+        // TODO: Remove the `.main` once this issue is fixed in MUI
+        // https://github.com/mui-org/material-ui/issues/29596
+        color: 'accent3.main',
+      },
+    },
+  },
 })
 
 export default theme
