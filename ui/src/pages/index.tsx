@@ -1,6 +1,7 @@
+import { Box, Container } from '@mui/material'
 import Head from 'next/head'
-import Link from 'next/link'
 
+import Link from '../components/Link'
 import { Feed } from '../generated/types'
 import API from '../graphql/apiClient'
 
@@ -12,18 +13,20 @@ export default function HomePage({ feeds }: { feeds: Feed[] }) {
       </Head>
 
       <main>
-        {feeds.map((feed) => (
-          <div key={feed.id}>
-            <Link
-              href={{
-                pathname: '/[slug]',
-                query: { slug: feed.slug },
-              }}
-            >
-              <a>{feed.name}</a>
-            </Link>
-          </div>
-        ))}
+        <Container maxWidth="sm">
+          {feeds.map((feed) => (
+            <Box key={feed.id}>
+              <Link
+                href={{
+                  pathname: '/[slug]',
+                  query: { slug: feed.slug },
+                }}
+              >
+                {feed.name}
+              </Link>
+            </Box>
+          ))}
+        </Container>
       </main>
     </div>
   )
