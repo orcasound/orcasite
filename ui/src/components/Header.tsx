@@ -4,6 +4,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import { useState } from 'react'
 
 import useIsMobile from '../hooks/useIsMobile'
+import Link from './Link'
 
 export default function Header() {
   const isMobile = useIsMobile()
@@ -52,7 +53,9 @@ function Desktop() {
 function Brand() {
   return (
     <Typography variant="h6" noWrap>
+      <Link href="/" color="inherit" underline="none">
       Orcasound
+      </Link>
     </Typography>
   )
 }
