@@ -10,9 +10,12 @@ export default function Header() {
   const isMobile = useIsMobile()
   return (
     <Box>
-      <AppBar position="sticky">
+      <AppBar position="fixed">
         <Toolbar>{isMobile ? <Mobile /> : <Desktop />}</Toolbar>
       </AppBar>
+      {/* Render a second toolbar to deal with spacing on fixed AppBar
+          https://mui.com/components/app-bar/#fixed-placement */}
+      <Toolbar />
     </Box>
   )
 }
@@ -54,7 +57,7 @@ function Brand() {
   return (
     <Typography variant="h6" noWrap>
       <Link href="/" color="inherit" underline="none">
-      Orcasound
+        Orcasound
       </Link>
     </Typography>
   )
