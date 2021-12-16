@@ -17,7 +17,7 @@ export default function BottomNav() {
         right: 0,
       }}
     >
-      <BottomNavigation showLabels>
+      <BottomNavigation showLabels sx={{ height: (theme) => theme.spacing(8) }}>
         <BottomNavigationAction label="Info" icon={<InfoIcon />} />
         <BottomNavigationAction label="Listen" icon={<GraphicEqIcon />} />
         <BottomNavigationAction
