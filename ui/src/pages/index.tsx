@@ -2,6 +2,7 @@ import { Box, Container } from '@mui/material'
 import Head from 'next/head'
 
 import Link from '../components/Link'
+import { getMapLayout } from '../components/MapLayout'
 import { Feed } from '../generated/types'
 import API from '../graphql/apiClient'
 
@@ -31,6 +32,8 @@ export default function HomePage({ feeds }: { feeds: Feed[] }) {
     </div>
   )
 }
+
+HomePage.getLayout = getMapLayout
 
 export async function getStaticProps() {
   const response = await API.feeds()
