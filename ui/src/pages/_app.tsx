@@ -1,9 +1,10 @@
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
+import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
-import { useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 import BottomNav from '../components/BottomNav'
@@ -11,19 +12,28 @@ import Header from '../components/Header'
 import createEmotionCache from '../styles/createEmotionCache'
 import theme from '../styles/theme'
 
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode
+}
+
+type MyAppProps = AppProps & {
+  Component: NextPageWithLayout
+  emotionCache?: EmotionCache
+}
+
 // Client-side cache, shared for the whole session of the user in the browser.
 // https://github.com/mui-org/material-ui/blob/master/examples/nextjs-with-typescript/pages/_app.tsx
 const clientSideEmotionCache = createEmotionCache()
-
-type MyAppProps = AppProps & {
-  emotionCache?: EmotionCache
-}
 
 function MyApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache,
 }: MyAppProps) {
+  // Allow pages to define custom per-page layout
+  // Based on https://nextjs.org/docs/basic-features/layouts
+  const getLayout = Component.getLayout || ((page) => page)
+
   // Configure react-query using the hydration setup
   // https://react-query.tanstack.com/guides/ssr#using-hydration
   const [queryClient] = useState(() => new QueryClient())
@@ -42,7 +52,7 @@ function MyApp({
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <Header />
-            <Component {...pageProps} />
+            {getLayout(<Component {...pageProps} />)}
             <BottomNav />
           </ThemeProvider>
         </CacheProvider>
