@@ -2,6 +2,7 @@ import { Box, Container } from '@mui/material'
 import Head from 'next/head'
 import Image from 'next/image'
 
+import { getMapLayout } from '../components/MapLayout'
 import { Feed } from '../generated/types'
 import API from '../graphql/apiClient'
 
@@ -45,6 +46,8 @@ export default function FeedPage({ feed }: { feed: Feed }) {
     </div>
   )
 }
+
+FeedPage.getLayout = getMapLayout
 
 export async function getStaticPaths() {
   const response = await API.feeds()
