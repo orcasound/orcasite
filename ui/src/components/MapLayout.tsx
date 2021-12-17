@@ -1,7 +1,9 @@
 import { ReactElement, ReactNode } from 'react'
 
+import Drawer from './Drawer'
+
 function MapLayout({ children }: { children: ReactNode }) {
-  return <div>{children}</div>
+  return <Drawer>{children}</Drawer>
 }
 
 export function getMapLayout(page: ReactElement) {
