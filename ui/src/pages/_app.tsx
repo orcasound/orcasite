@@ -6,6 +6,7 @@ import Head from 'next/head'
 import { useState } from 'react'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
+import Header from '../components/Header'
 import createEmotionCache from '../styles/createEmotionCache'
 import theme from '../styles/theme'
 
@@ -39,6 +40,7 @@ function MyApp({
           </Head>
           <ThemeProvider theme={theme}>
             <CssBaseline />
+            <Header />
             <Component {...pageProps} />
           </ThemeProvider>
         </CacheProvider>
