@@ -67,20 +67,36 @@ const theme = createTheme({
       fontFamily: montserrat,
     },
   },
-  components: {
-    MuiAppBar: {
-      defaultProps: {
-        color: 'secondary',
-      },
+})
+
+theme.components = {
+  ...theme.components,
+  MuiAppBar: {
+    defaultProps: {
+      color: 'secondary',
     },
-    MuiLink: {
-      defaultProps: {
-        // TODO: Remove the `.main` once this issue is fixed in MUI
-        // https://github.com/mui-org/material-ui/issues/29596
-        color: 'accent3.main',
+  },
+  MuiLink: {
+    defaultProps: {
+      // TODO: Remove the `.main` once this issue is fixed in MUI
+      // https://github.com/mui-org/material-ui/issues/29596
+      color: 'accent3.main',
+    },
+  },
+  MuiBottomNavigation: {
+    styleOverrides: {
+      root: {
+        backgroundColor: theme.palette.secondary.main,
       },
     },
   },
-})
+  MuiBottomNavigationAction: {
+    styleOverrides: {
+      root: {
+        color: theme.palette.secondary.contrastText,
+      },
+    },
+  },
+}
 
 export default theme
