@@ -9,13 +9,13 @@ import { MapContainer, TileLayer } from 'react-leaflet'
 export default function Map() {
   return (
     <MapContainer
-      center={[47.67, -122.59]}
-      zoom={10}
+      center={[48.27, -123.23]}
+      zoom={9}
       style={{ height: '100vh', width: '100%' }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}"
       />
     </MapContainer>
   )
