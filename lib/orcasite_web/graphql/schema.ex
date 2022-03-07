@@ -21,8 +21,14 @@ defmodule OrcasiteWeb.Schema do
     end
 
     @desc "List detections"
-    field :detections, list_of(:detection) do
+    field :detections_all, list_of(:detection) do
       resolve(&Resolvers.Detection.index/2)
+    end
+
+    @desc "List detections, paginated"
+    field :detections, :detections do
+      arg(:pagination, :pagination)
+      resolve(&Resolvers.Detection.list_detections/2)
     end
 
     @desc "List candidates, paginated"

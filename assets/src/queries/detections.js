@@ -1,8 +1,8 @@
 import gql from "graphql-tag"
 
-export const LIST_DETECTIONS = gql`
+export const LIST_ALL_DETECTIONS = gql`
   {
-    detections {
+    detectionsAll {
       id
       playlistTimestamp
       playerOffset
@@ -13,6 +13,33 @@ export const LIST_DETECTIONS = gql`
         id
         name
         slug
+      }
+    }
+  }
+`
+
+export const LIST_DETECTIONS = gql`
+  query getDetections($pagination: Pagination!) {
+    detections(pagination: $pagination) {
+      meta {
+        currentPage
+        previousPage
+        nextPage
+        totalEntries
+        totalPages
+      }
+      entries {
+        id
+        playlistTimestamp
+        playerOffset
+        timestamp
+        listenerCount
+        description
+        feed {
+          id
+          name
+          slug
+        }
       }
     }
   }

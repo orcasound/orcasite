@@ -54,10 +54,17 @@ defmodule Orcasite.Radio do
     end
   end
 
-  def list_detections do
+  def list_all_detections do
     Detection
     |> preload(:feed)
     |> Repo.all()
+  end
+
+  def list_detections(params \\ %{pagination: %{page: 1, page_size: 10}}) do
+    Detection
+    |> order_by(desc: :inserted_at)
+    |> preload(:feed)
+    |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
   end
 
   def get_detection!(id), do: Repo.get!(Detection, id)
