@@ -11,7 +11,7 @@ defmodule OrcasiteWeb.Types.Account do
     field(:email, :string)
   end
 
-  @desc "Pagination version of candidates"
+  @desc "Pagination version of users"
   object :users do
     field(:meta, :pagination_meta)
     field(:entries, list_of(:user))
