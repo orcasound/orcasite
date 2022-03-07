@@ -15,6 +15,12 @@ defmodule OrcasiteWeb.Types.Detection do
     field(:timestamp, :datetime)
   end
 
+  @desc "Pagination version of detections"
+  object :detections do
+    field(:meta, :pagination_meta)
+    field(:entries, list_of(:detection))
+  end
+
   object :detection_with_lockout do
     field(:detection, :detection)
     field(:lockout_initial, :float)

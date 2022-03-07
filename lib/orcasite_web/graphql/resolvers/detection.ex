@@ -2,17 +2,17 @@ defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.Radio
   alias OrcasiteWeb.Paginated
 
-  def index(_, %{context: %{current_user: %{admin: true}}}) do
-    {:ok, Radio.list_detections()}
+  def index(_, _) do
+    {:ok, Radio.list_all_detections()}
   end
 
-  def index(_, _), do: {:error, :not_authorized}
-
-  def list_candidates(args, %{context: %{current_user: %{admin: true}}}) do
+  def list_candidates(args, _) do
     {:ok, Paginated.format(Radio.list_candidates(args))}
   end
 
-  def list_candidates(_, _), do: {:error, :not_authorized}
+  def list_detections(args, _) do
+    {:ok, Paginated.format(Radio.list_detections(args))}
+  end
 
   def create(
         %{
