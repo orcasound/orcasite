@@ -52,6 +52,9 @@ defmodule OrcasiteWeb.Endpoint do
     signing_salt: "uSUTZKtc"
   )
 
+  # Allow cross-origin requests
+  plug(Corsica, origins: "*", allow_headers: :all)
+
   plug(OrcasiteWeb.Router)
 
   @doc """
