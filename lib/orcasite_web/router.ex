@@ -62,8 +62,7 @@ defmodule OrcasiteWeb.Router do
 
   scope "/" do
     if Mix.env() == :dev do
-      # Use the default browser stack
-      pipe_through(:browser)
+      pipe_through(:nextjs)
       get("/*page", OrcasiteWeb.PageController, :index)
     else
       pipe_through(:nextjs)
