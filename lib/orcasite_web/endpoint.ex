@@ -36,16 +36,14 @@ defmodule OrcasiteWeb.Endpoint do
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
-  plug(Plug.Session,
-    store: :cookie,
-    key: "_orcasite_key",
-    signing_salt: "uSUTZKtc"
-  )
+  # plug(Plug.Session,
+  #   store: :cookie,
+  #   key: "_orcasite_key",
+  #   signing_salt: "uSUTZKtc"
+  # )
 
   # Allow cross-origin requests in dev
-  if Mix.env == :dev do
-    plug(Corsica, origins: "*", allow_headers: :all)
-  end
+  plug(Corsica, origins: "*", allow_headers: :all)
 
   plug(OrcasiteWeb.Router)
 
