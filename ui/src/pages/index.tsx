@@ -1,12 +1,12 @@
-import { Box, Container } from '@mui/material'
+import { Container, Stack, Typography } from '@mui/material'
 import Head from 'next/head'
 
-import Link from '../components/Link'
+import FeedCard from '../components/FeedCard'
 import { getMapLayout } from '../components/MapLayout'
-import { Feed } from '../generated/types'
+import { FeedsQuery } from '../generated/types'
 import API from '../graphql/apiClient'
 
-export default function HomePage({ feeds }: { feeds: Feed[] }) {
+export default function HomePage({ feeds }: { feeds: FeedsQuery['feeds'] }) {
   return (
     <div>
       <Head>
@@ -15,18 +15,17 @@ export default function HomePage({ feeds }: { feeds: Feed[] }) {
 
       <main>
         <Container maxWidth="sm">
-          {feeds.map((feed) => (
-            <Box key={feed.id}>
-              <Link
-                href={{
-                  pathname: '/[slug]',
-                  query: { slug: feed.slug },
-                }}
-              >
-                {feed.name}
-              </Link>
-            </Box>
-          ))}
+          <Typography variant="h4" mt={4}>
+            Listen live
+          </Typography>
+          <Typography variant="body1">
+            Select a location to start listening live
+          </Typography>
+          <Stack spacing={4} mt={4}>
+            {feeds.map((feed) => (
+              <FeedCard key={feed.id} feed={feed} />
+            ))}
+          </Stack>
         </Container>
       </main>
     </div>
