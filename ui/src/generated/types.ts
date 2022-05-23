@@ -73,6 +73,13 @@ export type DetectionWithLockout = {
   lockoutRemaining?: Maybe<Scalars['Float']>
 }
 
+/** Pagination version of detections */
+export type Detections = {
+  __typename?: 'Detections'
+  entries?: Maybe<Array<Maybe<Detection>>>
+  meta?: Maybe<PaginationMeta>
+}
+
 export type Feed = {
   __typename?: 'Feed'
   id: Scalars['ID']
@@ -145,8 +152,10 @@ export type RootQueryType = {
   candidates?: Maybe<Candidates>
   /** Get logged in user */
   currentUser?: Maybe<User>
+  /** List detections, paginated */
+  detections?: Maybe<Detections>
   /** List detections */
-  detections?: Maybe<Array<Maybe<Detection>>>
+  detectionsAll?: Maybe<Array<Maybe<Detection>>>
   /** Get a feed */
   feed: Feed
   /** Get a list of feeds */
@@ -156,6 +165,10 @@ export type RootQueryType = {
 }
 
 export type RootQueryTypeCandidatesArgs = {
+  pagination?: Maybe<Pagination>
+}
+
+export type RootQueryTypeDetectionsArgs = {
   pagination?: Maybe<Pagination>
 }
 
@@ -178,7 +191,7 @@ export type User = {
   lastName?: Maybe<Scalars['String']>
 }
 
-/** Pagination version of candidates */
+/** Pagination version of users */
 export type Users = {
   __typename?: 'Users'
   entries?: Maybe<Array<Maybe<User>>>
