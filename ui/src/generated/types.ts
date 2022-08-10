@@ -2,13 +2,16 @@ import { GraphQLClient } from 'graphql-request'
 import * as Dom from 'graphql-request/dist/types.dom'
 import gql from 'graphql-tag'
 export type Maybe<T> = T | null
+export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K]
 }
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> }
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> }
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>
+}
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>
+}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string
@@ -16,24 +19,8 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
-  /**
-   * The `DateTime` scalar type represents a date and time in the UTC
-   * timezone. The DateTime appears in a JSON response as an ISO8601 formatted
-   * string, including UTC timezone ("Z"). The parsed date and time string will
-   * be converted to UTC and any UTC offset other than 0 will be rejected.
-   */
   DateTime: any
-  /**
-   * The `Decimal` scalar type represents signed double-precision fractional
-   * values parsed by the `Decimal` library.  The Decimal appears in a JSON
-   * response as a string to preserve precision.
-   */
   Decimal: any
-  /**
-   * The `Json` scalar type represents arbitrary json string data, represented as UTF-8
-   * character sequences. The Json type is most often used to represent a free-form
-   * human-readable json string.
-   */
   Json: any
 }
 
@@ -129,21 +116,21 @@ export type RootMutationTypeLoginArgs = {
 
 export type RootMutationTypeSignupArgs = {
   email: Scalars['String']
-  firstName?: Maybe<Scalars['String']>
-  lastName?: Maybe<Scalars['String']>
+  firstName?: InputMaybe<Scalars['String']>
+  lastName?: InputMaybe<Scalars['String']>
   password: Scalars['String']
 }
 
 export type RootMutationTypeSubmitDetectionArgs = {
-  description?: Maybe<Scalars['String']>
-  feedId?: Maybe<Scalars['ID']>
-  listenerCount?: Maybe<Scalars['Int']>
-  playerOffset?: Maybe<Scalars['Decimal']>
-  playlistTimestamp?: Maybe<Scalars['String']>
+  description?: InputMaybe<Scalars['String']>
+  feedId?: InputMaybe<Scalars['ID']>
+  listenerCount?: InputMaybe<Scalars['Int']>
+  playerOffset?: InputMaybe<Scalars['Decimal']>
+  playlistTimestamp?: InputMaybe<Scalars['String']>
 }
 
 export type RootMutationTypeUpdateUserArgs = {
-  admin?: Maybe<Scalars['Boolean']>
+  admin?: InputMaybe<Scalars['Boolean']>
 }
 
 export type RootQueryType = {
@@ -165,19 +152,19 @@ export type RootQueryType = {
 }
 
 export type RootQueryTypeCandidatesArgs = {
-  pagination?: Maybe<Pagination>
+  pagination?: InputMaybe<Pagination>
 }
 
 export type RootQueryTypeDetectionsArgs = {
-  pagination?: Maybe<Pagination>
+  pagination?: InputMaybe<Pagination>
 }
 
 export type RootQueryTypeFeedArgs = {
-  slug?: Maybe<Scalars['String']>
+  slug?: InputMaybe<Scalars['String']>
 }
 
 export type RootQueryTypeUsersArgs = {
-  pagination?: Maybe<Pagination>
+  pagination?: InputMaybe<Pagination>
 }
 
 /** A user */
@@ -261,10 +248,15 @@ export const FeedsDocument = gql`
 
 export type SdkFunctionWrapper = <T>(
   action: (requestHeaders?: Record<string, string>) => Promise<T>,
-  operationName: string
+  operationName: string,
+  operationType?: string
 ) => Promise<T>
 
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName) => action()
+const defaultWrapper: SdkFunctionWrapper = (
+  action,
+  _operationName,
+  _operationType
+) => action()
 
 export function getSdk(
   client: GraphQLClient,
@@ -281,7 +273,8 @@ export function getSdk(
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'feed'
+        'feed',
+        'query'
       )
     },
     feeds(
@@ -294,7 +287,8 @@ export function getSdk(
             ...requestHeaders,
             ...wrappedRequestHeaders,
           }),
-        'feeds'
+        'feeds',
+        'query'
       )
     },
   }

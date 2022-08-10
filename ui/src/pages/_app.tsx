@@ -1,18 +1,22 @@
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
+import {
+  Hydrate,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactElement, ReactNode, useState } from 'react'
-import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 import BottomNav from '../components/BottomNav'
 import Header from '../components/Header'
 import createEmotionCache from '../styles/createEmotionCache'
 import theme from '../styles/theme'
 
-type NextPageWithLayout = NextPage & {
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 
@@ -22,7 +26,7 @@ type MyAppProps = AppProps & {
 }
 
 // Client-side cache, shared for the whole session of the user in the browser.
-// https://github.com/mui-org/material-ui/blob/master/examples/nextjs-with-typescript/pages/_app.tsx
+// https://github.com/mui/material-ui/blob/master/examples/nextjs-with-typescript/pages/_app.tsx
 const clientSideEmotionCache = createEmotionCache()
 
 function MyApp({

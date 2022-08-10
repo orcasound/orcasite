@@ -1,5 +1,5 @@
-// Special component that combines nextjs and material-ui Link into one
-// From https://github.com/mui-org/material-ui/blob/master/examples/nextjs-with-typescript/src/Link.tsx
+// Special component that combines nextjs and mui Link into one
+// From https://github.com/mui/material-ui/blob/master/examples/nextjs-with-typescript/src/Link.tsx
 
 import MuiLink, { LinkProps as MuiLinkProps } from '@mui/material/Link'
 import { styled } from '@mui/material/styles'
@@ -13,27 +13,18 @@ const Anchor = styled('a')({})
 
 interface NextLinkComposedProps
   extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
-    Omit<NextLinkProps, 'href' | 'as'> {
+    Omit<NextLinkProps, 'href' | 'as' | 'onClick' | 'onMouseEnter'> {
   to: NextLinkProps['href']
   linkAs?: NextLinkProps['as']
-  href?: NextLinkProps['href']
 }
 
-const NextLinkComposed = React.forwardRef<
+// eslint-disable-next-line import/no-unused-modules
+export const NextLinkComposed = React.forwardRef<
   HTMLAnchorElement,
   NextLinkComposedProps
 >(function NextLinkComposed(props, ref) {
-  const {
-    to,
-    linkAs,
-    href,
-    replace,
-    scroll,
-    shallow,
-    prefetch,
-    locale,
-    ...other
-  } = props
+  const { to, linkAs, replace, scroll, shallow, prefetch, locale, ...other } =
+    props
 
   return (
     <NextLink
@@ -51,27 +42,35 @@ const NextLinkComposed = React.forwardRef<
   )
 })
 
-type LinkProps = {
+// eslint-disable-next-line import/no-unused-modules
+export type LinkProps = {
   activeClassName?: string
   as?: NextLinkProps['as']
   href: NextLinkProps['href']
+  linkAs?: NextLinkProps['as'] // Useful when the as prop is shallow by styled().
   noLinkStyle?: boolean
 } & Omit<NextLinkComposedProps, 'to' | 'linkAs' | 'href'> &
   Omit<MuiLinkProps, 'href'>
 
 // A styled version of the Next.js Link component:
-// https://nextjs.org/docs/#with-link
+// https://nextjs.org/docs/api-reference/next/link
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   props,
   ref
 ) {
   const {
     activeClassName = 'active',
-    as: linkAs,
+    as,
     className: classNameProps,
     href,
+    linkAs: linkAsProp,
+    locale,
     noLinkStyle,
+    prefetch,
+    replace,
     role, // Link don't have roles.
+    scroll,
+    shallow,
     ...other
   } = props
 
@@ -93,19 +92,34 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     return <MuiLink className={className} href={href} ref={ref} {...other} />
   }
 
+  const linkAs = linkAsProp || as
+  const nextjsProps = {
+    to: href,
+    linkAs,
+    replace,
+    scroll,
+    shallow,
+    prefetch,
+    locale,
+  }
+
   if (noLinkStyle) {
     return (
-      <NextLinkComposed className={className} ref={ref} to={href} {...other} />
+      <NextLinkComposed
+        className={className}
+        ref={ref}
+        {...nextjsProps}
+        {...other}
+      />
     )
   }
 
   return (
     <MuiLink
       component={NextLinkComposed}
-      linkAs={linkAs}
       className={className}
       ref={ref}
-      to={href}
+      {...nextjsProps}
       {...other}
     />
   )

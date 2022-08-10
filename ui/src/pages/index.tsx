@@ -5,8 +5,11 @@ import FeedCard from '../components/FeedCard'
 import { getMapLayout } from '../components/MapLayout'
 import { FeedsQuery } from '../generated/types'
 import API from '../graphql/apiClient'
+import type { NextPageWithLayout } from './_app'
 
-export default function HomePage({ feeds }: { feeds: FeedsQuery['feeds'] }) {
+type Props = { feeds: FeedsQuery['feeds'] }
+
+const HomePage: NextPageWithLayout<Props> = ({ feeds }) => {
   return (
     <div>
       <Head>
@@ -38,3 +41,5 @@ export async function getStaticProps() {
   const response = await API.feeds()
   return { props: { feeds: response.feeds } }
 }
+
+export default HomePage
