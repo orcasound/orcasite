@@ -71,6 +71,13 @@ const theme = createTheme({
 
 theme.components = {
   ...theme.components,
+  MuiCssBaseline: {
+    styleOverrides: `
+      html, body, #__next {
+        height: 100%;
+      }
+    `,
+  },
   MuiAppBar: {
     defaultProps: {
       color: 'secondary',

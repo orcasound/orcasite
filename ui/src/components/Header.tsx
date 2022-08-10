@@ -9,25 +9,16 @@ import Link from './Link'
 export default function Header() {
   const isMobile = useIsMobile()
   return (
-    <Box>
-      <AppBar
-        position="fixed"
-        sx={{
-          // Keep header above the side drawer
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
-      >
-        <Toolbar>{isMobile ? <Mobile /> : <Desktop />}</Toolbar>
-      </AppBar>
-      <ToolbarSpacer />
-    </Box>
+    <AppBar
+      position="static"
+      sx={{
+        // Keep header above the side drawer
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+    >
+      <Toolbar>{isMobile ? <Mobile /> : <Desktop />}</Toolbar>
+    </AppBar>
   )
-}
-
-// Render a second toolbar to deal with spacing on fixed AppBar
-// https://mui.com/components/app-bar/#fixed-placement
-export function ToolbarSpacer() {
-  return <Toolbar />
 }
 
 function Mobile() {

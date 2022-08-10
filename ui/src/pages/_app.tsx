@@ -11,8 +11,6 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactElement, ReactNode, useState } from 'react'
 
-import BottomNav from '../components/BottomNav'
-import Header from '../components/Header'
 import createEmotionCache from '../styles/createEmotionCache'
 import theme from '../styles/theme'
 
@@ -55,9 +53,7 @@ function MyApp({
           </Head>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Header />
             {getLayout(<Component {...pageProps} />)}
-            <BottomNav />
           </ThemeProvider>
         </CacheProvider>
       </Hydrate>
