@@ -5,8 +5,11 @@ import Image from 'next/image'
 import { getMapLayout } from '../components/MapLayout'
 import { Feed } from '../generated/types'
 import API from '../graphql/apiClient'
+import type { NextPageWithLayout } from './_app'
 
-export default function FeedPage({ feed }: { feed: Feed }) {
+type Props = { feed: Feed }
+
+const FeedPage: NextPageWithLayout<Props> = ({ feed }) => {
   return (
     <div>
       <Head>
@@ -62,3 +65,5 @@ export async function getStaticProps({ params }: { params: { feed: string } }) {
   if (!response.feed) return { notFound: true }
   return { props: { feed: response.feed } }
 }
+
+export default FeedPage

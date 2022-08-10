@@ -16,7 +16,7 @@ import Header from '../components/Header'
 import createEmotionCache from '../styles/createEmotionCache'
 import theme from '../styles/theme'
 
-type NextPageWithLayout = NextPage & {
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 
