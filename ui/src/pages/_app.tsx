@@ -1,11 +1,15 @@
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
+import {
+  Hydrate,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactElement, ReactNode, useState } from 'react'
-import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
 import BottomNav from '../components/BottomNav'
 import Header from '../components/Header'
