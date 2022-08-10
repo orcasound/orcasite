@@ -26,7 +26,7 @@ type MyAppProps = AppProps & {
 }
 
 // Client-side cache, shared for the whole session of the user in the browser.
-// https://github.com/mui-org/material-ui/blob/master/examples/nextjs-with-typescript/pages/_app.tsx
+// https://github.com/mui/material-ui/blob/master/examples/nextjs-with-typescript/pages/_app.tsx
 const clientSideEmotionCache = createEmotionCache()
 
 function MyApp({
