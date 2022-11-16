@@ -165,13 +165,15 @@ export default class MediaStreamer extends Component {
 
   render() {
     return (
-      <audio
-        ref={(node) => {
-          this.audioNode = node
-        }}
-        className="video-js"
-        playsInline
-      />
+      <div>
+        <audio
+          ref={(node) => {
+            this.audioNode = node
+          }}
+          className="video-js"
+          playsInline
+        />
+      </div>
     )
   }
 }
