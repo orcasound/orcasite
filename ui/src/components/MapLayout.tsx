@@ -1,8 +1,9 @@
 import { Box } from '@mui/material'
 import type { Map as LeafletMap } from 'leaflet'
 import dynamic from 'next/dynamic'
-import { ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
+import { Feed } from '../generated/types'
 import BottomNav from './BottomNav'
 import Drawer from './Drawer'
 import Header from './Header'
@@ -12,11 +13,21 @@ const MapWithNoSSR = dynamic(() => import('./Map'), {
   ssr: false,
 })
 
-function MapLayout({ children }: { children: ReactNode }) {
+function MapLayout({ children, feed }: { children: ReactNode; feed?: Feed }) {
+  const [currentFeed, setCurrentFeed] = useState(feed)
   const [map, setMap] = useState<LeafletMap>()
+
+  // update the currentFeed only if there's a new feed
+  useEffect(() => {
+    if (feed) {
+      setCurrentFeed(feed)
+    }
+  }, [feed])
 
   const invalidateSize = () => {
     if (map) {
+      // wait 200ms before resizing so that drawer transition animations have a chance to finish
+      // TODO: trigger resize directly from after transition instead of dead reckoning
       setTimeout(() => {
         map.invalidateSize({ pan: false })
       }, 200)
@@ -40,7 +51,7 @@ function MapLayout({ children }: { children: ReactNode }) {
           <Box sx={{ flexGrow: 1 }}>
             <MapWithNoSSR setMap={setMap} />
           </Box>
-          <Player />
+          <Player currentFeed={currentFeed} />
         </Box>
       </Box>
       <BottomNav />
@@ -49,5 +60,7 @@ function MapLayout({ children }: { children: ReactNode }) {
 }
 
 export function getMapLayout(page: ReactElement) {
-  return <MapLayout>{page}</MapLayout>
+  // if props include a feed, it gets passed to the layout so that the map and player can use the data
+  const feed = page.props?.feed as Feed | undefined
+  return <MapLayout feed={feed}>{page}</MapLayout>
 }
