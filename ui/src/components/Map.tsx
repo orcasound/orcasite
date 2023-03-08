@@ -16,6 +16,7 @@ export default function Map({
     <MapContainer
       center={[48.27, -123.23]}
       zoom={9}
+      maxZoom={13}
       style={{ height: '100%', width: '100%' }}
       ref={setMap}
       //TODO: Disable attribution on mobile only
@@ -23,8 +24,9 @@ export default function Map({
     >
       <TileLayer
         attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
-        url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}"
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
       />
+      <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
     </MapContainer>
   )
 }
