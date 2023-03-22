@@ -1,7 +1,15 @@
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css'
+import 'leaflet-defaulticon-compatibility'
 
-import type { Map as LeafletMap } from 'leaflet'
-import { MapContainer, TileLayer } from 'react-leaflet'
+import { Map as LeafletMap } from 'leaflet'
+import L from 'leaflet'
+import { useRouter } from 'next/router'
+import { MapContainer, Marker, TileLayer } from 'react-leaflet'
+
+import hydrophoneActiveIconImage from '../../public/hydrophone-active.svg'
+import hydrophoneDefaultIconImage from '../../public/hydrophone-default.svg'
+import { Feed, FeedsQuery } from '../generated/types'
 
 // Disable no-unused-modules because installed version of eslint-plugin-import
 // can't handle dynamic imports yet
@@ -9,9 +17,24 @@ import { MapContainer, TileLayer } from 'react-leaflet'
 // eslint-disable-next-line import/no-unused-modules
 export default function Map({
   setMap,
+  currentFeed,
+  feeds,
 }: {
   setMap?: (map: LeafletMap) => void
+  currentFeed?: Feed
+  feeds: FeedsQuery['feeds']
 }) {
+  const router = useRouter()
+
+  const hydrophoneDefaultIcon = L.icon({
+    iconUrl: hydrophoneDefaultIconImage.src,
+    iconSize: [30, 30],
+  })
+  const hydrophoneActiveIcon = L.icon({
+    iconUrl: hydrophoneActiveIconImage.src,
+    iconSize: [30, 30],
+  })
+
   return (
     <MapContainer
       center={[48.27, -123.23]}
@@ -27,6 +50,23 @@ export default function Map({
         url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
       />
       <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
+
+      {feeds.map((feed) => (
+        <Marker
+          key={feed.slug}
+          position={feed.locationPoint.coordinates}
+          icon={
+            feed.slug === currentFeed?.slug
+              ? hydrophoneActiveIcon
+              : hydrophoneDefaultIcon
+          }
+          eventHandlers={{
+            click: () => {
+              router.push(`/${feed.slug}`)
+            },
+          }}
+        />
+      ))}
     </MapContainer>
   )
 }

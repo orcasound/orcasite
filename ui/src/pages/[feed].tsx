@@ -2,7 +2,7 @@ import { Box, Container } from '@mui/material'
 import Head from 'next/head'
 import Image from 'next/image'
 
-import { getMapLayout } from '../components/MapLayout'
+import { getMapLayout, getMapProps } from '../components/MapLayout'
 import { Feed } from '../generated/types'
 import API from '../graphql/apiClient'
 import type { NextPageWithLayout } from './_app'
@@ -63,7 +63,8 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }: { params: { feed: string } }) {
   const response = await API.feed({ slug: params.feed })
   if (!response.feed) return { notFound: true }
-  return { props: { feed: response.feed } }
+  const mapProps = await getMapProps()
+  return { props: { ...mapProps, feed: response.feed } }
 }
 
 export default FeedPage
