@@ -1,7 +1,9 @@
-import { Box, Container } from '@mui/material'
+import { NavigateNext } from '@mui/icons-material'
+import { Box, Breadcrumbs, Container, Typography } from '@mui/material'
 import Head from 'next/head'
 import Image from 'next/image'
 
+import Link from '../components/Link'
 import { getMapLayout, getMapProps } from '../components/MapLayout'
 import { Feed } from '../generated/types'
 import API from '../graphql/apiClient'
@@ -19,6 +21,12 @@ const FeedPage: NextPageWithLayout<Props> = ({ feed }) => {
       <main>
         <Container maxWidth="sm">
           <Box>
+            <Breadcrumbs separator={<NavigateNext />} aria-label="breadcrumb">
+              <Link href={'/'} color="inherit">
+                All hydrophones
+              </Link>
+              <Typography color="textPrimary">{feed.name}</Typography>
+            </Breadcrumbs>
             <h1>{feed.name}</h1>
             <div
               style={{ position: 'relative', width: '100%', height: '15em' }}
