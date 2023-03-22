@@ -15,10 +15,10 @@
       "formation": {
         "web": {
           "quantity": 1,
-          "size": "hobby"
+          "size": "eco"
         }
       },
-      "addons": ["heroku-postgresql:hobby-dev", "autoidle:hobby"],
+      "addons": ["heroku-postgresql:mini"],
       "scripts": {
         "postdeploy": "POOL_SIZE=2 mix ecto.migrate && mix run priv/repo/seeds.exs"
       }
