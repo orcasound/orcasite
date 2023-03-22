@@ -3,7 +3,8 @@ import type { Map as LeafletMap } from 'leaflet'
 import dynamic from 'next/dynamic'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
-import { Feed } from '../generated/types'
+import { Feed, FeedsQuery } from '../generated/types'
+import API from '../graphql/apiClient'
 import BottomNav from './BottomNav'
 import Drawer from './Drawer'
 import Header from './Header'
@@ -13,7 +14,17 @@ const MapWithNoSSR = dynamic(() => import('./Map'), {
   ssr: false,
 })
 
-function MapLayout({ children, feed }: { children: ReactNode; feed?: Feed }) {
+type Feeds = FeedsQuery['feeds']
+
+function MapLayout({
+  children,
+  feed,
+  feeds,
+}: {
+  children: ReactNode
+  feed?: Feed
+  feeds: Feeds
+}) {
   const [currentFeed, setCurrentFeed] = useState(feed)
   const [map, setMap] = useState<LeafletMap>()
 
@@ -21,8 +32,9 @@ function MapLayout({ children, feed }: { children: ReactNode; feed?: Feed }) {
   useEffect(() => {
     if (feed) {
       setCurrentFeed(feed)
+      map?.panTo(feed.locationPoint.coordinates)
     }
-  }, [feed])
+  }, [feed, map])
 
   const invalidateSize = () => {
     if (map) {
@@ -49,7 +61,11 @@ function MapLayout({ children, feed }: { children: ReactNode; feed?: Feed }) {
           }}
         >
           <Box sx={{ flexGrow: 1 }}>
-            <MapWithNoSSR setMap={setMap} />
+            <MapWithNoSSR
+              setMap={setMap}
+              currentFeed={currentFeed}
+              feeds={feeds}
+            />
           </Box>
           <Player currentFeed={currentFeed} />
         </Box>
@@ -62,5 +78,15 @@ function MapLayout({ children, feed }: { children: ReactNode; feed?: Feed }) {
 export function getMapLayout(page: ReactElement) {
   // if props include a feed, it gets passed to the layout so that the map and player can use the data
   const feed = page.props?.feed as Feed | undefined
-  return <MapLayout feed={feed}>{page}</MapLayout>
+  const feeds = page.props?.feeds as Feeds
+  return (
+    <MapLayout feed={feed} feeds={feeds}>
+      {page}
+    </MapLayout>
+  )
+}
+
+export async function getMapProps() {
+  const response = await API.feeds()
+  return { feeds: response.feeds }
 }

@@ -214,6 +214,7 @@ export type FeedsQuery = {
     name: string
     slug: string
     nodeName: string
+    locationPoint: any
     thumbUrl: string
     mapUrl: string
   }>
@@ -240,6 +241,7 @@ export const FeedsDocument = gql`
       name
       slug
       nodeName
+      locationPoint
       thumbUrl
       mapUrl
     }
