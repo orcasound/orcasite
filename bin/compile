@@ -32,8 +32,8 @@ APP_BASE=server
 )
 
 if [ $? -ne 0 ]; then
-    echo "FAILED to copy directory into place" | indent
+    echo "FAILED to copy /${APP_BASE} into place" | indent
     exit 1
 fi
 
-echo "Copied ${APP_BASE} to root of app successfully" | indent
+echo "Copied /${APP_BASE} to root of app successfully" | indent
