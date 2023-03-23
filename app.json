@@ -6,6 +6,9 @@
     "review": {
       "buildpacks": [
         {
+          "url": "https://github.com/heroku/heroku-buildpack-inline"
+        },
+        {
           "url": "https://github.com/HashNuke/heroku-buildpack-elixir"
         },
         {
