@@ -33,13 +33,16 @@ defmodule Orcasite.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.0"},
+      {:phoenix, "~> 1.5.1"},
       {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:phoenix_ecto, "~> 4.1"},
+      {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.10"},
+      {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:phoenix_live_view, "~> 0.12.0"},
+      {:phoenix_live_dashboard, "~> 0.2.0"},
+      {:floki, ">= 0.0.0", only: :test},
       {:gettext, "~> 0.11"},
       {:plug_cowboy, "~> 2.1"},
       {:plug, "~> 1.7"},
@@ -60,7 +63,9 @@ defmodule Orcasite.Mixfile do
       # Reverse proxy for proxying to nextjs app
       {:reverse_proxy_plug, "~> 2.1"},
       {:httpoison, "~> 1.8"},
-      {:corsica, "~> 1.0"}
+      {:corsica, "~> 1.0"},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_poller, "~> 0.4"},
     ]
   end
 
@@ -72,6 +77,7 @@ defmodule Orcasite.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]

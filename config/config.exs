@@ -16,7 +16,8 @@ config :orcasite, OrcasiteWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3",
   render_errors: [view: OrcasiteWeb.ErrorView, accepts: ~w(json)],
-  pubsub_server: Orcasite.PubSub
+  pubsub_server: Orcasite.PubSub,
+  live_view: [signing_salt: "pOIfxPskzkrWLv1xBPoT7Ot5S7h6Sz5f"]
 
 # Configure reverse proxy to use HTTPoison as http client
 config :reverse_proxy_plug, :http_client, ReverseProxyPlug.HTTPClient.Adapters.HTTPoison

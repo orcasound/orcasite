@@ -1,6 +1,13 @@
 defmodule OrcasiteWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :orcasite
 
+  @session_options [
+    store: :cookie,
+    key: "_orcasite_key",
+    signing_salt: "SMhQTaMpt8AcmIFwcY6BSYb6EMP+OTFx",
+    same_site: "Lax"
+  ]
+
   socket("/socket", OrcasiteWeb.UserSocket,
     websocket: [
       check_origin: if Mix.env() == :prod do
@@ -10,6 +17,8 @@ defmodule OrcasiteWeb.Endpoint do
                     end
     ]
   )
+
+  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -28,9 +37,15 @@ defmodule OrcasiteWeb.Endpoint do
     socket("/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket)
     plug(Phoenix.LiveReloader)
     plug(Phoenix.CodeReloader)
+    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :orcasite
   end
 
+  plug Phoenix.LiveDashboard.RequestLogger,
+    param_key: "request_logger",
+    cookie_key: "request_logger"
+
   plug(Plug.RequestId)
+  plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
   plug(Orcasite.Logger)
 
   # The session will be stored in the cookie and signed,

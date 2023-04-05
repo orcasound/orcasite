@@ -5,8 +5,9 @@ defmodule Orcasite.Application do
   # for more information on OTP Applications
   def start(_type, _args) do
     children = [
-      {Phoenix.PubSub, name: Orcasite.PubSub},
+      OrcasiteWeb.Telemetry,
       Orcasite.Repo,
+      {Phoenix.PubSub, name: Orcasite.PubSub},
       OrcasiteWeb.Endpoint,
       OrcasiteWeb.Presence
     ]
