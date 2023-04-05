@@ -3,8 +3,8 @@
 echo -e 'Phase 2 - asdf installations...'
 # Add Erlang using asdf
 asdf plugin-add erlang
-asdf install erlang 22.0.7
-asdf global erlang 22.0.7
+asdf install erlang 22.3.4.26
+asdf global erlang 22.3.4.26
 
 # # Add Elixir using asdf
 asdf plugin-add elixir

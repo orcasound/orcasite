@@ -3,7 +3,7 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-use Mix.Config
+import Config
 
 config :phoenix, :json_library, Jason
 
@@ -16,7 +16,7 @@ config :orcasite, OrcasiteWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3",
   render_errors: [view: OrcasiteWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: Orcasite.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: Orcasite.PubSub
 
 # Configure reverse proxy to use HTTPoison as http client
 config :reverse_proxy_plug, :http_client, ReverseProxyPlug.HTTPClient.Adapters.HTTPoison
