@@ -46,10 +46,10 @@ defmodule Orcasite.Mixfile do
       {:gettext, "~> 0.11"},
       {:plug_cowboy, "~> 2.1"},
       {:plug, "~> 1.7"},
-      {:absinthe, "~> 1.4.0"},
-      {:absinthe_plug, "~> 1.4"},
+      {:absinthe, "~> 1.7"},
+      {:absinthe_plug, "~> 1.5"},
       # Provides helper functions for easy batching of Ecto associations
-      {:absinthe_ecto, "~>0.1.3"},
+      {:dataloader, "~> 1.0.0"},
       # Authenitication library for admin dashboard
       {:guardian, "~> 1.0"},
       # Algorithm used by Comeonin to hash password
