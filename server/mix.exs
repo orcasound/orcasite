@@ -51,7 +51,7 @@ defmodule Orcasite.Mixfile do
       # Provides helper functions for easy batching of Ecto associations
       {:dataloader, "~> 1.0.0"},
       # Authenitication library for admin dashboard
-      {:guardian, "~> 1.0"},
+      {:guardian, "~> 2.3"},
       # Algorithm used by Comeonin to hash password
       {:bcrypt_elixir, "~> 3.0"},
       # JSON parser, works with Absinthe out of the box
