@@ -19,7 +19,7 @@ defmodule OrcasiteWeb.Router do
     plug(:accepts, ["html"])
     plug(:fetch_session)
     plug(:fetch_live_flash)
-    plug :put_root_layout, {OrcasiteWeb.LayoutView, :root}
+    plug :put_root_layout, {OrcasiteWeb.Layouts, :root}
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
   end
@@ -59,6 +59,12 @@ defmodule OrcasiteWeb.Router do
       interface: :simple,
       json_codec: Jason
     )
+  end
+
+  scope "/dev" do
+    pipe_through :browser
+
+    forward "/mailbox", Plug.Swoosh.MailboxPreview
   end
 
   scope "/" do

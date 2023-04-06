@@ -33,19 +33,21 @@ defmodule Orcasite.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.15"},
+      {:phoenix, "~> 1.7.2"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 3.0"},
+      {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.17.5"},
-      {:phoenix_live_dashboard, "~> 0.6"},
-      {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
+      {:phoenix_live_view, "~> 0.18.16"},
+      {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
+      {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
-      {:gettext, "~> 0.18"},
+      {:gettext, "~> 0.20"},
       {:plug_cowboy, "~> 2.5"},
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.7"},
@@ -83,9 +85,11 @@ defmodule Orcasite.Mixfile do
       "ecto.setup": ["ecto.create", "ecto.migrate --quiet", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]
-      # TODO: Uncomment once switching to esbuild - see
+      # TODO: Uncomment once switching to esbuild and tailwind - see
+      # "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      # "assets.build": ["tailwind default", "esbuild default"],
       # https://www.phoenixdiff.org/?source=1.5.13&source_variant=live&target=1.6.15&target_variant=default
-      # "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      # "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end

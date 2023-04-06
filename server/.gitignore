@@ -22,6 +22,9 @@ erl_crash.dump
 # variables.
 /config/*.secret.exs
 
+# Temporary files, for example, from tests.
+/tmp/
+
 assets/src/config/
 
 # Ignore assets that are produced by build tools.

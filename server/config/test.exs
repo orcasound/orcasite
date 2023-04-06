@@ -8,7 +8,7 @@ config :orcasite, OrcasiteWeb.Endpoint,
   secret_key_base: "99+mOEo5AOlhlQi4sJJd5MWnAdFFzm64"
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
 # Configure your database
 config :orcasite, Orcasite.Repo,

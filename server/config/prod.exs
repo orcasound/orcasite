@@ -29,6 +29,8 @@ config :logger, level: :info, format: {Orcasite.Logger, :format}
 
 config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
 
+config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Orcasite.Finch
+
 config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
   secret_key: System.get_env("GUARDIAN_SECRET_KEY")

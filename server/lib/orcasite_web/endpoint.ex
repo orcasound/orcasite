@@ -28,7 +28,7 @@ defmodule OrcasiteWeb.Endpoint do
     at: "/",
     from: :orcasite,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: OrcasiteWeb.static_paths()
   )
 
   # Code reloading can be explicitly enabled under the
