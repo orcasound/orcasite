@@ -14,7 +14,10 @@ config :orcasite,
 # Configures the endpoint
 config :orcasite, OrcasiteWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: OrcasiteWeb.ErrorView, accepts: ~w(json)],
+  render_errors: [
+    formats: [html: OrcasiteWeb.ErrorHTML, json: OrcasiteWeb.ErrorJSON],
+    layout: false
+  ],
   pubsub_server: Orcasite.PubSub,
   live_view: [signing_salt: "pOIfxPskzkrWLv1xBPoT7Ot5S7h6Sz5f"]
 
