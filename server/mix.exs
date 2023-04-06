@@ -5,9 +5,9 @@ defmodule Orcasite.Mixfile do
     [
       app: :orcasite,
       version: "0.0.1",
-      elixir: "~> 1.4",
+      elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix] ++ Mix.compilers(),
+      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
@@ -33,18 +33,20 @@ defmodule Orcasite.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.13"},
+      {:phoenix, "~> 1.6.15"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.4"},
+      {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
-      {:phoenix_live_view, "~> 0.15.1"},
-      {:phoenix_live_dashboard, "~> 0.4"},
+      {:phoenix_html, "~> 3.0"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_view, "~> 0.17.5"},
+      {:phoenix_live_dashboard, "~> 0.6"},
+      {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
+      {:swoosh, "~> 1.3"},
       {:floki, ">= 0.30.0", only: :test},
-      {:gettext, "~> 0.11"},
-      {:plug_cowboy, "~> 2.1"},
+      {:gettext, "~> 0.18"},
+      {:plug_cowboy, "~> 2.5"},
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},
@@ -58,14 +60,14 @@ defmodule Orcasite.Mixfile do
       {:poison, "~> 4.0"},
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 3.0"},
-      {:jason, "~> 1.1"},
+      {:jason, "~> 1.2"},
       {:scrivener_ecto, "~> 2.0"},
       # Reverse proxy for proxying to nextjs app
       {:reverse_proxy_plug, "~> 2.1"},
       {:httpoison, "~> 1.8"},
       {:corsica, "~> 1.0"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
+      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_poller, "~> 1.0"},
     ]
   end
 
@@ -81,6 +83,9 @@ defmodule Orcasite.Mixfile do
       "ecto.setup": ["ecto.create", "ecto.migrate --quiet", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      # TODO: Uncomment once switching to esbuild - see
+      # https://www.phoenixdiff.org/?source=1.5.13&source_variant=live&target=1.6.15&target_variant=default
+      # "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end

@@ -7,10 +7,14 @@ import Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :orcasite, OrcasiteWeb.Endpoint,
-  http: [port: 4000],
+  http: [ip: {127, 0, 0, 1}, port: 4000],
   debug_errors: true,
   code_reloader: true,
-  check_origin: false
+  check_origin: false,
+  secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3"
+  # watchers: [
+  #   esbuild: {EsBuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+  # ]
 
 # ## SSL Support
 #
@@ -54,6 +58,7 @@ config :orcasite, Orcasite.Repo,
   password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   database: System.get_env("POSTGRES_DATABASE") || "orcasite_dev",
   hostname: System.get_env("POSTGRES_HOST") || "localhost",
+  stacktrace: true,
   port: System.get_env("POSTGRES_PORT") || 5432,
   pool_size: 10,
   types: Orcasite.PostgresTypes

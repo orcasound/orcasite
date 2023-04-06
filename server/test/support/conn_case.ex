@@ -29,10 +29,7 @@ defmodule OrcasiteWeb.ConnCase do
 
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Orcasite.Repo)
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Orcasite.Repo, {:shared, self()})
-    end
+    Orcasite.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 

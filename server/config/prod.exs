@@ -15,16 +15,12 @@ import Config
 # which you typically run after static files are built.
 config :orcasite, OrcasiteWeb.Endpoint,
   load_from_system_env: true,
-  url: [scheme: "https", host: System.get_env("HOST_URL"), port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   watchers: [npm: ["run", "start", cd: Path.expand("../ui", __DIR__)]]
 
 # Configure your database
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
-  url: System.get_env("DATABASE_URL"),
-  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   ssl: true,
   types: Orcasite.PostgresTypes
 
@@ -36,7 +32,3 @@ config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
 config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
   secret_key: System.get_env("GUARDIAN_SECRET_KEY")
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-# import_config "prod.secret.exs"
