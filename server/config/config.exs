@@ -52,7 +52,7 @@ config :tailwind,
   ]
 
 # Configure reverse proxy to use HTTPoison as http client
-config :reverse_proxy_plug, :http_client, ReverseProxyPlug.HTTPClient.Adapters.HTTPoison
+config :reverse_proxy_plug, :http_client, ReverseProxyPlug.HTTPClient.Adapters.Tesla
 
 # Configures Elixir's Logger
 config :logger, :console,
