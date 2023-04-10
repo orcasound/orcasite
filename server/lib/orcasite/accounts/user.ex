@@ -5,7 +5,7 @@ defmodule Orcasite.Accounts.User do
   alias Orcasite.Accounts.User
 
   schema "users" do
-    field(:email, :string, unique: true)
+    field(:email, :string)
     field(:password_hash, :string)
     field(:first_name, :string)
     field(:last_name, :string)

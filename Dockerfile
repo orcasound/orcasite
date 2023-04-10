@@ -1,4 +1,4 @@
-ARG ELIXIR_VERSION=1.9.1
+ARG ELIXIR_VERSION=1.14.0
 ARG NODE_VERSION=12.9.1
 
 # Pre-select the node image we want to use later on

@@ -65,13 +65,13 @@ defmodule OrcasiteWeb.Schema do
 
     @desc "Log out"
     field :logout, :user do
-      arg(:id)
+      arg(:id, :id)
       resolve(&Resolvers.Accounts.logout/2)
     end
 
     @desc "Update user details"
     field :update_user, :user do
-      arg(:id)
+      arg(:id, :id)
       arg(:admin, :boolean)
       resolve(&Resolvers.Accounts.update_user/2)
     end

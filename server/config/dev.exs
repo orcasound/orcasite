@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -10,7 +10,12 @@ config :orcasite, OrcasiteWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
-  check_origin: false
+  check_origin: false,
+  secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3"
+  # watchers: [
+  #   esbuild: {EsBuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+  #   tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+  # ]
 
 # ## SSL Support
 #
@@ -34,10 +39,12 @@ config :orcasite, OrcasiteWeb.Endpoint,
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/orcasite_web/views/.*(ex)$},
+      ~r{lib/orcasite_web/(controllers|live|components)/.*(ex|heex)$},
       ~r{lib/orcasite_web/templates/.*(eex)$}
     ]
   ]
+
+config :orcasite, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console,
@@ -54,8 +61,15 @@ config :orcasite, Orcasite.Repo,
   password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   database: System.get_env("POSTGRES_DATABASE") || "orcasite_dev",
   hostname: System.get_env("POSTGRES_HOST") || "localhost",
+  stacktrace: true,
   port: System.get_env("POSTGRES_PORT") || 5432,
   pool_size: 10,
   types: Orcasite.PostgresTypes
 
 config :orcasite, :orcasite_s3_url, (System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite")
+
+# Initialize plugs at runtime for faster development compilation
+config :phoenix, :plug_init_mode, :runtime
+
+# Disable swoosh api client as it is only required for production adapters.
+config :swoosh, :api_client, false

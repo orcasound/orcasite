@@ -1,5 +1,7 @@
-defmodule OrcasiteWeb.LayoutView do
-  use OrcasiteWeb, :view
+defmodule OrcasiteWeb.Layouts do
+  use OrcasiteWeb, :html
+
+  embed_templates "layouts/*"
 
   def js_script_tag(conn) do
     if Mix.env() == :prod do
