@@ -3,7 +3,7 @@ import Config
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :orcasite, OrcasiteWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4001],
+  http: [port: 4001],
   server: false,
   secret_key_base: "99+mOEo5AOlhlQi4sJJd5MWnAdFFzm64"
 

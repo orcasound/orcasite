@@ -1,6 +1,6 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
-  import Logger
+  require Logger
 
   # Set up request parsers here instead of in endpoint.ex because we don't want
   # them for the :nextjs pipeline, only :browser and :graphql
