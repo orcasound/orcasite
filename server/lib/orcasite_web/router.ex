@@ -2,6 +2,8 @@ defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
   require Logger
 
+  import AshAdmin.Router
+
   # Set up request parsers here instead of in endpoint.ex because we don't want
   # them for the :nextjs pipeline, only :browser and :graphql
   # See https://github.com/tallarium/reverse_proxy_plug#usage-in-phoenix
@@ -9,7 +11,7 @@ defmodule OrcasiteWeb.Router do
     plug(Plug.Parsers,
       parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
       pass: ["*/*"],
-      json_decoder: Jason
+      json_decoder: Phoenix.json_library()
     )
 
     plug(Plug.MethodOverride)
@@ -70,6 +72,10 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
+
+    # TODO: Put behind auth
+    ash_admin "/admin"
+
     if Mix.env() == :dev do
       pipe_through(:nextjs)
       get("/*page", OrcasiteWeb.PageController, :index)

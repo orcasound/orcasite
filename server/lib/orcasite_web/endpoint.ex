@@ -8,35 +8,29 @@ defmodule OrcasiteWeb.Endpoint do
     same_site: "Lax"
   ]
 
-  socket("/socket", OrcasiteWeb.UserSocket,
-    websocket: [
-      check_origin: if Mix.env() == :prod do
-                      Map.fetch!(System.get_env(), "URLS") |> String.split(" ")
-                    else
-                      false
-                    end
-    ]
-  )
+  if sandbox = Application.compile_env(:orcasite, :sandbox) do
+    plug Phoenix.Ecto.SQL.Sandbox, sandbox: sandbox
+  end
 
-  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [connect_info: [:user_agent, session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phoenix.digest
   # when deploying your static files in production.
-  plug(Plug.Static,
+  plug Plug.Static,
     at: "/",
     from: :orcasite,
     gzip: false,
     only: OrcasiteWeb.static_paths()
-  )
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
     socket("/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket)
-    plug(Phoenix.LiveReloader)
-    plug(Phoenix.CodeReloader)
+    plug Phoenix.LiveReloader
+    plug Phoenix.CodeReloader
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :orcasite
   end
 
@@ -44,9 +38,9 @@ defmodule OrcasiteWeb.Endpoint do
     param_key: "request_logger",
     cookie_key: "request_logger"
 
-  plug(Plug.RequestId)
+  plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
-  plug(Orcasite.Logger)
+  plug Orcasite.Logger
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -56,11 +50,10 @@ defmodule OrcasiteWeb.Endpoint do
   #   key: "_orcasite_key",
   #   signing_salt: "uSUTZKtc"
   # )
-
   # Allow cross-origin requests in dev
-  plug(Corsica, origins: "*", allow_headers: :all)
-
-  plug(OrcasiteWeb.Router)
+  plug Corsica, origins: "*", allow_headers: :all
+  plug Plug.Session, @session_options
+  plug OrcasiteWeb.Router
 
   @doc """
   Callback invoked for dynamically configuring the endpoint.

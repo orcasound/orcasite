@@ -73,6 +73,9 @@ config :orcasite, OrcasiteWeb.Auth.AuthAccessPipeline,
   module: OrcasiteWeb.Guardian,
   error_handler: OrcasiteWeb.Auth.AuthErrorHandler
 
+config :ash, :use_all_identities_in_manage_relationship?, false
+config :orcasite, :ash_apis, [Orcasite.Notifications]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
