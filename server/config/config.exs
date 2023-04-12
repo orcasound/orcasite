@@ -75,6 +75,7 @@ config :orcasite, OrcasiteWeb.Auth.AuthAccessPipeline,
 
 config :ash, :use_all_identities_in_manage_relationship?, false
 config :orcasite, :ash_apis, [Orcasite.Notifications]
+config :orcasite, :ecto_repos, [Orcasite.Repo]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
