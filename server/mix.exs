@@ -89,15 +89,13 @@ defmodule Orcasite.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
+      setup: ["deps.get", "assets.setup", "assets.build", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate --quiet", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
-      # TODO: Uncomment once switching to esbuild and tailwind - see
-      # "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      # "assets.build": ["tailwind default", "esbuild default"],
-      # https://www.phoenixdiff.org/?source=1.5.13&source_variant=live&target=1.6.15&target_variant=default
-      # "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind default", "esbuild default"],
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end

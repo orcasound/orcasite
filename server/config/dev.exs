@@ -11,11 +11,11 @@ config :orcasite, OrcasiteWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3"
-  # watchers: [
-  #   esbuild: {EsBuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-  #   tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
-  # ]
+  secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3",
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+  ]
 
 # ## SSL Support
 #
@@ -39,8 +39,7 @@ config :orcasite, OrcasiteWeb.Endpoint,
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/orcasite_web/(controllers|live|components)/.*(ex|heex)$},
-      ~r{lib/orcasite_web/templates/.*(eex)$}
+      ~r{lib/orcasite_web/(controllers|live|components)/.*(ex|heex)$}
     ]
   ]
 

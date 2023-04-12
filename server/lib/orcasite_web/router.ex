@@ -72,9 +72,14 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
-
+    pipe_through(:browser)
     # TODO: Put behind auth
     ash_admin "/admin"
+
+  end
+
+  scope "/" do
+
 
     if Mix.env() == :dev do
       pipe_through(:nextjs)
