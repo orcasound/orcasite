@@ -6,5 +6,8 @@ defmodule Orcasite.Notifications.Registry do
 
   entries do
     entry Orcasite.Notifications.Notification
+    entry Orcasite.Notifications.Subscriber
+    entry Orcasite.Notifications.Subscription
+    entry Orcasite.Notifications.SubscriptionNotification
   end
 end
