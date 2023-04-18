@@ -13,6 +13,39 @@ defmodule Orcasite.Notifications.Subscriber do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+
+    create :individual_subscriber do
+      description "Create a subscriber for an individual"
+      accept [:name, :email, :user_id]
+      argument :name, :string
+      argument :email, :string
+      argument :user_id, :string
+
+      change set_attribute(:name, arg(:name))
+      change set_attribute(:subscriber_type, :individual)
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.change_attribute(:meta, %{
+          user_id: Ash.Changeset.get_argument(changeset, :user_id),
+          email: Ash.Changeset.get_argument(changeset, :email)
+        })
+      end
+    end
+
+    create :newsletter_subscriber do
+      description "Create a subscriber for a newsletter"
+      accept [:name, :template_id]
+      argument :name, :string
+
+      change set_attribute(:name, arg(:name))
+      change set_attribute(:subscriber_type, :newsletter)
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.change_attribute(:meta, %{
+          template_id: Ash.Changeset.get_argument(changeset, :template_id)
+        })
+      end
+    end
   end
 
   postgres do

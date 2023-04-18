@@ -17,7 +17,7 @@ defmodule Orcasite.Notifications.Notification do
   actions do
     defaults [:create, :read, :update, :destroy]
 
-    create :confirmed_candidate do
+    create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       accept [:candidate_id]
       argument :candidate_id, :integer
@@ -32,7 +32,7 @@ defmodule Orcasite.Notifications.Notification do
       end
     end
 
-    create :new_detection do
+    create :notify_new_detection do
       description "Create a notification for a new detection (e.g. button push from user)."
       accept [:detection_id]
       argument :detection_id, :integer
