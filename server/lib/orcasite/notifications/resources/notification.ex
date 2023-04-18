@@ -1,7 +1,8 @@
 defmodule Orcasite.Notifications.Notification do
   use Ash.Resource,
     extensions: [AshAdmin.Resource],
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    notifiers: [Orcasite.Notifications.Notifiers.NotifySubscriptions]
 
   alias Orcasite.Notifications.{Event, SubscriptionNotification, Subscription}
 
@@ -9,12 +10,42 @@ defmodule Orcasite.Notifications.Notification do
     description """
     A notification object. Once created, this will be sent to any number of subscribers (api clients,
     newsletters, individuals, admins, etc) through their subscribed channels for the given event type
-    (new candidate created, detection verified, etc).
+    (confirmed candidate created, detection verified, etc).
     """
   end
 
   actions do
     defaults [:create, :read, :update, :destroy]
+
+    create :confirmed_candidate do
+      description "Create a notification for confirmed candidate (i.e. detection group)"
+      accept [:candidate_id]
+      argument :candidate_id, :integer
+
+      change set_attribute(:event_type, :confirmed_candidate)
+
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.change_attribute(:meta, %{
+          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id)
+        })
+      end
+    end
+
+    create :new_detection do
+      description "Create a notification for a new detection (e.g. button push from user)."
+      accept [:detection_id]
+      argument :detection_id, :integer
+
+      change set_attribute(:event_type, :new_detection)
+
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.change_attribute(:meta, %{
+          detection_id: Ash.Changeset.get_argument(changeset, :detection_id)
+        })
+      end
+    end
   end
 
   postgres do
@@ -40,6 +71,7 @@ defmodule Orcasite.Notifications.Notification do
 
   relationships do
     has_many :subscription_notifications, SubscriptionNotification
+
     many_to_many :subscriptions, Subscription do
       through SubscriptionNotification
       source_attribute_on_join_resource :notification_id
@@ -52,5 +84,4 @@ defmodule Orcasite.Notifications.Notification do
       field :event_type, type: :default
     end
   end
-
 end

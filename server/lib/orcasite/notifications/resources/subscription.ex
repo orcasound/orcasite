@@ -7,7 +7,8 @@ defmodule Orcasite.Notifications.Subscription do
 
   resource do
     description """
-    A subscription - relates a subscriber to a notification type and a channel. (i.e. subscribing to :new_candidates via :email)
+    A subscription - relates a subscriber to a notification type and a channel.
+    (i.e. subscribing to :new_detection via :email)
     """
   end
 
