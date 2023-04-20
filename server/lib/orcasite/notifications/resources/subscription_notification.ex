@@ -30,8 +30,8 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
     end
     attribute :processed_at, :utc_datetime_usec
     attribute :status, :atom do
-      constraints one_of: [:unsent, :pending, :sent, :failed]
-      default :unsent
+      constraints one_of: [:new, :pending, :sent, :failed]
+      default :new
     end
 
     create_timestamp :inserted_at

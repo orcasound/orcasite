@@ -7,6 +7,7 @@ defmodule Orcasite.Application do
     children = [
       OrcasiteWeb.Telemetry,
       Orcasite.Repo,
+      {Oban, Application.fetch_env!(:orcasite, Oban)},
       {Phoenix.PubSub, name: Orcasite.PubSub},
       {Finch, name: Orcasite.Finch},
       {Task.Supervisor, name: Orcasite.TaskSupervisor},
