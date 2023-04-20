@@ -7,7 +7,8 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
 
   resource do
     description """
-    A subscription notification object. This is a join table between subscriptions and notifications.
+    A subscription notification object. This tracks the status of a notification
+    and triggers the sending of the notification.
     """
   end
 
@@ -23,7 +24,15 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
   attributes do
     uuid_primary_key :id
 
+    attribute :meta, :map
+    attribute :channel, :atom do
+      constraints one_of: [:email, :newsletter]
+    end
     attribute :processed_at, :utc_datetime_usec
+    attribute :status, :atom do
+      constraints one_of: [:unsent, :pending, :sent, :failed]
+      default :unsent
+    end
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
