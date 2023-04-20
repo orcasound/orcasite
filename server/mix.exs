@@ -40,11 +40,7 @@ defmodule Orcasite.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      # {:phoenix_live_view, "~> 0.18.3"}, # Reenable once Surface is updated/fixed:
-      # https://github.com/surface-ui/surface/issues/683
-      # Or if ash_admin moves off surface
-      # https://github.com/ash-project/ash_admin/issues/46
-      {:phoenix_live_view, "0.18.16"},
+      {:phoenix_live_view, "0.18.18"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
@@ -75,7 +71,7 @@ defmodule Orcasite.Mixfile do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:ash, "~> 2.6"},
-      {:ash_admin, "~> 0.8.0"},
+      {:ash_admin, github: "ash-project/ash_admin", branch: "main"},
       {:ash_postgres, "~> 1.3"},
       {:heroicons, "~> 0.5"}
     ]

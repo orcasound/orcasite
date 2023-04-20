@@ -23,6 +23,7 @@ defmodule Orcasite.Notifications.Subscriber do
 
       change set_attribute(:name, arg(:name))
       change set_attribute(:subscriber_type, :individual)
+
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
@@ -36,9 +37,11 @@ defmodule Orcasite.Notifications.Subscriber do
       description "Create a subscriber for a newsletter"
       accept [:name, :template_id]
       argument :name, :string
+      argument :template_id, :string
 
       change set_attribute(:name, arg(:name))
       change set_attribute(:subscriber_type, :newsletter)
+
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
@@ -57,9 +60,11 @@ defmodule Orcasite.Notifications.Subscriber do
     uuid_primary_key :id
 
     attribute :name, :string
+
     attribute :subscriber_type, :atom do
       constraints one_of: [:individual, :organization, :newsletter]
     end
+
     attribute :meta, :map
 
     create_timestamp :inserted_at
