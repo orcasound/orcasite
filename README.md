@@ -78,8 +78,8 @@ You will need to install Erlang, Elixir, and Nodejs. You can use a tool like [`a
 Language-level dependencies can be found under `.tool-versions`. As of this writing, they are:
 
 ```
-erlang 22.0.7
-elixir 1.9.1-otp-21
+erlang 25.2.2
+elixir 1.14.2-otp-25
 nodejs 12.9.1
 ```
 

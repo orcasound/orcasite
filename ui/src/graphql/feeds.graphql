@@ -1,0 +1,11 @@
+query feeds {
+  feeds {
+    id
+    name
+    slug
+    nodeName
+    locationPoint
+    thumbUrl
+    mapUrl
+  }
+}

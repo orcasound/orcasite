@@ -1,0 +1,47 @@
+# App artifacts
+/_build
+/db
+/deps
+/*.ez
+
+/priv/static/
+/rel
+
+node_modules/
+
+.vscode/
+
+# Generated on crash by the VM
+erl_crash.dump
+
+# Files matching config/*.secret.exs pattern contain sensitive
+# data and you should not commit them into version control.
+#
+# Alternatively, you may comment the line below and commit the
+# secrets files as long as you replace their contents by environment
+# variables.
+/config/*.secret.exs
+
+# Temporary files, for example, from tests.
+/tmp/
+
+assets/src/config/
+
+# Ignore assets that are produced by build tools.
+/priv/static/assets/
+
+# Ignore digested assets cache.
+/priv/static/cache_manifest.json
+
+# Webstorm
+.idea/
+
+bash /
+
+docker/
+
+.vagrant/
+
+*.log
+
+.elixir_ls/

@@ -1,0 +1,28 @@
+{
+  "root": true, // so eslint knows not to look at parent folder for eslintrc
+  "extends": ["next", "next/core-web-vitals", "prettier"],
+  "plugins": ["simple-import-sort"],
+  "rules": {
+    "prefer-const": "warn",
+    "simple-import-sort/imports": "warn",
+    "simple-import-sort/exports": "warn",
+    "import/no-unused-modules": [
+      "warn",
+      {
+        "unusedExports": true,
+        "ignoreExports": [
+          "src/pages", // pages are automatically imported by nextjs
+          "src/generated" // graphql-code-generator output is exported by default for ease of use
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts?(x)"],
+      "rules": {
+        // typescript only rules go here
+      }
+    }
+  ]
+}
