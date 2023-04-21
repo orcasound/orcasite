@@ -97,7 +97,6 @@ defmodule Orcasite.Radio do
          }) do
       {:ok, detection}
     end
-    MailToModerators.send_email_to_moderators()
   end
 
   def datetime_min(time_1, time_2) do
