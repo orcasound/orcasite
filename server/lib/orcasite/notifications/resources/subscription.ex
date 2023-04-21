@@ -32,7 +32,8 @@ defmodule Orcasite.Notifications.Subscription do
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
-          email: Ash.Changeset.get_argument(changeset, :email)
+          email: Ash.Changeset.get_argument(changeset, :email),
+          channel: :email
         })
       end
 
@@ -58,7 +59,8 @@ defmodule Orcasite.Notifications.Subscription do
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
           template_id: Ash.Changeset.get_argument(changeset, :template_id),
-          template_variables: Ash.Changeset.get_argument(changeset, :template_variables)
+          template_variables: Ash.Changeset.get_argument(changeset, :template_variables),
+          channel: :newsletter
         })
       end
 

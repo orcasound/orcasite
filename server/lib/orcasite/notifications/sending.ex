@@ -1,14 +1,29 @@
 defmodule Orcasite.Notifications.Sending do
-  alias Orcasite.Notifications.{Notification, Subscriber, Subscription, SubscriptionNotification}
+  alias Orcasite.Repo
+  alias Orcasite.Notifications.{
+    SubscriptionNotification,
+    Workers
+  }
 
-  def send(%SubscriptionNotification{status: :unsent, id: id} = notification) do
-    Task.Supvervisor.start_child(Orcasite.TaskSupervisor, fn ->
-      do_send(notification)
-    end)
+  def queue(%SubscriptionNotification{id: id, channel: :email} = _sub_notif) do
+    {:ok, %{id: _job_id}} =
+      %{subscription_notification_id: id}
+      |> Workers.SendNotificationEmail.new()
+      |> Repo.insert()
+
+    # notification
+    # |> Ash.Changeset.for_update(:update, %{status: :pending, meta: %{job_id: job_id}})
+    # |> Notifications.update!()
   end
 
-  def do_send(%SubscriptionNotification{status: :unsent, id: id} = notification) do
-    # Pull notification, subscription, and subscriber
-    # Delegate sending to the appropriate module based on subscription channel
+  def queue(%SubscriptionNotification{id: id, channel: :newsletter} = _sub_notif) do
+    {:ok, %{id: _job_id}} =
+      %{subscription_notification_id: id}
+      |> Workers.SendNotificationNewsletter.new()
+      |> Repo.insert()
+
+    # notification
+    # |> Ash.Changeset.for_update(:update, %{status: :pending, meta: %{job_id: job_id}})
+    # |> Notifications.update!()
   end
 end
