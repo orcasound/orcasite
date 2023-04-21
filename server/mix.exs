@@ -44,8 +44,6 @@ defmodule Orcasite.Mixfile do
       {:phoenix_live_dashboard, "~> 0.7.2"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
-      {:swoosh, "~> 1.3"},
-      {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.20"},
       {:plug_cowboy, "~> 2.5"},
@@ -70,6 +68,7 @@ defmodule Orcasite.Mixfile do
       {:corsica, "~> 1.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
+      {:bamboo, "~> 2.3.0"}
     ]
   end
 

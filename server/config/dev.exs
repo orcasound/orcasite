@@ -12,10 +12,11 @@ config :orcasite, OrcasiteWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   secret_key_base: "ZaTk5BBbg4BWCa+zQ0rjJxr9T5WqSEUt3oS0bd1Ct1SOFQg1HgBjPJaGffsNXZU3"
-  # watchers: [
-  #   esbuild: {EsBuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-  #   tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
-  # ]
+
+# watchers: [
+#   esbuild: {EsBuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+#   tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+# ]
 
 # ## SSL Support
 #
@@ -47,8 +48,7 @@ config :orcasite, OrcasiteWeb.Endpoint,
 config :orcasite, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console,
-  format: {Orcasite.Logger, :format}
+config :logger, :console, format: {Orcasite.Logger, :format}
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
@@ -66,10 +66,11 @@ config :orcasite, Orcasite.Repo,
   pool_size: 10,
   types: Orcasite.PostgresTypes
 
-config :orcasite, :orcasite_s3_url, (System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite")
+config :orcasite,
+       :orcasite_s3_url,
+       System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite"
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
+config :orcasite, Orcasite.Mailer, adapter: Bamboo.LocalAdapter

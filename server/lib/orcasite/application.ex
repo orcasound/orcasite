@@ -8,8 +8,6 @@ defmodule Orcasite.Application do
       OrcasiteWeb.Telemetry,
       Orcasite.Repo,
       {Phoenix.PubSub, name: Orcasite.PubSub},
-      # Start Finch
-      {Finch, name: Orcasite.Finch},
       OrcasiteWeb.Endpoint,
       OrcasiteWeb.Presence
     ]

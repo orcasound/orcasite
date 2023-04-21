@@ -25,3 +25,5 @@ config :orcasite, Orcasite.Mailer, adapter: Swoosh.Adapters.Test
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :orcasite, Orcasite.Mailer, adapter: Bamboo.TestAdapter
