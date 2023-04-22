@@ -40,6 +40,7 @@ defmodule Orcasite.Notifications.Notification do
       change set_attribute(:event_type, :new_detection)
 
       change fn changeset, _context ->
+        # TODO: Get node, timestamp from detection
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
           detection_id: Ash.Changeset.get_argument(changeset, :detection_id)

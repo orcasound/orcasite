@@ -8,18 +8,19 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
   def perform(%Oban.Job{
         args: %{"subscription_notification_id" => subscription_notification_id} = _args
       }) do
-    IO.inspect(subscription_notification_id, label: "subscription_notification_id")
-
-    {:ok, sub_notif} =
+    {:ok, [sub_notif]} =
       SubscriptionNotification
       |> Ash.Query.for_read(:read, %{id: subscription_notification_id})
       |> Notifications.read!()
-      |> Notifications.load([:notification, :subscription, :subscriber])
+      |> Notifications.load([:notification, subscription: [:subscriber]])
 
-    IO.inspect(sub_notif, label: "sub_notif (server/lib/orcasite/notifications/workers/send_notification_email.ex:#{__ENV__.line})")
-
-    # Pull (with lock?) subscription, subscription notification, subscription, and subscriber
-    # TODO: Send email
+    %{
+      to: sub_notif.meta["email"],
+      name: sub_notif.meta["subscriber_name"],
+      node: sub_notif.meta["node"]
+    }
+    |> Orcasite.Notifications.Email.new_detection_email()
+    |> Orcasite.Mailer.deliver()
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       sub_notif

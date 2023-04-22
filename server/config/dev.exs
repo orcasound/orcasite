@@ -46,8 +46,7 @@ config :orcasite, OrcasiteWeb.Endpoint,
 config :orcasite, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console,
-  format: {Orcasite.Logger, :format}
+config :logger, :console, format: {Orcasite.Logger, :format}
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
@@ -65,7 +64,9 @@ config :orcasite, Orcasite.Repo,
   pool_size: 10,
   types: Orcasite.PostgresTypes
 
-config :orcasite, :orcasite_s3_url, (System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite")
+config :orcasite,
+       :orcasite_s3_url,
+       System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite"
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime

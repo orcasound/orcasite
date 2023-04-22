@@ -17,8 +17,9 @@ defmodule Orcasite.Notifications.Subscription do
 
     create :email_subscribe do
       description "Create a subscription for an individual email"
-      accept [:event_type, :subscriber, :email]
+      accept [:event_type, :subscriber, :email, :name]
       argument :email, :string
+      argument :name, :string
 
       argument :event_type, :atom do
         constraints one_of: Event.types()
@@ -32,6 +33,7 @@ defmodule Orcasite.Notifications.Subscription do
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
+          name: Ash.Changeset.get_argument(changeset, :name),
           email: Ash.Changeset.get_argument(changeset, :email),
           channel: :email
         })

@@ -27,20 +27,18 @@ defmodule Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta do
            {:get_notif, Notifications.get(Notification, changeset.arguments.notification)} do
       changeset
       |> Ash.Changeset.change_attribute(:meta, %{
+        subscriber_name: Map.get(subscription.meta, "name"),
         channel: Map.get(subscription.meta, "channel"),
         event_type: notification.event_type,
-        node_id: Map.get(notification.meta, "node_id"),
-        node_type: Map.get(notification.meta, "node_type"),
+        node: Map.get(notification.meta, "node"),
         timestamp: Map.get(notification.meta, "timestamp")
       })
     else
-      {:get_sub, {:error, _} = err} ->
-        IO.inspect(err, label: "Sub error (server/lib/orcasite/notifications/changes/extract_subscription_notification_meta.ex:#{__ENV__.line})")
+      {:get_sub, {:error, _}} ->
         changeset
         |> Ash.Changeset.add_error("Subscription not found")
 
-      {:get_notif, {:error, _} = err} ->
-        IO.inspect(err, label: "Notif error (server/lib/orcasite/notifications/changes/extract_subscription_notification_meta.ex:#{__ENV__.line})")
+      {:get_notif, {:error, _}} ->
         changeset
         |> Ash.Changeset.add_error("Notification not found")
     end
