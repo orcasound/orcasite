@@ -7,11 +7,10 @@ defmodule Orcasite.Notifications.Email do
     new()
     |> to({name, email})
     |> from({"Orcasound", "info@orcasound.net"})
-    |> put_provider_option(:merge_language, "handlebars")
     |> put_provider_option(:template_name, "new-detection-notification")
     |> put_provider_option(:global_merge_vars, [
-      %{"name" => "node", "content" => node},
-      %{"name" => "node_name", "content" => node_name}
+      %{"name" => "NODE", "content" => node},
+      %{"name" => "NODENAME", "content" => node_name}
     ])
   end
 end
