@@ -8,12 +8,14 @@ import { createTheme } from '@mui/material/styles'
 // Based on https://mui.com/customization/palette/#adding-new-colors
 declare module '@mui/material/styles' {
   interface Palette {
+    base: Palette['primary']
     accent1: Palette['primary']
     accent2: Palette['primary']
     accent3: Palette['primary']
     accent4: Palette['primary']
   }
   interface PaletteOptions {
+    base: PaletteOptions['primary']
     accent1: PaletteOptions['primary']
     accent2: PaletteOptions['primary']
     accent3: PaletteOptions['primary']
@@ -21,9 +23,25 @@ declare module '@mui/material/styles' {
   }
 }
 
+declare module '@mui/material/AppBar' {
+  interface AppBarPropsColorOverrides {
+    base: true
+  }
+}
+
+declare module '@mui/material/Fab' {
+  interface FabPropsColorOverrides {
+    base: true
+  }
+}
+
 // Fonts with fallbacks
 const mukta = 'Mukta, Helvetica, Arial, sans-serif'
 const montserrat = 'Montserrat, Helvetica, Arial, sans-serif'
+
+// Hack to get access to theme helpers
+// see https://github.com/mui/material-ui/issues/35895#issuecomment-1401579770
+const helperTheme = createTheme()
 
 const theme = createTheme({
   palette: {
@@ -33,6 +51,12 @@ const theme = createTheme({
     secondary: {
       main: '#080d26',
     },
+    base: helperTheme.palette.augmentColor({
+      color: {
+        main: '#080d26',
+        contrastText: '#ffffff',
+      },
+    }),
     accent1: {
       main: '#008bdf',
     },
@@ -80,7 +104,7 @@ theme.components = {
   },
   MuiAppBar: {
     defaultProps: {
-      color: 'secondary',
+      color: 'base',
     },
   },
   MuiLink: {
@@ -93,14 +117,14 @@ theme.components = {
   MuiBottomNavigation: {
     styleOverrides: {
       root: {
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: theme.palette.base.main,
       },
     },
   },
   MuiBottomNavigationAction: {
     styleOverrides: {
       root: {
-        color: theme.palette.secondary.contrastText,
+        color: theme.palette.base.contrastText,
       },
     },
   },
