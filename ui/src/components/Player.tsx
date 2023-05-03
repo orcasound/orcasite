@@ -143,6 +143,7 @@ export default function Player({ currentFeed }: { currentFeed?: Feed }) {
               left: 0,
               right: 0,
               margin: 'auto',
+              maxWidth: 'max-content',
 
               // style to look like outlined button
               backgroundColor: 'white',
