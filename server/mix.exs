@@ -74,7 +74,8 @@ defmodule Orcasite.Mixfile do
       {:ash_admin, github: "ash-project/ash_admin", branch: "main"},
       {:ash_postgres, "~> 1.3"},
       {:heroicons, "~> 0.5"},
-      {:oban, "~> 2.14"}
+      {:oban, "~> 2.14"},
+      {:mailchimp, "~> 0.1.2"}
     ]
   end
 

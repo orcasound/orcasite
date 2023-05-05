@@ -68,4 +68,6 @@ if config_env() == :prod do
   config :orcasite, Orcasite.Mailer,
     adapter: Swoosh.Adapters.Mandrill,
     api_key: System.get_env("ORCASOUND_MANDRILL_API_KEY")
+
 end
+config :mailchimp, api_key: System.get_env("ORCASOUND_MAILCHIMP_API_KEY")
