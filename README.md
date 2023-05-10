@@ -16,8 +16,9 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 ## Getting started
 
 #### Quick Start (e.g. at hackathons):
+
 - Load the Docker Configuration `docker-compose pull && docker-compose up`
-- Navigate to a new terminal in the same directory 
+- Navigate to a new terminal in the same directory
 - Stop the containers by running `docker-compose stop`
 - Install the hex and npm dependencies by running `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
 - Restart your containers by running `docker-compose up`
@@ -31,7 +32,7 @@ The fastest way to get the site up and running is to [use the included Docker co
 
 To access the site, run `docker-compose pull && docker-compose up` and wait until the `phoenix_1` container outputs `Compiled successfully`. Then you should find the site available in your browser at [`http://localhost:4000`](http://localhost:4000).
 
-Note:  The first time you load the docker configuration you will need to install the dependencies.  Leave the `phoenix_1` server running while navigating to a new command line tab inside the same directory.  Then run `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"` which will install the node modules and hex dependencies.  Now, navigate to `localhost:4000` to view the running application.  
+Note: The first time you load the docker configuration you will need to install the dependencies. Leave the `phoenix_1` server running while navigating to a new command line tab inside the same directory. Then run `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"` which will install the node modules and hex dependencies. Now, navigate to `localhost:4000` to view the running application.
 
 ##### Flexible method (e.g. longer-term development)
 
@@ -161,27 +162,3 @@ For the moment, this app is running in a Heroku instance with `mix phx.server`. 
 `heroku run POOL_SIZE=2 iex -S mix`
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
-
-## Setting up Vagrant
-
-Install [Oracle Virtual Box](https://www.virtualbox.org/wiki/Downloads)
-
-Install [Vagrant](https://www.vagrantup.com/downloads.html)
-
-Spin up the vagrant box. This is a onetime setup that will take some time. Approximately 30 minutes.
-```
-$ vagrant up
-```
-
-SSH into the vagrant box
-```
-$ vagrant ssh
-```
-
-from the vagrant shell
-
-```
-vagrant@ubuntu-bionic:~$ cd /vagrant
-```
-
-Run all the mix, iex, npm and all other build type commands from the vagrant shell from the /vagrant directory or it's children.
