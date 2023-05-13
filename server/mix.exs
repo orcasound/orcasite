@@ -75,7 +75,8 @@ defmodule Orcasite.Mixfile do
       {:ash_postgres, "~> 1.3"},
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
-      {:mailchimp, "~> 0.1.2"}
+      {:mailchimp, "~> 0.1.2"},
+      {:gen_smtp, "~> 1.0"}
     ]
   end
 
