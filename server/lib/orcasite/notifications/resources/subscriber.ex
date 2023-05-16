@@ -32,23 +32,6 @@ defmodule Orcasite.Notifications.Subscriber do
         })
       end
     end
-
-    create :newsletter_subscriber do
-      description "Create a subscriber for a newsletter"
-      accept [:name, :template_id]
-      argument :name, :string
-      argument :template_id, :string
-
-      change set_attribute(:name, arg(:name))
-      change set_attribute(:subscriber_type, :newsletter)
-
-      change fn changeset, _context ->
-        changeset
-        |> Ash.Changeset.change_attribute(:meta, %{
-          template_id: Ash.Changeset.get_argument(changeset, :template_id)
-        })
-      end
-    end
   end
 
   postgres do
@@ -62,7 +45,7 @@ defmodule Orcasite.Notifications.Subscriber do
     attribute :name, :string
 
     attribute :subscriber_type, :atom do
-      constraints one_of: [:individual, :organization, :newsletter]
+      constraints one_of: [:individual, :organization]
     end
 
     attribute :meta, :map

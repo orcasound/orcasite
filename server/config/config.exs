@@ -80,7 +80,7 @@ config :orcasite, :ecto_repos, [Orcasite.Repo]
 config :orcasite, Oban,
   repo: Orcasite.Repo,
   plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}], # 7 day job retention
-  queues: [default: 10, email: 10, newsletter: 10]
+  queues: [default: 10, email: 10]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

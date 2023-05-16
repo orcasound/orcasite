@@ -45,7 +45,7 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
     attribute :meta, :map
 
     attribute :channel, :atom do
-      constraints one_of: [:email, :newsletter]
+      constraints one_of: [:email]
     end
 
     attribute :processed_at, :utc_datetime_usec

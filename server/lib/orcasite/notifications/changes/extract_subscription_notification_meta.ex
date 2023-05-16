@@ -17,7 +17,6 @@ defmodule Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta do
     # Based on the channel, do:
     # If it's an email, get the email address, set subject and
     # body based on event type
-    # If it's a newsletter, get the template id and template variables
 
     changeset |> IO.inspect(label: "changeset with args?")
 

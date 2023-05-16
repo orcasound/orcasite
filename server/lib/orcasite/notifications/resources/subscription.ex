@@ -41,33 +41,6 @@ defmodule Orcasite.Notifications.Subscription do
 
       change manage_relationship(:subscriber, type: :append)
     end
-
-    create :newsletter_subscribe do
-      description "Create a subscription for a Mailchimp newsletter"
-      accept [:event_type, :subscriber, :template_variables, :template_id]
-      argument :template_id, :string
-      argument :template_variables, :map
-
-      argument :event_type, :atom do
-        constraints one_of: Event.types()
-        default nil
-      end
-
-      argument :subscriber, :uuid
-
-      change set_attribute(:event_type, arg(:event_type))
-
-      change fn changeset, _context ->
-        changeset
-        |> Ash.Changeset.change_attribute(:meta, %{
-          template_id: Ash.Changeset.get_argument(changeset, :template_id),
-          template_variables: Ash.Changeset.get_argument(changeset, :template_variables),
-          channel: :newsletter
-        })
-      end
-
-      change manage_relationship(:subscriber, type: :append)
-    end
   end
 
   postgres do
