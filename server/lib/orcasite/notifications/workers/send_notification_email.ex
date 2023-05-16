@@ -19,7 +19,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       name: sub_notif.meta["subscriber_name"],
       node: sub_notif.meta["node"]
     }
-    |> Orcasite.Notifications.Email.new_detection_email()
+    |> email_for_notif(sub_notif.meta["event_type"])
     |> Orcasite.Mailer.deliver()
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
@@ -30,4 +30,10 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
     :ok
   end
+
+  defp email_for_notif(params, "new_detection"),
+    do: Orcasite.Notifications.Email.new_detection_email(params)
+
+  defp email_for_notif(params, "confirmed_candidate"),
+    do: Orcasite.Notifications.Email.confirmed_candidate_email(params)
 end
