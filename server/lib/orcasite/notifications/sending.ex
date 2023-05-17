@@ -5,9 +5,9 @@ defmodule Orcasite.Notifications.Sending do
     Workers
   }
 
-  def queue(%SubscriptionNotification{id: id, channel: :email} = _sub_notif) do
+  def queue(%SubscriptionNotification{channel: :email} = sub_notif) do
     {:ok, %{id: _job_id}} =
-      %{subscription_notification_id: id}
+      %{subscription_notification: sub_notif}
       |> Workers.SendNotificationEmail.new()
       |> Repo.insert()
 

@@ -1,7 +1,7 @@
 defmodule Orcasite.Notifications.SubscriptionNotification do
   use Ash.Resource,
     extensions: [AshAdmin.Resource],
-    data_layer: AshPostgres.DataLayer
+  data_layer: Ash.DataLayer.Ets
 
   alias Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta
   alias Orcasite.Notifications.{Notification, Subscription}
@@ -13,10 +13,10 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
     """
   end
 
-  postgres do
-    table "subscription_notifications"
-    repo Orcasite.Repo
-  end
+  # postgres do
+  #   table "subscription_notifications"
+  #   repo Orcasite.Repo
+  # end
 
   code_interface do
     define_for Orcasite.Notifications
@@ -36,6 +36,13 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
       change manage_relationship(:notification, type: :append)
 
       change {ExtractSubscriptionNotificationMeta, []}
+
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.after_action(fn _, record ->
+          Orcasite.Notifications.Sending.queue(record)
+        end)
+      end
     end
   end
 

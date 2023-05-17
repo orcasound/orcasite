@@ -18,8 +18,6 @@ defmodule Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta do
     # If it's an email, get the email address, set subject and
     # body based on event type
 
-    changeset |> IO.inspect(label: "changeset with args?")
-
     with {:get_sub, {:ok, subscription}} <-
            {:get_sub, Notifications.get(Subscription, changeset.arguments.subscription)},
          {:get_notif, {:ok, notification}} <-
@@ -32,6 +30,7 @@ defmodule Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta do
         node: Map.get(notification.meta, "node"),
         timestamp: Map.get(notification.meta, "timestamp")
       })
+      |> Ash.Changeset.change_attribute(:channel, Map.get(subscription.meta, "channel"))
     else
       {:get_sub, {:error, _}} ->
         changeset
