@@ -1,18 +1,24 @@
 defmodule Orcasite.Notifications.Sending do
-  alias Orcasite.Repo
   alias Orcasite.Notifications.{
     SubscriptionNotification,
     Workers
   }
 
-  def queue(%SubscriptionNotification{channel: :email} = sub_notif) do
+  def queue(
+        %SubscriptionNotification{
+          channel: :email,
+          id: id,
+          notification_id: notification_id,
+          subscription_id: subscription_id
+        } = _subscription_notification
+      ) do
     {:ok, %{id: _job_id}} =
-      %{subscription_notification: sub_notif}
+      %{
+        subscription_notification_id: id,
+        notification_id: notification_id,
+        subscription_id: subscription_id
+      }
       |> Workers.SendNotificationEmail.new()
-      |> Repo.insert()
-
-    # notification
-    # |> Ash.Changeset.for_update(:update, %{status: :pending, meta: %{job_id: job_id}})
-    # |> Notifications.update!()
+      |> Oban.insert()
   end
 end

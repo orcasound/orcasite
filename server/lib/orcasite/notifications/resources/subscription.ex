@@ -58,6 +58,8 @@ defmodule Orcasite.Notifications.Subscription do
       constraints one_of: Event.types()
     end
 
+    attribute :last_notified_at, :utc_datetime_usec
+
     create_timestamp :inserted_at
     update_timestamp :updated_at
   end
@@ -70,6 +72,11 @@ defmodule Orcasite.Notifications.Subscription do
       through SubscriptionNotification
       source_attribute_on_join_resource :subscription_id
       destination_attribute_on_join_resource :notification_id
+    end
+
+    belongs_to :last_notification, Notification do
+
+
     end
   end
 end

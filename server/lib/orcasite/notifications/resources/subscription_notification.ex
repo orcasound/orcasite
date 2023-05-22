@@ -1,7 +1,7 @@
 defmodule Orcasite.Notifications.SubscriptionNotification do
   use Ash.Resource,
     extensions: [AshAdmin.Resource],
-  data_layer: Ash.DataLayer.Ets
+    data_layer: Ash.DataLayer.Ets
 
   alias Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta
   alias Orcasite.Notifications.{Notification, Subscription}
@@ -40,7 +40,10 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.after_action(fn _, record ->
-          Orcasite.Notifications.Sending.queue(record)
+          record
+          |> Orcasite.Notifications.Sending.queue()
+
+          {:ok, record}
         end)
       end
     end

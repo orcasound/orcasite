@@ -1,29 +1,44 @@
 defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
-  use Oban.Worker, queue: :email
+  use Oban.Worker, queue: :email, unique: [keys: [:notification_id, :subscription_id]]
 
   alias Orcasite.Notifications
-  # alias Orcasite.Notifications.SubscriptionNotification
+  alias Orcasite.Notifications.SubscriptionNotification
 
   @impl Oban.Worker
   def perform(%Oban.Job{
-        args: %{"subscription_notification" => sub_notif} = args
+        args: %{"subscription_notification_id" => subscription_notification_id} = _args
       }) do
+    sub_notif =
+      SubscriptionNotification
+      |> Ash.Query.for_read(:read, %{id: subscription_notification_id})
+      |> Notifications.read!()
+      |> Notifications.load([:notification, subscription: [:subscriber]])
+      |> case do
+        {:ok, notifs} when is_list(notifs) ->
+          notifs |> List.last()
 
-    {:ok, [sub_notif]} =
-      sub_notif |> Notifications.load([:notification, subscription: [:subscriber]])
+        {:ok, notif} ->
+          notif
+      end
+
+    params =
+      sub_notif.meta
+      |> stringify_map()
+      |> Map.merge(stringify_map(sub_notif.subscription.meta))
+      |> Map.merge(stringify_map(sub_notif.notification.meta))
 
     %{
-      to: sub_notif.meta["email"],
-      name: sub_notif.meta["subscriber_name"],
-      node: sub_notif.meta["node"]
+      to: params["email"],
+      name: params["subscriber_name"],
+      node: params["node"]
     }
-    |> email_for_notif(sub_notif.meta["event_type"])
+    |> email_for_notif(stringify(params["event_type"]))
     |> Orcasite.Mailer.deliver()
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       sub_notif
-      |> Ash.Changeset.for_update(:update, %{status: :sent, processed_at: DateTime.utc_now()})
-      |> Notifications.update!()
+      |> Ash.Changeset.for_destroy(:destroy)
+      |> Notifications.destroy!()
     end)
 
     :ok
@@ -34,4 +49,18 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
   defp email_for_notif(params, "confirmed_candidate"),
     do: Orcasite.Notifications.Email.confirmed_candidate_email(params)
+
+  defp stringify(name) when is_atom(name), do: Atom.to_string(name)
+  defp stringify(name), do: name
+
+  defp stringify_map(map) do
+    map
+    |> Map.new(fn
+      {k, v} when is_atom(k) ->
+        {Atom.to_string(k), v}
+
+      {k, v} ->
+        {k, v}
+    end)
+  end
 end
