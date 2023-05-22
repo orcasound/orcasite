@@ -74,9 +74,6 @@ defmodule Orcasite.Notifications.Subscription do
       destination_attribute_on_join_resource :notification_id
     end
 
-    belongs_to :last_notification, Notification do
-
-
-    end
+    belongs_to :last_notification, Notification
   end
 end

@@ -35,6 +35,13 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     |> email_for_notif(stringify(params["event_type"]))
     |> Orcasite.Mailer.deliver()
 
+    sub_notif.subscription
+    |> Ash.Changeset.for_update(:update, %{
+      last_notified_at: DateTime.utc_now()
+    })
+    |> Ash.Changeset.manage_relationship(:last_notification, sub_notif.notification, type: :append)
+    |> Notifications.update!()
+
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       sub_notif
       |> Ash.Changeset.for_destroy(:destroy)
