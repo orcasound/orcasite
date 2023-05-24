@@ -11,6 +11,7 @@ defmodule Orcasite.Application do
       {Phoenix.PubSub, name: Orcasite.PubSub},
       {Finch, name: Orcasite.Finch},
       {Task.Supervisor, name: Orcasite.TaskSupervisor},
+      {AshAuthentication.Supervisor, otp_app: :orcasite},
       OrcasiteWeb.Endpoint,
       OrcasiteWeb.Presence
     ]
