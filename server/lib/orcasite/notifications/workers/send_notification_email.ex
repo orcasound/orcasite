@@ -2,7 +2,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
   use Oban.Worker, queue: :email, unique: [keys: [:notification_id, :subscription_id]]
 
   alias Orcasite.Notifications
-  alias Orcasite.Notifications.SubscriptionNotification
+  alias Orcasite.Notifications.{Subscription, SubscriptionNotification}
 
   @impl Oban.Worker
   def perform(%Oban.Job{
@@ -36,11 +36,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     |> Orcasite.Mailer.deliver()
 
     sub_notif.subscription
-    |> Ash.Changeset.for_update(:update, %{
-      last_notified_at: DateTime.utc_now()
-    })
-    |> Ash.Changeset.manage_relationship(:last_notification, sub_notif.notification, type: :append)
-    |> Notifications.update!()
+    |> Subscription.update_last_notification(sub_notif.notification_id)
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       sub_notif

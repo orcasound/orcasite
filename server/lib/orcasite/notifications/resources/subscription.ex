@@ -41,6 +41,57 @@ defmodule Orcasite.Notifications.Subscription do
 
       change manage_relationship(:subscriber, type: :append)
     end
+
+    update :update_last_notification do
+      accept [:last_notification]
+
+      argument :last_notification, :uuid
+
+      change manage_relationship(:last_notification, type: :append)
+      change set_attribute(:last_notified_at, &DateTime.utc_now/0)
+    end
+
+    read :available_for_notification do
+      description """
+      Subscriptions that can be sent a notification. Finds subscriptions that haven't been sent a
+      notification recently and that match the notification's event type.
+      """
+
+      pagination keyset?: true, required?: false
+
+      argument :notification_id, :uuid
+
+      argument :event_type, :atom do
+        constraints one_of: Event.types()
+        default nil
+      end
+
+      argument :minutes_ago, :integer, default: 5
+
+      filter expr(last_notification_id != ^arg(:notification_id))
+      filter expr(event_type == ^arg(:event_type))
+
+      filter expr(
+               fragment(
+                 "? is null or ? < now() - ?::numeric * interval '1 minute'",
+                 last_notified_at,
+                 last_notified_at,
+                 ^arg(:minutes_ago)
+               )
+             )
+    end
+  end
+
+  code_interface do
+    define_for Orcasite.Notifications
+
+    define :update_last_notification,
+      action: :update_last_notification,
+      args: [:last_notification]
+
+    define :available_for_notification,
+      action: :available_for_notification,
+      args: [:notification_id, :event_type, {:optional, :minutes_ago}]
   end
 
   postgres do

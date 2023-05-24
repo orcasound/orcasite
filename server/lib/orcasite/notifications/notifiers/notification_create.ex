@@ -10,15 +10,31 @@ defmodule Orcasite.Notifications.Notifiers.NotifySubscriptions do
           data: notification
         } = _notif
       ) do
-    IO.inspect(notification,
-      label:
-        "notification (server/lib/orcasite/notifications/notifiers/notification_create.ex:#{__ENV__.line})"
-    )
-
     # Queue up an async process that:
-      # Query Subscriptions that match this notification's event_type
-      # and queue up a SubscriptionNotification create for each subscription as
-      # long as the subscription has not had a recent SubscriptionNotification of the
-      # same event type (or perhaps for the same subscriber)
+    # Query Subscriptions that match this notification's event_type
+    # and queue up a SubscriptionNotification create for each subscription as
+    # long as the subscription has not had a recent SubscriptionNotification of the
+    # same event type (or perhaps for the same subscriber)
+    Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+      Orcasite.Notifications.Subscription
+      |> Ash.Query.for_read(:available_for_notification, %{
+        notification_id: notification.id,
+        event_type: notification.event_type
+      })
+      |> IO.inspect(
+        label:
+          "query? (server/lib/orcasite/notifications/notifiers/notification_create.ex:#{__ENV__.line})"
+      )
+      |> Orcasite.Notifications.stream!()
+      |> Stream.map(fn subscription ->
+        Orcasite.Notifications.SubscriptionNotification
+        |> Ash.Changeset.for_create(:create_with_relationships, %{
+          notification: notification.id,
+          subscription: subscription.id
+        })
+        |> Orcasite.Notifications.create!()
+      end)
+      |> Stream.run()
+    end)
   end
 end
