@@ -13,11 +13,6 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
     """
   end
 
-  # postgres do
-  #   table "subscription_notifications"
-  #   repo Orcasite.Repo
-  # end
-
   code_interface do
     define_for Orcasite.Notifications
     define :update, action: :update, args: [:status, :meta, :processed_at]

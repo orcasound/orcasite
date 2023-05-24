@@ -18,22 +18,6 @@ defmodule Orcasite.Repo.Migrations.CreateNotificationSchema do
       add :subscriber_id, :uuid
     end
 
-    create table(:subscription_notifications, primary_key: false) do
-      add :id, :uuid, null: false, primary_key: true, default: fragment("uuid_generate_v4()")
-      add :processed_at, :utc_datetime_usec
-      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
-      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-
-      add :subscription_id,
-          references(:subscriptions,
-            column: :id,
-            name: "subscription_notifications_subscription_id_fkey",
-            type: :uuid
-          )
-
-      add :notification_id, :uuid
-    end
-
     create table(:subscribers, primary_key: false) do
       add :id, :uuid, null: false, primary_key: true, default: fragment("uuid_generate_v4()")
     end
@@ -59,15 +43,6 @@ defmodule Orcasite.Repo.Migrations.CreateNotificationSchema do
       add :id, :uuid, null: false, primary_key: true, default: fragment("uuid_generate_v4()")
     end
 
-    alter table(:subscription_notifications) do
-      modify :notification_id,
-             references(:notifications,
-               column: :id,
-               name: "subscription_notifications_notification_id_fkey",
-               type: :uuid
-             )
-    end
-
     alter table(:notifications) do
       add :meta, :map
       add :processed_at, :utc_datetime_usec
@@ -84,15 +59,6 @@ defmodule Orcasite.Repo.Migrations.CreateNotificationSchema do
       remove :event_type
       remove :processed_at
       remove :meta
-    end
-
-    drop constraint(
-           :subscription_notifications,
-           "subscription_notifications_notification_id_fkey"
-         )
-
-    alter table(:subscription_notifications) do
-      modify :notification_id, :uuid
     end
 
     drop table(:notifications)
@@ -112,13 +78,6 @@ defmodule Orcasite.Repo.Migrations.CreateNotificationSchema do
     end
 
     drop table(:subscribers)
-
-    drop constraint(
-           :subscription_notifications,
-           "subscription_notifications_subscription_id_fkey"
-         )
-
-    drop table(:subscription_notifications)
 
     drop table(:subscriptions)
   end
