@@ -9,15 +9,9 @@ defmodule Orcasite.Repo.Migrations.AddObanTables do
 
   def up do
     Oban.Migration.up(version: 11)
-    alter table(:subscription_notifications) do
-      modify :status, :text, default: "new"
-    end
   end
 
   def down do
-    alter table(:subscription_notifications) do
-      modify :status, :text, default: "pending"
-    end
     Oban.Migration.up(version: 1)
   end
 end
