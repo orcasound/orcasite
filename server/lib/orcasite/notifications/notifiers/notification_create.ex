@@ -21,10 +21,6 @@ defmodule Orcasite.Notifications.Notifiers.NotifySubscriptions do
         notification_id: notification.id,
         event_type: notification.event_type
       })
-      |> IO.inspect(
-        label:
-          "query? (server/lib/orcasite/notifications/notifiers/notification_create.ex:#{__ENV__.line})"
-      )
       |> Orcasite.Notifications.stream!()
       |> Stream.map(fn subscription ->
         Orcasite.Notifications.SubscriptionNotification

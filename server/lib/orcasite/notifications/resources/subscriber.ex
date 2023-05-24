@@ -39,6 +39,18 @@ defmodule Orcasite.Notifications.Subscriber do
     repo Orcasite.Repo
   end
 
+  authentication do
+    api Orcasite.Notifications
+
+    tokens do
+      enabled? true
+      token_resource Orcasite.Notifications.SubscribeToken
+      signing_secret fn _, _ ->
+        Application.fetch_env(:orcasite, :token_signing_secret)
+      end
+    end
+  end
+
   attributes do
     uuid_primary_key :id
 

@@ -64,6 +64,9 @@ config :orcasite, Orcasite.Repo,
   pool_size: 10,
   types: Orcasite.PostgresTypes
 
+
+config :orcasite, :token_signing_secret, "Xstt5R1uV9bpU1znaidSShp4nPiQFeIR4gpfaxtQ1xqb2Oo4m86lEyzMKFpzhjxL"
+
 config :orcasite,
        :orcasite_s3_url,
        System.get_env("ORCASITE_S3_URL") || "https://s3-us-west-2.amazonaws.com/orcasite"
