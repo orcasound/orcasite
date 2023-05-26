@@ -1,6 +1,6 @@
 defmodule Orcasite.Notifications.Subscriber do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource],
+    extensions: [AshAdmin.Resource, AshAuthentication],
     data_layer: AshPostgres.DataLayer
 
   alias Orcasite.Notifications.{Subscription}
@@ -9,6 +9,10 @@ defmodule Orcasite.Notifications.Subscriber do
     description """
     A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
     """
+  end
+
+  identities do
+    identity :id, [:id]
   end
 
   actions do
@@ -42,9 +46,25 @@ defmodule Orcasite.Notifications.Subscriber do
   authentication do
     api Orcasite.Notifications
 
+    strategies do
+      magic_link do
+        identity_field :id
+
+        sender fn subscriber, token, _opts ->
+          IO.inspect({subscriber, token},
+            label:
+              "subscriber/token (server/lib/orcasite/notifications/resources/subscriber.ex:#{__ENV__.line})"
+          )
+
+          # Orcasite.Emails.deliver_magic_link(user, token)
+        end
+      end
+    end
+
     tokens do
       enabled? true
       token_resource Orcasite.Notifications.SubscribeToken
+
       signing_secret fn _, _ ->
         Application.fetch_env(:orcasite, :token_signing_secret)
       end

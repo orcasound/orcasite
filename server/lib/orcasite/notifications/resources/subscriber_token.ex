@@ -1,7 +1,7 @@
 defmodule Orcasite.Notifications.SubscriberToken do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication.TokenResource]
+    extensions: [AshAuthentication.TokenResource, Ash.Policy.Authorizer]
 
   token do
     api Orcasite.Notifications
@@ -14,6 +14,10 @@ defmodule Orcasite.Notifications.SubscriberToken do
 
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+
+    bypass actor_attribute_equals(:admin, true) do
       authorize_if always()
     end
   end
