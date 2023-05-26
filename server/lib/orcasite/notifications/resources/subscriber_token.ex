@@ -12,13 +12,13 @@ defmodule Orcasite.Notifications.SubscriberToken do
     repo Orcasite.Repo
   end
 
-  policies do
-    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
-      authorize_if always()
-    end
+  # policies do
+  #   bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+  #     authorize_if always()
+  #   end
 
-    bypass actor_attribute_equals(:admin, true) do
-      authorize_if always()
-    end
-  end
+  #   bypass actor_attribute_equals(:admin, true) do
+  #     authorize_if always()
+  #   end
+  # end
 end

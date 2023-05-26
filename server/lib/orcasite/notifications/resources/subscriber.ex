@@ -48,8 +48,11 @@ defmodule Orcasite.Notifications.Subscriber do
     api Orcasite.Notifications
 
     strategies do
-      magic_link do
+      magic_link :manage_subscriptions do
         identity_field :id
+
+        single_use_token? false
+        token_lifetime 1_209_600 # 14 days (in minutes)
 
         sender fn subscriber, token, _opts ->
           IO.inspect({subscriber, token},
@@ -65,7 +68,6 @@ defmodule Orcasite.Notifications.Subscriber do
     tokens do
       enabled? true
       token_resource Orcasite.Notifications.SubscriberToken
-
       signing_secret Application.compile_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]
     end
   end

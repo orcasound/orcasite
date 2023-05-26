@@ -80,8 +80,8 @@ defmodule OrcasiteWeb.Router do
     ash_admin "/admin"
 
     sign_in_route()
-    sign_out_route OrcasiteWeb.AuthController
-    auth_routes_for Orcasite.Notifications.Subscriber, to: OrcasiteWeb.AuthController
+    sign_out_route OrcasiteWeb.SubscriberAuthController
+    auth_routes_for Orcasite.Notifications.Subscriber, to: OrcasiteWeb.SubscriberAuthController
     reset_route []
   end
 
