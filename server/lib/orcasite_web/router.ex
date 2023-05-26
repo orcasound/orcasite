@@ -1,5 +1,7 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
+  use AshAuthentication.Phoenix.Router
+
   require Logger
 
   import AshAdmin.Router
@@ -26,6 +28,7 @@ defmodule OrcasiteWeb.Router do
     plug(:put_root_layout, {OrcasiteWeb.Layouts, :root})
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
+    plug :load_from_session
   end
 
   pipeline :nextjs do
@@ -76,11 +79,13 @@ defmodule OrcasiteWeb.Router do
     # TODO: Put behind auth
     ash_admin "/admin"
 
+    sign_in_route()
+    sign_out_route OrcasiteWeb.AuthController
+    auth_routes_for Orcasite.Notifications.Subscriber, to: OrcasiteWeb.AuthController
+    reset_route []
   end
 
   scope "/" do
-
-
     if Mix.env() == :dev do
       pipe_through(:nextjs)
       get("/*page", OrcasiteWeb.PageController, :index)

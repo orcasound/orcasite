@@ -66,9 +66,7 @@ defmodule Orcasite.Notifications.Subscriber do
       enabled? true
       token_resource Orcasite.Notifications.SubscriberToken
 
-      signing_secret fn _, _ ->
-        Application.fetch_env(:orcasite, :token_signing_secret)
-      end
+      signing_secret Application.compile_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]
     end
   end
 
