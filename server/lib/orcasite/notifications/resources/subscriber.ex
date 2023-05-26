@@ -12,6 +12,7 @@ defmodule Orcasite.Notifications.Subscriber do
   end
 
   identities do
+    # Needed by magic_token. Primary key doesn't show up as an identity otherwise
     identity :id, [:id]
   end
 
@@ -63,7 +64,7 @@ defmodule Orcasite.Notifications.Subscriber do
 
     tokens do
       enabled? true
-      token_resource Orcasite.Notifications.SubscribeToken
+      token_resource Orcasite.Notifications.SubscriberToken
 
       signing_secret fn _, _ ->
         Application.fetch_env(:orcasite, :token_signing_secret)
