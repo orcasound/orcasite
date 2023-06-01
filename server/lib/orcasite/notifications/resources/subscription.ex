@@ -165,4 +165,10 @@ defmodule Orcasite.Notifications.Subscription do
 
     belongs_to :last_notification, Notification
   end
+
+  def unsubscribe_token(subscription) do
+    strategy = AshAuthentication.Info.strategy!(Orcasite.Notifications.Subscription, :unsubscribe)
+    {:ok, token} = AshAuthentication.Strategy.MagicLink.request_token_for(strategy, subscription)
+    token
+  end
 end

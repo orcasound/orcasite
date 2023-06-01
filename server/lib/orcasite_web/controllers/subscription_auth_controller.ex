@@ -13,8 +13,6 @@ defmodule OrcasiteWeb.SubscriptionAuthController do
   def success(conn, _activity, subscription, _token) when not is_nil(subscription) do
     return_to = get_session(conn, :return_to) || ~p"/"
 
-    IO.inspect(subscription, label: "subscription (server/lib/orcasite_web/controllers/subscription_auth_controller.ex:#{__ENV__.line})")
-
     subscription
     |> Ash.Changeset.for_update(:update, %{active: false})
     |> Orcasite.Notifications.update!()
