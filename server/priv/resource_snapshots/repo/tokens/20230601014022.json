@@ -76,7 +76,7 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "D41CD8E8D4964010502EA407DBCC392FF40E587BACFBC6DFC4D28CCB8ED0FC73",
+  "hash": "45983F951758C6446C20F88ADEB40BA0F5851A62B63F649D38436E227EC1E9A6",
   "identities": [],
   "multitenancy": {
     "attribute": null,
@@ -85,5 +85,5 @@
   },
   "repo": "Elixir.Orcasite.Repo",
   "schema": null,
-  "table": "subscriber_tokens"
+  "table": "tokens"
 }

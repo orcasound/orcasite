@@ -1,4 +1,4 @@
-defmodule Orcasite.Notifications.SubscriberToken do
+defmodule Orcasite.Notifications.Token do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication.TokenResource, Ash.Policy.Authorizer]
@@ -8,7 +8,7 @@ defmodule Orcasite.Notifications.SubscriberToken do
   end
 
   postgres do
-    table "subscriber_tokens"
+    table "tokens"
     repo Orcasite.Repo
   end
 

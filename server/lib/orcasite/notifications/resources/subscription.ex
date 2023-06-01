@@ -1,6 +1,6 @@
 defmodule Orcasite.Notifications.Subscription do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource],
+    extensions: [AshAdmin.Resource, AshAuthentication],
     data_layer: AshPostgres.DataLayer
 
   alias Orcasite.Notifications.{Event, Notification, SubscriptionNotification, Subscriber}
@@ -10,6 +10,11 @@ defmodule Orcasite.Notifications.Subscription do
     A subscription - relates a subscriber to a notification type and a channel.
     (i.e. subscribing to :new_detection via :email)
     """
+  end
+
+  identities do
+    # Needed by magic_token. Primary key doesn't show up as an identity otherwise
+    identity :id, [:id]
   end
 
   actions do
@@ -40,6 +45,35 @@ defmodule Orcasite.Notifications.Subscription do
       end
 
       change manage_relationship(:subscriber, type: :append)
+    end
+
+    authentication do
+      api Orcasite.Notifications
+
+      strategies do
+        magic_link :unsubscribe do
+          identity_field :id
+
+          single_use_token? false
+          # 14 days (in minutes)
+          token_lifetime 1_209_600
+
+          sender fn subscription, token, _opts ->
+            IO.inspect({subscription, token},
+              label:
+                "{subscription, token} (server/lib/orcasite/notifications/resources/subscription.ex:#{__ENV__.line})"
+            )
+
+            # Orcasite.Emails.deliver_magic_link(user, token)
+          end
+        end
+      end
+
+      tokens do
+        enabled? true
+        token_resource Orcasite.Notifications.Token
+        signing_secret Application.compile_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]
+      end
     end
 
     update :update_last_notification do
@@ -79,6 +113,8 @@ defmodule Orcasite.Notifications.Subscription do
                  ^arg(:minutes_ago)
                )
              )
+
+      filter expr(active == true)
     end
   end
 
@@ -104,6 +140,8 @@ defmodule Orcasite.Notifications.Subscription do
 
     attribute :name, :string
     attribute :meta, :map
+
+    attribute :active, :boolean, default: true
 
     attribute :event_type, :atom do
       constraints one_of: Event.types()

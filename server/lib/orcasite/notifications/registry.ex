@@ -9,6 +9,6 @@ defmodule Orcasite.Notifications.Registry do
     entry Orcasite.Notifications.Subscriber
     entry Orcasite.Notifications.Subscription
     entry Orcasite.Notifications.SubscriptionNotification
-    entry Orcasite.Notifications.SubscriberToken
+    entry Orcasite.Notifications.Token
   end
 end

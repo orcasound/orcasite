@@ -1,4 +1,4 @@
-defmodule Orcasite.Repo.Migrations.AddSubscriberTokens do
+defmodule Orcasite.Repo.Migrations.AddTokens do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -8,7 +8,7 @@ defmodule Orcasite.Repo.Migrations.AddSubscriberTokens do
   use Ecto.Migration
 
   def up do
-    create table(:subscriber_tokens, primary_key: false) do
+    create table(:tokens, primary_key: false) do
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :created_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :extra_data, :map
@@ -17,9 +17,13 @@ defmodule Orcasite.Repo.Migrations.AddSubscriberTokens do
       add :subject, :text, null: false
       add :jti, :text, null: false, primary_key: true
     end
+
+    create unique_index(:subscriptions, [:id], name: "subscriptions_id_index")
   end
 
   def down do
-    drop table(:subscriber_tokens)
+    drop_if_exists unique_index(:subscriptions, [:id], name: "subscriptions_id_index")
+
+    drop table(:tokens)
   end
 end
