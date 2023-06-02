@@ -11,18 +11,15 @@ defmodule OrcasiteWeb.SubscriptionAuthController do
   end
 
   def success(conn, _activity, subscription, _token) when not is_nil(subscription) do
-    return_to = get_session(conn, :return_to) || ~p"/"
-
     subscription
     |> Ash.Changeset.for_update(:update, %{active: false})
     |> Orcasite.Notifications.update!()
 
-    # TODO: Add success page for subscription unsub
     conn
     |> delete_session(:return_to)
     |> store_in_session(subscription)
     |> assign(:current_subscription, subscription)
-    |> redirect(to: return_to)
+    |> render("success.html")
   end
 
   def failure(conn, _activity, _reason) do
