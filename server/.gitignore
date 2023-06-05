@@ -40,8 +40,6 @@ bash /
 
 docker/
 
-.vagrant/
-
 *.log
 
 .elixir_ls/

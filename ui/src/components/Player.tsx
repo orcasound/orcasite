@@ -1,9 +1,10 @@
-import { Pause, PlayArrow } from '@mui/icons-material'
+import { GraphicEq, Pause, PlayArrow } from '@mui/icons-material'
 import { Box, Fab, styled } from '@mui/material'
 import { useEffect, useState } from 'react'
 
 import type { Feed } from '../generated/types'
 import useIsMobile from '../hooks/useIsMobile'
+import DetectionDialog from './DetectionDialog'
 import MediaStreamer from './MediaStreamer'
 
 const PlayerContainer = styled('div')`
@@ -23,7 +24,13 @@ const StyledButtonContainer = styled('div')`
 export default function Player({ currentFeed }: { currentFeed?: Feed }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [controls, setControls] = useState({ playPause: () => {} })
+  const [controls, setControls] = useState({
+    play: () => {},
+    pause: () => {},
+    playPause: () => {},
+    getPlayerTime: () => {},
+    setVolume: () => {},
+  })
   const [hlsURI, setHlsURI] = useState<string>()
   const [currentXhr, setCurrentXhr] = useState<XMLHttpRequest>()
   const [timestamp, setTimestamp] = useState('')
@@ -109,17 +116,73 @@ export default function Player({ currentFeed }: { currentFeed?: Feed }) {
     <Box
       sx={{
         minHeight: 80,
-        color: 'secondary.contrastText',
-        backgroundColor: 'secondary.main',
+        color: 'base.contrastText',
+        backgroundColor: 'base.main',
+        ...(isMobile && { mb: (theme) => theme.spacing(8) }),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        ...(isMobile && { mb: (theme) => theme.spacing(8) }),
+        position: 'relative',
       }}
     >
+      {isPlaying && (
+        <DetectionDialog
+          isPlaying={isPlaying}
+          feed={currentFeed}
+          timestamp={timestamp}
+          getPlayerTime={controls.getPlayerTime}
+          // listenerCount={this.props.listenerCount}
+        >
+          <Fab
+            variant="extended"
+            size="large"
+            color="secondary"
+            sx={{
+              position: 'absolute',
+              bottom: 100,
+              left: 0,
+              right: 0,
+              margin: 'auto',
+              maxWidth: 'max-content',
+
+              // style to look like outlined button
+              backgroundColor: 'white',
+              color: 'primary.main',
+              borderColor: 'primary.main',
+              borderStyle: 'solid',
+              borderWidth: '2px',
+              '&:hover': {
+                backgroundColor: 'primary.main',
+                color: 'white',
+              },
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <GraphicEq sx={{ mr: 1 }} />
+              Report sound
+            </Box>
+          </Fab>
+        </DetectionDialog>
+      )}
       <PlayerContainer sx={{ mx: 2 }}>
         <StyledButtonContainer>
-          <Fab color="secondary" onClick={controls.playPause}>
+          <Fab
+            color="base"
+            sx={{
+              // set hover color manually because custom colors are broken for Fab
+              // see https://github.com/mui/material-ui/issues/31063
+              '&:hover': {
+                backgroundColor: 'base.light',
+              },
+            }}
+            onClick={controls.playPause}
+          >
             {!isPlaying && (
               <PlayArrow
                 className="icon"
@@ -139,16 +202,6 @@ export default function Player({ currentFeed }: { currentFeed?: Feed }) {
               />
             )}
           </Fab>
-
-          {/* {isPlaying && (
-              <DetectionDialog
-                isPlaying={isPlaying}
-                feed={currentFeed}
-                timestamp={timestamp}
-                getPlayerTime={getPlayerTime}
-                listenerCount={this.props.listenerCount}
-              />
-            )} */}
         </StyledButtonContainer>
         {hlsURI && (
           <MediaStreamer
