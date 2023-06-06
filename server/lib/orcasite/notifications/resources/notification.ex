@@ -8,9 +8,9 @@ defmodule Orcasite.Notifications.Notification do
 
   resource do
     description """
-    A notification object. Once created, this will be sent to any number of subscribers (api clients,
-    newsletters, individuals, admins, etc) through their subscribed channels for the given event type
-    (confirmed candidate created, detection verified, etc).
+    Notification for a specific event type. Once created, all Subscriptions that match this Notification's
+    event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
+    channel settings (email, browser notification, webhooks).
     """
   end
 
