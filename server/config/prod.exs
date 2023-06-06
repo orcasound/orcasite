@@ -41,3 +41,7 @@ config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Orcasite.Finch
 config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
   secret_key: System.get_env("GUARDIAN_SECRET_KEY")
+
+config :orcasite, OrcasiteWeb.BasicAuth,
+  username: System.get_env("ADMIN_USER"),
+  password: System.get_env("ADMIN_PASSWORD")

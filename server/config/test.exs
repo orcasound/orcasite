@@ -26,3 +26,5 @@ config :orcasite, Oban, testing: :inline
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"

@@ -1,7 +1,5 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
-  use AshAuthentication.Phoenix.Router
-
   require Logger
 
   import AshAdmin.Router
@@ -29,6 +27,10 @@ defmodule OrcasiteWeb.Router do
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug :load_from_session
+  end
+
+  pipeline :require_admin do
+    plug OrcasiteWeb.BasicAuth
   end
 
   pipeline :nextjs do
@@ -75,10 +77,8 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
-    pipe_through(:browser)
-    # TODO: Put behind auth
+    pipe_through [:browser, :require_admin]
     ash_admin "/admin"
-
     sign_in_route()
 
     sign_out_route OrcasiteWeb.SubscriberAuthController
