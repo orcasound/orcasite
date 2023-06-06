@@ -47,6 +47,7 @@ defmodule OrcasiteWeb.Router do
   pipeline :api do
     plug(:parsers)
     plug(:accepts, ["json"])
+    plug :load_from_bearer
   end
 
   pipeline :graphql do
