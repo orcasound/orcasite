@@ -44,4 +44,4 @@ config :orcasite, OrcasiteWeb.Guardian,
 
 config :orcasite, OrcasiteWeb.BasicAuth,
   username: System.get_env("ADMIN_USER"),
-  password: System.get_env("ADMIN_PASS")
+  password: System.get_env("ADMIN_PASSWORD")
