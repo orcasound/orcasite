@@ -28,6 +28,10 @@ defmodule OrcasiteWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :require_admin do
+    plug OrcasiteWeb.BasicAuth, Application.compile_env(:orcasite, OrcasiteWeb.BasicAuth)
+  end
+
   pipeline :nextjs do
     plug(:accepts, ["html"])
     plug(:put_secure_browser_headers)
@@ -72,15 +76,11 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
-    pipe_through(:browser)
-    # TODO: Put behind auth
+    pipe_through [:browser, :require_admin]
     ash_admin "/admin"
-
   end
 
   scope "/" do
-
-
     if Mix.env() == :dev do
       pipe_through(:nextjs)
       get("/*page", OrcasiteWeb.PageController, :index)

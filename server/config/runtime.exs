@@ -69,5 +69,9 @@ if config_env() == :prod do
     adapter: Swoosh.Adapters.Mandrill,
     api_key: System.get_env("ORCASOUND_MANDRILL_API_KEY")
 
+  config :orcasite, OrcasiteWeb.BasicAuth,
+    username: System.get_env("ADMIN_USER"),
+    password: System.get_env("ADMIN_PASS")
 end
+
 config :mailchimp, api_key: System.get_env("ORCASOUND_MAILCHIMP_API_KEY")
