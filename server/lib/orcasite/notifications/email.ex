@@ -65,7 +65,7 @@ defmodule Orcasite.Notifications.Email do
       </p>
 
       <p>
-        Listen to orcase here: <a href={"https://live.orcasound.net/#{@node}"}>https://live.orcasound.net/<%= @node %></a>
+        Listen to orcas here: <a href={"https://live.orcasound.net/#{@node}"}>https://live.orcasound.net/<%= @node %></a>
       </p>
 
       <%= if @unsubscribe_token do %>
