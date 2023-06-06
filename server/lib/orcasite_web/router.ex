@@ -29,7 +29,7 @@ defmodule OrcasiteWeb.Router do
   end
 
   pipeline :require_admin do
-    plug OrcasiteWeb.BasicAuth, Application.compile_env(:orcasite, OrcasiteWeb.BasicAuth)
+    plug OrcasiteWeb.BasicAuth
   end
 
   pipeline :nextjs do

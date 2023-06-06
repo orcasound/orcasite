@@ -4,7 +4,8 @@ defmodule OrcasiteWeb.BasicAuth do
 
   def init(opts), do: opts
 
-  def call(conn, correct_auth) do
+  def call(conn) do
+    correct_auth = Application.get_env(:orcasite, OrcasiteWeb.BasicAuth)
     case get_req_header(conn, "authorization") do
       ["Basic " <> attempted_auth] -> verify(conn, attempted_auth, correct_auth)
       _ -> unauthorized(conn)
