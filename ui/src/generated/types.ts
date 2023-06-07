@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
-import * as Dom from 'graphql-request/dist/types.dom'
+import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types'
 import gql from 'graphql-tag'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
@@ -12,26 +12,35 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>
 }
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T
+> = { [_ in K]?: never }
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
+    }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string
-  String: string
-  Boolean: boolean
-  Int: number
-  Float: number
-  DateTime: any
-  Decimal: any
-  Json: any
+  ID: { input: string | number; output: string }
+  String: { input: string; output: string }
+  Boolean: { input: boolean; output: boolean }
+  Int: { input: number; output: number }
+  Float: { input: number; output: number }
+  DateTime: { input: any; output: any }
+  Decimal: { input: any; output: any }
+  Json: { input: any; output: any }
 }
 
 export type Candidate = {
   __typename?: 'Candidate'
-  detectionCount?: Maybe<Scalars['Int']>
+  detectionCount?: Maybe<Scalars['Int']['output']>
   detections?: Maybe<Array<Maybe<Detection>>>
   feed?: Maybe<Feed>
-  id?: Maybe<Scalars['ID']>
-  maxTime?: Maybe<Scalars['DateTime']>
-  minTime?: Maybe<Scalars['DateTime']>
+  id?: Maybe<Scalars['ID']['output']>
+  maxTime?: Maybe<Scalars['DateTime']['output']>
+  minTime?: Maybe<Scalars['DateTime']['output']>
 }
 
 /** Pagination version of candidates */
@@ -43,21 +52,21 @@ export type Candidates = {
 
 export type Detection = {
   __typename?: 'Detection'
-  description?: Maybe<Scalars['String']>
+  description?: Maybe<Scalars['String']['output']>
   feed?: Maybe<Feed>
-  id?: Maybe<Scalars['ID']>
-  listenerCount?: Maybe<Scalars['Int']>
-  playerOffset?: Maybe<Scalars['Decimal']>
-  playlistTimestamp?: Maybe<Scalars['Int']>
-  sourceIp?: Maybe<Scalars['String']>
-  timestamp?: Maybe<Scalars['DateTime']>
+  id?: Maybe<Scalars['ID']['output']>
+  listenerCount?: Maybe<Scalars['Int']['output']>
+  playerOffset?: Maybe<Scalars['Decimal']['output']>
+  playlistTimestamp?: Maybe<Scalars['Int']['output']>
+  sourceIp?: Maybe<Scalars['String']['output']>
+  timestamp?: Maybe<Scalars['DateTime']['output']>
 }
 
 export type DetectionWithLockout = {
   __typename?: 'DetectionWithLockout'
   detection?: Maybe<Detection>
-  lockoutInitial?: Maybe<Scalars['Float']>
-  lockoutRemaining?: Maybe<Scalars['Float']>
+  lockoutInitial?: Maybe<Scalars['Float']['output']>
+  lockoutRemaining?: Maybe<Scalars['Float']['output']>
 }
 
 /** Pagination version of detections */
@@ -69,30 +78,30 @@ export type Detections = {
 
 export type Feed = {
   __typename?: 'Feed'
-  id: Scalars['ID']
-  introHtml: Scalars['String']
-  locationPoint: Scalars['Json']
-  mapUrl: Scalars['String']
-  name: Scalars['String']
-  nodeName: Scalars['String']
-  slug: Scalars['String']
-  thumbUrl: Scalars['String']
+  id: Scalars['ID']['output']
+  introHtml: Scalars['String']['output']
+  locationPoint: Scalars['Json']['output']
+  mapUrl: Scalars['String']['output']
+  name: Scalars['String']['output']
+  nodeName: Scalars['String']['output']
+  slug: Scalars['String']['output']
+  thumbUrl: Scalars['String']['output']
 }
 
 /** Pagination options */
 export type Pagination = {
-  page: Scalars['Int']
-  pageSize: Scalars['Int']
+  page: Scalars['Int']['input']
+  pageSize: Scalars['Int']['input']
 }
 
 /** Pagination results via scrivener */
 export type PaginationMeta = {
   __typename?: 'PaginationMeta'
-  currentPage: Scalars['Int']
-  nextPage?: Maybe<Scalars['Int']>
-  previousPage?: Maybe<Scalars['Int']>
-  totalEntries: Scalars['Int']
-  totalPages: Scalars['Int']
+  currentPage: Scalars['Int']['output']
+  nextPage?: Maybe<Scalars['Int']['output']>
+  previousPage?: Maybe<Scalars['Int']['output']>
+  totalEntries: Scalars['Int']['output']
+  totalPages: Scalars['Int']['output']
 }
 
 export type RootMutationType = {
@@ -110,27 +119,32 @@ export type RootMutationType = {
 }
 
 export type RootMutationTypeLoginArgs = {
-  email: Scalars['String']
-  password: Scalars['String']
+  email: Scalars['String']['input']
+  password: Scalars['String']['input']
+}
+
+export type RootMutationTypeLogoutArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>
 }
 
 export type RootMutationTypeSignupArgs = {
-  email: Scalars['String']
-  firstName?: InputMaybe<Scalars['String']>
-  lastName?: InputMaybe<Scalars['String']>
-  password: Scalars['String']
+  email: Scalars['String']['input']
+  firstName?: InputMaybe<Scalars['String']['input']>
+  lastName?: InputMaybe<Scalars['String']['input']>
+  password: Scalars['String']['input']
 }
 
 export type RootMutationTypeSubmitDetectionArgs = {
-  description?: InputMaybe<Scalars['String']>
-  feedId?: InputMaybe<Scalars['ID']>
-  listenerCount?: InputMaybe<Scalars['Int']>
-  playerOffset?: InputMaybe<Scalars['Decimal']>
-  playlistTimestamp?: InputMaybe<Scalars['String']>
+  description?: InputMaybe<Scalars['String']['input']>
+  feedId?: InputMaybe<Scalars['ID']['input']>
+  listenerCount?: InputMaybe<Scalars['Int']['input']>
+  playerOffset?: InputMaybe<Scalars['Decimal']['input']>
+  playlistTimestamp?: InputMaybe<Scalars['String']['input']>
 }
 
 export type RootMutationTypeUpdateUserArgs = {
-  admin?: InputMaybe<Scalars['Boolean']>
+  admin?: InputMaybe<Scalars['Boolean']['input']>
+  id?: InputMaybe<Scalars['ID']['input']>
 }
 
 export type RootQueryType = {
@@ -160,7 +174,7 @@ export type RootQueryTypeDetectionsArgs = {
 }
 
 export type RootQueryTypeFeedArgs = {
-  slug?: InputMaybe<Scalars['String']>
+  slug?: InputMaybe<Scalars['String']['input']>
 }
 
 export type RootQueryTypeUsersArgs = {
@@ -170,12 +184,12 @@ export type RootQueryTypeUsersArgs = {
 /** A user */
 export type User = {
   __typename?: 'User'
-  admin?: Maybe<Scalars['Boolean']>
-  authToken?: Maybe<Scalars['String']>
-  email?: Maybe<Scalars['String']>
-  firstName?: Maybe<Scalars['String']>
-  id?: Maybe<Scalars['ID']>
-  lastName?: Maybe<Scalars['String']>
+  admin?: Maybe<Scalars['Boolean']['output']>
+  authToken?: Maybe<Scalars['String']['output']>
+  email?: Maybe<Scalars['String']['output']>
+  firstName?: Maybe<Scalars['String']['output']>
+  id?: Maybe<Scalars['ID']['output']>
+  lastName?: Maybe<Scalars['String']['output']>
 }
 
 /** Pagination version of users */
@@ -186,7 +200,7 @@ export type Users = {
 }
 
 export type FeedQueryVariables = Exact<{
-  slug: Scalars['String']
+  slug: Scalars['String']['input']
 }>
 
 export type FeedQuery = {
@@ -267,7 +281,7 @@ export function getSdk(
   return {
     feed(
       variables: FeedQueryVariables,
-      requestHeaders?: Dom.RequestInit['headers']
+      requestHeaders?: GraphQLClientRequestHeaders
     ): Promise<FeedQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
@@ -281,7 +295,7 @@ export function getSdk(
     },
     feeds(
       variables?: FeedsQueryVariables,
-      requestHeaders?: Dom.RequestInit['headers']
+      requestHeaders?: GraphQLClientRequestHeaders
     ): Promise<FeedsQuery> {
       return withWrapper(
         (wrappedRequestHeaders) =>
