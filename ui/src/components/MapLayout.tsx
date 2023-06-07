@@ -4,8 +4,8 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
-import { GET_FEED, LIST_FEEDS } from '@/graphql/queries/feeds'
-import { useGraphQL } from '@/hooks/useGraphQL'
+import apiClient from '@/graphql/apiClient'
+import { useFeedQuery, useFeedsQuery } from '@/graphql/generated/types'
 
 import BottomNav from './BottomNav'
 import Drawer from './Drawer'
@@ -20,11 +20,11 @@ function MapLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const slug = router.query.feed as string
   // TODO: don't make request if there's no feed slug
-  const feed = useGraphQL(GET_FEED, { slug: slug }).data?.feed
+  const feed = useFeedQuery(apiClient, { slug: slug }).data?.feed
 
   const [currentFeed, setCurrentFeed] = useState(feed)
   const [map, setMap] = useState<LeafletMap>()
-  const feeds = useGraphQL(LIST_FEEDS).data?.feeds ?? []
+  const feeds = useFeedsQuery(apiClient).data?.feeds ?? []
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {

@@ -1,15 +1,15 @@
 import { Container, Stack, Typography } from '@mui/material'
 import Head from 'next/head'
 
-import { LIST_FEEDS } from '@/graphql/queries/feeds'
-import { useGraphQL } from '@/hooks/useGraphQL'
+import apiClient from '@/graphql/apiClient'
+import { useFeedsQuery } from '@/graphql/generated/types'
 
 import FeedCard from '../components/FeedCard'
 import { getMapLayout } from '../components/MapLayout'
 import type { NextPageWithLayout } from './_app'
 
 const HomePage: NextPageWithLayout = () => {
-  const feeds = useGraphQL(LIST_FEEDS).data?.feeds
+  const feeds = useFeedsQuery(apiClient).data?.feeds
 
   if (!feeds) return null
 
