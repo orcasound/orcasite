@@ -44,11 +44,11 @@
     "@types/react-dom": "18.2.4",
     "@types/react-leaflet": "^2.8.3",
     "@types/video.js": "^7.3.52",
-    "eslint": "8.21.0",
-    "eslint-config-next": "12.2.3",
-    "eslint-config-prettier": "8.5.0",
-    "eslint-plugin-simple-import-sort": "7.0.0",
-    "prettier": "2.7.1",
+    "eslint": "8.42.0",
+    "eslint-config-next": "13.4.4",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-simple-import-sort": "10.0.0",
+    "prettier": "2.8.8",
     "typescript": "5.1.3"
   }
 }
