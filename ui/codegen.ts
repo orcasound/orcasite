@@ -9,26 +9,7 @@ const config: CodegenConfig = {
   // ignoreNoDocuments: true,
   hooks: { afterAllFileWrite: ['prettier --write'] },
   generates: {
-    // './src/graphql/generated/': {
-    //   preset: 'client',
-    //   // TODO: switch to TypedDocumentString
-    //   // config: {
-    //   //   documentMode: 'string',
-    //   // },
-    // },
-    // './src/graphql/generated/sdk.ts': {
-    //   plugins: [
-    //     'typescript',
-    //     'typescript-operations',
-    //     'typescript-graphql-request',
-    //   ],
-    //   // config: {
-    //   //   documentMode: 'external',
-    //   //   importDocumentNodeExternallyFrom: './graphql',
-    //   //   importOperationTypesFrom: 'Operations',
-    //   // },
-    // },
-    './src/graphql/generated/types.ts': {
+    './src/graphql/generated/index.ts': {
       plugins: [
         'typescript',
         'typescript-operations',

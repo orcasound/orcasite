@@ -2,7 +2,7 @@ import { Container, Stack, Typography } from '@mui/material'
 import Head from 'next/head'
 
 import apiClient from '@/graphql/apiClient'
-import { useFeedsQuery } from '@/graphql/generated/types'
+import { useFeedsQuery } from '@/graphql/generated'
 
 import FeedCard from '../components/FeedCard'
 import { getMapLayout } from '../components/MapLayout'

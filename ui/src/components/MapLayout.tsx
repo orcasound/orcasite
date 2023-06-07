@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
 import apiClient from '@/graphql/apiClient'
-import { useFeedQuery, useFeedsQuery } from '@/graphql/generated/types'
+import { useFeedQuery, useFeedsQuery } from '@/graphql/generated'
 
 import BottomNav from './BottomNav'
 import Drawer from './Drawer'

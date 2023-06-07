@@ -5,7 +5,7 @@ import Image from 'next/legacy/image'
 import { useRouter } from 'next/router'
 
 import apiClient from '@/graphql/apiClient'
-import { useFeedQuery } from '@/graphql/generated/types'
+import { useFeedQuery } from '@/graphql/generated'
 
 import Link from '../components/Link'
 import { getMapLayout } from '../components/MapLayout'
