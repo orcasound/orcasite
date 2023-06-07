@@ -1,5 +1,4 @@
-import { GraphQLClient } from 'graphql-request'
-import { RequestInit } from 'graphql-request/dist/types.dom'
+import { endpointUrl, fetchParams } from '@/graphql/client'
 import {
   useMutation,
   useQuery,
@@ -27,18 +26,24 @@ export type Incremental<T> =
       [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
     }
 
-function fetcher<TData, TVariables extends { [key: string]: any }>(
-  client: GraphQLClient,
-  query: string,
-  variables?: TVariables,
-  requestHeaders?: RequestInit['headers']
-) {
-  return async (): Promise<TData> =>
-    client.request({
-      document: query,
-      variables,
-      requestHeaders,
+function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
+  return async (): Promise<TData> => {
+    const res = await fetch(endpointUrl as string, {
+      method: 'POST',
+      ...fetchParams,
+      body: JSON.stringify({ query, variables }),
     })
+
+    const json = await res.json()
+
+    if (json.errors) {
+      const { message } = json.errors[0]
+
+      throw new Error(message)
+    }
+
+    return json.data
+  }
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -292,14 +297,12 @@ export const useSubmitDetectionMutation = <
   TError = unknown,
   TContext = unknown
 >(
-  client: GraphQLClient,
   options?: UseMutationOptions<
     SubmitDetectionMutation,
     TError,
     SubmitDetectionMutationVariables,
     TContext
-  >,
-  headers?: RequestInit['headers']
+  >
 ) =>
   useMutation<
     SubmitDetectionMutation,
@@ -310,10 +313,8 @@ export const useSubmitDetectionMutation = <
     ['submitDetection'],
     (variables?: SubmitDetectionMutationVariables) =>
       fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
-        client,
         SubmitDetectionDocument,
-        variables,
-        headers
+        variables
       )(),
     options
   )
@@ -332,19 +333,12 @@ export const FeedDocument = `
 }
     `
 export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
-  client: GraphQLClient,
   variables: FeedQueryVariables,
-  options?: UseQueryOptions<FeedQuery, TError, TData>,
-  headers?: RequestInit['headers']
+  options?: UseQueryOptions<FeedQuery, TError, TData>
 ) =>
   useQuery<FeedQuery, TError, TData>(
     ['feed', variables],
-    fetcher<FeedQuery, FeedQueryVariables>(
-      client,
-      FeedDocument,
-      variables,
-      headers
-    ),
+    fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables),
     options
   )
 export const FeedsDocument = `
@@ -361,18 +355,11 @@ export const FeedsDocument = `
 }
     `
 export const useFeedsQuery = <TData = FeedsQuery, TError = unknown>(
-  client: GraphQLClient,
   variables?: FeedsQueryVariables,
-  options?: UseQueryOptions<FeedsQuery, TError, TData>,
-  headers?: RequestInit['headers']
+  options?: UseQueryOptions<FeedsQuery, TError, TData>
 ) =>
   useQuery<FeedsQuery, TError, TData>(
     variables === undefined ? ['feeds'] : ['feeds', variables],
-    fetcher<FeedsQuery, FeedsQueryVariables>(
-      client,
-      FeedsDocument,
-      variables,
-      headers
-    ),
+    fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables),
     options
   )

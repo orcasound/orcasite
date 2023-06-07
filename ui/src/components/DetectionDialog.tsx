@@ -13,7 +13,6 @@ import {
 import Image from 'next/legacy/image'
 import { useState } from 'react'
 
-import apiClient from '@/graphql/apiClient'
 import { useSubmitDetectionMutation } from '@/graphql/generated'
 
 import vesselIconImage from '../../public/icons/vessel-purple.svg'
@@ -28,7 +27,7 @@ export default function DetectionDialog(props: any) {
   const [category, setCategory] = useState<DetectionCategory>()
   const [description, setDescription] = useState('')
 
-  const submitDetection = useSubmitDetectionMutation(apiClient, {
+  const submitDetection = useSubmitDetectionMutation({
     onSuccess: () => {
       setSubmitted(true)
     },

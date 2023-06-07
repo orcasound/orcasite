@@ -6,17 +6,26 @@ const config: CodegenConfig = {
     'src/**/*.{graphql,js,ts,jsx,tsx}',
     '!src/graphql/generated/**/*',
   ],
-  // ignoreNoDocuments: true,
+  ignoreNoDocuments: true,
   hooks: { afterAllFileWrite: ['prettier --write'] },
   generates: {
     './src/graphql/generated/index.ts': {
       plugins: [
+        {
+          add: {
+            content:
+              "import { endpointUrl, fetchParams } from '@/graphql/client';",
+          },
+        },
         'typescript',
         'typescript-operations',
         'typescript-react-query',
       ],
       config: {
-        fetcher: 'graphql-request',
+        fetcher: {
+          endpoint: 'endpointUrl',
+          fetchParams: 'fetchParams',
+        },
       },
     },
   },

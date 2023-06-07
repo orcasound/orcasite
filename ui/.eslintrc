@@ -2,6 +2,7 @@
   "root": true, // so eslint knows not to look at parent folder for eslintrc
   "extends": ["next", "next/core-web-vitals", "prettier"],
   "plugins": ["simple-import-sort"],
+  "ignorePatterns": ["src/graphql/generated"],
   "rules": {
     "prefer-const": "warn",
     "simple-import-sort/imports": "warn",
@@ -12,7 +13,6 @@
         "unusedExports": true,
         "ignoreExports": [
           "src/pages", // pages are automatically imported by nextjs
-          "src/graphql/generated", // graphql-code-generator output is exported by default for ease of use
           "codegen.ts"
         ]
       }

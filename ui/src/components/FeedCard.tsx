@@ -1,7 +1,8 @@
 import { Card, CardActionArea, CardHeader } from '@mui/material'
 
+import { Feed } from '@/graphql/generated'
+
 import Link from '../components/Link'
-import { Feed } from '../generated/types'
 
 export default function FeedCard({
   feed,
