@@ -1,7 +1,7 @@
 import { NavigateNext } from '@mui/icons-material'
 import { Box, Breadcrumbs, Container, Typography } from '@mui/material'
 import Head from 'next/head'
-import Image from 'next/image'
+import Image from 'next/legacy/image'
 
 import Link from '../components/Link'
 import { getMapLayout, getMapProps } from '../components/MapLayout'

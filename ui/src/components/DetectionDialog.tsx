@@ -10,7 +10,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material'
-import Image from 'next/image'
+import Image from 'next/legacy/image'
 import { useState } from 'react'
 
 import vesselIconImage from '../../public/icons/vessel-purple.svg'

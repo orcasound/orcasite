@@ -18,16 +18,16 @@ export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 
-type MyAppProps = AppProps & {
+export type MyAppProps = AppProps & {
   Component: NextPageWithLayout
   emotionCache?: EmotionCache
 }
 
 // Client-side cache, shared for the whole session of the user in the browser.
-// https://github.com/mui/material-ui/blob/master/examples/nextjs-with-typescript/pages/_app.tsx
+// https://github.com/mui/material-ui/blob/master/examples/material-next-ts/pages/_app.tsx
 const clientSideEmotionCache = createEmotionCache()
 
-function MyApp({
+export default function MyApp({
   Component,
   pageProps,
   emotionCache = clientSideEmotionCache,
@@ -60,4 +60,3 @@ function MyApp({
     </QueryClientProvider>
   )
 }
-export default MyApp
