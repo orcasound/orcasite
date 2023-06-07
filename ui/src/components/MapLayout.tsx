@@ -1,10 +1,12 @@
 import { Box } from '@mui/material'
 import type { Map as LeafletMap } from 'leaflet'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
-import { Feed, FeedsQuery } from '../generated/types'
-import API from '../graphql/apiClient'
+import { feedQuery, feedsQuery } from '@/graphql/queries'
+import { useGraphQL } from '@/hooks/useGraphQL'
+
 import BottomNav from './BottomNav'
 import Drawer from './Drawer'
 import Header from './Header'
@@ -14,19 +16,15 @@ const MapWithNoSSR = dynamic(() => import('./Map'), {
   ssr: false,
 })
 
-type Feeds = FeedsQuery['feeds']
+function MapLayout({ children }: { children: ReactNode }) {
+  const router = useRouter()
+  const slug = router.query.feed as string
+  // TODO: don't make request if there's no feed slug
+  const feed = useGraphQL(feedQuery, { slug: slug }).data?.feed
 
-function MapLayout({
-  children,
-  feed,
-  feeds,
-}: {
-  children: ReactNode
-  feed?: Feed
-  feeds: Feeds
-}) {
   const [currentFeed, setCurrentFeed] = useState(feed)
   const [map, setMap] = useState<LeafletMap>()
+  const feeds = useGraphQL(feedsQuery).data?.feeds ?? []
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
@@ -76,17 +74,5 @@ function MapLayout({
 }
 
 export function getMapLayout(page: ReactElement) {
-  // if props include a feed, it gets passed to the layout so that the map and player can use the data
-  const feed = page.props?.feed as Feed | undefined
-  const feeds = page.props?.feeds as Feeds
-  return (
-    <MapLayout feed={feed} feeds={feeds}>
-      {page}
-    </MapLayout>
-  )
-}
-
-export async function getMapProps() {
-  const response = await API.feeds()
-  return { feeds: response.feeds }
+  return <MapLayout>{page}</MapLayout>
 }

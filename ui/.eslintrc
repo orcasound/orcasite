@@ -12,7 +12,8 @@
         "unusedExports": true,
         "ignoreExports": [
           "src/pages", // pages are automatically imported by nextjs
-          "src/generated" // graphql-code-generator output is exported by default for ease of use
+          "src/graphql/generated", // graphql-code-generator output is exported by default for ease of use
+          "codegen.ts"
         ]
       }
     ]

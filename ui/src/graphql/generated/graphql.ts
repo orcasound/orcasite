@@ -1,6 +1,5 @@
-import { GraphQLClient } from 'graphql-request'
-import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types'
-import gql from 'graphql-tag'
+/* eslint-disable */
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -28,8 +27,24 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean }
   Int: { input: number; output: number }
   Float: { input: number; output: number }
+  /**
+   * The `DateTime` scalar type represents a date and time in the UTC
+   * timezone. The DateTime appears in a JSON response as an ISO8601 formatted
+   * string, including UTC timezone ("Z"). The parsed date and time string will
+   * be converted to UTC if there is an offset.
+   */
   DateTime: { input: any; output: any }
+  /**
+   * The `Decimal` scalar type represents signed double-precision fractional
+   * values parsed by the `Decimal` library. The Decimal appears in a JSON
+   * response as a string to preserve precision.
+   */
   Decimal: { input: any; output: any }
+  /**
+   * The `Json` scalar type represents arbitrary json string data, represented as UTF-8
+   * character sequences. The Json type is most often used to represent a free-form
+   * human-readable json string.
+   */
   Json: { input: any; output: any }
 }
 
@@ -199,6 +214,22 @@ export type Users = {
   meta?: Maybe<PaginationMeta>
 }
 
+export type FeedsQueryVariables = Exact<{ [key: string]: never }>
+
+export type FeedsQuery = {
+  __typename?: 'RootQueryType'
+  feeds: Array<{
+    __typename?: 'Feed'
+    id: string
+    name: string
+    slug: string
+    nodeName: string
+    locationPoint: any
+    thumbUrl: string
+    mapUrl: string
+  }>
+}
+
 export type FeedQueryVariables = Exact<{
   slug: Scalars['String']['input']
 }>
@@ -218,95 +249,95 @@ export type FeedQuery = {
   }
 }
 
-export type FeedsQueryVariables = Exact<{ [key: string]: never }>
-
-export type FeedsQuery = {
-  __typename?: 'RootQueryType'
-  feeds: Array<{
-    __typename?: 'Feed'
-    id: string
-    name: string
-    slug: string
-    nodeName: string
-    locationPoint: any
-    thumbUrl: string
-    mapUrl: string
-  }>
-}
-
-export const FeedDocument = gql`
-  query feed($slug: String!) {
-    feed(slug: $slug) {
-      id
-      name
-      slug
-      nodeName
-      locationPoint
-      introHtml
-      thumbUrl
-      mapUrl
-    }
-  }
-`
-export const FeedsDocument = gql`
-  query feeds {
-    feeds {
-      id
-      name
-      slug
-      nodeName
-      locationPoint
-      thumbUrl
-      mapUrl
-    }
-  }
-`
-
-export type SdkFunctionWrapper = <T>(
-  action: (requestHeaders?: Record<string, string>) => Promise<T>,
-  operationName: string,
-  operationType?: string
-) => Promise<T>
-
-const defaultWrapper: SdkFunctionWrapper = (
-  action,
-  _operationName,
-  _operationType
-) => action()
-
-export function getSdk(
-  client: GraphQLClient,
-  withWrapper: SdkFunctionWrapper = defaultWrapper
-) {
-  return {
-    feed(
-      variables: FeedQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders
-    ): Promise<FeedQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<FeedQuery>(FeedDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'feed',
-        'query'
-      )
+export const FeedsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'feeds' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'feeds' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'nodeName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'locationPoint' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'thumbUrl' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'mapUrl' } },
+              ],
+            },
+          },
+        ],
+      },
     },
-    feeds(
-      variables?: FeedsQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders
-    ): Promise<FeedsQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<FeedsQuery>(FeedsDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'feeds',
-        'query'
-      )
+  ],
+} as unknown as DocumentNode<FeedsQuery, FeedsQueryVariables>
+export const FeedDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'feed' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'slug' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'feed' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'slug' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'slug' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'nodeName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'locationPoint' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'introHtml' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'thumbUrl' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'mapUrl' } },
+              ],
+            },
+          },
+        ],
+      },
     },
-  }
-}
-export type Sdk = ReturnType<typeof getSdk>
+  ],
+} as unknown as DocumentNode<FeedQuery, FeedQueryVariables>
