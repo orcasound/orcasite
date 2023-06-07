@@ -236,22 +236,6 @@ export type SubmitDetectionMutation = {
   } | null
 }
 
-export type FeedsQueryVariables = Exact<{ [key: string]: never }>
-
-export type FeedsQuery = {
-  __typename?: 'RootQueryType'
-  feeds: Array<{
-    __typename?: 'Feed'
-    id: string
-    name: string
-    slug: string
-    nodeName: string
-    locationPoint: any
-    thumbUrl: string
-    mapUrl: string
-  }>
-}
-
 export type FeedQueryVariables = Exact<{
   slug: Scalars['String']['input']
 }>
@@ -269,6 +253,22 @@ export type FeedQuery = {
     thumbUrl: string
     mapUrl: string
   }
+}
+
+export type FeedsQueryVariables = Exact<{ [key: string]: never }>
+
+export type FeedsQuery = {
+  __typename?: 'RootQueryType'
+  feeds: Array<{
+    __typename?: 'Feed'
+    id: string
+    name: string
+    slug: string
+    nodeName: string
+    locationPoint: any
+    thumbUrl: string
+    mapUrl: string
+  }>
 }
 
 export const SubmitDetectionDocument = `
@@ -317,35 +317,6 @@ export const useSubmitDetectionMutation = <
       )(),
     options
   )
-export const FeedsDocument = `
-    query feeds {
-  feeds {
-    id
-    name
-    slug
-    nodeName
-    locationPoint
-    thumbUrl
-    mapUrl
-  }
-}
-    `
-export const useFeedsQuery = <TData = FeedsQuery, TError = unknown>(
-  client: GraphQLClient,
-  variables?: FeedsQueryVariables,
-  options?: UseQueryOptions<FeedsQuery, TError, TData>,
-  headers?: RequestInit['headers']
-) =>
-  useQuery<FeedsQuery, TError, TData>(
-    variables === undefined ? ['feeds'] : ['feeds', variables],
-    fetcher<FeedsQuery, FeedsQueryVariables>(
-      client,
-      FeedsDocument,
-      variables,
-      headers
-    ),
-    options
-  )
 export const FeedDocument = `
     query feed($slug: String!) {
   feed(slug: $slug) {
@@ -371,6 +342,35 @@ export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
     fetcher<FeedQuery, FeedQueryVariables>(
       client,
       FeedDocument,
+      variables,
+      headers
+    ),
+    options
+  )
+export const FeedsDocument = `
+    query feeds {
+  feeds {
+    id
+    name
+    slug
+    nodeName
+    locationPoint
+    thumbUrl
+    mapUrl
+  }
+}
+    `
+export const useFeedsQuery = <TData = FeedsQuery, TError = unknown>(
+  client: GraphQLClient,
+  variables?: FeedsQueryVariables,
+  options?: UseQueryOptions<FeedsQuery, TError, TData>,
+  headers?: RequestInit['headers']
+) =>
+  useQuery<FeedsQuery, TError, TData>(
+    variables === undefined ? ['feeds'] : ['feeds', variables],
+    fetcher<FeedsQuery, FeedsQueryVariables>(
+      client,
+      FeedsDocument,
       variables,
       headers
     ),
