@@ -1,9 +1,9 @@
 /* eslint-disable import/no-unused-modules */
+if (!process.env.NEXT_PUBLIC_API_ENDPOINT) {
+  throw new Error('NEXT_PUBLIC_API_ENDPOINT is not defined')
+}
 
-// TODO: move heroku review app specific stuff out of here
-export const endpointUrl = process.env.IS_REVIEW_APP
-  ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com/graphql`
-  : process.env.API_ENDPOINT ?? 'http://localhost:4000/graphql'
+export const endpointUrl = process.env.NEXT_PUBLIC_API_ENDPOINT
 
 export const fetchParams = {
   headers: {
