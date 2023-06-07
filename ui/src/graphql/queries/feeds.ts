@@ -1,6 +1,6 @@
-import { graphql } from '@/graphql/generated'
+import { graphql } from '../generated'
 
-export const feedsQuery = graphql(`
+export const LIST_FEEDS = graphql(`
   query feeds {
     feeds {
       id
@@ -14,7 +14,7 @@ export const feedsQuery = graphql(`
   }
 `)
 
-export const feedQuery = graphql(`
+export const GET_FEED = graphql(`
   query feed($slug: String!) {
     feed(slug: $slug) {
       id

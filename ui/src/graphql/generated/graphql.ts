@@ -249,6 +249,24 @@ export type FeedQuery = {
   }
 }
 
+export type SubmitDetectionMutationVariables = Exact<{
+  feedId: Scalars['ID']['input']
+  playlistTimestamp: Scalars['String']['input']
+  playerOffset: Scalars['Decimal']['input']
+  description: Scalars['String']['input']
+  listenerCount?: InputMaybe<Scalars['Int']['input']>
+}>
+
+export type SubmitDetectionMutation = {
+  __typename?: 'RootMutationType'
+  submitDetection?: {
+    __typename?: 'DetectionWithLockout'
+    lockoutInitial?: number | null
+    lockoutRemaining?: number | null
+    detection?: { __typename?: 'Detection'; id?: string | null } | null
+  } | null
+}
+
 export const FeedsDocument = {
   kind: 'Document',
   definitions: [
@@ -341,3 +359,153 @@ export const FeedDocument = {
     },
   ],
 } as unknown as DocumentNode<FeedQuery, FeedQueryVariables>
+export const SubmitDetectionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'submitDetection' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'feedId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'playlistTimestamp' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'playerOffset' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'Decimal' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'description' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'listenerCount' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'submitDetection' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'feedId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'feedId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'playlistTimestamp' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'playlistTimestamp' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'playerOffset' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'playerOffset' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'listenerCount' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'listenerCount' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'description' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'description' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'detection' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'lockoutInitial' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'lockoutRemaining' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SubmitDetectionMutation,
+  SubmitDetectionMutationVariables
+>

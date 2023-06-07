@@ -17,6 +17,8 @@ const documents = {
     types.FeedsDocument,
   '\n  query feed($slug: String!) {\n    feed(slug: $slug) {\n      id\n      name\n      slug\n      nodeName\n      locationPoint\n      introHtml\n      thumbUrl\n      mapUrl\n    }\n  }\n':
     types.FeedDocument,
+  '\n  mutation submitDetection(\n    $feedId: ID!\n    $playlistTimestamp: String!\n    $playerOffset: Decimal!\n    $description: String!\n    $listenerCount: Int\n  ) {\n    submitDetection(\n      feedId: $feedId\n      playlistTimestamp: $playlistTimestamp\n      playerOffset: $playerOffset\n      listenerCount: $listenerCount\n      description: $description\n    ) {\n      detection {\n        id\n      }\n      lockoutInitial\n      lockoutRemaining\n    }\n  }\n':
+    types.SubmitDetectionDocument,
 }
 
 /**
@@ -45,6 +47,12 @@ export function graphql(
 export function graphql(
   source: '\n  query feed($slug: String!) {\n    feed(slug: $slug) {\n      id\n      name\n      slug\n      nodeName\n      locationPoint\n      introHtml\n      thumbUrl\n      mapUrl\n    }\n  }\n'
 ): (typeof documents)['\n  query feed($slug: String!) {\n    feed(slug: $slug) {\n      id\n      name\n      slug\n      nodeName\n      locationPoint\n      introHtml\n      thumbUrl\n      mapUrl\n    }\n  }\n']
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation submitDetection(\n    $feedId: ID!\n    $playlistTimestamp: String!\n    $playerOffset: Decimal!\n    $description: String!\n    $listenerCount: Int\n  ) {\n    submitDetection(\n      feedId: $feedId\n      playlistTimestamp: $playlistTimestamp\n      playerOffset: $playerOffset\n      listenerCount: $listenerCount\n      description: $description\n    ) {\n      detection {\n        id\n      }\n      lockoutInitial\n      lockoutRemaining\n    }\n  }\n'
+): (typeof documents)['\n  mutation submitDetection(\n    $feedId: ID!\n    $playlistTimestamp: String!\n    $playerOffset: Decimal!\n    $description: String!\n    $listenerCount: Int\n  ) {\n    submitDetection(\n      feedId: $feedId\n      playlistTimestamp: $playlistTimestamp\n      playerOffset: $playerOffset\n      listenerCount: $listenerCount\n      description: $description\n    ) {\n      detection {\n        id\n      }\n      lockoutInitial\n      lockoutRemaining\n    }\n  }\n']
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {}

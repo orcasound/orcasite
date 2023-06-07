@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Image from 'next/legacy/image'
 import { useRouter } from 'next/router'
 
-import { feedQuery } from '@/graphql/queries'
+import { GET_FEED } from '@/graphql/queries/feeds'
 import { useGraphQL } from '@/hooks/useGraphQL'
 
 import Link from '../components/Link'
@@ -14,7 +14,7 @@ import type { NextPageWithLayout } from './_app'
 const FeedPage: NextPageWithLayout = () => {
   const router = useRouter()
   const slug = router.query.feed as string
-  const feed = useGraphQL(feedQuery, { slug: slug }).data?.feed
+  const feed = useGraphQL(GET_FEED, { slug: slug }).data?.feed
 
   if (!feed) return null
 
