@@ -131,6 +131,7 @@ export default function Player({ currentFeed }: { currentFeed?: Feed }) {
           feed={currentFeed}
           timestamp={timestamp}
           getPlayerTime={controls.getPlayerTime}
+          // TODO: add listenerCount
           // listenerCount={this.props.listenerCount}
         >
           <Fab

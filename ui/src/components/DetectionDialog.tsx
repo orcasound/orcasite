@@ -13,6 +13,9 @@ import {
 import Image from 'next/legacy/image'
 import { useState } from 'react'
 
+import apiClient from '@/graphql/apiClient'
+import { useSubmitDetectionMutation } from '@/graphql/generated'
+
 import vesselIconImage from '../../public/icons/vessel-purple.svg'
 import wavesIconImage from '../../public/icons/water-waves-blue.svg'
 import whaleFlukeIconImage from '../../public/icons/whale-fluke-gray.svg'
@@ -24,6 +27,12 @@ export default function DetectionDialog(props: any) {
   const [submitted, setSubmitted] = useState(false)
   const [category, setCategory] = useState<DetectionCategory>()
   const [description, setDescription] = useState('')
+
+  const submitDetection = useSubmitDetectionMutation(apiClient, {
+    onSuccess: () => {
+      setSubmitted(true)
+    },
+  })
 
   const handleClickOpen = () => {
     setSubmitted(false)
@@ -40,9 +49,9 @@ export default function DetectionDialog(props: any) {
     }
   }
 
-  const handleKeyDown = (submitDetection: any) => (e: any) => {
+  const handleKeyDown = () => (e: any) => {
     if (e.which === 13) {
-      onDetect(submitDetection)
+      onDetect()
     }
   }
 
@@ -50,7 +59,7 @@ export default function DetectionDialog(props: any) {
     setOpen(false)
   }
 
-  const onDetect = (submitDetection: any) => {
+  const onDetect = () => {
     const {
       feed: { id: feedId },
       timestamp: playlistTimestamp,
@@ -61,26 +70,15 @@ export default function DetectionDialog(props: any) {
 
     const playerOffset = getPlayerTime()
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
-      submitDetection({
-        variables: {
-          feedId,
-          playlistTimestamp,
-          playerOffset,
-          description,
-          listenerCount,
-        },
+      submitDetection.mutate({
+        feedId,
+        playlistTimestamp,
+        playerOffset,
+        // TODO: send category as a separate field
+        description: `[${category}] ${description}`,
+        listenerCount,
       })
     }
-  }
-
-  const onSuccess = () => {
-    setSubmitted(true)
-  }
-
-  function submitDetection(data: any) {
-    console.log('submitDetection')
-    console.log(data)
-    onSuccess()
   }
 
   const categoryButtons = [
@@ -144,7 +142,7 @@ export default function DetectionDialog(props: any) {
               type="text"
               fullWidth
               onChange={handleChange}
-              onKeyDown={handleKeyDown(submitDetection)}
+              onKeyDown={handleKeyDown}
               sx={{
                 marginY: 2,
               }}
@@ -157,9 +155,7 @@ export default function DetectionDialog(props: any) {
               CANCEL
             </Button>
             <Button
-              onClick={() => {
-                onDetect(submitDetection)
-              }}
+              onClick={onDetect}
               color="primary"
               variant="outlined"
               disabled={!category}
