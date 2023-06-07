@@ -39,7 +39,7 @@
     "@graphql-codegen/typescript-graphql-request": "4.5.2",
     "@graphql-codegen/typescript-operations": "2.5.2",
     "@types/leaflet": "^1.7.11",
-    "@types/node": "18.6.3",
+    "@types/node": "20.2.5",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
     "@types/react-leaflet": "^2.8.2",
