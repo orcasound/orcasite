@@ -1,15 +1,14 @@
-defmodule Orcasite.Notifications.SubscriptionNotification do
+defmodule Orcasite.Notifications.NotificationInstance do
   use Ash.Resource,
     extensions: [AshAdmin.Resource],
     data_layer: Ash.DataLayer.Ets
 
-  alias Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta
+  alias Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta
   alias Orcasite.Notifications.{Notification, Subscription}
 
   resource do
     description """
-    A subscription notification object. This tracks the status of a notification
-    and triggers the sending of the notification.
+    Sends a single notification to a subscription
     """
   end
 
@@ -30,7 +29,7 @@ defmodule Orcasite.Notifications.SubscriptionNotification do
       change manage_relationship(:subscription, type: :append)
       change manage_relationship(:notification, type: :append)
 
-      change {ExtractSubscriptionNotificationMeta, []}
+      change {ExtractNotificationInstanceMeta, []}
 
       change fn changeset, _context ->
         changeset

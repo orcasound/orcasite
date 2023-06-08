@@ -1,4 +1,4 @@
-defmodule Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta do
+defmodule Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta do
   use Ash.Resource.Change
 
   alias Orcasite.Notifications
@@ -10,7 +10,7 @@ defmodule Orcasite.Notifications.Changes.ExtractSubscriptionNotificationMeta do
         _context
       )
       when is_binary(notification_id) and is_binary(subscription_id) do
-    # Get relevant details for this subscription notification:
+    # Get relevant details for this notification instance:
     # For either event type (right now), get the node, timestamp, maybe
     # construct the link to the node
 

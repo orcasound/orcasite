@@ -1,11 +1,11 @@
 defmodule Orcasite.Notifications.Sending do
   alias Orcasite.Notifications.{
-    SubscriptionNotification,
+    NotificationInstance,
     Workers
   }
 
   def queue(
-        %SubscriptionNotification{
+        %NotificationInstance{
           channel: :email,
           id: id,
           notification_id: notification_id,

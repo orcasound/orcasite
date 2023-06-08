@@ -104,19 +104,16 @@ defmodule Orcasite.Notifications.Subscription do
 
       argument :minutes_ago, :integer, default: 5
 
-      filter expr(last_notification_id != ^arg(:notification_id))
-      filter expr(event_type == ^arg(:event_type))
-
       filter expr(
-               fragment(
-                 "? is null or ? < now() - ?::numeric * interval '1 minute'",
-                 last_notified_at,
-                 last_notified_at,
-                 ^arg(:minutes_ago)
-               )
-             )
-
-      filter expr(active == true)
+        last_notification_id != ^arg(:notification_id) and
+        event_type == ^arg(:event_type) and
+        fragment(
+          "? is null or ? < now() - ?::numeric * interval '1 minute'",
+          last_notified_at,
+          last_notified_at,
+          ^arg(:minutes_ago)
+        ) and
+        active == true)
     end
   end
 
