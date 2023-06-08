@@ -10,11 +10,11 @@ defmodule Orcasite.Notifications.Sending do
           id: id,
           notification_id: notification_id,
           subscription_id: subscription_id
-        } = _subscription_notification
+        } = _notification_instance
       ) do
     {:ok, %{id: _job_id}} =
       %{
-        subscription_notification_id: id,
+        notification_instance_id: id,
         notification_id: notification_id,
         subscription_id: subscription_id
       }

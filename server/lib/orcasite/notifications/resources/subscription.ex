@@ -117,7 +117,7 @@ defmodule Orcasite.Notifications.Subscription do
 
   relationships do
     belongs_to :subscriber, Subscriber
-    has_many :subscription_notifications, NotificationInstance
+    has_many :notification_instances, NotificationInstance
 
     many_to_many :notifications, Notification do
       through NotificationInstance

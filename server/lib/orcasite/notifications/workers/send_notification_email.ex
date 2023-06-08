@@ -6,11 +6,11 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
   @impl Oban.Worker
   def perform(%Oban.Job{
-        args: %{"subscription_notification_id" => subscription_notification_id} = _args
+        args: %{"notification_instance_id" => notification_instance_id} = _args
       }) do
     notif_instance =
       NotificationInstance
-      |> Ash.Query.for_read(:read, %{id: subscription_notification_id})
+      |> Ash.Query.for_read(:read, %{id: notification_instance_id})
       |> Notifications.read!()
       |> Notifications.load([:notification, subscription: [:subscriber]])
       |> case do
