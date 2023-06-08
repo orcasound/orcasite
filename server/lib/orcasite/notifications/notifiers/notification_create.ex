@@ -12,8 +12,8 @@ defmodule Orcasite.Notifications.Notifiers.NotifySubscriptions do
       ) do
     # Queue up an async process that:
     # Query Subscriptions that match this notification's event_type
-    # and queue up a SubscriptionNotification create for each subscription as
-    # long as the subscription has not had a recent SubscriptionNotification of the
+    # and queue up a NotificationInstance create for each subscription as
+    # long as the subscription has not had a recent NotificationInstance of the
     # same event type (or perhaps for the same subscriber)
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       Orcasite.Notifications.Subscription
@@ -23,7 +23,7 @@ defmodule Orcasite.Notifications.Notifiers.NotifySubscriptions do
       })
       |> Orcasite.Notifications.stream!()
       |> Stream.map(fn subscription ->
-        Orcasite.Notifications.SubscriptionNotification
+        Orcasite.Notifications.NotificationInstance
         |> Ash.Changeset.for_create(:create_with_relationships, %{
           notification: notification.id,
           subscription: subscription.id

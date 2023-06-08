@@ -2,14 +2,14 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
   use Oban.Worker, queue: :email, unique: [keys: [:notification_id, :subscription_id]]
 
   alias Orcasite.Notifications
-  alias Orcasite.Notifications.{Subscription, SubscriptionNotification}
+  alias Orcasite.Notifications.{Subscription, NotificationInstance}
 
   @impl Oban.Worker
   def perform(%Oban.Job{
         args: %{"subscription_notification_id" => subscription_notification_id} = _args
       }) do
-    sub_notif =
-      SubscriptionNotification
+    notif_instance =
+      NotificationInstance
       |> Ash.Query.for_read(:read, %{id: subscription_notification_id})
       |> Notifications.read!()
       |> Notifications.load([:notification, subscription: [:subscriber]])
@@ -22,10 +22,10 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       end
 
     params =
-      sub_notif.meta
+      notif_instance.meta
       |> stringify_map()
-      |> Map.merge(stringify_map(sub_notif.subscription.meta))
-      |> Map.merge(stringify_map(sub_notif.notification.meta))
+      |> Map.merge(stringify_map(notif_instance.subscription.meta))
+      |> Map.merge(stringify_map(notif_instance.notification.meta))
 
     %{
       to: params["email"],
@@ -35,11 +35,11 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     |> email_for_notif(stringify(params["event_type"]))
     |> Orcasite.Mailer.deliver()
 
-    sub_notif.subscription
-    |> Subscription.update_last_notification(sub_notif.notification_id)
+    notif_instance.subscription
+    |> Subscription.update_last_notification(notif_instance.notification_id)
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-      sub_notif
+      notif_instance
       |> Ash.Changeset.for_destroy(:destroy)
       |> Notifications.destroy!()
     end)

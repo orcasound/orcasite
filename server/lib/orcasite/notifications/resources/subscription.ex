@@ -3,7 +3,7 @@ defmodule Orcasite.Notifications.Subscription do
     extensions: [AshAdmin.Resource],
     data_layer: AshPostgres.DataLayer
 
-  alias Orcasite.Notifications.{Event, Notification, SubscriptionNotification, Subscriber}
+  alias Orcasite.Notifications.{Event, Notification, NotificationInstance, Subscriber}
 
   resource do
     description """
@@ -117,10 +117,10 @@ defmodule Orcasite.Notifications.Subscription do
 
   relationships do
     belongs_to :subscriber, Subscriber
-    has_many :subscription_notifications, SubscriptionNotification
+    has_many :subscription_notifications, NotificationInstance
 
     many_to_many :notifications, Notification do
-      through SubscriptionNotification
+      through NotificationInstance
       source_attribute_on_join_resource :subscription_id
       destination_attribute_on_join_resource :notification_id
     end
