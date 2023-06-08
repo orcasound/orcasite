@@ -2,16 +2,21 @@ import { NavigateNext } from '@mui/icons-material'
 import { Box, Breadcrumbs, Container, Typography } from '@mui/material'
 import Head from 'next/head'
 import Image from 'next/legacy/image'
+import { useRouter } from 'next/router'
+
+import { useFeedQuery } from '@/graphql/generated'
 
 import Link from '../components/Link'
-import { getMapLayout, getMapProps } from '../components/MapLayout'
-import { Feed } from '../generated/types'
-import API from '../graphql/apiClient'
+import { getMapLayout } from '../components/MapLayout'
 import type { NextPageWithLayout } from './_app'
 
-type Props = { feed: Feed }
+const FeedPage: NextPageWithLayout = () => {
+  const router = useRouter()
+  const slug = router.query.feed as string
+  const feed = useFeedQuery({ slug: slug }).data?.feed
 
-const FeedPage: NextPageWithLayout<Props> = ({ feed }) => {
+  if (!feed) return null
+
   return (
     <div>
       <Head>
@@ -59,20 +64,5 @@ const FeedPage: NextPageWithLayout<Props> = ({ feed }) => {
 }
 
 FeedPage.getLayout = getMapLayout
-
-export async function getStaticPaths() {
-  const response = await API.feeds()
-  return {
-    paths: response.feeds.map((feed) => ({ params: { feed: feed.slug } })),
-    fallback: 'blocking',
-  }
-}
-
-export async function getStaticProps({ params }: { params: { feed: string } }) {
-  const response = await API.feed({ slug: params.feed })
-  if (!response.feed) return { notFound: true }
-  const mapProps = await getMapProps()
-  return { props: { ...mapProps, feed: response.feed } }
-}
 
 export default FeedPage

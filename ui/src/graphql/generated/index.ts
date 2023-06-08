@@ -1,6 +1,10 @@
-import { GraphQLClient } from 'graphql-request'
-import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types'
-import gql from 'graphql-tag'
+import { endpointUrl, fetchParams } from '@/graphql/client'
+import {
+  useMutation,
+  useQuery,
+  UseMutationOptions,
+  UseQueryOptions,
+} from '@tanstack/react-query'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -21,6 +25,26 @@ export type Incremental<T> =
   | {
       [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
     }
+
+function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
+  return async (): Promise<TData> => {
+    const res = await fetch(endpointUrl as string, {
+      method: 'POST',
+      ...fetchParams,
+      body: JSON.stringify({ query, variables }),
+    })
+
+    const json = await res.json()
+
+    if (json.errors) {
+      const { message } = json.errors[0]
+
+      throw new Error(message)
+    }
+
+    return json.data
+  }
+}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string | number; output: string }
@@ -199,6 +223,24 @@ export type Users = {
   meta?: Maybe<PaginationMeta>
 }
 
+export type SubmitDetectionMutationVariables = Exact<{
+  feedId: Scalars['ID']['input']
+  playlistTimestamp: Scalars['String']['input']
+  playerOffset: Scalars['Decimal']['input']
+  description: Scalars['String']['input']
+  listenerCount?: InputMaybe<Scalars['Int']['input']>
+}>
+
+export type SubmitDetectionMutation = {
+  __typename?: 'RootMutationType'
+  submitDetection?: {
+    __typename?: 'DetectionWithLockout'
+    lockoutInitial?: number | null
+    lockoutRemaining?: number | null
+    detection?: { __typename?: 'Detection'; id?: string | null } | null
+  } | null
+}
+
 export type FeedQueryVariables = Exact<{
   slug: Scalars['String']['input']
 }>
@@ -234,79 +276,90 @@ export type FeedsQuery = {
   }>
 }
 
-export const FeedDocument = gql`
-  query feed($slug: String!) {
-    feed(slug: $slug) {
+export const SubmitDetectionDocument = `
+    mutation submitDetection($feedId: ID!, $playlistTimestamp: String!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int) {
+  submitDetection(
+    feedId: $feedId
+    playlistTimestamp: $playlistTimestamp
+    playerOffset: $playerOffset
+    listenerCount: $listenerCount
+    description: $description
+  ) {
+    detection {
       id
-      name
-      slug
-      nodeName
-      locationPoint
-      introHtml
-      thumbUrl
-      mapUrl
     }
-  }
-`
-export const FeedsDocument = gql`
-  query feeds {
-    feeds {
-      id
-      name
-      slug
-      nodeName
-      locationPoint
-      thumbUrl
-      mapUrl
-    }
-  }
-`
-
-export type SdkFunctionWrapper = <T>(
-  action: (requestHeaders?: Record<string, string>) => Promise<T>,
-  operationName: string,
-  operationType?: string
-) => Promise<T>
-
-const defaultWrapper: SdkFunctionWrapper = (
-  action,
-  _operationName,
-  _operationType
-) => action()
-
-export function getSdk(
-  client: GraphQLClient,
-  withWrapper: SdkFunctionWrapper = defaultWrapper
-) {
-  return {
-    feed(
-      variables: FeedQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders
-    ): Promise<FeedQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<FeedQuery>(FeedDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'feed',
-        'query'
-      )
-    },
-    feeds(
-      variables?: FeedsQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders
-    ): Promise<FeedsQuery> {
-      return withWrapper(
-        (wrappedRequestHeaders) =>
-          client.request<FeedsQuery>(FeedsDocument, variables, {
-            ...requestHeaders,
-            ...wrappedRequestHeaders,
-          }),
-        'feeds',
-        'query'
-      )
-    },
+    lockoutInitial
+    lockoutRemaining
   }
 }
-export type Sdk = ReturnType<typeof getSdk>
+    `
+export const useSubmitDetectionMutation = <
+  TError = unknown,
+  TContext = unknown
+>(
+  options?: UseMutationOptions<
+    SubmitDetectionMutation,
+    TError,
+    SubmitDetectionMutationVariables,
+    TContext
+  >
+) =>
+  useMutation<
+    SubmitDetectionMutation,
+    TError,
+    SubmitDetectionMutationVariables,
+    TContext
+  >(
+    ['submitDetection'],
+    (variables?: SubmitDetectionMutationVariables) =>
+      fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
+        SubmitDetectionDocument,
+        variables
+      )(),
+    options
+  )
+export const FeedDocument = `
+    query feed($slug: String!) {
+  feed(slug: $slug) {
+    id
+    name
+    slug
+    nodeName
+    locationPoint
+    introHtml
+    thumbUrl
+    mapUrl
+  }
+}
+    `
+export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
+  variables: FeedQueryVariables,
+  options?: UseQueryOptions<FeedQuery, TError, TData>
+) =>
+  useQuery<FeedQuery, TError, TData>(
+    ['feed', variables],
+    fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables),
+    options
+  )
+export const FeedsDocument = `
+    query feeds {
+  feeds {
+    id
+    name
+    slug
+    nodeName
+    locationPoint
+    thumbUrl
+    mapUrl
+  }
+}
+    `
+export const useFeedsQuery = <TData = FeedsQuery, TError = unknown>(
+  variables?: FeedsQueryVariables,
+  options?: UseQueryOptions<FeedsQuery, TError, TData>
+) =>
+  useQuery<FeedsQuery, TError, TData>(
+    variables === undefined ? ['feeds'] : ['feeds', variables],
+    fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables),
+    options
+  )
