@@ -75,7 +75,7 @@ defmodule Orcasite.Notifications.Notification do
   end
 
   relationships do
-    has_many :subscription_notifications, NotificationInstance
+    has_many :notification_instances, NotificationInstance
 
     many_to_many :subscriptions, Subscription do
       through NotificationInstance
