@@ -5,6 +5,8 @@ defmodule OrcasiteWeb.Router do
 
   import AshAdmin.Router
 
+  import AshAdmin.Router
+
   # Set up request parsers here instead of in endpoint.ex because we don't want
   # them for the :nextjs pipeline, only :browser and :graphql
   # See https://github.com/tallarium/reverse_proxy_plug#usage-in-phoenix
@@ -28,6 +30,10 @@ defmodule OrcasiteWeb.Router do
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug :load_from_session
+  end
+
+  pipeline :require_admin do
+    plug OrcasiteWeb.BasicAuth
   end
 
   pipeline :require_admin do

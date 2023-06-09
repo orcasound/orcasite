@@ -28,7 +28,7 @@ defmodule Orcasite.Notifications.Notification do
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
-          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id)
+          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id),
           node: Ash.Changeset.get_argument(changeset, :node)
         })
       end

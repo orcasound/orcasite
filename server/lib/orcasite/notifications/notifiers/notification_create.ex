@@ -10,7 +10,6 @@ defmodule Orcasite.Notifications.Notifiers.NotifySubscriptions do
           data: notification
         } = _notif
       ) do
-
     # Queue up an async process that:
     # Query Subscriptions that match this notification's event_type
     # and queue up a NotificationInstance create for each subscription as
