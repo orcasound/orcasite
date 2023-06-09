@@ -1,4 +1,4 @@
-// From https://github.com/mui/material-ui/blob/master/examples/nextjs-with-typescript/src/createEmotionCache.ts
+// From https://github.com/mui/material-ui/blob/master/examples/material-next-ts/src/createEmotionCache.ts
 
 import createCache from '@emotion/cache'
 

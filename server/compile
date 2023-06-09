@@ -1,3 +1,6 @@
 # For use with https://elements.heroku.com/buildpacks/gjaldon/heroku-buildpack-phoenix-static
+
+source $phoenix_dir/load_env.sh
+
 cd $phoenix_dir/ui
 npm run build

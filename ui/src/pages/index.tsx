@@ -1,15 +1,17 @@
 import { Container, Stack, Typography } from '@mui/material'
 import Head from 'next/head'
 
+import { useFeedsQuery } from '@/graphql/generated'
+
 import FeedCard from '../components/FeedCard'
 import { getMapLayout } from '../components/MapLayout'
-import { FeedsQuery } from '../generated/types'
-import API from '../graphql/apiClient'
 import type { NextPageWithLayout } from './_app'
 
-type Props = { feeds: FeedsQuery['feeds'] }
+const HomePage: NextPageWithLayout = () => {
+  const feeds = useFeedsQuery().data?.feeds
 
-const HomePage: NextPageWithLayout<Props> = ({ feeds }) => {
+  if (!feeds) return null
+
   return (
     <div>
       <Head>
@@ -36,10 +38,5 @@ const HomePage: NextPageWithLayout<Props> = ({ feeds }) => {
 }
 
 HomePage.getLayout = getMapLayout
-
-export async function getStaticProps() {
-  const response = await API.feeds()
-  return { props: { feeds: response.feeds } }
-}
 
 export default HomePage

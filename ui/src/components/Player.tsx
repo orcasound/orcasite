@@ -2,7 +2,8 @@ import { GraphicEq, Pause, PlayArrow } from '@mui/icons-material'
 import { Box, Fab, styled } from '@mui/material'
 import { useEffect, useState } from 'react'
 
-import type { Feed } from '../generated/types'
+import type { Feed } from '@/graphql/generated'
+
 import useIsMobile from '../hooks/useIsMobile'
 import DetectionDialog from './DetectionDialog'
 import MediaStreamer from './MediaStreamer'
@@ -131,6 +132,7 @@ export default function Player({ currentFeed }: { currentFeed?: Feed }) {
           feed={currentFeed}
           timestamp={timestamp}
           getPlayerTime={controls.getPlayerTime}
+          // TODO: add listenerCount
           // listenerCount={this.props.listenerCount}
         >
           <Fab
