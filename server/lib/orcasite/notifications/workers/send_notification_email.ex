@@ -28,7 +28,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       |> Map.merge(stringify_map(notif_instance.notification.meta))
 
     unsubscribe_token =
-      Orcasite.Notifications.Subscription.unsubscribe_token(sub_notif.subscription)
+      Orcasite.Notifications.Subscription.unsubscribe_token(notif_instance.subscription)
 
     %{
       to: params["email"],
