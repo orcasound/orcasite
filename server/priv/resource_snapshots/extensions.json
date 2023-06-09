@@ -1,0 +1,7 @@
+{
+  "installed": [
+    "citext",
+    "uuid-ossp",
+    "postgis"
+  ]
+}

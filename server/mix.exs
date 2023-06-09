@@ -40,7 +40,7 @@ defmodule Orcasite.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.18.16"},
+      {:phoenix_live_view, "0.18.18"},
       {:phoenix_live_dashboard, "~> 0.7.2"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
@@ -70,6 +70,13 @@ defmodule Orcasite.Mixfile do
       {:corsica, "~> 1.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
+      {:ash, "~> 2.6"},
+      {:ash_admin, github: "ash-project/ash_admin", branch: "main"},
+      {:ash_postgres, "~> 1.3"},
+      {:heroicons, "~> 0.5"},
+      {:oban, "~> 2.14"},
+      {:mailchimp, "~> 0.1.2"},
+      {:gen_smtp, "~> 1.0"}
     ]
   end
 
@@ -81,15 +88,13 @@ defmodule Orcasite.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
+      setup: ["deps.get", "assets.setup", "assets.build", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate --quiet", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
-      # TODO: Uncomment once switching to esbuild and tailwind - see
-      # "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      # "assets.build": ["tailwind default", "esbuild default"],
-      # https://www.phoenixdiff.org/?source=1.5.13&source_variant=live&target=1.6.15&target_variant=default
-      # "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"],
+      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.build": ["tailwind default", "esbuild default"],
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end

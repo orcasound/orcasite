@@ -22,6 +22,9 @@ config :orcasite, Orcasite.Repo,
   pool_size: 10
 
 config :orcasite, Orcasite.Mailer, adapter: Swoosh.Adapters.Test
+config :orcasite, Oban, testing: :inline
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"

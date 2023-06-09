@@ -16,7 +16,8 @@ import Config
 config :orcasite, OrcasiteWeb.Endpoint,
   load_from_system_env: true,
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  watchers: [npm: ["run", "start", cd: Path.expand("../ui", __DIR__)]]
+  watchers: [npm: ["run", "start", cd: Path.expand("../ui", __DIR__)]],
+  check_origin: (System.get_env("URLS") || "") |> String.split(" ")
 
 # Configure your database
 config :orcasite, Orcasite.Repo,
@@ -29,8 +30,18 @@ config :logger, level: :info, format: {Orcasite.Logger, :format}
 
 config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
 
+config :orcasite, Orcasite.Mailer,
+  adapter: Swoosh.Adapters.AmazonSES,
+  region: "us-west-2",
+  access_key: System.get_env("ORCASITE_AWS_ACCESS_KEY_ID"),
+  secret: System.get_env("ORCASITE_AWS_SECRET_ACCESS_KEY")
+
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Orcasite.Finch
 
 config :orcasite, OrcasiteWeb.Guardian,
   issuer: "orcasite",
   secret_key: System.get_env("GUARDIAN_SECRET_KEY")
+
+config :orcasite, OrcasiteWeb.BasicAuth,
+  username: System.get_env("ADMIN_USER"),
+  password: System.get_env("ADMIN_PASSWORD")
