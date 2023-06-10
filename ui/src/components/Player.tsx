@@ -22,7 +22,11 @@ const StyledButtonContainer = styled('div')`
   justify-content: flex-start;
 `
 
-export default function Player({ currentFeed }: { currentFeed?: Feed }) {
+export default function Player({
+  currentFeed,
+}: {
+  currentFeed?: Pick<Feed, 'slug' | 'nodeName' | 'name' | 'locationPoint'>
+}) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [controls, setControls] = useState({
@@ -44,8 +48,7 @@ export default function Player({ currentFeed }: { currentFeed?: Feed }) {
 
   const isMobile = useIsMobile()
 
-  // const S3_BUCKET = process.env.S3_BUCKET
-  const S3_BUCKET = 'streaming-orcasound-net'
+  const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET
 
   const getHlsUri = (timestamp: string, feed: string, bucket: string) =>
     `https://s3-us-west-2.amazonaws.com/${bucket}/${feed}/hls/${timestamp}/live.m3u8`
