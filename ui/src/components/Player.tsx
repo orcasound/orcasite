@@ -49,6 +49,9 @@ export default function Player({
   const isMobile = useIsMobile()
 
   const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET
+  if (!S3_BUCKET) {
+    throw new Error('Missing NEXT_PUBLIC_S3_BUCKET is not set')
+  }
 
   const getHlsUri = (timestamp: string, feed: string, bucket: string) =>
     `https://s3-us-west-2.amazonaws.com/${bucket}/${feed}/hls/${timestamp}/live.m3u8`
