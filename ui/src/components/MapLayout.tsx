@@ -15,11 +15,24 @@ const MapWithNoSSR = dynamic(() => import('./Map'), {
   ssr: false,
 })
 
+const feedFromSlug = (feedSlug: string) => ({
+  name: feedSlug,
+  slug: feedSlug,
+  nodeName: feedSlug,
+  // TODO: figure out which coordinates to use for dynamic feeds
+  locationPoint: {
+    coordinates: [47.6, -122.3],
+  },
+})
+
 function MapLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const slug = router.query.feed as string
-  // TODO: don't make request if there's no feed slug
-  const feed = useFeedQuery({ slug: slug }).data?.feed
+  // TODO: don't make request if there's no feed slug or is dynamic
+  const feedFromQuery = useFeedQuery({ slug: slug }).data?.feed
+
+  const isDynamic = router.asPath.split('/')[1] === 'dynamic'
+  const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery
 
   const [currentFeed, setCurrentFeed] = useState(feed)
   const [map, setMap] = useState<LeafletMap>()
@@ -27,11 +40,11 @@ function MapLayout({ children }: { children: ReactNode }) {
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
-    if (feed) {
+    if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed)
       map?.panTo(feed.locationPoint.coordinates)
     }
-  }, [feed, map])
+  }, [feed, map, currentFeed])
 
   const invalidateSize = () => {
     if (map) {
