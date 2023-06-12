@@ -2,6 +2,7 @@
   "name": "Orcasite",
   "website": "https://live.orcasound.net/",
   "repository": "https://github.com/orcasound/orcasite",
+  "stack": "heroku-22",
   "environments": {
     "review": {
       "buildpacks": [
