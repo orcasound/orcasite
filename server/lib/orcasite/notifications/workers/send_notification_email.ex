@@ -27,10 +27,14 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       |> Map.merge(stringify_map(notif_instance.subscription.meta))
       |> Map.merge(stringify_map(notif_instance.notification.meta))
 
+    unsubscribe_token =
+      Orcasite.Notifications.Subscription.unsubscribe_token(notif_instance.subscription)
+
     %{
       to: params["email"],
       name: params["subscriber_name"],
-      node: params["node"]
+      node: params["node"] || "",
+      unsubscribe_token: unsubscribe_token
     }
     |> email_for_notif(stringify(params["event_type"]))
     |> Orcasite.Mailer.deliver()

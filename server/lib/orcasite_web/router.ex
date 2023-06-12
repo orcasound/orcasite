@@ -1,6 +1,9 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
   require Logger
+  use AshAuthentication.Phoenix.Router
+
+  import AshAdmin.Router
 
   import AshAdmin.Router
 
@@ -26,6 +29,11 @@ defmodule OrcasiteWeb.Router do
     plug(:put_root_layout, {OrcasiteWeb.Layouts, :root})
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
+    plug :load_from_session
+  end
+
+  pipeline :require_admin do
+    plug OrcasiteWeb.BasicAuth
   end
 
   pipeline :require_admin do
@@ -45,6 +53,7 @@ defmodule OrcasiteWeb.Router do
   pipeline :api do
     plug(:parsers)
     plug(:accepts, ["json"])
+    plug :load_from_bearer
   end
 
   pipeline :graphql do
@@ -78,6 +87,20 @@ defmodule OrcasiteWeb.Router do
   scope "/" do
     pipe_through [:browser, :require_admin]
     ash_admin "/admin"
+  end
+
+  scope "/" do
+    pipe_through :browser
+
+    sign_in_route()
+
+    sign_out_route OrcasiteWeb.SubscriberAuthController
+    auth_routes_for Orcasite.Notifications.Subscriber, to: OrcasiteWeb.SubscriberAuthController
+
+    auth_routes_for Orcasite.Notifications.Subscription, to: OrcasiteWeb.SubscriptionAuthController
+    sign_out_route OrcasiteWeb.SubscriptionAuthController
+
+    reset_route []
   end
 
   scope "/" do

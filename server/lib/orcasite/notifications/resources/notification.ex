@@ -21,13 +21,15 @@ defmodule Orcasite.Notifications.Notification do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       accept [:candidate_id]
       argument :candidate_id, :integer
+      argument :node, :string, allow_nil?: false
 
       change set_attribute(:event_type, :confirmed_candidate)
 
       change fn changeset, _context ->
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
-          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id)
+          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id),
+          node: Ash.Changeset.get_argument(changeset, :node)
         })
       end
     end
@@ -36,6 +38,7 @@ defmodule Orcasite.Notifications.Notification do
       description "Create a notification for a new detection (e.g. button push from user)."
       accept [:detection_id]
       argument :detection_id, :integer
+      argument :node, :string, allow_nil?: false
 
       change set_attribute(:event_type, :new_detection)
 
@@ -43,7 +46,8 @@ defmodule Orcasite.Notifications.Notification do
         # TODO: Get node, timestamp from detection
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
-          detection_id: Ash.Changeset.get_argument(changeset, :detection_id)
+          detection_id: Ash.Changeset.get_argument(changeset, :detection_id),
+          node: Ash.Changeset.get_argument(changeset, :node)
         })
       end
     end
