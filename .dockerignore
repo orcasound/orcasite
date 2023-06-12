@@ -1,4 +1,3 @@
-_build
-deps
-assets/node_modules
-test
+server/_build
+server/deps
+**/node_modules

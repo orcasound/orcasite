@@ -1,98 +1,55 @@
-ARG ELIXIR_VERSION=1.14.0
-ARG NODE_VERSION=12.9.1
+# Largely based on https://github.com/nicbet/docker-phoenix/blob/main/Dockerfile
+ARG ELIXIR_VERSION=1.14
+ARG NODE_VERSION=20.2.0
 
-# Pre-select the node image we want to use later on
-# (while we can still use build args)
-FROM node:${NODE_VERSION}-alpine as node
+FROM node:${NODE_VERSION}-alpine AS node
+FROM elixir:${ELIXIR_VERSION}-alpine
 
-# Grab the elixir image that we need to add node to
-FROM bitwalker/alpine-elixir:${ELIXIR_VERSION} as alpine-elixir-phoenix
 
-# This entire dockerfile is based on https://github.com/bitwalker/alpine-elixir-phoenix/blob/e4b3948886d6218acb3250246820137465b30735/Dockerfile
-# It does basically the exact same thing, just with a custom version of node
+### Install deps
 
-# Important!  Update this no-op ENV variable when this Dockerfile
-# is updated with the current date. It will force refresh of all
-# of the base images and things like `apt-get update` won't be using
-# old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2019-08-30 \
-  # Set this so that CTRL+G works properly
-  TERM=xterm
+RUN apk --no-cache --update add \
+    # General deps
+    bash git curl rsync \
+    # Elixir
+    inotify-tools build-base \
+    # NPM
+    python3
+# Workaround for getting picosat_elixir to compile on alpine
+# https://stackoverflow.com/questions/52894632/cannot-install-pycosat-on-alpine-during-dockerizing
+RUN echo "#include <unistd.h>" > /usr/include/sys/unistd.h
 
-# Prepare to install node
-RUN \
-  mkdir -p /opt/app && \
-  chmod -R 777 /opt/app && \
-  apk --no-cache --update add \
-  git make g++ wget curl inotify-tools && \
-  # temporary rsync install for grabbing node in the next step
-  apk --no-cache --update add --virtual .build-deps rsync && \
-  update-ca-certificates --fresh
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+
+### Install node
 
 # "borrow" the node install from the official node alpine image so that we don't
 # have to do all the messy compilation (due to being on musl)
-# Inpired by https://github.com/beardedeagle/alpine-phoenix-builder/blob/16695c570ce55a86f01b7e45cabbd23848cf48e3/Dockerfile#L34
-# Using --from with images directly doesn't work, that's why we use an alias
-# https://medium.com/@tonistiigi/advanced-multi-stage-build-patterns-6f741b852fae
+# Inspired by https://github.com/beardedeagle/alpine-phoenix-builder/blob/16695c570ce55a86f01b7e45cabbd23848cf48e3/Dockerfile#L34
+# and https://stackoverflow.com/a/76132347
 COPY --from=node /usr/local /opt/node
-
-# Use rsync to merge in the node files into /usr/local without overwritting
+# Use rsync to merge in the node files into /usr/local without overwriting
 # everything already in there, then clean up and remove rsync
-RUN rsync -a /opt/node/ /usr/local \
-  && apk --no-cache del .build-deps \
-  && rm -rf /opt/node
+RUN rsync -a /opt/node/ /usr/local && \
+    rm -rf /opt/node && \
+    npm i -g yarn --force
 
-# Add local node module binaries to PATH
-ENV PATH=./node_modules/.bin:$PATH \
-  MIX_HOME=/opt/mix \
-  HEX_HOME=/opt/hex \
-  HOME=/opt/app
 
-# Install Hex+Rebar
-RUN mix local.hex --force && \
-  mix local.rebar --force
+### Container setup
 
-WORKDIR /opt/app
+ENV APP_HOME /app
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
 
-# Use multistage builds to avoid loading unnecessary stuff into final image
-# Based on https://github.com/bitwalker/alpine-elixir-phoenix/blob/0f64751da96db874a120c9a9e083d70f53cb3603/README.md
-FROM alpine-elixir-phoenix as phx-builder
-
-# Set env
-ENV MIX_ENV=dev
-
-# Install temporary build deps
-RUN apk --no-cache --update add \
-  automake autoconf libtool nasm
-
-# Cache elixir deps
-ADD mix.exs mix.lock ./
-RUN mix do deps.get, deps.compile
-
-# Same with npm deps
-ADD assets/package.json assets/package-lock.json assets/
-RUN cd assets && \
-  npm install --no-optional && \
-  npm rebuild node-sass
-
-# Now that everything is built/installed, reset back to the image we want to
-# be running things in
-FROM alpine-elixir-phoenix
-
-# Set exposed ports and env
+EXPOSE 3000
 EXPOSE 4000
-EXPOSE 8080
-ENV PORT=4000 MIX_ENV=dev
-
-# Copy deps over
-COPY --from=phx-builder /opt/app/assets/node_modules /opt/app/assets/node_modules
-# Make node_modules a volume so that it doesn't get replaced with host bind mount
-VOLUME /opt/app/assets/node_modules
-COPY --from=phx-builder /opt/app/_build /opt/app/_build
-COPY --from=phx-builder /opt/app/deps /opt/app/deps
-# COPY --from=phx-builder /opt/app/.mix /opt/app/.mix
-COPY --from=phx-builder /opt/app/mix.* /opt/app/
-# 
+ENV PORT=4000 UI_PORT=3000 MIX_ENV=dev
+ 
 ADD . .
 
-CMD ["mix", "phx.server"]
+RUN cd server && mix do deps.get, deps.compile
+RUN cd ui && npm install
+
+CMD ["/bin/bash", "-c", "cd server && mix ecto.setup && mix phx.server & cd ui && npm run dev"]
