@@ -1,7 +1,6 @@
 # Orcasite
 
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Flive.orcasound.net)](https://live.orcasound.net)
-[![Dockerhub](https://img.shields.io/docker/pulls/orcasound/orcasite?color=blue&logo=docker&logoColor=white)](https://hub.docker.com/r/orcasound/orcasite)
 [![License](https://img.shields.io/github/license/orcasound/orcasite)](https://github.com/orcasound/orcasite/blob/master/LICENSE)
 
 [![Slack](https://img.shields.io/badge/slack-join%20chat-blue.svg?logo=slack)](https://join.slack.com/t/orcasound/shared_invite/zt-bd1jk2q9-FjeWr3OzocDBwDgS0g1FdQ)
@@ -13,29 +12,16 @@ This repo specifies the web backend and frontend for the [Orcasound app](http://
 
 Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a successful contribution, as well as learning resources!
 
-## Getting started
-
-#### Quick Start (e.g. at hackathons):
+## Quick Start (e.g. at hackathons):
 
 - Load the Docker Configuration: `docker-compose up`
-- The first time you run this command, docker will build the container
-- Once the container is built, wait for Phoenix and Next.js to start up
-- Navigate to localhost:3000 to view the website
-- Navigate to localhost:4000 to access the Phoenix server
+- Wait for container to start up
+- Navigate to [localhost:3000](http://localhost:3000) to view the website
+- Navigate to [localhost:4000](http://localhost:4000) to access the API server
 
 Note: this assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
 
-## Detailed Setup
-
-The fastest way to get the site up and running is to [use the included Docker configuration](#running-in-docker).
-
-To access the site, run `docker-compose up` and wait for the UI and server to start up. Then you should find the site available in your browser at [`http://localhost:3000`](http://localhost:3000).
-
-##### Flexible method (e.g. longer-term development)
-
-If you would like a more flexible method, you can [install the dependencies directly on your machine](#set-up-manually).
-
-## Running in Docker
+### Running in Docker
 
 Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/) installed on your machine.
 
@@ -43,39 +29,56 @@ Once you clone the repository, you can just run docker-compose in the root direc
 
 `docker-compose up`
 
-This will pull the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) along with an image for the database, automatically configure everything, and run the Phoenix server. The orcasite page will be accessible at [`http://localhost:3000`](http://localhost:3000) as soon as the `web` container finishes starting up.
+This will build an image locally with all the dependencies you need. It will also pull a pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) for the database, automatically configure everything, and both the Phoenix and Next.js servers. The orcasite page will be accessible at [`http://localhost:3000`](http://localhost:3000) as soon as the `web` container finishes starting up.
 
-#### Developing in Docker
+## Developing
 
-At the moment, the `docker-compose` file uses bind mounting for the source files (`assets`, `config`, `lib`, `test`, `mix.exs`, and `mix.lock`), which means if you edit the source on your host file system, the changes will get picked up and hot reloaded in your browser.
+The default Docker configuration is great for getting the project up and running, but if you want to do development, you'll want to be able to modify the source code without re-building an entire Docker image.
 
-However, please note that installed packages are not shared with the host file system, which means node packages and hexes need to be installed by running `mix deps.get` and `npm install` inside the `phoenix` container. The best way to do this is to use `docker-compose exec`
+### Setup options
 
-`docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
+There are several options for how to setup your dev environment:
 
-The `exec` command can also be used to run any other commands that need to be completed in the container, like `ecto.migrate` and other database operations.
+- [VS Code with dev containers](#using-vs-code)
+- [Using docker-compose](#using-docker-compose-directly)
+- [Directly on your machine](#set-up-directly-on-machine)
 
-For more involved development you may want to access `iex`. To do this, stop the containers with `docker-compose stop` and start them back up using
+Once you have one of these up and running, see the [Getting everything running](#getting-everything-running) section for how to start the project.
 
-`docker-compose run --rm --service-ports phoenix iex -S mix phx.server`
+#### Using VS Code
 
-You will now have an interactive access to iex, while the postgres container runs in the background.
+This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker-compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container. Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
 
-If you need more control over the dev setup, consider [installing everything manually on the local machine](#set-up-manually).
+#### Using docker-compose directly
 
-## Set up manually
+If you prefer not to use VS Code dev containers, the easiest way to develop in docker is by starting up docker-compose manually (using the dev compose file):
+
+```
+docker-compose -f docker-compose.dev.yml up -d
+```
+
+Once you have the services started, you can start a session inside the `web` container:
+
+```
+docker-compose exec web bash
+```
+
+From here you can run the [commands below](#getting-everything-running) to get everything started.
+
+> **NOTE**
+> The `docker-compose` setup uses bind mounting for the source files, which means if you edit the source on your host file system, the changes will get picked up and hot reloaded in your browser.
+
+#### Set up directly on machine
 
 If Docker doesn't suit your needs, you can follow these instructions to get everything running directly on your machine.
 
-### Requirements
+##### Language
 
-#### Language
-
-You will need to install Erlang, Elixir, and Nodejs. You can use a tool like [`asdf`](https://github.com/asdf-vm/asdf) to manage your language dependencies.
+You will need to install Erlang, Elixir, and Node.js. You can use a tool like [`asdf`](https://github.com/asdf-vm/asdf) to manage your language dependencies.
 
 Language-level dependencies can be found under `.tool-versions`.
 
-#### Database
+##### Database
 
 You will need to install Postgres and setup the `postgres` user with a password. The default connection details are:
 
@@ -93,45 +96,43 @@ Orcasite uses [PostGIS](http://postgis.net/) for location data inside of Postgre
 
 `brew install postgis`
 
-### Installation
+### Getting everything running
 
-Once Erlang, Elixir, and Nodejs are installed, Postgres is running, and the repository has been cloned, install the project's dependencies with this command in the `/server` directory:
+Once you have your environment setup via one of the options above, you can start the project. You'll need to run both the Phoenix server and the Next.js server.
+
+#### Server
+
+In a new terminal session, from the root directory:
 
 ```
 > cd server/
 > mix deps.get
-```
-
-Set up the database with
-
-```
 > mix ecto.setup
-```
-
-Setting up the frontend requires `npm`. To set up the frontend:
-
-```
-cd ui/
-npm install
-```
-
-Finally, run the server with:
-
-```
 > iex -S mix phx.server
 ```
 
-You should now be able to see the page when visiting
+> **NOTE**
+> For future runs, you can skip running the `mix` commands and just start the server with `iex -S mix phx.server`
 
-[`http://localhost:3000`](http://localhost:3000)
+The server should soon be available at [`http://localhost:4000`](http://localhost:4000).
 
-## Test
+#### UI
+
+Then open another terminal session and run these commands to start Next.js:
+
+```
+cd ui/
+npm i
+npm run dev
+```
+
+Once everything finishes starting up, you'll be able to access the UI at [`http://localhost:3000`](http://localhost:3000).
+
+## Tests
 
 ### UI
 
-From the `ui` folder
-
-`npm run test`
+The new version (v3) is currently under development, rapidly changing, and has no tests yet
 
 ## Deployment
 

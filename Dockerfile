@@ -46,10 +46,15 @@ WORKDIR $APP_HOME
 EXPOSE 3000
 EXPOSE 4000
 ENV PORT=4000 UI_PORT=3000 MIX_ENV=dev
- 
-ADD . .
 
+# Install and cache server deps
+ADD server/mix.exs server/mix.lock server/
 RUN cd server && mix do deps.get, deps.compile
+
+# Same with ui deps
+ADD ui/package.json ui/package-lock.json ui/
 RUN cd ui && npm install
+
+ADD . .
 
 CMD ["/bin/bash", "-c", "cd server && mix ecto.setup && mix phx.server & cd ui && npm run dev"]
