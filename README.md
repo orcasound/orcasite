@@ -19,7 +19,8 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 - Navigate to [localhost:3000](http://localhost:3000) to view the website
 - Navigate to [localhost:4000](http://localhost:4000) to access the API server
 
-Note: this assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
+> **Note**
+> This assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 ### Running in Docker
 
@@ -65,7 +66,7 @@ docker-compose exec web bash
 
 From here you can run the [commands below](#getting-everything-running) to get everything started.
 
-> **NOTE**
+> **Note**
 > The `docker-compose` setup uses bind mounting for the source files, which means if you edit the source on your host file system, the changes will get picked up and hot reloaded in your browser.
 
 #### Set up directly on machine
@@ -111,7 +112,7 @@ In a new terminal session, from the root directory:
 > iex -S mix phx.server
 ```
 
-> **NOTE**
+> **Note**
 > For future runs, you can skip running the `mix` commands and just start the server with `iex -S mix phx.server`
 
 The server should soon be available at [`http://localhost:4000`](http://localhost:4000).
