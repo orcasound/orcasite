@@ -7,7 +7,7 @@
 [![Slack](https://img.shields.io/badge/slack-join%20chat-blue.svg?logo=slack)](https://join.slack.com/t/orcasound/shared_invite/zt-bd1jk2q9-FjeWr3OzocDBwDgS0g1FdQ)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)](https://github.com/orcasound/orcasite/blob/master/CONTRIBUTING.md)
 
-This repo specifies the web backend and frontend for the [Orcasound app](http://live.orcasound.net) that plays a live audio stream through the user's browser of choice. The backend is an [Elixir](https://elixir-lang.org/) app using the [Phoenix framework](https://phoenixframework.org/). The Phoenix app serves a React app.
+This repo specifies the web backend and frontend for the [Orcasound app](http://live.orcasound.net) that plays a live audio stream through the user's browser of choice. The backend is an [Elixir](https://elixir-lang.org/) app using the [Phoenix framework](https://phoenixframework.org/). The frontend is built in [Next.js](nextjs.org/).
 
 ## Contributing
 
@@ -17,22 +17,19 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 
 #### Quick Start (e.g. at hackathons):
 
-- Load the Docker Configuration `docker-compose pull && docker-compose up`
-- Navigate to a new terminal in the same directory
-- Stop the containers by running `docker-compose stop`
-- Install the hex and npm dependencies by running `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"`
-- Restart your containers by running `docker-compose up`
-- Navigate to localhost:4000 to view the React app
+- Load the Docker Configuration: `docker-compose up`
+- The first time you run this command, docker will build the container
+- Once the container is built, wait for Phoenix and Next.js to start up
+- Navigate to localhost:3000 to view the website
+- Navigate to localhost:4000 to access the Phoenix server
 
-Note: this assumes you have installed [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/).
+Note: this assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 ## Detailed Setup
 
 The fastest way to get the site up and running is to [use the included Docker configuration](#running-in-docker).
 
-To access the site, run `docker-compose pull && docker-compose up` and wait until the `phoenix_1` container outputs `Compiled successfully`. Then you should find the site available in your browser at [`http://localhost:4000`](http://localhost:4000).
-
-Note: The first time you load the docker configuration you will need to install the dependencies. Leave the `phoenix_1` server running while navigating to a new command line tab inside the same directory. Then run `docker-compose exec phoenix bash -c "mix deps.get && cd assets && npm install"` which will install the node modules and hex dependencies. Now, navigate to `localhost:4000` to view the running application.
+To access the site, run `docker-compose up` and wait for the UI and server to start up. Then you should find the site available in your browser at [`http://localhost:3000`](http://localhost:3000).
 
 ##### Flexible method (e.g. longer-term development)
 
@@ -42,11 +39,11 @@ If you would like a more flexible method, you can [install the dependencies dire
 
 Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/) installed on your machine.
 
-Once you clone the repository, you can just run docker-compose in the root directory. To avoid building locally you can use the `pull` command first to grab the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite). Combining both commands into one line:
+Once you clone the repository, you can just run docker-compose in the root directory:
 
-`docker-compose pull && docker-compose up`
+`docker-compose up`
 
-This will pull the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) along with an image for the database, automatically configure everything, and run the Phoenix server. The orcasite page will be accessible at [`http://localhost:4000`](http://localhost:4000) as soon as the `phoenix_1` container outputs `Compiled successfully`.
+This will pull the pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) along with an image for the database, automatically configure everything, and run the Phoenix server. The orcasite page will be accessible at [`http://localhost:3000`](http://localhost:3000) as soon as the `web` container finishes starting up.
 
 #### Developing in Docker
 
@@ -76,13 +73,7 @@ If Docker doesn't suit your needs, you can follow these instructions to get ever
 
 You will need to install Erlang, Elixir, and Nodejs. You can use a tool like [`asdf`](https://github.com/asdf-vm/asdf) to manage your language dependencies.
 
-Language-level dependencies can be found under `.tool-versions`. As of this writing, they are:
-
-```
-erlang 25.2.2
-elixir 1.14.2-otp-25
-nodejs 12.9.1
-```
+Language-level dependencies can be found under `.tool-versions`.
 
 #### Database
 
@@ -102,58 +93,45 @@ Orcasite uses [PostGIS](http://postgis.net/) for location data inside of Postgre
 
 `brew install postgis`
 
-As of this writing, the following version numbers are used:
-
-```
-postgres 10.6
-postgis 2.5.1
-```
-
 ### Installation
 
-Once Erlang, Elixir, and Nodejs are installed, Postgres is running, and the repository has been cloned, install the project's dependencies with this command in the root directory:
+Once Erlang, Elixir, and Nodejs are installed, Postgres is running, and the repository has been cloned, install the project's dependencies with this command in the `/server` directory:
 
-`mix deps.get`
+```
+> cd server/
+> mix deps.get
+```
 
 Set up the database with
 
-`mix ecto.create`
-
-and
-
-`mix ecto.migrate`
+```
+> mix ecto.setup
+```
 
 Setting up the frontend requires `npm`. To set up the frontend:
 
-`cd assets`
-
-and
-
-`npm install`
-
-You can then return to the root directory
-
-`cd ..`
-
-The freshly created database is empty. To create a Feed in the database, run the `seeds.exs` file like this:
-
-`mix run priv/repo/seeds.exs`
+```
+cd ui/
+npm install
+```
 
 Finally, run the server with:
 
-`iex -S mix phx.server`
+```
+> iex -S mix phx.server
+```
 
 You should now be able to see the page when visiting
 
-[`http://localhost:4000`](http://localhost:4000)
+[`http://localhost:3000`](http://localhost:3000)
 
 ## Test
 
-### React
+### UI
 
-From the assets folder
+From the `ui` folder
 
-`npx mocha`
+`npm run test`
 
 ## Deployment
 

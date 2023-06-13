@@ -7,7 +7,7 @@ services:
       - POSTGRES_HOST=db
       - NEXT_TELEMETRY_DISABLED=1
     ports:
-      - "3030:3000"
+      - "3000:3000"
       - "4000:4000"
     depends_on:
       - db
