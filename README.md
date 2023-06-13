@@ -54,7 +54,7 @@ This project comes with a [devcontainer.json configuration](https://code.visuals
 If you prefer not to use VS Code dev containers, the easiest way to develop in docker is by starting up docker-compose manually (using the dev compose file):
 
 ```
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 Once you have the services started, you can start a session inside the `web` container:
