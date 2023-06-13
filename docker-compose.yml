@@ -1,31 +1,23 @@
 version: "3"
 
 services:
-  phoenix:
+  web:
     build: ./
-    image: orcasound/orcasite
-    command: /bin/bash -c "mix deps.get && cd assets && npm install && cd .. && mix ecto.create && mix ecto.migrate && mix run priv/repo/seeds.exs && mix phx.server"
     environment:
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=db
+      - NEXT_TELEMETRY_DISABLED=1
     ports:
+      - "3000:3000"
       - "4000:4000"
-      - "8080:8080"
     depends_on:
-      - postgres
+      - db
     links:
-      - postgres
-    volumes:
-      - ./assets:/opt/app/assets
-      - ./config:/opt/app/config
-      - ./lib:/opt/app/lib
-      - ./test:/opt/app/test
-      - ./mix.exs:/opt/app/mix.exs
-      - ./mix.lock:/opt/app/mix.lock
-      - ./priv:/opt/app/priv
+      - db
 
-  postgres:
-    image: mdillon/postgis:10-alpine
+  db:
+    image: kartoza/postgis:15
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASS=postgres

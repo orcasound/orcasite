@@ -1,0 +1,6 @@
+version: "3"
+services:
+  web:
+    command: sleep infinity
+    volumes:
+      - .:/app
