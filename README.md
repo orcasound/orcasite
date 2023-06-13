@@ -28,7 +28,9 @@ Docker is the quickest way to get the project up and running, especially if you 
 
 Once you clone the repository, you can just run docker-compose in the root directory:
 
-`docker-compose up`
+```
+docker-compose up
+```
 
 This will build an image locally with all the dependencies you need. It will also pull a pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) for the database, automatically configure everything, and both the Phoenix and Next.js servers. The orcasite page will be accessible at [`http://localhost:3000`](http://localhost:3000) as soon as the `web` container finishes starting up.
 
@@ -67,7 +69,7 @@ docker-compose exec web bash
 From here you can run the [commands below](#getting-everything-running) to get everything started.
 
 > **Note**
-> The `docker-compose` setup uses bind mounting for the source files, which means if you edit the source on your host file system, the changes will get picked up and hot reloaded in your browser.
+> The `docker-compose` setup uses bind mounting for the source files, which means if you edit the source on your host file system, the changes will get picked up and live reloaded in your browser.
 
 #### Set up directly on machine
 
@@ -95,7 +97,9 @@ You can pass in custom values using env variables. Full details can be found in 
 
 Orcasite uses [PostGIS](http://postgis.net/) for location data inside of Postgres. To install on MacOS, run
 
-`brew install postgis`
+```
+brew install postgis
+```
 
 ### Getting everything running
 
@@ -119,12 +123,12 @@ The server should soon be available at [`http://localhost:4000`](http://localhos
 
 #### UI
 
-Then open another terminal session and run these commands to start Next.js:
+Open another terminal session and run these commands to start Next.js:
 
 ```
-cd ui/
-npm i
-npm run dev
+> cd ui/
+> npm i
+> npm run dev
 ```
 
 Once everything finishes starting up, you'll be able to access the UI at [`http://localhost:3000`](http://localhost:3000).
@@ -139,6 +143,8 @@ The new version (v3) is currently under development, rapidly changing, and has n
 
 For the moment, this app is running in a Heroku instance with `mix phx.server`. To access the console, run:
 
-`heroku run POOL_SIZE=2 iex -S mix`
+```
+heroku run POOL_SIZE=2 iex -S mix
+```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
