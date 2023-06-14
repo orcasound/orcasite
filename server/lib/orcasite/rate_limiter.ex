@@ -14,8 +14,7 @@ defmodule Orcasite.RateLimiter do
       :ok
     else
       %{remaining: _remaining} = state ->
-        Process.sleep(1000)
-        IO.inspect(state, label: "state (server/lib/orcasite/rate_limiter.ex:#{__ENV__.line})")
+        Process.sleep(250)
         continue?(rate_limiter, count)
     end
   end
