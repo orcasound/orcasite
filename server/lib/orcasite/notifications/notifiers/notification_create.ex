@@ -32,5 +32,6 @@ defmodule Orcasite.Notifications.Notifiers.NotifySubscriptions do
       end)
       |> Stream.run()
     end)
+    :ok
   end
 end
