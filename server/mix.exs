@@ -78,7 +78,8 @@ defmodule Orcasite.Mixfile do
       {:mailchimp, "~> 0.1.2"},
       {:gen_smtp, "~> 1.0"},
       {:ash_authentication, "~> 3.11.1"},
-      {:ash_authentication_phoenix, "~> 1.7.2"}
+      {:ash_authentication_phoenix, "~> 1.7.2"},
+      {:syn, "~> 3.3"}
     ]
   end
 
