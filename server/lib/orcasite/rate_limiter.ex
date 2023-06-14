@@ -13,7 +13,7 @@ defmodule Orcasite.RateLimiter do
            call_rate_limit(rate_limiter, count) do
       :ok
     else
-      %{remaining: _remaining} = state ->
+      %{remaining: _remaining} = _state ->
         Process.sleep(250)
         continue?(rate_limiter, count)
     end
@@ -38,6 +38,7 @@ defmodule Orcasite.RateLimiter do
     GenServer.cast(local_name(rate_limiter), {:register_syn, rate_limiter})
   end
 
+  @spec rate_limit(:atomics.atomics_ref(), pos_integer) :: integer
   def rate_limit(counter, amount)
       when is_reference(counter) and is_integer(amount) and amount > 0 do
     :atomics.sub_get(counter, @atomics_index, amount)
@@ -47,6 +48,7 @@ defmodule Orcasite.RateLimiter do
     GenServer.call(global_name(rate_limiter), {:call_rate_limit, amount})
   end
 
+  @spec get_currently_allowed(:atomics.atomics_ref()) :: integer
   def get_currently_allowed(counter) when is_reference(counter) do
     :atomics.get(counter, @atomics_index)
   end
