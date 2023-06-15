@@ -30,6 +30,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     unsubscribe_token =
       Orcasite.Notifications.Subscription.unsubscribe_token(notif_instance.subscription)
 
+    :ok = Orcasite.RateLimiter.continue?(:ses, 1)
     %{
       to: params["email"],
       name: params["subscriber_name"],
