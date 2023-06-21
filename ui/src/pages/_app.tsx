@@ -41,26 +41,16 @@ export default function MyApp({
 
   // Configure react-query using the hydration setup
   // https://react-query.tanstack.com/guides/ssr#using-hydration
-  const [queryClient] = useState(() => {
-    const client = new QueryClient({
-      defaultOptions: {
-        queries: {
-          staleTime: 1000 * 20, // 20 seconds
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 20, // 20 seconds
+          },
         },
-      },
-    })
-
-    const feedKey = useFeedQuery.getKey({ slug: '' })[0]
-    const feedsKey = useFeedsQuery.getKey()[0]
-    const queryKeys = [feedKey, feedsKey]
-
-    queryKeys.forEach((key) => {
-      client.setQueryDefaults([key], {
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours
       })
-    })
-    return client
-  })
+  )
 
   return (
     <QueryClientProvider client={queryClient}>
