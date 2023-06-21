@@ -6,10 +6,13 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactElement, ReactNode, useState } from 'react'
+
+import { useFeedQuery, useFeedsQuery } from '@/graphql/generated'
 
 import createEmotionCache from '../styles/createEmotionCache'
 import theme from '../styles/theme'
@@ -38,7 +41,16 @@ export default function MyApp({
 
   // Configure react-query using the hydration setup
   // https://react-query.tanstack.com/guides/ssr#using-hydration
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 20, // 20 seconds
+          },
+        },
+      })
+  )
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -57,6 +69,7 @@ export default function MyApp({
           </ThemeProvider>
         </CacheProvider>
       </Hydrate>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }

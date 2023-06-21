@@ -318,6 +318,15 @@ export const useSubmitDetectionMutation = <
       )(),
     options
   )
+useSubmitDetectionMutation.getKey = () => ['submitDetection']
+
+useSubmitDetectionMutation.fetcher = (
+  variables: SubmitDetectionMutationVariables
+) =>
+  fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
+    SubmitDetectionDocument,
+    variables
+  )
 export const FeedDocument = `
     query feed($slug: String!) {
   feed(slug: $slug) {
@@ -341,6 +350,11 @@ export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
     fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables),
     options
   )
+useFeedQuery.document = FeedDocument
+
+useFeedQuery.getKey = (variables: FeedQueryVariables) => ['feed', variables]
+useFeedQuery.fetcher = (variables: FeedQueryVariables) =>
+  fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables)
 export const FeedsDocument = `
     query feeds {
   feeds {
@@ -363,3 +377,9 @@ export const useFeedsQuery = <TData = FeedsQuery, TError = unknown>(
     fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables),
     options
   )
+useFeedsQuery.document = FeedsDocument
+
+useFeedsQuery.getKey = (variables?: FeedsQueryVariables) =>
+  variables === undefined ? ['feeds'] : ['feeds', variables]
+useFeedsQuery.fetcher = (variables?: FeedsQueryVariables) =>
+  fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables)
