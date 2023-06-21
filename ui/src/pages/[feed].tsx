@@ -69,13 +69,19 @@ FeedPage.getLayout = getMapLayout
 export async function getStaticPaths() {
   const queryClient = new QueryClient()
 
-  const response = await queryClient.fetchQuery(
-    useFeedsQuery.getKey(),
-    useFeedsQuery.fetcher()
-  )
+  let response
+  try {
+    response = await queryClient.fetchQuery(
+      useFeedsQuery.getKey(),
+      useFeedsQuery.fetcher()
+    )
+  } catch (error) {
+    console.error(error)
+  }
 
   return {
-    paths: response.feeds.map((feed) => ({ params: { feed: feed.slug } })),
+    paths:
+      response?.feeds.map((feed) => ({ params: { feed: feed.slug } })) ?? [],
     fallback: 'blocking',
   }
 }
