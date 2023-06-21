@@ -1,4 +1,5 @@
 import { Container, Stack, Typography } from '@mui/material'
+import { dehydrate, QueryClient } from '@tanstack/react-query'
 import Head from 'next/head'
 
 import { useFeedsQuery } from '@/graphql/generated'
@@ -38,5 +39,20 @@ const HomePage: NextPageWithLayout = () => {
 }
 
 HomePage.getLayout = getMapLayout
+
+export async function getStaticProps() {
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery(
+    useFeedsQuery.getKey(),
+    useFeedsQuery.fetcher()
+  )
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  }
+}
 
 export default HomePage

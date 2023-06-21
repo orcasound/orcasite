@@ -1,4 +1,5 @@
 import { Box } from '@mui/material'
+import { QueryClient } from '@tanstack/react-query'
 import type { Map as LeafletMap } from 'leaflet'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -28,10 +29,13 @@ const feedFromSlug = (feedSlug: string) => ({
 function MapLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const slug = router.query.feed as string
-  // TODO: don't make request if there's no feed slug or is dynamic
-  const feedFromQuery = useFeedQuery({ slug: slug }).data?.feed
 
   const isDynamic = router.asPath.split('/')[1] === 'dynamic'
+  // don't make feed request if there's no feed slug or is dynamic
+  const feedFromQuery = useFeedQuery(
+    { slug: slug },
+    { enabled: !!slug || isDynamic }
+  ).data?.feed
   const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery
 
   const [currentFeed, setCurrentFeed] = useState(feed)
@@ -87,4 +91,11 @@ function MapLayout({ children }: { children: ReactNode }) {
 
 export function getMapLayout(page: ReactElement) {
   return <MapLayout>{page}</MapLayout>
+}
+
+export async function getMapStaticProps(queryClient: QueryClient) {
+  await queryClient.prefetchQuery(
+    useFeedsQuery.getKey(),
+    useFeedsQuery.fetcher()
+  )
 }
