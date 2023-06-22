@@ -17,6 +17,7 @@ const MapWithNoSSR = dynamic(() => import('./Map'), {
 })
 
 const feedFromSlug = (feedSlug: string) => ({
+  id: feedSlug,
   name: feedSlug,
   slug: feedSlug,
   nodeName: feedSlug,
