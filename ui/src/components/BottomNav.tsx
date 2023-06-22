@@ -7,7 +7,7 @@ import {
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
-import useIsMobile from '../hooks/useIsMobile'
+import useIsMobile from '@/hooks/useIsMobile'
 
 export default function BottomNav() {
   const isMobile = useIsMobile()

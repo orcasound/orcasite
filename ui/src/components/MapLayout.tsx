@@ -5,12 +5,11 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
+import BottomNav from '@/components/BottomNav'
+import Drawer from '@/components/Drawer'
+import Header from '@/components/Header'
+import Player from '@/components/Player'
 import { useFeedQuery, useFeedsQuery } from '@/graphql/generated'
-
-import BottomNav from './BottomNav'
-import Drawer from './Drawer'
-import Header from './Header'
-import Player from './Player'
 
 const MapWithNoSSR = dynamic(() => import('./Map'), {
   ssr: false,

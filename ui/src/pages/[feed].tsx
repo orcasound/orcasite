@@ -5,11 +5,10 @@ import Head from 'next/head'
 import Image from 'next/legacy/image'
 import { useRouter } from 'next/router'
 
+import Link from '@/components/Link'
+import { getMapLayout, getMapStaticProps } from '@/components/MapLayout'
 import { useFeedQuery, useFeedsQuery } from '@/graphql/generated'
-
-import Link from '../components/Link'
-import { getMapLayout, getMapStaticProps } from '../components/MapLayout'
-import type { NextPageWithLayout } from './_app'
+import type { NextPageWithLayout } from '@/pages/_app'
 
 const FeedPage: NextPageWithLayout = () => {
   const router = useRouter()

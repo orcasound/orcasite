@@ -2,8 +2,8 @@ import { Close, Menu } from '@mui/icons-material'
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import { useState } from 'react'
 
-import useIsMobile from '../hooks/useIsMobile'
-import Link from './Link'
+import Link from '@/components/Link'
+import useIsMobile from '@/hooks/useIsMobile'
 
 export default function Header() {
   const isMobile = useIsMobile()

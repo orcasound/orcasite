@@ -8,8 +8,8 @@ import {
 } from '@mui/material'
 import { ReactNode, useState } from 'react'
 
-import useIsMobile from '../hooks/useIsMobile'
-import { BottomNavSpacer } from './BottomNav'
+import { BottomNavSpacer } from '@/components/BottomNav'
+import useIsMobile from '@/hooks/useIsMobile'
 
 export default function Drawer({
   children,
