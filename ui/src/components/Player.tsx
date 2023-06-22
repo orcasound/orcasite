@@ -1,6 +1,6 @@
 import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab, styled } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import type { Feed } from '@/graphql/generated'
 import useFeedPresence from '@/hooks/useFeedPresence'
@@ -44,13 +44,15 @@ export default function Player({
     latencyHistory: number[]
   }>()
 
+  const handleFetcherStop = useCallback(() => {
+    setIsPlaying(false)
+    setIsLoading(false)
+  }, [])
+
   const { timestamp, hlsURI, awsConsoleUri } = useTimestampFetcher(
     currentFeed?.nodeName,
     {
-      onStop: () => {
-        setIsPlaying(false)
-        setIsLoading(false)
-      },
+      onStop: handleFetcherStop,
     }
   )
 
