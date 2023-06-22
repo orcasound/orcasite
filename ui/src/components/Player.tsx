@@ -1,5 +1,6 @@
 import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab, styled } from '@mui/material'
+import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Feed } from '@/graphql/generated'
@@ -8,7 +9,9 @@ import useIsMobile from '@/hooks/useIsMobile'
 import useTimestampFetcher from '@/hooks/useTimestampFetcher'
 
 import DetectionDialog from './DetectionDialog'
-import MediaStreamer, { type MediaStreamerControls } from './MediaStreamer'
+import type { MediaStreamerControls } from './MediaStreamer'
+
+const MediaStreamer = dynamic(() => import('./MediaStreamer'))
 
 const PlayerContainer = styled('div')`
   .video-js {
