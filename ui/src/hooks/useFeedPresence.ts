@@ -1,5 +1,5 @@
 import { Channel, Presence } from 'phoenix'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import socket from '@/utils/socket'
 
@@ -9,15 +9,14 @@ import socket from '@/utils/socket'
  * @returns Portion of Presence object pertaining to the feed
  */
 export default function useFeedPresence(feedId?: string) {
-  const channelRef = useRef<Channel>()
   const [feedPresence, setFeedPresence] = useState<Record<string, any>>()
 
   useEffect(() => {
-    const channel = channelRef.current
+    let channel: Channel | undefined
 
     if (socket && feedId) {
       const newChannel = socket.channel(`feed:${feedId}`, {})
-      channelRef.current = newChannel
+      channel = newChannel
 
       const presence = new Presence(newChannel)
       presence.onSync(() => {
