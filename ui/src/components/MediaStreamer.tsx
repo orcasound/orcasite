@@ -99,7 +99,7 @@ export default function MediaStreamer({
         return
       }
 
-      playerRef.current = videojs(audioNodeRef.current, {
+      const player = videojs(audioNodeRef.current, {
         autoplay: autoplay,
         flash: options,
         html5: options,
@@ -111,54 +111,39 @@ export default function MediaStreamer({
         ],
       }) as PlayerWithOffset
 
+      playerRef.current = player
+
       if (startOffset && endOffset) {
-        playerRef.current.offset({
+        player.offset({
           start: startOffset,
           end: endOffset,
           restart_beginning: true,
         })
       }
 
-      playerRef.current.ready(() => {
-        if (!playerRef.current) {
-          console.error('player.ready: no player set')
-          return
-        }
-        const controls = getControls(playerRef.current)
+      player.ready(() => {
+        const controls = getControls(player)
         callbacks.onReady?.(controls)
-        playerRef.current.tech().on('retryplaylist', (_e: Event) => {
+        player.tech().on('retryplaylist', (_e: Event) => {
           const latency = controls.getLatency()
           if (latency && latency < MAX_LATENCY) {
             controls.rewind(RETRY_REWIND_AMOUNT)
           }
         })
         latencyUpdateInterval = setInterval(() => {
-          if (!playerRef.current) {
-            console.error('latencyUpdate: no player set')
-            return
-          }
           callbacks.onLatencyUpdate?.(
-            getControls(playerRef.current).getLatency() ?? 0,
-            playerRef.current.currentTime() ?? 0
+            getControls(player).getLatency() ?? 0,
+            player.currentTime() ?? 0
           )
         }, 1000)
       })
 
-      playerRef.current.on('playing', () => {
-        callbacks.onPlaying?.()
-      })
-
-      playerRef.current.on('pause', () => {
-        callbacks.onPaused?.()
-      })
-
-      playerRef.current.on('waiting', () => {
-        callbacks.onLoading?.()
-      })
-
-      playerRef.current.on('timeupdate', () => {
-        callbacks.onTimeUpdate?.(playerRef.current?.currentTime() ?? 0)
-      })
+      player.on('playing', () => callbacks.onPlaying?.())
+      player.on('pause', () => callbacks.onPaused?.())
+      player.on('waiting', () => callbacks.onLoading?.())
+      player.on('timeupdate', () =>
+        callbacks.onTimeUpdate?.(player.currentTime() ?? 0)
+      )
     }
 
     setupPlayer()
