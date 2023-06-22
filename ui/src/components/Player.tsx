@@ -1,10 +1,12 @@
-import { GraphicEq, Pause, PlayArrow } from '@mui/icons-material'
+import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab, styled } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import type { Feed } from '@/graphql/generated'
+import useFeedPresence from '@/hooks/useFeedPresence'
+import useIsMobile from '@/hooks/useIsMobile'
+import useTimestampFetcher from '@/hooks/useTimestampFetcher'
 
-import useIsMobile from '../hooks/useIsMobile'
 import DetectionDialog from './DetectionDialog'
 import MediaStreamer from './MediaStreamer'
 
@@ -36,73 +38,28 @@ export default function Player({
     getPlayerTime: () => {},
     setVolume: () => {},
   })
-  const [hlsURI, setHlsURI] = useState<string>()
-  const [currentXhr, setCurrentXhr] = useState<XMLHttpRequest>()
-  const [timestamp, setTimestamp] = useState('')
-  const [intervalId, setIntervalId] = useState<NodeJS.Timer>()
 
   const [debugInfo, setDebugInfo] = useState<{
     playerTime: number
     latencyHistory: number[]
   }>()
 
+  const handleFetcherStop = useCallback(() => {
+    setIsPlaying(false)
+    setIsLoading(false)
+  }, [])
+
+  const { timestamp, hlsURI, awsConsoleUri } = useTimestampFetcher(
+    currentFeed?.nodeName,
+    {
+      onStop: handleFetcherStop,
+    }
+  )
+
+  const feedPresence = useFeedPresence(currentFeed?.slug)
+  const listenerCount = feedPresence?.metas.length ?? 0
+
   const isMobile = useIsMobile()
-
-  const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET
-  if (!S3_BUCKET) {
-    throw new Error('Missing NEXT_PUBLIC_S3_BUCKET is not set')
-  }
-
-  const getHlsUri = (timestamp: string, feed: string, bucket: string) =>
-    `https://s3-us-west-2.amazonaws.com/${bucket}/${feed}/hls/${timestamp}/live.m3u8`
-
-  const getAwsConsoleUri = (
-    timestamp: string,
-    nodeName: string,
-    bucket: string
-  ) =>
-    `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
-
-  const fetchTimestamp = (feed: string) => {
-    const timestampURI = `https://s3-us-west-2.amazonaws.com/${S3_BUCKET}/${feed}/latest.txt`
-
-    const xhr = new XMLHttpRequest()
-    setCurrentXhr(xhr)
-    xhr.open('GET', timestampURI)
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        const newTimestamp = xhr.responseText.trim()
-        if (process.env.NODE_ENV === 'development')
-          console.log('Latest timestamp: ' + newTimestamp)
-        if (newTimestamp !== timestamp) {
-          setTimestamp(newTimestamp)
-          setHlsURI(getHlsUri(newTimestamp, feed, S3_BUCKET))
-          if (process.env.NODE_ENV === 'development')
-            console.log(
-              'New stream instance: ' + getHlsUri(newTimestamp, feed, S3_BUCKET)
-            )
-        }
-      }
-    }
-    xhr.send()
-  }
-
-  const startTimestampFetcher = () => {
-    stopFetcher()
-    if (currentFeed && Object.keys(currentFeed).length > 0) {
-      fetchTimestamp(currentFeed.nodeName)
-      const intervalId = setInterval(
-        () => fetchTimestamp(currentFeed.nodeName),
-        10000
-      )
-      setIntervalId(intervalId)
-    }
-  }
-
-  const stopFetcher = () => {
-    if (currentXhr) currentXhr.abort()
-    if (intervalId) clearInterval(intervalId)
-  }
 
   const handleReady = (controls: any) => {
     setIsLoading(false)
@@ -110,14 +67,10 @@ export default function Player({
   }
 
   useEffect(() => {
-    startTimestampFetcher()
-    return () => {
-      stopFetcher()
-      setHlsURI(undefined)
-      setIsPlaying(false)
-      setIsLoading(false)
+    if (process.env.NODE_ENV === 'development' && hlsURI) {
+      console.log(`New stream instance: ${hlsURI}`)
     }
-  }, [currentFeed])
+  }, [hlsURI])
 
   return (
     <Box
@@ -138,8 +91,7 @@ export default function Player({
           feed={currentFeed}
           timestamp={timestamp}
           getPlayerTime={controls.getPlayerTime}
-          // TODO: add listenerCount
-          // listenerCount={this.props.listenerCount}
+          listenerCount={listenerCount}
         >
           <Fab
             variant="extended"
@@ -236,6 +188,20 @@ export default function Player({
           />
         )}
       </PlayerContainer>
+      <Box
+        sx={{
+          mx: 2,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        {currentFeed && (
+          <>
+            <Person sx={{ mr: 1 }} />
+            {listenerCount}
+          </>
+        )}
+      </Box>
       <Box sx={{ mx: 2 }}>
         {currentFeed
           ? `${currentFeed.name} - ${currentFeed.nodeName}`
