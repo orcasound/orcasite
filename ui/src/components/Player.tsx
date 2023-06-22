@@ -166,6 +166,7 @@ export default function Player({
         {hlsURI && (
           <MediaStreamer
             src={hlsURI}
+            key={hlsURI}
             autoplay={true}
             onReady={handleReady}
             onLoading={() => setIsLoading(true)}
