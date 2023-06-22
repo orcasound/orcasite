@@ -1,15 +1,15 @@
-import MenuIcon from '@mui/icons-material/Menu'
+import { Menu } from '@mui/icons-material'
 import {
+  Box,
   Drawer as SideDrawer,
   IconButton,
   SwipeableDrawer,
   Toolbar,
 } from '@mui/material'
-import { Box } from '@mui/system'
 import { ReactNode, useState } from 'react'
 
-import useIsMobile from '../hooks/useIsMobile'
-import { BottomNavSpacer } from './BottomNav'
+import { BottomNavSpacer } from '@/components/BottomNav'
+import useIsMobile from '@/hooks/useIsMobile'
 
 export default function Drawer({
   children,
@@ -118,11 +118,11 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
       <Box sx={{ alignSelf: 'end' }}>
         {open ? (
           <IconButton onClick={onClose}>
-            <MenuIcon />
+            <Menu />
           </IconButton>
         ) : (
           <IconButton onClick={onOpen}>
-            <MenuIcon />
+            <Menu />
           </IconButton>
         )}
       </Box>

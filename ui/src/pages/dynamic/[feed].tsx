@@ -5,8 +5,7 @@ import { useRouter } from 'next/router'
 
 import Link from '@/components/Link'
 import { getMapLayout } from '@/components/MapLayout'
-
-import type { NextPageWithLayout } from '../_app'
+import type { NextPageWithLayout } from '@/pages/_app'
 
 const FeedPage: NextPageWithLayout = () => {
   const router = useRouter()

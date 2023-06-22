@@ -14,10 +14,9 @@ import Image from 'next/legacy/image'
 import { useState } from 'react'
 
 import { useSubmitDetectionMutation } from '@/graphql/generated'
-
-import vesselIconImage from '../../public/icons/vessel-purple.svg'
-import wavesIconImage from '../../public/icons/water-waves-blue.svg'
-import whaleFlukeIconImage from '../../public/icons/whale-fluke-gray.svg'
+import vesselIconImage from '@/public/icons/vessel-purple.svg'
+import wavesIconImage from '@/public/icons/water-waves-blue.svg'
+import whaleFlukeIconImage from '@/public/icons/whale-fluke-gray.svg'
 
 type DetectionCategory = 'orca' | 'vessel' | 'other'
 
