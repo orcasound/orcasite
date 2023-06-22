@@ -1,5 +1,6 @@
 import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
-import { Box, Fab, styled } from '@mui/material'
+import { Box, Fab } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 

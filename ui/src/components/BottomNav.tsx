@@ -1,9 +1,11 @@
-import GraphicEqIcon from '@mui/icons-material/GraphicEq'
-import InfoIcon from '@mui/icons-material/Info'
-import MenuIcon from '@mui/icons-material/Menu'
-import NotificationsIcon from '@mui/icons-material/Notifications'
-import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material'
-import { Box, styled } from '@mui/system'
+import { GraphicEq, Info, Menu, Notifications } from '@mui/icons-material'
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Box,
+  Paper,
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import useIsMobile from '../hooks/useIsMobile'
 
@@ -21,13 +23,10 @@ export default function BottomNav() {
       }}
     >
       <BottomNavigation showLabels sx={{ height: (theme) => theme.spacing(8) }}>
-        <BottomNavigationAction label="Info" icon={<InfoIcon />} />
-        <BottomNavigationAction label="Listen" icon={<GraphicEqIcon />} />
-        <BottomNavigationAction
-          label="Subscribe"
-          icon={<NotificationsIcon />}
-        />
-        <BottomNavigationAction label="More" icon={<MenuIcon />} />
+        <BottomNavigationAction label="Info" icon={<Info />} />
+        <BottomNavigationAction label="Listen" icon={<GraphicEq />} />
+        <BottomNavigationAction label="Subscribe" icon={<Notifications />} />
+        <BottomNavigationAction label="More" icon={<Menu />} />
       </BottomNavigation>
     </Paper>
   ) : null

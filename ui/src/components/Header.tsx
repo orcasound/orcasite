@@ -1,5 +1,4 @@
-import CloseIcon from '@mui/icons-material/Close'
-import MenuIcon from '@mui/icons-material/Menu'
+import { Close, Menu } from '@mui/icons-material'
 import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import { useState } from 'react'
 
@@ -43,7 +42,7 @@ function Mobile() {
         color="inherit"
         onClick={handleMenuToggle}
       >
-        {menuIsOpen ? <CloseIcon /> : <MenuIcon />}
+        {menuIsOpen ? <Close /> : <Menu />}
       </IconButton>
       <Brand />
     </Box>
