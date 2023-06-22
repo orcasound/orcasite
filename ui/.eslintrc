@@ -1,12 +1,22 @@
 {
   "root": true, // so eslint knows not to look at parent folder for eslintrc
   "extends": ["next", "next/core-web-vitals", "prettier"],
-  "plugins": ["simple-import-sort"],
+  "plugins": ["simple-import-sort", "unused-imports"],
   "ignorePatterns": ["src/graphql/generated"],
   "rules": {
     "prefer-const": "warn",
     "simple-import-sort/imports": "warn",
     "simple-import-sort/exports": "warn",
+    "unused-imports/no-unused-imports": "warn",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
     "import/no-unused-modules": [
       "warn",
       {
@@ -21,8 +31,12 @@
   "overrides": [
     {
       "files": ["**/*.ts?(x)"],
+      "extends": ["plugin:@typescript-eslint/recommended"],
+      "plugins": ["@typescript-eslint"],
       "rules": {
         // typescript only rules go here
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-empty-function": "warn"
       }
     }
   ]

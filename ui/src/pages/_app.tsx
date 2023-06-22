@@ -12,12 +12,10 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactElement, ReactNode, useState } from 'react'
 
-import { useFeedQuery, useFeedsQuery } from '@/graphql/generated'
-
 import createEmotionCache from '../styles/createEmotionCache'
 import theme from '../styles/theme'
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 

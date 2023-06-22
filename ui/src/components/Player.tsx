@@ -1,6 +1,6 @@
 import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab, styled } from '@mui/material'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Feed } from '@/graphql/generated'
 import useFeedPresence from '@/hooks/useFeedPresence'
@@ -8,7 +8,7 @@ import useIsMobile from '@/hooks/useIsMobile'
 import useTimestampFetcher from '@/hooks/useTimestampFetcher'
 
 import DetectionDialog from './DetectionDialog'
-import MediaStreamer from './MediaStreamer'
+import MediaStreamer, { type MediaStreamerControls } from './MediaStreamer'
 
 const PlayerContainer = styled('div')`
   .video-js {
@@ -27,19 +27,16 @@ const StyledButtonContainer = styled('div')`
 export default function Player({
   currentFeed,
 }: {
-  currentFeed?: Pick<Feed, 'slug' | 'nodeName' | 'name' | 'locationPoint'>
+  currentFeed?: Pick<
+    Feed,
+    'id' | 'slug' | 'nodeName' | 'name' | 'locationPoint'
+  >
 }) {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [controls, setControls] = useState({
-    play: () => {},
-    pause: () => {},
-    playPause: () => {},
-    getPlayerTime: () => {},
-    setVolume: () => {},
-  })
+  const [_isLoading, setIsLoading] = useState(false)
+  const controlsRef = useRef<MediaStreamerControls>()
 
-  const [debugInfo, setDebugInfo] = useState<{
+  const [_debugInfo, setDebugInfo] = useState<{
     playerTime: number
     latencyHistory: number[]
   }>()
@@ -49,22 +46,40 @@ export default function Player({
     setIsLoading(false)
   }, [])
 
-  const { timestamp, hlsURI, awsConsoleUri } = useTimestampFetcher(
-    currentFeed?.nodeName,
-    {
-      onStop: handleFetcherStop,
-    }
-  )
+  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName, {
+    onStop: handleFetcherStop,
+  })
 
   const feedPresence = useFeedPresence(currentFeed?.slug)
   const listenerCount = feedPresence?.metas.length ?? 0
 
   const isMobile = useIsMobile()
 
-  const handleReady = (controls: any) => {
-    setIsLoading(false)
-    setControls(controls)
-  }
+  const mediaStreamerCallbacks = useMemo(
+    () => ({
+      onReady: (controls: MediaStreamerControls) => {
+        setIsLoading(false)
+        controlsRef.current = controls
+      },
+      onLoading: () => setIsLoading(true),
+      onPlaying: () => {
+        setIsLoading(false)
+        setIsPlaying(true)
+      },
+      onPaused: () => {
+        setIsLoading(false)
+        setIsPlaying(false)
+      },
+      onLatencyUpdate: (newestLatency: number, playerTime: number) =>
+        setDebugInfo((prevDebugInfo) => ({
+          playerTime: playerTime,
+          latencyHistory: (prevDebugInfo?.latencyHistory ?? []).concat(
+            newestLatency
+          ),
+        })),
+    }),
+    []
+  )
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' && hlsURI) {
@@ -85,12 +100,12 @@ export default function Player({
         position: 'relative',
       }}
     >
-      {isPlaying && (
+      {isPlaying && currentFeed && timestamp && (
         <DetectionDialog
           isPlaying={isPlaying}
           feed={currentFeed}
           timestamp={timestamp}
-          getPlayerTime={controls.getPlayerTime}
+          getPlayerTime={controlsRef.current?.getPlayerTime}
           listenerCount={listenerCount}
         >
           <Fab
@@ -141,7 +156,7 @@ export default function Player({
                 backgroundColor: 'base.light',
               },
             }}
-            onClick={controls.playPause}
+            onClick={controlsRef.current?.playPause}
           >
             {!isPlaying && (
               <PlayArrow
@@ -168,24 +183,7 @@ export default function Player({
             src={hlsURI}
             key={hlsURI}
             autoplay={true}
-            onReady={handleReady}
-            onLoading={() => setIsLoading(true)}
-            onPlaying={() => {
-              setIsLoading(false)
-              setIsPlaying(true)
-            }}
-            onPaused={() => {
-              setIsLoading(false)
-              setIsPlaying(false)
-            }}
-            onLatencyUpdate={(newestLatency: number, playerTime: number) =>
-              setDebugInfo((prevDebugInfo) => ({
-                playerTime: playerTime,
-                latencyHistory: (prevDebugInfo?.latencyHistory ?? []).concat(
-                  newestLatency
-                ),
-              }))
-            }
+            callbacks={mediaStreamerCallbacks}
           />
         )}
       </PlayerContainer>

@@ -9,7 +9,7 @@ import socket from '@/utils/socket'
  * @returns Portion of Presence object pertaining to the feed
  */
 export default function useFeedPresence(feedId?: string) {
-  const [feedPresence, setFeedPresence] = useState<Record<string, any>>()
+  const [feedPresence, setFeedPresence] = useState<Record<string, unknown[]>>()
 
   useEffect(() => {
     let channel: Channel | undefined
