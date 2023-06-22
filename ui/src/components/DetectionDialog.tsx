@@ -35,7 +35,7 @@ export default function DetectionDialog({
   }
   timestamp: string
   isPlaying: boolean
-  getPlayerTime: () => number
+  getPlayerTime?: () => number | undefined
   listenerCount: number
 }) {
   const [open, setOpen] = useState(false)
@@ -79,7 +79,7 @@ export default function DetectionDialog({
   }
 
   const onDetect = () => {
-    const playerOffset = getPlayerTime()
+    const playerOffset = getPlayerTime?.()
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
       submitDetection.mutate({
         feedId,
