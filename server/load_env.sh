@@ -9,5 +9,5 @@ if [ -n "$IS_REVIEW_APP" ]; then
   echo "URLS: ${URLS}"
 fi
 
-export API_ENDPOINT="https://${HOST_URL}/graphql"
+export API_ENDPOINT=$HOST_URL
 echo "Using API endpoint: ${API_ENDPOINT}"

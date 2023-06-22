@@ -1,10 +1,11 @@
-import { GraphicEq, Pause, PlayArrow } from '@mui/icons-material'
+import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab, styled } from '@mui/material'
 import { useEffect, useState } from 'react'
 
 import type { Feed } from '@/graphql/generated'
+import useFeedPresence from '@/hooks/useFeedPresence'
+import useIsMobile from '@/hooks/useIsMobile'
 
-import useIsMobile from '../hooks/useIsMobile'
 import DetectionDialog from './DetectionDialog'
 import MediaStreamer from './MediaStreamer'
 
@@ -47,6 +48,9 @@ export default function Player({
   }>()
 
   const isMobile = useIsMobile()
+
+  const feedPresence = useFeedPresence(currentFeed?.slug)
+  const listenerCount = feedPresence?.metas.length ?? 0
 
   const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET
   if (!S3_BUCKET) {
@@ -236,6 +240,20 @@ export default function Player({
           />
         )}
       </PlayerContainer>
+      <Box
+        sx={{
+          mx: 2,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        {currentFeed && (
+          <>
+            <Person sx={{ mr: 1 }} />
+            {listenerCount}
+          </>
+        )}
+      </Box>
       <Box sx={{ mx: 2 }}>
         {currentFeed
           ? `${currentFeed.name} - ${currentFeed.nodeName}`
