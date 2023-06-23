@@ -2,22 +2,19 @@ import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import DetectionDialog from '@/components/DetectionDialog'
-import type { MediaStreamerControls } from '@/components/MediaStreamer'
+import type {
+  MediaStreamerControls,
+  PlayerWithOffset,
+} from '@/components/MediaStreamer'
 import type { Feed } from '@/graphql/generated'
 import useFeedPresence from '@/hooks/useFeedPresence'
 import useIsMobile from '@/hooks/useIsMobile'
 import useTimestampFetcher from '@/hooks/useTimestampFetcher'
 
 const MediaStreamer = dynamic(() => import('@/components/MediaStreamer'))
-
-const PlayerContainer = styled('div')`
-  .video-js {
-    display: none;
-  }
-`
 
 const StyledButtonContainer = styled('div')`
   border-radius: 2.0625rem;
@@ -58,29 +55,32 @@ export default function Player({
 
   const isMobile = useIsMobile()
 
-  const mediaStreamerCallbacks = useMemo(
-    () => ({
-      onReady: (controls: MediaStreamerControls) => {
-        setIsLoading(false)
-        controlsRef.current = controls
-      },
-      onLoading: () => setIsLoading(true),
-      onPlaying: () => {
+  const handleReady = useCallback(
+    (player: PlayerWithOffset, controls: MediaStreamerControls) => {
+      setIsLoading(false)
+      controlsRef.current = controls
+
+      player.on('playing', () => {
         setIsLoading(false)
         setIsPlaying(true)
-      },
-      onPaused: () => {
+      })
+      player.on('pause', () => {
         setIsLoading(false)
         setIsPlaying(false)
-      },
-      onLatencyUpdate: (newestLatency: number, playerTime: number) =>
-        setDebugInfo((prevDebugInfo) => ({
-          playerTime: playerTime,
-          latencyHistory: (prevDebugInfo?.latencyHistory ?? []).concat(
-            newestLatency
-          ),
-        })),
-    }),
+      })
+      player.on('waiting', () => setIsLoading(true))
+    },
+    []
+  )
+
+  const handleLatencyUpdate = useCallback(
+    (newestLatency: number, playerTime: number) =>
+      setDebugInfo((prevDebugInfo) => ({
+        playerTime: playerTime,
+        latencyHistory: (prevDebugInfo?.latencyHistory ?? []).concat(
+          newestLatency
+        ),
+      })),
     []
   )
 
@@ -148,7 +148,7 @@ export default function Player({
           </Fab>
         </DetectionDialog>
       )}
-      <PlayerContainer sx={{ mx: 2 }}>
+      <Box sx={{ mx: 2 }}>
         <StyledButtonContainer>
           <Fab
             color="base"
@@ -186,10 +186,11 @@ export default function Player({
             src={hlsURI}
             key={hlsURI}
             autoplay={true}
-            callbacks={mediaStreamerCallbacks}
+            onReady={handleReady}
+            onLatencyUpdate={handleLatencyUpdate}
           />
         )}
-      </PlayerContainer>
+      </Box>
       <Box
         sx={{
           mx: 2,

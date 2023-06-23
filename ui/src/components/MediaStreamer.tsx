@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-type PlayerWithOffset = Player & {
+export type PlayerWithOffset = Player & {
   offset: (offset: {
     start: number
     end: number
@@ -20,14 +20,8 @@ type MediaStreamerProps = {
   autoplay?: boolean
   startOffset?: number
   endOffset?: number
-  callbacks: {
-    onReady?: (controls: MediaStreamerControls) => void
-    onPlaying?: () => void
-    onPaused?: () => void
-    onLoading?: () => void
-    onTimeUpdate?: (currentTime: number) => void
-    onLatencyUpdate?: (latency: number, currentTime: number) => void
-  }
+  onReady?: (player: PlayerWithOffset, controls: MediaStreamerControls) => void
+  onLatencyUpdate?: (latency: number, currentTime: number) => void
 }
 
 export type MediaStreamerControls = {
@@ -47,13 +41,14 @@ export default function MediaStreamer({
   autoplay = false,
   startOffset,
   endOffset,
-  callbacks,
+  onReady,
+  onLatencyUpdate,
 }: MediaStreamerProps) {
   const audioNodeRef = useRef<HTMLAudioElement>(null)
-  const playerRef = useRef<PlayerWithOffset>()
 
   useEffect(() => {
-    let latencyUpdateInterval: NodeJS.Timeout
+    let currentPlayer: PlayerWithOffset | undefined
+    let latencyUpdateInterval: NodeJS.Timeout | undefined
 
     const getControls = (player: PlayerWithOffset) => {
       const controls: MediaStreamerControls = {
@@ -111,7 +106,7 @@ export default function MediaStreamer({
         ],
       }) as PlayerWithOffset
 
-      playerRef.current = player
+      currentPlayer = player
 
       if (startOffset && endOffset) {
         player.offset({
@@ -123,7 +118,7 @@ export default function MediaStreamer({
 
       player.ready(() => {
         const controls = getControls(player)
-        callbacks.onReady?.(controls)
+        onReady?.(player, controls)
         player.tech().on('retryplaylist', (_e: Event) => {
           const latency = controls.getLatency()
           if (latency && latency < MAX_LATENCY) {
@@ -131,30 +126,24 @@ export default function MediaStreamer({
           }
         })
         latencyUpdateInterval = setInterval(() => {
-          callbacks.onLatencyUpdate?.(
+          onLatencyUpdate?.(
             getControls(player).getLatency() ?? 0,
             player.currentTime() ?? 0
           )
         }, 1000)
       })
-
-      player.on('playing', () => callbacks.onPlaying?.())
-      player.on('pause', () => callbacks.onPaused?.())
-      player.on('waiting', () => callbacks.onLoading?.())
-      player.on('timeupdate', () =>
-        callbacks.onTimeUpdate?.(player.currentTime() ?? 0)
-      )
     }
 
     setupPlayer()
     return () => {
       clearInterval(latencyUpdateInterval)
-      if (playerRef.current) {
-        getControls(playerRef.current).pause()
-        playerRef.current.dispose()
+      if (currentPlayer) {
+        getControls(currentPlayer).pause()
+        currentPlayer.dispose()
+        currentPlayer = undefined
       }
     }
-  }, [src, autoplay, startOffset, endOffset, callbacks])
+  }, [src, autoplay, startOffset, endOffset, onReady, onLatencyUpdate])
 
   return (
     <div>
