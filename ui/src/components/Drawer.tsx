@@ -10,6 +10,7 @@ import { ReactNode, useState } from 'react'
 
 import { BottomNavSpacer } from '@/components/BottomNav'
 import useIsMobile from '@/hooks/useIsMobile'
+import { displayDesktop, displayMobile } from '@/styles/responsive'
 
 export default function Drawer({
   children,
@@ -32,15 +33,16 @@ export default function Drawer({
     setOpen(false)
     onClose?.()
   }
+  return (
+    <>
+      <Mobile open={open && isMobile} onOpen={handleOpen} onClose={handleClose}>
+        {children}
+      </Mobile>
 
-  return isMobile ? (
-    <Mobile open={open} onOpen={handleOpen} onClose={handleClose}>
-      {children}
-    </Mobile>
-  ) : (
-    <Desktop open={open} onOpen={handleOpen} onClose={handleClose}>
-      {children}
-    </Desktop>
+      <Desktop open={open} onOpen={handleOpen} onClose={handleClose}>
+        {children}
+      </Desktop>
+    </>
   )
 }
 
@@ -64,6 +66,7 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
         keepMounted: true,
       }}
       sx={{
+        ...displayMobile,
         '& > .MuiPaper-root': {
           height: 1,
           overflow: 'visible',
@@ -89,6 +92,7 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
         if (!open) onOpen()
       }}
       sx={(theme) => ({
+        ...displayDesktop,
         width: theme.breakpoints.values.sm,
         maxWidth: 0.5,
         flexShrink: 0,
