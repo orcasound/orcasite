@@ -1,6 +1,5 @@
 import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab } from '@mui/material'
-import { styled } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import VideoJSPlayer from 'video.js/dist/types/player'
@@ -13,14 +12,6 @@ import useTimestampFetcher from '@/hooks/useTimestampFetcher'
 
 // dynamically import VideoJS to speed up initial page load
 const VideoJS = dynamic(() => import('@/components/VideoJS'))
-
-const StyledButtonContainer = styled('div')`
-  border-radius: 2.0625rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-`
 
 export default function Player({
   currentFeed,
@@ -188,38 +179,36 @@ export default function Player({
           },
         }}
       >
-        <StyledButtonContainer>
-          <Fab
-            color="base"
-            sx={{
-              // set hover color manually because custom colors are broken for Fab
-              // see https://github.com/mui/material-ui/issues/31063
-              '&:hover': {
-                backgroundColor: 'base.light',
-              },
-            }}
-            onClick={handlePlayPause}
-          >
-            {!isPlaying && (
-              <PlayArrow
-                className="icon"
-                fontSize="large"
-                // onClick={() =>
-                //   analyticsEvents.stream.started(currentFeed.slug)
-                // }
-              />
-            )}
-            {isPlaying && (
-              <Pause
-                className="icon"
-                fontSize="large"
-                // onClick={() =>
-                //   analyticsEvents.stream.paused(currentFeed.slug)
-                // }
-              />
-            )}
-          </Fab>
-        </StyledButtonContainer>
+        <Fab
+          color="base"
+          sx={{
+            // set hover color manually because custom colors are broken for Fab
+            // see https://github.com/mui/material-ui/issues/31063
+            '&:hover': {
+              backgroundColor: 'base.light',
+            },
+          }}
+          onClick={handlePlayPause}
+        >
+          {!isPlaying && (
+            <PlayArrow
+              className="icon"
+              fontSize="large"
+              // onClick={() =>
+              //   analyticsEvents.stream.started(currentFeed.slug)
+              // }
+            />
+          )}
+          {isPlaying && (
+            <Pause
+              className="icon"
+              fontSize="large"
+              // onClick={() =>
+              //   analyticsEvents.stream.paused(currentFeed.slug)
+              // }
+            />
+          )}
+        </Fab>
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
       <Box
