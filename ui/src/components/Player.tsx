@@ -25,11 +25,6 @@ export default function Player({
   const [_isLoading, setIsLoading] = useState(false)
   const playerRef = useRef<VideoJSPlayer | null>(null)
 
-  const [_debugInfo, setDebugInfo] = useState<{
-    playerTime: number
-    latencyHistory: number[]
-  }>()
-
   const handleFetcherStop = useCallback(() => {
     setIsPlaying(false)
     setIsLoading(false)
@@ -95,17 +90,6 @@ export default function Player({
       player.pause()
     }
   }
-
-  const handleLatencyUpdate = useCallback(
-    (newestLatency: number, playerTime: number) =>
-      setDebugInfo((prevDebugInfo) => ({
-        playerTime: playerTime,
-        latencyHistory: (prevDebugInfo?.latencyHistory ?? []).concat(
-          newestLatency
-        ),
-      })),
-    []
-  )
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' && hlsURI) {
