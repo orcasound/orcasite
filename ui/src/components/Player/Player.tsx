@@ -25,16 +25,18 @@ export default function Player({
   >
 }) {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [_isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isError, setIsError] = useState(false)
   const playerRef = useRef<VideoJSPlayer | null>(null)
 
-  const handleFetcherStop = useCallback(() => {
+  const resetPlayerStatus = useCallback(() => {
     setIsPlaying(false)
     setIsLoading(false)
+    setIsError(false)
   }, [])
 
   const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName, {
-    onStop: handleFetcherStop,
+    onStop: resetPlayerStatus,
   })
 
   const feedPresence = useFeedPresence(currentFeed?.slug)
@@ -43,54 +45,69 @@ export default function Player({
   const isMobile = useIsMobile()
 
   const playerOptions = useMemo(
-    () =>
-      hlsURI
-        ? {
-            autoplay: true,
-            flash: {
-              hls: {
-                overrideNative: true,
-              },
-            },
-            html5: {
-              hls: {
-                overrideNative: true,
-              },
-            },
-            sources: [
-              {
-                src: hlsURI,
-                type: 'application/x-mpegurl',
-              },
-            ],
-          }
-        : {},
+    () => ({
+      autoplay: true,
+      flash: {
+        hls: {
+          overrideNative: true,
+        },
+      },
+      html5: {
+        hls: {
+          overrideNative: true,
+        },
+      },
+      sources: [
+        {
+          src: hlsURI ?? '',
+          type: 'application/x-mpegurl',
+        },
+      ],
+    }),
     [hlsURI]
   )
 
-  const handleReady = useCallback((player: VideoJSPlayer) => {
-    playerRef.current = player
+  const handleReady = useCallback(
+    (player: VideoJSPlayer) => {
+      playerRef.current = player
 
-    setIsLoading(false)
+      resetPlayerStatus()
 
-    player.on('playing', () => {
-      setIsLoading(false)
-      setIsPlaying(true)
-    })
-    player.on('pause', () => {
-      setIsLoading(false)
-      setIsPlaying(false)
-    })
-    player.on('waiting', () => setIsLoading(true))
-  }, [])
+      player.on('playing', () => {
+        resetPlayerStatus()
+        setIsPlaying(true)
+      })
+      player.on('pause', () => {
+        resetPlayerStatus()
+      })
+      player.on('waiting', () => setIsLoading(true))
+      player.on('error', () => setIsError(true))
+    },
+    [resetPlayerStatus]
+  )
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     const player = playerRef.current
-    if (!player) return
-    if (player.paused()) {
-      player.play()
-    } else {
-      player.pause()
+
+    if (isError) {
+      resetPlayerStatus()
+      return
+    }
+
+    if (!player) {
+      setIsError(true)
+      return
+    }
+
+    try {
+      if (!isPlaying) {
+        await player.play()
+      } else {
+        await player.pause()
+      }
+    } catch (e) {
+      console.error(e)
+      setIsError(true)
     }
   }
 
@@ -128,7 +145,12 @@ export default function Player({
         </DetectionDialog>
       )}
       <Box mx={2}>
-        <PlayPauseButton isPlaying={isPlaying} onClick={handlePlayPause} />
+        <PlayPauseButton
+          isPlaying={isPlaying}
+          isLoading={isLoading}
+          isError={isError}
+          onClick={handlePlayPause}
+        />
       </Box>
       <Box mx={2}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
       <Box mx={2}>

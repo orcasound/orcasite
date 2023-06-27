@@ -1,11 +1,15 @@
-import { Pause, PlayArrow } from '@mui/icons-material'
-import { Fab } from '@mui/material'
+import { ErrorOutline, Pause, PlayArrow } from '@mui/icons-material'
+import { CircularProgress, Fab, Tooltip } from '@mui/material'
 
 export default function PlayPauseButton({
   isPlaying,
+  isLoading,
+  isError,
   onClick,
 }: {
   isPlaying: boolean
+  isLoading: boolean
+  isError: boolean
   onClick: () => void
 }) {
   return (
@@ -19,22 +23,28 @@ export default function PlayPauseButton({
         },
       }}
       onClick={onClick}
+      disabled={isLoading && !isError}
     >
-      {!isPlaying && (
-        <PlayArrow
-          className="icon"
-          fontSize="large"
-          // onClick={() =>
-          //   analyticsEvents.stream.started(currentFeed.slug)
-          // }
-        />
-      )}
-      {isPlaying && (
+      {isError ? (
+        <Tooltip title="Failed to load" placement="right">
+          <ErrorOutline className="icon" fontSize="large" />
+        </Tooltip>
+      ) : isLoading ? (
+        <CircularProgress sx={{ color: 'base.contrastText' }} />
+      ) : isPlaying ? (
         <Pause
           className="icon"
           fontSize="large"
           // onClick={() =>
           //   analyticsEvents.stream.paused(currentFeed.slug)
+          // }
+        />
+      ) : (
+        <PlayArrow
+          className="icon"
+          fontSize="large"
+          // onClick={() =>
+          //   analyticsEvents.stream.started(currentFeed.slug)
           // }
         />
       )}
