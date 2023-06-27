@@ -2,19 +2,17 @@ import { GraphicEq, Pause, Person, PlayArrow } from '@mui/icons-material'
 import { Box, Fab } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import VideoJSPlayer from 'video.js/dist/types/player'
 
 import DetectionDialog from '@/components/DetectionDialog'
-import type {
-  MediaStreamerControls,
-  PlayerWithOffset,
-} from '@/components/MediaStreamer'
 import type { Feed } from '@/graphql/generated'
 import useFeedPresence from '@/hooks/useFeedPresence'
 import useIsMobile from '@/hooks/useIsMobile'
 import useTimestampFetcher from '@/hooks/useTimestampFetcher'
 
-const MediaStreamer = dynamic(() => import('@/components/MediaStreamer'))
+// dynamically import VideoJS to speed up initial page load
+const VideoJS = dynamic(() => import('@/components/VideoJS'))
 
 const StyledButtonContainer = styled('div')`
   border-radius: 2.0625rem;
@@ -34,7 +32,7 @@ export default function Player({
 }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [_isLoading, setIsLoading] = useState(false)
-  const controlsRef = useRef<MediaStreamerControls>()
+  const playerRef = useRef<VideoJSPlayer | null>(null)
 
   const [_debugInfo, setDebugInfo] = useState<{
     playerTime: number
@@ -55,23 +53,57 @@ export default function Player({
 
   const isMobile = useIsMobile()
 
-  const handleReady = useCallback(
-    (player: PlayerWithOffset, controls: MediaStreamerControls) => {
-      setIsLoading(false)
-      controlsRef.current = controls
-
-      player.on('playing', () => {
-        setIsLoading(false)
-        setIsPlaying(true)
-      })
-      player.on('pause', () => {
-        setIsLoading(false)
-        setIsPlaying(false)
-      })
-      player.on('waiting', () => setIsLoading(true))
-    },
-    []
+  const playerOptions = useMemo(
+    () =>
+      hlsURI
+        ? {
+            autoplay: true,
+            flash: {
+              hls: {
+                overrideNative: true,
+              },
+            },
+            html5: {
+              hls: {
+                overrideNative: true,
+              },
+            },
+            sources: [
+              {
+                src: hlsURI,
+                type: 'application/x-mpegurl',
+              },
+            ],
+          }
+        : {},
+    [hlsURI]
   )
+
+  const handleReady = useCallback((player: VideoJSPlayer) => {
+    playerRef.current = player
+
+    setIsLoading(false)
+
+    player.on('playing', () => {
+      setIsLoading(false)
+      setIsPlaying(true)
+    })
+    player.on('pause', () => {
+      setIsLoading(false)
+      setIsPlaying(false)
+    })
+    player.on('waiting', () => setIsLoading(true))
+  }, [])
+
+  const handlePlayPause = () => {
+    const player = playerRef.current
+    if (!player) return
+    if (player.paused()) {
+      player.play()
+    } else {
+      player.pause()
+    }
+  }
 
   const handleLatencyUpdate = useCallback(
     (newestLatency: number, playerTime: number) =>
@@ -108,7 +140,7 @@ export default function Player({
           isPlaying={isPlaying}
           feed={currentFeed}
           timestamp={timestamp}
-          getPlayerTime={controlsRef.current?.getPlayerTime}
+          getPlayerTime={playerRef.current?.currentTime}
           listenerCount={listenerCount}
         >
           <Fab
@@ -148,7 +180,14 @@ export default function Player({
           </Fab>
         </DetectionDialog>
       )}
-      <Box sx={{ mx: 2 }}>
+      <Box
+        sx={{
+          mx: 2,
+          '& .video-js': {
+            display: 'none',
+          },
+        }}
+      >
         <StyledButtonContainer>
           <Fab
             color="base"
@@ -159,7 +198,7 @@ export default function Player({
                 backgroundColor: 'base.light',
               },
             }}
-            onClick={controlsRef.current?.playPause}
+            onClick={handlePlayPause}
           >
             {!isPlaying && (
               <PlayArrow
@@ -181,15 +220,7 @@ export default function Player({
             )}
           </Fab>
         </StyledButtonContainer>
-        {hlsURI && (
-          <MediaStreamer
-            src={hlsURI}
-            key={hlsURI}
-            autoplay={true}
-            onReady={handleReady}
-            onLatencyUpdate={handleLatencyUpdate}
-          />
-        )}
+        <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
       <Box
         sx={{
