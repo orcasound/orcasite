@@ -10,13 +10,14 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material'
-import Image from 'next/legacy/image'
 import { useState } from 'react'
 
 import { useSubmitDetectionMutation } from '@/graphql/generated'
 import vesselIconImage from '@/public/icons/vessel-purple.svg'
 import wavesIconImage from '@/public/icons/water-waves-blue.svg'
 import whaleFlukeIconImage from '@/public/icons/whale-fluke-gray.svg'
+
+import DetectionCategoryButton from './DetectionCategoryButton'
 
 type DetectionCategory = 'orca' | 'vessel' | 'other'
 
@@ -182,26 +183,5 @@ export default function DetectionDialog({
         )}
       </Dialog>
     </>
-  )
-}
-
-function DetectionCategoryButton({
-  icon,
-  title,
-}: {
-  icon: { src: string }
-  title: string
-}) {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <Image src={icon.src} alt={`${title} icon`} width={100} height={100} />
-      {title}
-    </Box>
   )
 }

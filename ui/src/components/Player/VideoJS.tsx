@@ -4,19 +4,22 @@ import React from 'react'
 import videojs from 'video.js'
 import type Player from 'video.js/dist/types/player'
 
+export type VideoJSPlayer = Player
+export type VideoJSOptions = {
+  autoplay?: boolean
+  sources?: {
+    src: string
+    type: string
+  }[]
+  [key: string]: unknown
+}
+
 // adapted from https://videojs.com/guides/react/
 export default function VideoJS({
   options,
   onReady,
 }: {
-  options: {
-    autoplay?: boolean
-    sources?: {
-      src: string
-      type: string
-    }[]
-    [key: string]: unknown
-  }
+  options: VideoJSOptions
   onReady?: (player: Player) => void
 }) {
   const videoRef = React.useRef<HTMLDivElement | null>(null)
