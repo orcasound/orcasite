@@ -5,24 +5,31 @@ export default function PlayPauseButton({
   isPlaying,
   isLoading,
   isError,
+  disabled,
   onClick,
 }: {
   isPlaying: boolean
   isLoading: boolean
   isError: boolean
+  disabled: boolean
   onClick: () => void
 }) {
   return (
     <Fab
       color="base"
-      sx={{
-        // set hover color manually because custom colors are broken for Fab
-        // see https://github.com/mui/material-ui/issues/31063
-        '&:hover': {
-          backgroundColor: 'base.light',
-        },
-      }}
-      onClick={onClick}
+      sx={
+        disabled
+          ? { color: 'base.light' }
+          : {
+              // set hover color manually because custom colors are broken for Fab
+              // see https://github.com/mui/material-ui/issues/31063
+              '&:hover': {
+                backgroundColor: 'base.light',
+              },
+            }
+      }
+      disableRipple={disabled}
+      onClick={() => !disabled && onClick()}
       disabled={isLoading && !isError}
     >
       {isError ? (

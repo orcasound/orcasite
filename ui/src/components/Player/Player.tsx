@@ -150,13 +150,14 @@ export default function Player({
           isLoading={isLoading}
           isError={isError}
           onClick={handlePlayPause}
+          disabled={!currentFeed}
         />
       </Box>
       <Box mx={2}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
       <Box mx={2}>
         {currentFeed
           ? `${currentFeed.name} - ${currentFeed.nodeName}`
-          : 'Player: no feed selected'}
+          : 'Select a location to start listening live'}
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: 'end' }}>
         {currentFeed &&
