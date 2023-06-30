@@ -94,4 +94,5 @@
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.7.0", "bc84380c9ab48177092f43ac89e4dfa2c6d62b40b8bd132b1059ecc7232f9a78", [:rebar3], [], "hexpm", "25eee6d67df61960cf6a794239566599b09e17e668d3700247bc498638152521"},
   "websock": {:hex, :websock, "0.5.2", "b3c08511d8d79ed2c2f589ff430bd1fe799bb389686dafce86d28801783d8351", [:mix], [], "hexpm", "925f5de22fca6813dfa980fb62fd542ec43a2d1a1f83d2caec907483fe66ff05"},
   "websock_adapter": {:hex, :websock_adapter, "0.5.3", "4908718e42e4a548fc20e00e70848620a92f11f7a6add8cf0886c4232267498d", [:mix], [{:bandit, ">= 0.6.0", [hex: :bandit, repo: "hexpm", optional: true]}, {:plug, "~> 1.14", [hex: :plug, repo: "hexpm", optional: false]}, {:plug_cowboy, "~> 2.6", [hex: :plug_cowboy, repo: "hexpm", optional: true]}, {:websock, "~> 0.5", [hex: :websock, repo: "hexpm", optional: false]}], "hexpm", "cbe5b814c1f86b6ea002b52dd99f345aeecf1a1a6964e209d208fb404d930d3d"},
+  "zappa": {:git, "https://github.com/fireproofsocks/zappa.git", "d89d983b73652e761861bd7c2c5d03a45fc4badd", [branch: "master"]},
 }
