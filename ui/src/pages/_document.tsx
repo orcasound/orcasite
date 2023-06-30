@@ -13,9 +13,9 @@ import Document, {
 } from 'next/document'
 import React from 'react'
 
-import createEmotionCache from '../styles/createEmotionCache'
-import theme from '../styles/theme'
-import { MyAppProps } from './_app'
+import { MyAppProps } from '@/pages/_app'
+import createEmotionCache from '@/styles/createEmotionCache'
+import theme from '@/styles/theme'
 
 interface MyDocumentProps extends DocumentProps {
   emotionStyleTags: JSX.Element[]

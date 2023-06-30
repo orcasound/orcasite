@@ -1,11 +1,11 @@
 import { Container, Stack, Typography } from '@mui/material'
+import { dehydrate, QueryClient } from '@tanstack/react-query'
 import Head from 'next/head'
 
+import FeedCard from '@/components/FeedCard'
+import { getMapLayout } from '@/components/MapLayout'
 import { useFeedsQuery } from '@/graphql/generated'
-
-import FeedCard from '../components/FeedCard'
-import { getMapLayout } from '../components/MapLayout'
-import type { NextPageWithLayout } from './_app'
+import type { NextPageWithLayout } from '@/pages/_app'
 
 const HomePage: NextPageWithLayout = () => {
   const feeds = useFeedsQuery().data?.feeds
@@ -38,5 +38,20 @@ const HomePage: NextPageWithLayout = () => {
 }
 
 HomePage.getLayout = getMapLayout
+
+export async function getStaticProps() {
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery(
+    useFeedsQuery.getKey(),
+    useFeedsQuery.fetcher()
+  )
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  }
+}
 
 export default HomePage

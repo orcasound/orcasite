@@ -12,6 +12,12 @@ defmodule OrcasiteWeb.Endpoint do
     plug Phoenix.Ecto.SQL.Sandbox, sandbox: sandbox
   end
 
+  socket("/socket", OrcasiteWeb.UserSocket,
+    websocket: [
+      check_origin: Application.compile_env(:orcasite, OrcasiteWeb.Endpoint)[:check_origin]
+    ]
+  )
+
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [
       connect_info: [:user_agent, session: @session_options],

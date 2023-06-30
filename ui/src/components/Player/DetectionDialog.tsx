@@ -10,18 +10,34 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material'
-import Image from 'next/legacy/image'
 import { useState } from 'react'
 
 import { useSubmitDetectionMutation } from '@/graphql/generated'
+import vesselIconImage from '@/public/icons/vessel-purple.svg'
+import wavesIconImage from '@/public/icons/water-waves-blue.svg'
+import whaleFlukeIconImage from '@/public/icons/whale-fluke-gray.svg'
 
-import vesselIconImage from '../../public/icons/vessel-purple.svg'
-import wavesIconImage from '../../public/icons/water-waves-blue.svg'
-import whaleFlukeIconImage from '../../public/icons/whale-fluke-gray.svg'
+import DetectionCategoryButton from './DetectionCategoryButton'
 
 type DetectionCategory = 'orca' | 'vessel' | 'other'
 
-export default function DetectionDialog(props: any) {
+export default function DetectionDialog({
+  children,
+  feed: { id: feedId },
+  timestamp: playlistTimestamp,
+  isPlaying,
+  getPlayerTime,
+  listenerCount,
+}: {
+  children: React.ReactNode
+  feed: {
+    id: string
+  }
+  timestamp: string
+  isPlaying: boolean
+  getPlayerTime?: () => number | undefined
+  listenerCount: number
+}) {
   const [open, setOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [category, setCategory] = useState<DetectionCategory>()
@@ -40,15 +56,19 @@ export default function DetectionDialog(props: any) {
     setOpen(true)
   }
 
-  const handleChange = (e: any) => setDescription(e.target.value)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setDescription(e.target.value)
 
-  const handleCategoryChange = (e: any, newCategory: DetectionCategory) => {
+  const handleCategoryChange = (
+    e: React.MouseEvent<HTMLElement>,
+    newCategory: DetectionCategory
+  ) => {
     if (newCategory) {
       setCategory(newCategory)
     }
   }
 
-  const handleKeyDown = () => (e: any) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.which === 13) {
       onDetect()
     }
@@ -59,15 +79,7 @@ export default function DetectionDialog(props: any) {
   }
 
   const onDetect = () => {
-    const {
-      feed: { id: feedId },
-      timestamp: playlistTimestamp,
-      isPlaying,
-      getPlayerTime,
-      listenerCount,
-    } = props
-
-    const playerOffset = getPlayerTime()
+    const playerOffset = getPlayerTime?.()
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
       submitDetection.mutate({
         feedId,
@@ -88,7 +100,7 @@ export default function DetectionDialog(props: any) {
 
   return (
     <>
-      <Box onClick={handleClickOpen}>{props.children}</Box>
+      <Box onClick={handleClickOpen}>{children}</Box>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -171,26 +183,5 @@ export default function DetectionDialog(props: any) {
         )}
       </Dialog>
     </>
-  )
-}
-
-function DetectionCategoryButton({
-  icon,
-  title,
-}: {
-  icon: any
-  title: string
-}) {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <Image src={icon.src} alt={`${title} icon`} width={100} height={100} />
-      {title}
-    </Box>
   )
 }

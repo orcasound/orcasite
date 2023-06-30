@@ -1,14 +1,14 @@
 import { NavigateNext } from '@mui/icons-material'
 import { Box, Breadcrumbs, Container, Typography } from '@mui/material'
+import { dehydrate, QueryClient } from '@tanstack/react-query'
 import Head from 'next/head'
 import Image from 'next/legacy/image'
 import { useRouter } from 'next/router'
 
-import { useFeedQuery } from '@/graphql/generated'
-
-import Link from '../components/Link'
-import { getMapLayout } from '../components/MapLayout'
-import type { NextPageWithLayout } from './_app'
+import Link from '@/components/Link'
+import { getMapLayout, getMapStaticProps } from '@/components/MapLayout'
+import { useFeedQuery, useFeedsQuery } from '@/graphql/generated'
+import type { NextPageWithLayout } from '@/pages/_app'
 
 const FeedPage: NextPageWithLayout = () => {
   const router = useRouter()
@@ -64,5 +64,40 @@ const FeedPage: NextPageWithLayout = () => {
 }
 
 FeedPage.getLayout = getMapLayout
+
+export async function getStaticPaths() {
+  const queryClient = new QueryClient()
+
+  let response
+  try {
+    response = await queryClient.fetchQuery(
+      useFeedsQuery.getKey(),
+      useFeedsQuery.fetcher()
+    )
+  } catch (error) {
+    console.error(error)
+  }
+
+  return {
+    paths:
+      response?.feeds.map((feed) => ({ params: { feed: feed.slug } })) ?? [],
+    fallback: 'blocking',
+  }
+}
+
+export async function getStaticProps({ params }: { params: { feed: string } }) {
+  const queryClient = new QueryClient()
+  await getMapStaticProps(queryClient)
+  await queryClient.prefetchQuery(
+    useFeedQuery.getKey({ slug: params.feed }),
+    useFeedQuery.fetcher({ slug: params.feed })
+  )
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  }
+}
 
 export default FeedPage

@@ -8,14 +8,9 @@ import { useRouter } from 'next/router'
 import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 
 import { Feed, FeedsQuery } from '@/graphql/generated'
+import hydrophoneActiveIconImage from '@/public/icons/hydrophone-active.svg'
+import hydrophoneDefaultIconImage from '@/public/icons/hydrophone-default.svg'
 
-import hydrophoneActiveIconImage from '../../public/icons/hydrophone-active.svg'
-import hydrophoneDefaultIconImage from '../../public/icons/hydrophone-default.svg'
-
-// Disable no-unused-modules because installed version of eslint-plugin-import
-// can't handle dynamic imports yet
-// TODO: Remove once eslint-plugin-import is upgraded
-// eslint-disable-next-line import/no-unused-modules
 export default function Map({
   setMap,
   currentFeed,

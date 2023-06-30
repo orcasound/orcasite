@@ -1,21 +1,22 @@
 import { Box } from '@mui/material'
+import { QueryClient } from '@tanstack/react-query'
 import type { Map as LeafletMap } from 'leaflet'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 
+import BottomNav from '@/components/BottomNav'
+import Drawer from '@/components/Drawer'
+import Header from '@/components/Header'
+import Player from '@/components/Player'
 import { useFeedQuery, useFeedsQuery } from '@/graphql/generated'
-
-import BottomNav from './BottomNav'
-import Drawer from './Drawer'
-import Header from './Header'
-import Player from './Player'
 
 const MapWithNoSSR = dynamic(() => import('./Map'), {
   ssr: false,
 })
 
 const feedFromSlug = (feedSlug: string) => ({
+  id: feedSlug,
   name: feedSlug,
   slug: feedSlug,
   nodeName: feedSlug,
@@ -28,10 +29,13 @@ const feedFromSlug = (feedSlug: string) => ({
 function MapLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const slug = router.query.feed as string
-  // TODO: don't make request if there's no feed slug or is dynamic
-  const feedFromQuery = useFeedQuery({ slug: slug }).data?.feed
 
   const isDynamic = router.asPath.split('/')[1] === 'dynamic'
+  // don't make feed request if there's no feed slug or is dynamic
+  const feedFromQuery = useFeedQuery(
+    { slug: slug },
+    { enabled: !!slug || isDynamic }
+  ).data?.feed
   const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery
 
   const [currentFeed, setCurrentFeed] = useState(feed)
@@ -87,4 +91,11 @@ function MapLayout({ children }: { children: ReactNode }) {
 
 export function getMapLayout(page: ReactElement) {
   return <MapLayout>{page}</MapLayout>
+}
+
+export async function getMapStaticProps(queryClient: QueryClient) {
+  await queryClient.prefetchQuery(
+    useFeedsQuery.getKey(),
+    useFeedsQuery.fetcher()
+  )
 }

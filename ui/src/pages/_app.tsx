@@ -6,15 +6,16 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ReactElement, ReactNode, useState } from 'react'
 
-import createEmotionCache from '../styles/createEmotionCache'
-import theme from '../styles/theme'
+import createEmotionCache from '@/styles/createEmotionCache'
+import theme from '@/styles/theme'
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 
@@ -38,7 +39,16 @@ export default function MyApp({
 
   // Configure react-query using the hydration setup
   // https://react-query.tanstack.com/guides/ssr#using-hydration
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 20, // 20 seconds
+          },
+        },
+      })
+  )
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -57,6 +67,7 @@ export default function MyApp({
           </ThemeProvider>
         </CacheProvider>
       </Hydrate>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }
