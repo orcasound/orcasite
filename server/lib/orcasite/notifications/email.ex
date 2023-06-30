@@ -33,7 +33,6 @@ defmodule Orcasite.Notifications.Email do
     <mj-section>
       <mj-column>
 
-        <mj-text font-size="20px" font-family="helvetica">Hello World</mj-text>
         <mj-text font-size="20px" font-family="helvetica">
           A new detection has been submitted at {{ node_name }} ({{ node }})!
         </mj-text>
