@@ -148,3 +148,8 @@ heroku run POOL_SIZE=2 iex -S mix
 ```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
+
+
+## Emails
+
+Orcasite uses MJML for email templating. There are a few online MJML renderers, including: [mjml.io](https://mjml.io/try-it-live) and [grapes.js](https://grapesjs.com/demo-mjml.html)
