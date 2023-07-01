@@ -152,4 +152,4 @@ The `POOL_SIZE` config var is necessary due to the current Postgres db having 20
 
 ## Emails
 
-Orcasite uses MJML for email templating. There are a few online MJML renderers, including: https://mjml.io/try-it-live
+Orcasite uses MJML for email templating. There are a few online MJML renderers, including: [mjml.io](https://mjml.io/try-it-live) and [grapes.js](https://grapesjs.com/demo-mjml.html)
