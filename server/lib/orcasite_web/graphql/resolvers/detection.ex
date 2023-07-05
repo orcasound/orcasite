@@ -36,7 +36,7 @@ defmodule OrcasiteWeb.Resolvers.Detection do
         {:ok, detection} ->
           # Send notification for new detection
           Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-            %{node: node} = Radio.get_feed!(feed_id)
+            %{slug: node} = Radio.get_feed!(feed_id)
             Orcasite.Notifications.Notification.notify_new_detection(detection.id, node)
           end)
 
