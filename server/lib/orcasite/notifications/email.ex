@@ -65,7 +65,7 @@ defmodule Orcasite.Notifications.Email do
     """
     <mjml>
       <mj-body>
-        <mj-section padding="0" full-width background-color="#c4cdd3">
+        <mj-section padding="0" full-width="" background-color="#c4cdd3">
           <mj-column padding="0">
             <mj-image src="https://orcasite.s3.us-west-2.amazonaws.com/email_assets/orcasound_email_header.jpg" alt="Orcasound" align="center" container-background-color="#c4cdd3"></mj-image>
           </mj-column>
@@ -95,7 +95,6 @@ defmodule Orcasite.Notifications.Email do
           </mj-column>
         </mj-section>
 
-        <!-- footer -->
         <mj-section background-color="#5d5b72">
           <mj-column>
 
