@@ -1,16 +1,14 @@
 import { ErrorOutline, Pause, PlayArrow } from '@mui/icons-material'
 import { CircularProgress, Fab, Tooltip } from '@mui/material'
 
+import { type PlayerStatus } from './Player'
+
 export default function PlayPauseButton({
-  isPlaying,
-  isLoading,
-  isError,
+  playerStatus,
   disabled,
   onClick,
 }: {
-  isPlaying: boolean
-  isLoading: boolean
-  isError: boolean
+  playerStatus: PlayerStatus
   disabled: boolean
   onClick: () => void
 }) {
@@ -30,15 +28,14 @@ export default function PlayPauseButton({
       }
       disableRipple={disabled}
       onClick={() => !disabled && onClick()}
-      disabled={isLoading && !isError}
     >
-      {isError ? (
+      {playerStatus === 'error' ? (
         <Tooltip title="Failed to load" placement="right">
           <ErrorOutline className="icon" fontSize="large" />
         </Tooltip>
-      ) : isLoading ? (
+      ) : playerStatus === 'loading' ? (
         <CircularProgress sx={{ color: 'base.contrastText' }} />
-      ) : isPlaying ? (
+      ) : playerStatus === 'playing' ? (
         <Pause
           className="icon"
           fontSize="large"

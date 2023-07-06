@@ -16,6 +16,8 @@ import { type VideoJSPlayer } from './VideoJS'
 // dynamically import VideoJS to speed up initial page load
 const VideoJS = dynamic(() => import('./VideoJS'))
 
+export type PlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error'
+
 export default function Player({
   currentFeed,
 }: {
@@ -24,20 +26,10 @@ export default function Player({
     'id' | 'slug' | 'nodeName' | 'name' | 'locationPoint'
   >
 }) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(false)
+  const [playerStatus, setPlayerStatus] = useState<PlayerStatus>('idle')
   const playerRef = useRef<VideoJSPlayer | null>(null)
 
-  const resetPlayerStatus = useCallback(() => {
-    setIsPlaying(false)
-    setIsLoading(false)
-    setIsError(false)
-  }, [])
-
-  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName, {
-    onStop: resetPlayerStatus,
-  })
+  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName)
 
   const feedPresence = useFeedPresence(currentFeed?.slug)
   const listenerCount = feedPresence?.metas.length ?? 0
@@ -59,55 +51,55 @@ export default function Player({
       },
       sources: [
         {
-          src: hlsURI ?? '',
+          src: currentFeed?.nodeName
+            ? // If hlsURI isn't set, use a dummy URI to trigger an error
+              // The dummy URI doesn't actually exist, it should return 404
+              // This is the only way to get videojs to throw an error, otherwise
+              // it just won't initialize (if src is undefined/null/empty))
+              hlsURI ?? `${currentFeed?.nodeName}/404`
+            : // if there's no feed though, the player shouldn't initialize
+              null,
           type: 'application/x-mpegurl',
         },
       ],
     }),
-    [hlsURI]
+    [hlsURI, currentFeed?.nodeName]
   )
 
-  const handleReady = useCallback(
-    (player: VideoJSPlayer) => {
-      playerRef.current = player
+  const handleReady = useCallback((player: VideoJSPlayer) => {
+    playerRef.current = player
 
-      resetPlayerStatus()
+    player.on('playing', () => setPlayerStatus('playing'))
+    player.on('pause', () => setPlayerStatus('paused'))
+    player.on('waiting', () => setPlayerStatus('loading'))
+    player.on('error', () => setPlayerStatus('error'))
+  }, [])
 
-      player.on('playing', () => {
-        resetPlayerStatus()
-        setIsPlaying(true)
-      })
-      player.on('pause', () => {
-        resetPlayerStatus()
-      })
-      player.on('waiting', () => setIsLoading(true))
-      player.on('error', () => setIsError(true))
-    },
-    [resetPlayerStatus]
-  )
-
-  const handlePlayPause = async () => {
+  const handlePlayPauseClick = async () => {
     const player = playerRef.current
 
-    if (isError) {
-      resetPlayerStatus()
+    if (playerStatus === 'error') {
+      setPlayerStatus('idle')
       return
     }
 
     if (!player) {
-      setIsError(true)
+      setPlayerStatus('error')
       return
     }
 
     try {
-      if (!isPlaying) {
-        await player.play()
-      } else {
+      if (playerStatus === 'loading' || playerStatus === 'playing') {
         await player.pause()
+      } else {
+        await player.play()
       }
     } catch (e) {
       console.error(e)
-      setIsError(true)
+      // AbortError is thrown if pause() is called while play() is still loading (e.g. if segments are 404ing)
+      // It's not important, so don't show this error to the user
+      if (e instanceof DOMException && e.name === 'AbortError') return
+      setPlayerStatus('error')
     }
   }
 
@@ -115,7 +107,11 @@ export default function Player({
     if (process.env.NODE_ENV === 'development' && hlsURI) {
       console.log(`New stream instance: ${hlsURI}`)
     }
-  }, [hlsURI])
+
+    return () => {
+      setPlayerStatus('idle')
+    }
+  }, [hlsURI, currentFeed?.nodeName])
 
   return (
     <Box
@@ -133,9 +129,9 @@ export default function Player({
       <Box display="none">
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      {isPlaying && currentFeed && timestamp && (
+      {playerStatus === 'playing' && currentFeed && timestamp && (
         <DetectionDialog
-          isPlaying={isPlaying}
+          isPlaying={playerStatus === 'playing'}
           feed={currentFeed}
           timestamp={timestamp}
           getPlayerTime={() => playerRef.current?.currentTime()}
@@ -146,10 +142,8 @@ export default function Player({
       )}
       <Box mx={2}>
         <PlayPauseButton
-          isPlaying={isPlaying}
-          isLoading={isLoading}
-          isError={isError}
-          onClick={handlePlayPause}
+          playerStatus={playerStatus}
+          onClick={handlePlayPauseClick}
           disabled={!currentFeed}
         />
       </Box>
