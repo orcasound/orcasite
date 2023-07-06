@@ -49,19 +49,18 @@ export default function Player({
           overrideNative: true,
         },
       },
-      sources: [
-        {
-          src: currentFeed?.nodeName
-            ? // If hlsURI isn't set, use a dummy URI to trigger an error
+      sources: currentFeed?.nodeName
+        ? [
+            {
+              // If hlsURI isn't set, use a dummy URI to trigger an error
               // The dummy URI doesn't actually exist, it should return 404
               // This is the only way to get videojs to throw an error, otherwise
               // it just won't initialize (if src is undefined/null/empty))
-              hlsURI ?? `${currentFeed?.nodeName}/404`
-            : // if there's no feed though, the player shouldn't initialize
-              null,
-          type: 'application/x-mpegurl',
-        },
-      ],
+              src: hlsURI ?? `${currentFeed?.nodeName}/404`,
+              type: 'application/x-mpegurl',
+            },
+          ]
+        : [],
     }),
     [hlsURI, currentFeed?.nodeName]
   )
