@@ -105,7 +105,7 @@ defmodule Orcasite.Notifications.Subscription do
       argument :minutes_ago, :integer, default: 5
 
       filter expr(
-        last_notification_id != ^arg(:notification_id) and
+        (last_notification_id != ^arg(:notification_id) or last_notification_id == nil) and
         event_type == ^arg(:event_type) and
         fragment(
           "? is null or ? < timezone('UTC', now()) - ?::numeric * interval '1 minute'",
