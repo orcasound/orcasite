@@ -16,6 +16,8 @@ import { type VideoJSPlayer } from './VideoJS'
 // dynamically import VideoJS to speed up initial page load
 const VideoJS = dynamic(() => import('./VideoJS'))
 
+export type PlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error'
+
 export default function Player({
   currentFeed,
 }: {
@@ -24,18 +26,10 @@ export default function Player({
     'id' | 'slug' | 'nodeName' | 'name' | 'locationPoint'
   >
 }) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [_isLoading, setIsLoading] = useState(false)
+  const [playerStatus, setPlayerStatus] = useState<PlayerStatus>('idle')
   const playerRef = useRef<VideoJSPlayer | null>(null)
 
-  const handleFetcherStop = useCallback(() => {
-    setIsPlaying(false)
-    setIsLoading(false)
-  }, [])
-
-  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName, {
-    onStop: handleFetcherStop,
-  })
+  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName)
 
   const feedPresence = useFeedPresence(currentFeed?.slug)
   const listenerCount = feedPresence?.metas.length ?? 0
@@ -43,54 +37,68 @@ export default function Player({
   const isMobile = useIsMobile()
 
   const playerOptions = useMemo(
-    () =>
-      hlsURI
-        ? {
-            autoplay: true,
-            flash: {
-              hls: {
-                overrideNative: true,
-              },
+    () => ({
+      autoplay: true,
+      flash: {
+        hls: {
+          overrideNative: true,
+        },
+      },
+      html5: {
+        hls: {
+          overrideNative: true,
+        },
+      },
+      sources: currentFeed?.nodeName
+        ? [
+            {
+              // If hlsURI isn't set, use a dummy URI to trigger an error
+              // The dummy URI doesn't actually exist, it should return 404
+              // This is the only way to get videojs to throw an error, otherwise
+              // it just won't initialize (if src is undefined/null/empty))
+              src: hlsURI ?? `${currentFeed?.nodeName}/404`,
+              type: 'application/x-mpegurl',
             },
-            html5: {
-              hls: {
-                overrideNative: true,
-              },
-            },
-            sources: [
-              {
-                src: hlsURI,
-                type: 'application/x-mpegurl',
-              },
-            ],
-          }
-        : {},
-    [hlsURI]
+          ]
+        : [],
+    }),
+    [hlsURI, currentFeed?.nodeName]
   )
 
   const handleReady = useCallback((player: VideoJSPlayer) => {
     playerRef.current = player
 
-    setIsLoading(false)
-
-    player.on('playing', () => {
-      setIsLoading(false)
-      setIsPlaying(true)
-    })
-    player.on('pause', () => {
-      setIsLoading(false)
-      setIsPlaying(false)
-    })
-    player.on('waiting', () => setIsLoading(true))
+    player.on('playing', () => setPlayerStatus('playing'))
+    player.on('pause', () => setPlayerStatus('paused'))
+    player.on('waiting', () => setPlayerStatus('loading'))
+    player.on('error', () => setPlayerStatus('error'))
   }, [])
 
-  const handlePlayPause = () => {
+  const handlePlayPauseClick = async () => {
     const player = playerRef.current
-    if (!player) return
-    if (player.paused()) {
-      player.play()
-    } else {
-      player.pause()
+
+    if (playerStatus === 'error') {
+      setPlayerStatus('idle')
+      return
+    }
+
+    if (!player) {
+      setPlayerStatus('error')
+      return
+    }
+
+    try {
+      if (playerStatus === 'loading' || playerStatus === 'playing') {
+        await player.pause()
+      } else {
+        await player.play()
+      }
+    } catch (e) {
+      console.error(e)
+      // AbortError is thrown if pause() is called while play() is still loading (e.g. if segments are 404ing)
+      // It's not important, so don't show this error to the user
+      if (e instanceof DOMException && e.name === 'AbortError') return
+      setPlayerStatus('error')
     }
   }
 
@@ -98,7 +106,11 @@ export default function Player({
     if (process.env.NODE_ENV === 'development' && hlsURI) {
       console.log(`New stream instance: ${hlsURI}`)
     }
-  }, [hlsURI])
+
+    return () => {
+      setPlayerStatus('idle')
+    }
+  }, [hlsURI, currentFeed?.nodeName])
 
   return (
     <Box
@@ -116,25 +128,31 @@ export default function Player({
       <Box display="none">
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      {isPlaying && currentFeed && timestamp && (
-        <DetectionDialog
-          isPlaying={isPlaying}
-          feed={currentFeed}
-          timestamp={timestamp}
-          getPlayerTime={() => playerRef.current?.currentTime()}
-          listenerCount={listenerCount}
-        >
-          <DetectionButton />
-        </DetectionDialog>
-      )}
+      {(playerStatus === 'playing' || playerStatus === 'loading') &&
+        currentFeed &&
+        timestamp && (
+          <DetectionDialog
+            isPlaying={playerStatus === 'playing'}
+            feed={currentFeed}
+            timestamp={timestamp}
+            getPlayerTime={() => playerRef.current?.currentTime()}
+            listenerCount={listenerCount}
+          >
+            <DetectionButton />
+          </DetectionDialog>
+        )}
       <Box mx={2}>
-        <PlayPauseButton isPlaying={isPlaying} onClick={handlePlayPause} />
+        <PlayPauseButton
+          playerStatus={playerStatus}
+          onClick={handlePlayPauseClick}
+          disabled={!currentFeed}
+        />
       </Box>
       <Box mx={2}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
       <Box mx={2}>
         {currentFeed
           ? `${currentFeed.name} - ${currentFeed.nodeName}`
-          : 'Player: no feed selected'}
+          : 'Select a location to start listening live'}
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: 'end' }}>
         {currentFeed &&
