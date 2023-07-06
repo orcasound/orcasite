@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Feed } from '@/graphql/generated'
 import useFeedPresence from '@/hooks/useFeedPresence'
-import useIsMobile from '@/hooks/useIsMobile'
 import useTimestampFetcher from '@/hooks/useTimestampFetcher'
 
 import DetectionButton from './DetectionButton'
@@ -33,8 +32,6 @@ export default function Player({
 
   const feedPresence = useFeedPresence(currentFeed?.slug)
   const listenerCount = feedPresence?.metas.length ?? 0
-
-  const isMobile = useIsMobile()
 
   const playerOptions = useMemo(
     () => ({
@@ -118,7 +115,7 @@ export default function Player({
         minHeight: 80,
         color: 'base.contrastText',
         backgroundColor: 'base.main',
-        ...(isMobile && { mb: (theme) => theme.spacing(8) }),
+        mb: [8, 0],
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',

@@ -3,10 +3,9 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
 import { useState } from 'react'
 
 import Link from '@/components/Link'
-import useIsMobile from '@/hooks/useIsMobile'
+import { displayDesktop, displayMobile } from '@/styles/responsive'
 
 export default function Header() {
-  const isMobile = useIsMobile()
   return (
     <AppBar
       position="static"
@@ -15,7 +14,10 @@ export default function Header() {
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
-      <Toolbar>{isMobile ? <Mobile /> : <Desktop />}</Toolbar>
+      <Toolbar>
+        <Mobile />
+        <Desktop />
+      </Toolbar>
     </AppBar>
   )
 }
@@ -28,29 +30,35 @@ function Mobile() {
   }
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}
-    >
-      <IconButton
-        sx={{ marginRight: 'auto' }}
-        color="inherit"
-        onClick={handleMenuToggle}
+    <Box sx={displayMobile}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          alignItems: 'center',
+          textAlign: 'center',
+        }}
       >
-        {menuIsOpen ? <Close /> : <Menu />}
-      </IconButton>
-      <Brand />
+        <IconButton
+          sx={{ marginRight: 'auto' }}
+          color="inherit"
+          onClick={handleMenuToggle}
+        >
+          {menuIsOpen ? <Close /> : <Menu />}
+        </IconButton>
+        <Brand />
+      </Box>
     </Box>
   )
 }
 
 function Desktop() {
-  return <Brand />
+  return (
+    <Box sx={displayDesktop}>
+      <Brand />
+    </Box>
+  )
 }
 
 function Brand() {
