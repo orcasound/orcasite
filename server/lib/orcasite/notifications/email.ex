@@ -65,6 +65,7 @@ defmodule Orcasite.Notifications.Email do
     """
     <mjml>
       <mj-body>
+        <!-- header -->
         <mj-section padding="0" full-width="" background-color="#c4cdd3">
           <mj-column padding="0">
             <mj-image src="https://orcasite.s3.us-west-2.amazonaws.com/email_assets/orcasound_email_header.jpg" alt="Orcasound" align="center" container-background-color="#c4cdd3"></mj-image>
@@ -95,9 +96,9 @@ defmodule Orcasite.Notifications.Email do
           </mj-column>
         </mj-section>
 
-        <mj-section background-color="#5d5b72">
+        <!-- footer -->
+        <mj-section background-color="#5d5b72" full-width="">
           <mj-column>
-
             <mj-text font-weight="bold" font-family="Helvetica" color="#ffffff" align="center" line-height="150%">
               If you encounter whales at sea, <a href="https://www.bewhalewise.org/" style="font-weight: normal; color: #ffffff">Be Whale Wise</a>.<br />
               Know the laws and best practices in both the U.S. and Canada.
@@ -172,7 +173,7 @@ defmodule Orcasite.Notifications.Email do
       mjml_confirmed_candidate_body(
         params
         |> Map.put(:node_name, node_name)
-        |> Map.put(:message, "Orcas can be heard near #{node_name}!")
+        |> Map.put_new(:message, "Orcas can be heard near #{node_name}!")
       )
     )
   end
