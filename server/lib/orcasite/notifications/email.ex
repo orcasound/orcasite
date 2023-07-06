@@ -43,7 +43,7 @@ defmodule Orcasite.Notifications.Email do
 
         {{#if unsubscribe_token }}
           <mj-text font-size="20px">
-            If you no longer wish to receive these emails, you can unsubscribe here: {{ unsubscribe_url }}
+            If you no longer wish to receive these emails, you can <a href="{{unsubscribe_url}}">unsubscribe here</a>.
           </mj-text>
         {{/if}}
       </mj-column>
