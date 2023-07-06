@@ -128,17 +128,19 @@ export default function Player({
       <Box display="none">
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      {playerStatus === 'playing' && currentFeed && timestamp && (
-        <DetectionDialog
-          isPlaying={playerStatus === 'playing'}
-          feed={currentFeed}
-          timestamp={timestamp}
-          getPlayerTime={() => playerRef.current?.currentTime()}
-          listenerCount={listenerCount}
-        >
-          <DetectionButton />
-        </DetectionDialog>
-      )}
+      {(playerStatus === 'playing' || playerStatus === 'loading') &&
+        currentFeed &&
+        timestamp && (
+          <DetectionDialog
+            isPlaying={playerStatus === 'playing'}
+            feed={currentFeed}
+            timestamp={timestamp}
+            getPlayerTime={() => playerRef.current?.currentTime()}
+            listenerCount={listenerCount}
+          >
+            <DetectionButton />
+          </DetectionDialog>
+        )}
       <Box mx={2}>
         <PlayPauseButton
           playerStatus={playerStatus}
