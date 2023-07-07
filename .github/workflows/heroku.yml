@@ -1,0 +1,19 @@
+name: Heroku
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  review-app-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Review App status
+        uses: niteoweb/reviewapps-deploy-status@v1.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          build_time_delay: 200
+          deployments_timeout: 600
+          publish_timeout: 300
