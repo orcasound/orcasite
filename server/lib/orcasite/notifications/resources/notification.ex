@@ -14,6 +14,15 @@ defmodule Orcasite.Notifications.Notification do
     """
   end
 
+  code_interface do
+    define_for Orcasite.Notifications
+    define :notify_new_detection, action: :notify_new_detection, args: [:detection_id, :node]
+
+    define :notify_confirmed_candidate,
+      action: :notify_confirmed_candidate,
+      args: [:candidate_id, :node]
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
 
@@ -22,6 +31,13 @@ defmodule Orcasite.Notifications.Notification do
       accept [:candidate_id]
       argument :candidate_id, :integer
       argument :node, :string, allow_nil?: false
+      argument :message, :string do
+        description """
+        What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
+        and clicks can be heard at Orcasound Lab!')
+        """
+        allow_nil? false
+      end
 
       change set_attribute(:event_type, :confirmed_candidate)
 
@@ -29,7 +45,8 @@ defmodule Orcasite.Notifications.Notification do
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
           candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id),
-          node: Ash.Changeset.get_argument(changeset, :node)
+          node: Ash.Changeset.get_argument(changeset, :node),
+          message: Ash.Changeset.get_argument(changeset, :message)
         })
       end
     end

@@ -34,6 +34,12 @@ defmodule OrcasiteWeb.Resolvers.Detection do
       |> Radio.create_detection_with_candidate()
       |> case do
         {:ok, detection} ->
+          # Send notification for new detection
+          Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+            %{slug: node} = Radio.get_feed!(feed_id)
+            Orcasite.Notifications.Notification.notify_new_detection(detection.id, node)
+          end)
+
           {:ok,
            %{
              detection: detection,
