@@ -10,16 +10,8 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       }) do
     notif_instance =
       NotificationInstance
-      |> Ash.Query.for_read(:read, %{id: notification_instance_id})
-      |> Notifications.read!()
-      |> Notifications.load([:notification, subscription: [:subscriber]])
-      |> case do
-        {:ok, notifs} when is_list(notifs) ->
-          notifs |> List.last()
-
-        {:ok, notif} ->
-          notif
-      end
+      |> Notifications.get!(notification_instance_id)
+      |> Notifications.load!([:notification, subscription: [:subscriber]])
 
     params =
       notif_instance.meta
