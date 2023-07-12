@@ -89,16 +89,23 @@ defmodule OrcasiteWeb.Router do
     ash_admin "/admin"
   end
 
-  scope "/" do
+  scope "/s" do
+    # Subscription routes
     pipe_through :browser
-
-    sign_in_route()
-
     sign_out_route OrcasiteWeb.SubscriberAuthController
     auth_routes_for Orcasite.Notifications.Subscriber, to: OrcasiteWeb.SubscriberAuthController
 
     auth_routes_for Orcasite.Notifications.Subscription, to: OrcasiteWeb.SubscriptionAuthController
     sign_out_route OrcasiteWeb.SubscriptionAuthController
+  end
+
+  scope "/" do
+    pipe_through :browser
+
+    sign_in_route()
+
+    sign_out_route OrcasiteWeb.AuthController
+    auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController
 
     reset_route []
   end

@@ -8,7 +8,7 @@ defmodule Orcasite.Accounts.Token do
   end
 
   postgres do
-    table "account_tokens"
+    table "tokens"
     repo Orcasite.Repo
   end
 

@@ -29,7 +29,7 @@ defmodule Orcasite.Accounts.User do
       enabled? true
       token_resource Orcasite.Accounts.Token
       signing_secret fn _, _ ->
-        Application.fetch_env(:my_app, :token_signing_secret)
+        {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
   end
