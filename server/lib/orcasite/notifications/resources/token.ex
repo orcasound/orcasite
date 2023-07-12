@@ -8,7 +8,7 @@ defmodule Orcasite.Notifications.Token do
   end
 
   postgres do
-    table "tokens"
+    table "subscriber_tokens"
     repo Orcasite.Repo
   end
 
