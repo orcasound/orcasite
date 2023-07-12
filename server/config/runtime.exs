@@ -65,5 +65,3 @@ if config_env() == :prod do
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
 end
-
-config :mailchimp, api_key: System.get_env("ORCASOUND_MAILCHIMP_API_KEY")
