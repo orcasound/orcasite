@@ -5,5 +5,7 @@ source $phoenix_dir/load_env.sh
 cd $phoenix_dir/ui
 npm run build
 
+echo "---- UI build done, running: cd $phoenix_dir; mix assets.deploy"
+
 cd $phoenix_dir
 mix assets.deploy
