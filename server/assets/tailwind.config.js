@@ -10,6 +10,9 @@ module.exports = {
     '../lib/*_web/**/*.*ex',
     "../deps/ash_authentication_phoenix/**/*.ex"
   ],
+  // Enable dark mode with a 'dark' class on html element
+  // See: https://tailwindcss.com/docs/dark-mode
+  darkMode: 'class',
   theme: {
     extend: {},
   },

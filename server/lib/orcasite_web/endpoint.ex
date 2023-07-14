@@ -8,6 +8,10 @@ defmodule OrcasiteWeb.Endpoint do
     same_site: "Lax"
   ]
 
+  if Mix.env == :dev do
+    use Plug.Debugger, otp_app: :orcasite
+  end
+
   if sandbox = Application.compile_env(:orcasite, :sandbox) do
     plug Phoenix.Ecto.SQL.Sandbox, sandbox: sandbox
   end
