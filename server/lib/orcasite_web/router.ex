@@ -129,7 +129,7 @@ defmodule OrcasiteWeb.Router do
     conn
     |> case do
       %{assigns: %{current_user: user}} when not is_nil(user) -> conn
-      _ -> Phoenix.Controller.redirect(conn, to: "/")
+      _ -> Phoenix.Controller.redirect(conn, to: "/sign-in")
     end
   end
 
