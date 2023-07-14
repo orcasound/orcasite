@@ -4,3 +4,6 @@ source $phoenix_dir/load_env.sh
 
 cd $phoenix_dir/ui
 npm run build
+
+cd $phoenix_dir/server
+mix assets.deploy
