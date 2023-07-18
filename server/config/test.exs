@@ -5,7 +5,8 @@ import Config
 config :orcasite, OrcasiteWeb.Endpoint,
   http: [port: 4001],
   server: false,
-  secret_key_base: "99+mOEo5AOlhlQi4sJJd5MWnAdFFzm64"
+  secret_key_base: "99+mOEo5AOlhlQi4sJJd5MWnAdFFzm64",
+  check_origin: false
 
 # Print only warnings and errors during test
 config :logger, level: :warning

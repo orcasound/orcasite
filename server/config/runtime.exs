@@ -61,8 +61,7 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base,
-    check_origin: (System.get_env("URLS") || "") |> String.split(" ")
+    secret_key_base: secret_key_base
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
 end
