@@ -16,16 +16,13 @@ defmodule OrcasiteWeb.Endpoint do
     plug Phoenix.Ecto.SQL.Sandbox, sandbox: sandbox
   end
 
-  socket("/socket", OrcasiteWeb.UserSocket,
-    websocket: [
-      check_origin: Application.compile_env(:orcasite, OrcasiteWeb.Endpoint)[:check_origin]
-    ]
-  )
+  socket "/socket", OrcasiteWeb.UserSocket,
+    websocket: []
+
 
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [
-      connect_info: [:user_agent, session: @session_options],
-      check_origin: Application.compile_env(:orcasite, OrcasiteWeb.Endpoint)[:check_origin]
+      connect_info: [:user_agent, session: @session_options]
     ]
 
   # Serve at "/" the static files from "priv/static" directory.
