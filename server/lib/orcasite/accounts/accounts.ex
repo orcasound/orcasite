@@ -1,67 +1,11 @@
 defmodule Orcasite.Accounts do
-  import Ecto.Query, warn: false
+  use Ash.Api, extensions: [AshAdmin.Api]
 
-  alias Orcasite.Repo
-  alias Orcasite.Accounts.User
-
-  def get_user!(id), do: Repo.get!(User, id)
-
-  def find_user_by_auth_token(auth_token),
-    do: User |> where(auth_token: ^auth_token) |> Repo.one()
-
-  def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.create_changeset(attrs)
-    |> Repo.insert()
+  resources do
+    registry Orcasite.Accounts.Registry
   end
 
-  def list_users(params \\ %{pagination: %{page: 1, page_size: 10}}) do
-    User
-    |> order_by(desc: :inserted_at)
-    |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
-  end
-
-  def update_user(%User{id: id} = user, attrs, %User{admin: admin, id: current_user_id})
-      when (is_boolean(admin) and admin) or current_user_id == id do
-    user
-    |> User.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def update_password(user, password) do
-    user
-    |> User.password_changeset(%{password: password})
-    |> Repo.update()
-  end
-
-  def login_user(user) do
-    {:ok, jwt, _} = OrcasiteWeb.Guardian.encode_and_sign(user)
-    {:ok, _} = store_token(user, jwt)
-  end
-
-  def store_token(%User{} = user, auth_token) do
-    user
-    |> User.store_token_changeset(%{auth_token: auth_token})
-    |> Repo.update()
-  end
-
-  def revoke_token(%User{} = user) do
-    user
-    |> User.store_token_changeset(%{auth_token: nil})
-    |> Repo.update()
-  end
-
-  def authenticate(%{email: email, password: password}) do
-    User
-    |> Repo.get_by(email: String.downcase(email))
-    |> case do
-      nil ->
-        # Take up time
-        Bcrypt.no_user_verify()
-        {:error, :wrong_credentials}
-
-      user ->
-        Bcrypt.check_pass(user, password)
-    end
+  admin do
+    show? true
   end
 end

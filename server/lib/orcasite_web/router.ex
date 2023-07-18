@@ -1,11 +1,10 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
-  require Logger
   use AshAuthentication.Phoenix.Router
 
   import AshAdmin.Router
 
-  import AshAdmin.Router
+  require Logger
 
   # Set up request parsers here instead of in endpoint.ex because we don't want
   # them for the :nextjs pipeline, only :browser and :graphql
@@ -33,11 +32,8 @@ defmodule OrcasiteWeb.Router do
   end
 
   pipeline :require_admin do
-    plug OrcasiteWeb.BasicAuth
-  end
-
-  pipeline :require_admin do
-    plug OrcasiteWeb.BasicAuth
+    plug :check_authed
+    plug :check_admin_path
   end
 
   pipeline :nextjs do
@@ -89,16 +85,23 @@ defmodule OrcasiteWeb.Router do
     ash_admin "/admin"
   end
 
-  scope "/" do
+  scope "/s" do
+    # Subscription routes
     pipe_through :browser
-
-    sign_in_route()
-
     sign_out_route OrcasiteWeb.SubscriberAuthController
     auth_routes_for Orcasite.Notifications.Subscriber, to: OrcasiteWeb.SubscriberAuthController
 
     auth_routes_for Orcasite.Notifications.Subscription, to: OrcasiteWeb.SubscriptionAuthController
     sign_out_route OrcasiteWeb.SubscriptionAuthController
+  end
+
+  scope "/" do
+    pipe_through :browser
+
+    sign_in_route(overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default])
+
+    sign_out_route OrcasiteWeb.AuthController
+    auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController
 
     reset_route []
   end
@@ -120,5 +123,29 @@ defmodule OrcasiteWeb.Router do
 
   def log_reverse_proxy_error(error) do
     Logger.warn("ReverseProxyPlug network error: #{inspect(error)}")
+  end
+
+  defp check_authed(conn, _opts) do
+    conn
+    |> case do
+      %{assigns: %{current_user: user}} when not is_nil(user) -> conn
+      _ -> Phoenix.Controller.redirect(conn, to: "/sign-in")
+    end
+  end
+
+  defp check_admin_path(conn, _opts) do
+    # Implemented with a conditional here because AshAdmin doesn't take into account the scope for
+    # paths in the dashboard
+    conn
+    |> case do
+      %{assigns: %{current_user: %{admin: true}}, request_path: "/admin" <> _} ->
+        conn
+
+      %{request_path: "/admin" <> _} ->
+        Phoenix.Controller.redirect(conn, to: "/sign-in")
+
+      _ ->
+        conn
+    end
   end
 end

@@ -13,7 +13,6 @@ config :orcasite,
 
 # Configures the endpoint
 config :orcasite, OrcasiteWeb.Endpoint,
-  url: [host: "localhost"],
   render_errors: [
     formats: [html: OrcasiteWeb.ErrorHTML, json: OrcasiteWeb.ErrorJSON],
     layout: false
@@ -74,7 +73,7 @@ config :orcasite, OrcasiteWeb.Auth.AuthAccessPipeline,
   error_handler: OrcasiteWeb.Auth.AuthErrorHandler
 
 config :ash, :use_all_identities_in_manage_relationship?, false
-config :orcasite, :ash_apis, [Orcasite.Notifications]
+config :orcasite, :ash_apis, [Orcasite.Notifications, Orcasite.Accounts]
 config :orcasite, :ecto_repos, [Orcasite.Repo]
 
 config :orcasite, Oban,
