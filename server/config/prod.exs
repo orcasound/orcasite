@@ -17,7 +17,6 @@ config :orcasite, OrcasiteWeb.Endpoint,
   load_from_system_env: true,
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   watchers: [npm: ["run", "start", cd: Path.expand("../ui", __DIR__)]],
-  check_origin: (System.get_env("URLS") || "") |> String.split(" ")
 
 # Configure your database
 config :orcasite, Orcasite.Repo,

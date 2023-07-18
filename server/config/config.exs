@@ -13,7 +13,6 @@ config :orcasite,
 
 # Configures the endpoint
 config :orcasite, OrcasiteWeb.Endpoint,
-  url: [host: "localhost"],
   render_errors: [
     formats: [html: OrcasiteWeb.ErrorHTML, json: OrcasiteWeb.ErrorJSON],
     layout: false
