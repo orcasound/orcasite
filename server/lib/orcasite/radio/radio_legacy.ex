@@ -1,11 +1,11 @@
-defmodule Orcasite.Radio do
+defmodule Orcasite.RadioLegacy do
   @moduledoc """
-  The Radio context.
+  The RadioLegacy context.
   """
 
   import Ecto.Query, warn: false
   alias Orcasite.Repo
-  alias Orcasite.Radio.{Feed, Detection, Candidate}
+  alias Orcasite.RadioLegacy.{Feed, Detection, Candidate}
 
   def list_feeds do
     Repo.all(Feed)

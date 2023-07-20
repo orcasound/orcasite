@@ -1,17 +1,17 @@
 defmodule OrcasiteWeb.Resolvers.Detection do
-  alias Orcasite.Radio
+  alias Orcasite.RadioLegacy
   alias OrcasiteWeb.Paginated
 
   def index(_, _) do
-    {:ok, Radio.list_all_detections()}
+    {:ok, RadioLegacy.list_all_detections()}
   end
 
   def list_candidates(args, _) do
-    {:ok, Paginated.format(Radio.list_candidates(args))}
+    {:ok, Paginated.format(RadioLegacy.list_candidates(args))}
   end
 
   def list_detections(args, _) do
-    {:ok, Paginated.format(Radio.list_detections(args))}
+    {:ok, Paginated.format(RadioLegacy.list_detections(args))}
   end
 
   def create(
@@ -28,15 +28,15 @@ defmodule OrcasiteWeb.Resolvers.Detection do
       |> :inet_parse.ntoa()
       |> to_string()
 
-    with :ok <- Radio.verify_can_submit_detection(feed_id, source_ip, lockout_seconds()) do
+    with :ok <- RadioLegacy.verify_can_submit_detection(feed_id, source_ip, lockout_seconds()) do
       detection_attrs
       |> Map.put(:source_ip, source_ip)
-      |> Radio.create_detection_with_candidate()
+      |> RadioLegacy.create_detection_with_candidate()
       |> case do
         {:ok, detection} ->
           # Send notification for new detection
           Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-            %{slug: node} = Radio.get_feed!(feed_id)
+            %{slug: node} = RadioLegacy.get_feed!(feed_id)
             Orcasite.Notifications.Notification.notify_new_detection(detection.id, node)
           end)
 
