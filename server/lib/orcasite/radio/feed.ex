@@ -1,5 +1,6 @@
 defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
+    extensions: [AshAdmin.Resource],
     data_layer: AshPostgres.DataLayer
 
   attributes do
@@ -102,6 +103,11 @@ defmodule Orcasite.Radio.Feed do
         changeset
         |> Ash.Changeset.add_error(field: :longitude_latitude, message: "must be two floats")
     end
-    |> IO.inspect(label: "changing? (server/lib/orcasite/radio/feed.ex:#{__ENV__.line})")
+  end
+
+  admin do
+    table_columns [:id, :name, :slug, :node_name, :location_point]
+
+    format_fields location_point: {Jason, :encode!, []}
   end
 end

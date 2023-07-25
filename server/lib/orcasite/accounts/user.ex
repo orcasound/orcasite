@@ -1,7 +1,7 @@
 defmodule Orcasite.Accounts.User do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication]
+    extensions: [AshAuthentication, AshAdmin.Resource]
 
 
   attributes do
@@ -45,5 +45,9 @@ defmodule Orcasite.Accounts.User do
 
   actions do
     defaults [:read, :create, :update, :destroy]
+  end
+
+  admin do
+    table_columns [:id, :email, :first_name, :last_name, :admin, :inserted_at]
   end
 end
