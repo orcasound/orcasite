@@ -2,7 +2,6 @@ defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer
 
-
   attributes do
     integer_primary_key :id
 
@@ -25,10 +24,41 @@ defmodule Orcasite.Radio.Feed do
   end
 
   actions do
-    defaults [:read, :create, :update, :destroy]
+    defaults [:destroy]
+
+    read :read do
+      primary? true
+
+      prepare fn query, _context ->
+        query
+        |> Ash.Query.load(:longitude_latitude)
+      end
+    end
 
     read :get_by_slug do
       get_by :slug
+    end
+
+    create :create do
+      primary? true
+      reject [:location_point]
+
+      argument :longitude_latitude, :string do
+        description "A comma-separated string of longitude and latitude"
+      end
+
+      change &change_longitude_latitude/2
+    end
+
+    update :update do
+      primary? true
+      reject [:location_point]
+
+      argument :longitude_latitude, :string do
+        description "A comma-separated string of longitude and latitude"
+      end
+
+      change &change_longitude_latitude/2
     end
   end
 
@@ -36,5 +66,42 @@ defmodule Orcasite.Radio.Feed do
     define_for Orcasite.Radio
 
     define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+  end
+
+  calculations do
+    calculate :longitude_latitude,
+              :string,
+              {Orcasite.Radio.Calculations.LongitudeLatitude,
+               keys: [:location_point], select: [:location_point]}
+  end
+
+  defp change_longitude_latitude(changeset, _context) do
+    with {:is_string, lng_lat} when is_binary(lng_lat) <-
+           {:is_string, Ash.Changeset.get_argument(changeset, :longitude_latitude)},
+         {:two_els, [lng, lat]} <-
+           {:two_els, lng_lat |> String.split(",") |> Enum.map(&String.trim/1)},
+         {:two_floats, [{longitude, _}, {latitude, _}]} <-
+           {:two_floats, [lng, lat] |> Enum.map(&Float.parse/1)} do
+      changeset
+      |> Ash.Changeset.change_attribute(:location_point, %Geo.Point{
+        coordinates: {longitude, latitude},
+        srid: 4326
+      })
+    else
+      {:is_string, _} ->
+        changeset
+
+      {:two_els, _} ->
+        changeset
+        |> Ash.Changeset.add_error(
+          field: :longitude_latitude,
+          message: "must be a comma-separated string"
+        )
+
+      {:two_floats, _} ->
+        changeset
+        |> Ash.Changeset.add_error(field: :longitude_latitude, message: "must be two floats")
+    end
+    |> IO.inspect(label: "changing? (server/lib/orcasite/radio/feed.ex:#{__ENV__.line})")
   end
 end
