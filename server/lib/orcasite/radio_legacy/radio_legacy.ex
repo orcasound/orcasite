@@ -7,31 +7,6 @@ defmodule Orcasite.RadioLegacy do
   alias Orcasite.Repo
   alias Orcasite.RadioLegacy.{Feed, Detection, Candidate}
 
-  def list_feeds do
-    Repo.all(Feed)
-  end
-
-  def get_feed!(id), do: Repo.get!(Feed, id)
-
-  def get_feed_by_slug(slug) do
-    Feed
-    |> where(slug: ^slug)
-    |> limit(1)
-    |> Repo.one()
-  end
-
-  def create_feed(attrs \\ %{}) do
-    %Feed{}
-    |> Feed.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_feed(%Feed{} = feed, attrs) do
-    feed
-    |> Feed.changeset(attrs)
-    |> Repo.update()
-  end
-
   def verify_can_submit_detection(
         feed_id,
         source_ip,

@@ -1,14 +1,13 @@
 defmodule OrcasiteWeb.Resolvers.Feed do
-  alias Orcasite.RadioLegacy
   def index(_, _) do
-    {:ok, RadioLegacy.list_feeds()}
+    {:ok, Orcasite.Radio.read!(Orcasite.Radio.Feed)}
   end
 
   def show(%{slug: slug}, _) do
-    {:ok, RadioLegacy.get_feed_by_slug(slug)}
+    {:ok, Orcasite.Radio.Feed.get_feed_by_slug!(slug)}
   end
 
   def show(%{id: id}, _) do
-    {:ok, RadioLegacy.get_feed!(id)}
+    {:ok, Orcasite.Radio.get!(Orcasite.Radio.Feed, id)}
   end
 end

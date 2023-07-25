@@ -73,8 +73,9 @@ config :orcasite, OrcasiteWeb.Auth.AuthAccessPipeline,
   error_handler: OrcasiteWeb.Auth.AuthErrorHandler
 
 config :ash, :use_all_identities_in_manage_relationship?, false
-config :orcasite, :ash_apis, [Orcasite.Notifications, Orcasite.Accounts]
+config :orcasite, :ash_apis, [Orcasite.Notifications, Orcasite.Accounts, Orcasite.Radio]
 config :orcasite, :ecto_repos, [Orcasite.Repo]
+config :ash, :custom_types, [geometry: Orcasite.Types.Geometry]
 
 config :orcasite, Oban,
   repo: Orcasite.Repo,

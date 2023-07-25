@@ -1,40 +1,40 @@
-defmodule Orcasite.RadioLegacy.Feed do
-  use Ecto.Schema
-  import Ecto.Changeset
+defmodule Orcasite.Radio.Feed do
+  use Ash.Resource,
+    data_layer: AshPostgres.DataLayer
 
-  alias __MODULE__
 
-  schema "feeds" do
-    field(:name, :string)
-    field(:slug, :string)
-    field(:node_name, :string)
-    field(:location_point, Geo.PostGIS.Geometry)
+  attributes do
+    integer_primary_key :id
 
-    timestamps()
+    attribute :name, :string
+    attribute :node_name, :string
+    attribute :slug, :string
+    attribute :location_point, :geometry
+
+    create_timestamp :inserted_at
+    update_timestamp :updated_at
   end
 
-  @doc false
-  def changeset(feed, attrs) do
-    feed
-    |> cast(attrs, [:name, :node_name, :slug, :location_point])
-    |> validate_required([:name, :node_name, :slug])
+  postgres do
+    table "feeds"
+    repo Orcasite.Repo
   end
 
-  def latlong_to_geo(lat, long) when is_float(lat) and is_float(long),
-    do: Geo.WKT.decode!("SRID=4326;POINT(#{lat} #{long})")
-
-  # TODO: Find the actual json -> schema function
-  def from_json(attrs) do
-    %Feed{}
-    |> cast(
-      decode_location_point(attrs),
-      Map.keys(Orcasite.Utils.atomize_keys(attrs))
-    )
-    |> apply_changes()
+  identities do
+    identity :unique_slug, [:slug]
   end
 
-  def decode_location_point(%{"location_point" => point} = attrs) when is_binary(point),
-    do: %{attrs | "location_point" => Geo.WKB.decode!(attrs["location_point"])}
+  actions do
+    defaults [:read, :create, :update, :destroy]
 
-  def decode_location_point(attrs), do: attrs
+    read :get_by_slug do
+      get_by :slug
+    end
+  end
+
+  code_interface do
+    define_for Orcasite.Radio
+
+    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+  end
 end
