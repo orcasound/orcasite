@@ -60,6 +60,15 @@ If you prefer not to use VS Code dev containers, the easiest way to develop in d
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
+> **Note**
+> You can also set the `COMPOSE_FILE` environment variable to avoid having to specify the compose files every time. This one-liner will do that for you no matter what subdirectory you're in:
+>
+> ```
+> export COMPOSE_FILE=`git rev-parse --show-toplevel`/docker-compose.yml:`git rev-parse --show-toplevel`/docker-compose.dev.yml
+> ```
+>
+> After setting COMPOSE_FILE, you can just run `docker-compose up -d` from anywhere in the project.
+
 Once you have the services started, you can start a session inside the `web` container:
 
 ```
@@ -148,7 +157,6 @@ heroku run POOL_SIZE=2 iex -S mix
 ```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
-
 
 ## Emails
 
