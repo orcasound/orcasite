@@ -20,6 +20,7 @@ const feedFromSlug = (feedSlug: string) => ({
   name: feedSlug,
   slug: feedSlug,
   nodeName: feedSlug,
+  longitudeLatitude: {lng: -122.3, lat: 47.6},
   // TODO: figure out which coordinates to use for dynamic feeds
   locationPoint: {
     coordinates: [47.6, -122.3],
