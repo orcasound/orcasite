@@ -61,7 +61,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 > **Note**
-> You can also set the `COMPOSE_FILE` environment variable to avoid having to specify the compose files every time. This one-liner will do that for you no matter what subdirectory you're in:
+> You can also set the `COMPOSE_FILE` environment variable to avoid having to specify the compose files every time. This one-liner will do that for you no matter which subdirectory you're in:
 >
 > ```
 > export COMPOSE_FILE=`git rev-parse --show-toplevel`/docker-compose.yml:`git rev-parse --show-toplevel`/docker-compose.dev.yml
