@@ -20,6 +20,16 @@ defmodule OrcasiteWeb.Types.Feed do
       end)
     end
 
+    field :longitude_latitude, non_null(:json) do
+      resolve(fn
+        %{location_point: %{coordinates: {lng, lat}}}, _, _ ->
+          {:ok, %{lng: lng, lat: lat}}
+
+        _, _, _ ->
+          {:ok, %{}}
+      end)
+    end
+
     field :thumb_url, non_null(:string) do
       resolve(fn %{node_name: node_name}, _, _ ->
         {:ok, feed_s3_url(node_name, "thumbnail.png")}

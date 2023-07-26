@@ -46,7 +46,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed)
-      map?.panTo(feed.locationPoint.coordinates)
+      map?.panTo(feed.longitudeLatitude)
     }
   }, [feed, map, currentFeed])
 

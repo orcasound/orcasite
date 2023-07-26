@@ -153,7 +153,7 @@ export default function Player({
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: 'end' }}>
         {currentFeed &&
-          `${currentFeed.locationPoint.coordinates[0]}, ${currentFeed.locationPoint.coordinates[1]}`}
+          `${currentFeed.longitudeLatitude["lng"]}, ${currentFeed.longitudeLatitude["lat"]}`}
       </Box>
     </Box>
   )
