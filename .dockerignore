@@ -1,3 +1,26 @@
-server/_build
-server/deps
-**/node_modules
+### server
+
+# build
+server/_build/
+server/priv/static/assets/
+server/priv/static/cache_manifest.json
+
+# deps
+server/deps/
+server/**/node_modules/
+
+# other
+server/.elixir_ls
+
+### ui
+
+# build
+ui/build/
+ui/.next/
+ui/out/
+
+# deps
+ui/node_modules/
+
+### misc
+.DS_Store
