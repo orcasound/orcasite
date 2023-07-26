@@ -1,40 +1,113 @@
 defmodule Orcasite.Radio.Feed do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Ash.Resource,
+    extensions: [AshAdmin.Resource],
+    data_layer: AshPostgres.DataLayer
 
-  alias __MODULE__
+  attributes do
+    integer_primary_key :id
 
-  schema "feeds" do
-    field(:name, :string)
-    field(:slug, :string)
-    field(:node_name, :string)
-    field(:location_point, Geo.PostGIS.Geometry)
+    attribute :name, :string
+    attribute :node_name, :string
+    attribute :slug, :string
+    attribute :location_point, :geometry
 
-    timestamps()
+    create_timestamp :inserted_at
+    update_timestamp :updated_at
   end
 
-  @doc false
-  def changeset(feed, attrs) do
-    feed
-    |> cast(attrs, [:name, :node_name, :slug, :location_point])
-    |> validate_required([:name, :node_name, :slug])
+  postgres do
+    table "feeds"
+    repo Orcasite.Repo
   end
 
-  def latlong_to_geo(lat, long) when is_float(lat) and is_float(long),
-    do: Geo.WKT.decode!("SRID=4326;POINT(#{lat} #{long})")
-
-  # TODO: Find the actual json -> schema function
-  def from_json(attrs) do
-    %Feed{}
-    |> cast(
-      decode_location_point(attrs),
-      Map.keys(Orcasite.Utils.atomize_keys(attrs))
-    )
-    |> apply_changes()
+  identities do
+    identity :unique_slug, [:slug]
   end
 
-  def decode_location_point(%{"location_point" => point} = attrs) when is_binary(point),
-    do: %{attrs | "location_point" => Geo.WKB.decode!(attrs["location_point"])}
+  actions do
+    defaults [:destroy]
 
-  def decode_location_point(attrs), do: attrs
+    read :read do
+      primary? true
+
+      prepare fn query, _context ->
+        query
+        |> Ash.Query.load(:longitude_latitude)
+      end
+    end
+
+    read :get_by_slug do
+      get_by :slug
+    end
+
+    create :create do
+      primary? true
+      reject [:location_point]
+
+      argument :longitude_latitude, :string do
+        description "A comma-separated string of longitude and latitude"
+      end
+
+      change &change_longitude_latitude/2
+    end
+
+    update :update do
+      primary? true
+      reject [:location_point]
+
+      argument :longitude_latitude, :string do
+        description "A comma-separated string of longitude and latitude"
+      end
+
+      change &change_longitude_latitude/2
+    end
+  end
+
+  code_interface do
+    define_for Orcasite.Radio
+
+    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+  end
+
+  calculations do
+    calculate :longitude_latitude,
+              :string,
+              {Orcasite.Radio.Calculations.LongitudeLatitude,
+               keys: [:location_point], select: [:location_point]}
+  end
+
+  defp change_longitude_latitude(changeset, _context) do
+    with {:is_string, lng_lat} when is_binary(lng_lat) <-
+           {:is_string, Ash.Changeset.get_argument(changeset, :longitude_latitude)},
+         {:two_els, [lng, lat]} <-
+           {:two_els, lng_lat |> String.split(",") |> Enum.map(&String.trim/1)},
+         {:two_floats, [{longitude, _}, {latitude, _}]} <-
+           {:two_floats, [lng, lat] |> Enum.map(&Float.parse/1)} do
+      changeset
+      |> Ash.Changeset.change_attribute(:location_point, %Geo.Point{
+        coordinates: {longitude, latitude},
+        srid: 4326
+      })
+    else
+      {:is_string, _} ->
+        changeset
+
+      {:two_els, _} ->
+        changeset
+        |> Ash.Changeset.add_error(
+          field: :longitude_latitude,
+          message: "must be a comma-separated string"
+        )
+
+      {:two_floats, _} ->
+        changeset
+        |> Ash.Changeset.add_error(field: :longitude_latitude, message: "must be two floats")
+    end
+  end
+
+  admin do
+    table_columns [:id, :name, :slug, :node_name, :location_point]
+
+    format_fields location_point: {Jason, :encode!, []}
+  end
 end

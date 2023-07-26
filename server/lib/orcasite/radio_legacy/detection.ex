@@ -1,8 +1,8 @@
-defmodule Orcasite.Radio.Detection do
+defmodule Orcasite.RadioLegacy.Detection do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Orcasite.Radio.{Feed, Candidate}
+  alias Orcasite.RadioLegacy.{Feed, Candidate}
   alias __MODULE__
 
   schema "detections" do

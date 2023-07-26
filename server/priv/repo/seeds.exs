@@ -11,7 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 #
 import Ecto.Query
-alias Orcasite.Radio.Feed
+alias Orcasite.RadioLegacy.Feed
 
 feeds = [
   %{

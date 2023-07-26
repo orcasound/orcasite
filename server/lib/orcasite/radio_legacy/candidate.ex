@@ -1,8 +1,8 @@
-defmodule Orcasite.Radio.Candidate do
+defmodule Orcasite.RadioLegacy.Candidate do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Orcasite.Radio.{Detection, Feed}
+  alias Orcasite.RadioLegacy.{Detection, Feed}
 
   schema "candidates" do
     field(:detection_count, :integer)

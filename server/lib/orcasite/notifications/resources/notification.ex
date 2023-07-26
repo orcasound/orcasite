@@ -102,6 +102,10 @@ defmodule Orcasite.Notifications.Notification do
   end
 
   admin do
+    table_columns [:id, :meta, :event_type, :inserted_at]
+
+    format_fields meta: {Jason, :encode!, []}
+
     form do
       field :event_type, type: :default
     end

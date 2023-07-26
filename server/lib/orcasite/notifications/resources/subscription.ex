@@ -172,4 +172,10 @@ defmodule Orcasite.Notifications.Subscription do
     {:ok, token} = AshAuthentication.Strategy.MagicLink.request_token_for(strategy, subscription)
     token
   end
+
+  admin do
+    table_columns [:id, :name, :meta, :active, :event_type, :subscriber_id, :inserted_at]
+
+    format_fields meta: {Jason, :encode!, []}
+  end
 end

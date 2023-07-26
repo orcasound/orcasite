@@ -92,4 +92,14 @@ defmodule Orcasite.Notifications.Subscriber do
   relationships do
     has_many :subscriptions, Subscription
   end
+
+  admin do
+    table_columns [:id, :name, :meta, :inserted_at]
+
+    format_fields meta: {Jason, :encode!, []}
+
+    form do
+      field :event_type, type: :default
+    end
+  end
 end

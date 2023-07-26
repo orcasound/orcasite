@@ -1,36 +1,11 @@
-defmodule Orcasite.Radio do
+defmodule Orcasite.RadioLegacy do
   @moduledoc """
-  The Radio context.
+  The RadioLegacy context.
   """
 
   import Ecto.Query, warn: false
   alias Orcasite.Repo
-  alias Orcasite.Radio.{Feed, Detection, Candidate}
-
-  def list_feeds do
-    Repo.all(Feed)
-  end
-
-  def get_feed!(id), do: Repo.get!(Feed, id)
-
-  def get_feed_by_slug(slug) do
-    Feed
-    |> where(slug: ^slug)
-    |> limit(1)
-    |> Repo.one()
-  end
-
-  def create_feed(attrs \\ %{}) do
-    %Feed{}
-    |> Feed.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_feed(%Feed{} = feed, attrs) do
-    feed
-    |> Feed.changeset(attrs)
-    |> Repo.update()
-  end
+  alias Orcasite.RadioLegacy.{Feed, Detection, Candidate}
 
   def verify_can_submit_detection(
         feed_id,
