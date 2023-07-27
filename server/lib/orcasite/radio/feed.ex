@@ -32,7 +32,7 @@ defmodule Orcasite.Radio.Feed do
 
       prepare fn query, _context ->
         query
-        |> Ash.Query.load(:longitude_latitude)
+        |> Ash.Query.load(:latitude_longitude)
       end
     end
 
@@ -44,22 +44,22 @@ defmodule Orcasite.Radio.Feed do
       primary? true
       reject [:location_point]
 
-      argument :longitude_latitude, :string do
+      argument :latitude_longitude, :string do
         description "A comma-separated string of longitude and latitude"
       end
 
-      change &change_longitude_latitude/2
+      change &change_latitude_longitude/2
     end
 
     update :update do
       primary? true
       reject [:location_point]
 
-      argument :longitude_latitude, :string do
+      argument :latitude_longitude, :string do
         description "A comma-separated string of longitude and latitude"
       end
 
-      change &change_longitude_latitude/2
+      change &change_latitude_longitude/2
     end
   end
 
@@ -70,15 +70,15 @@ defmodule Orcasite.Radio.Feed do
   end
 
   calculations do
-    calculate :longitude_latitude,
+    calculate :latitude_longitude,
               :string,
               {Orcasite.Radio.Calculations.LongitudeLatitude,
                keys: [:location_point], select: [:location_point]}
   end
 
-  defp change_longitude_latitude(changeset, _context) do
+  defp change_latitude_longitude(changeset, _context) do
     with {:is_string, lng_lat} when is_binary(lng_lat) <-
-           {:is_string, Ash.Changeset.get_argument(changeset, :longitude_latitude)},
+           {:is_string, Ash.Changeset.get_argument(changeset, :latitude_longitude)},
          {:two_els, [lng, lat]} <-
            {:two_els, lng_lat |> String.split(",") |> Enum.map(&String.trim/1)},
          {:two_floats, [{longitude, _}, {latitude, _}]} <-
@@ -95,13 +95,13 @@ defmodule Orcasite.Radio.Feed do
       {:two_els, _} ->
         changeset
         |> Ash.Changeset.add_error(
-          field: :longitude_latitude,
+          field: :latitude_longitude,
           message: "must be a comma-separated string"
         )
 
       {:two_floats, _} ->
         changeset
-        |> Ash.Changeset.add_error(field: :longitude_latitude, message: "must be two floats")
+        |> Ash.Changeset.add_error(field: :latitude_longitude, message: "must be two floats")
     end
   end
 

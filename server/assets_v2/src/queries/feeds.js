@@ -20,7 +20,6 @@ export const GET_FEED = gql`
       name
       slug
       nodeName
-      locationPoint
       introHtml
       thumbUrl
       mapUrl

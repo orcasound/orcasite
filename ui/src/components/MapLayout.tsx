@@ -20,11 +20,7 @@ const feedFromSlug = (feedSlug: string) => ({
   name: feedSlug,
   slug: feedSlug,
   nodeName: feedSlug,
-  longitudeLatitude: {lng: -122.3, lat: 47.6},
-  // TODO: figure out which coordinates to use for dynamic feeds
-  locationPoint: {
-    coordinates: [47.6, -122.3],
-  },
+  latitudeLongitude: {lat: 47.6, lng: -122.3},
 })
 
 function MapLayout({ children }: { children: ReactNode }) {
@@ -47,7 +43,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed)
-      map?.panTo(feed.longitudeLatitude)
+      map?.panTo(feed.latitudeLongitude)
     }
   }, [feed, map, currentFeed])
 

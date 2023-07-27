@@ -22,7 +22,7 @@ export default function Player({
 }: {
   currentFeed?: Pick<
     Feed,
-    'id' | 'slug' | 'nodeName' | 'name' | 'locationPoint' | 'longitudeLatitude'
+    'id' | 'slug' | 'nodeName' | 'name' | 'latitudeLongitude'
   >
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>('idle')
@@ -153,7 +153,7 @@ export default function Player({
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: 'end' }}>
         {currentFeed &&
-          `${currentFeed.longitudeLatitude["lng"]}, ${currentFeed.longitudeLatitude["lat"]}`}
+          `${currentFeed.latitudeLongitude["lng"]}, ${currentFeed.latitudeLongitude["lat"]}`}
       </Box>
     </Box>
   )

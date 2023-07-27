@@ -10,17 +10,7 @@ defmodule OrcasiteWeb.Types.Feed do
     field(:node_name, non_null(:string))
     field(:slug, non_null(:string))
 
-    field :location_point, non_null(:json) do
-      resolve(fn
-        %{location_point: point}, _, _ when not is_nil(point) ->
-          Geo.JSON.encode(point)
-
-        _, _, _ ->
-          {:ok, %{}}
-      end)
-    end
-
-    field :longitude_latitude, non_null(:json) do
+    field :latitude_longitude, non_null(:json) do
       resolve(fn
         %{location_point: %{coordinates: {lng, lat}}}, _, _ ->
           {:ok, %{lng: lng, lat: lat}}
