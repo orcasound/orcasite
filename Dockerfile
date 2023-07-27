@@ -47,14 +47,27 @@ EXPOSE 3000
 EXPOSE 4000
 ENV PORT=4000 UI_PORT=3000 MIX_ENV=dev
 
-# Install and cache server deps
+### Install dependencies and compile
+
+# Download and compile server deps
 ADD server/mix.exs server/mix.lock server/
+ADD server/config server/config/
 RUN cd server && mix do deps.get, deps.compile
 
-# Same with ui deps
+# Download and install UI deps
 ADD ui/package.json ui/package-lock.json ui/
 RUN cd ui && npm install
 
+# Compile server code
+ADD server server/
+RUN cd server && mix compile
+RUN cd server && mix do tailwind.install, esbuild.install
+
+# Compile UI code
+ADD ui ui/
+RUN cd ui && npm run build:dev
+
+# Copy remaining files
 ADD . .
 
-CMD ["/bin/bash", "-c", "cd server && mix ecto.setup && mix phx.server & cd ui && npm run dev"]
+CMD ["/bin/bash", "-c", "cd server && mix ecto.setup && mix phx.server & cd ui && npm run start:dev"]
