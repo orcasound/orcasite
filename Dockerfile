@@ -65,9 +65,9 @@ RUN cd server && mix do tailwind.install, esbuild.install
 
 # Compile UI code
 ADD ui ui/
-RUN cd ui && npm run build
+RUN cd ui && npm run build:dev
 
 # Copy remaining files
 ADD . .
 
-CMD ["/bin/bash", "-c", "cd server && mix ecto.setup && mix phx.server & cd ui && npm run start"]
+CMD ["/bin/bash", "-c", "cd server && mix ecto.setup && mix phx.server & cd ui && npm run start:dev"]
