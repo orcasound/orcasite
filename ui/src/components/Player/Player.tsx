@@ -22,7 +22,7 @@ export default function Player({
 }: {
   currentFeed?: Pick<
     Feed,
-    'id' | 'slug' | 'nodeName' | 'name' | 'locationPoint'
+    'id' | 'slug' | 'nodeName' | 'name' | 'locationPoint' | 'longitudeLatitude'
   >
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>('idle')
