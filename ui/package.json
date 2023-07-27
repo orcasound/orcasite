@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev -p ${UI_PORT:-3000}",
     "build": "next build",
+    "build:dev": "dotenv -c development npm run build",
     "start": "next start -p ${UI_PORT:-3000}",
+    "start:dev": "dotenv -c development npm run start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "format": "prettier . --write",
@@ -23,6 +25,7 @@
     "@mui/material": "^5.13.5",
     "@tanstack/react-query": "^4.29.15",
     "clsx": "^1.2.1",
+    "dotenv-cli": "^7.2.1",
     "graphql": "^16.7.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.1",

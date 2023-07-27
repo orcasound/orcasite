@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   web:
@@ -10,7 +10,8 @@ services:
       - "3000:3000"
       - "4000:4000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     links:
       - db
 
@@ -21,3 +22,10 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASS=postgres
+    restart: on-failure
+    healthcheck:
+      test: "PGUSER=$$POSTGRES_USER PGPASSWORD=$$POSTGRES_PASS PGHOST=localhost pg_isready"
+      # TODO: enable start_interval once docker 25.0.0 is released
+      # https://github.com/moby/moby/issues/45897
+      # start_period: 60s
+      # start_interval: 5s
