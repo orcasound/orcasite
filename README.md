@@ -50,7 +50,7 @@ Once you have one of these up and running, see the [Getting everything running](
 
 #### Using VS Code
 
-This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker-compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container. Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
+This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker-compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container (assuming [you've installed docker and the dev containers extension](https://code.visualstudio.com/docs/devcontainers/containers#_installation)). Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
 
 #### Using docker-compose directly
 
@@ -59,6 +59,15 @@ If you prefer not to use VS Code dev containers, the easiest way to develop in d
 ```
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
+
+> **Note**
+> You can also set the `COMPOSE_FILE` environment variable to avoid having to specify the compose files every time. This one-liner will do that for you no matter which subdirectory you're in:
+>
+> ```
+> export COMPOSE_FILE=`git rev-parse --show-toplevel`/docker-compose.yml:`git rev-parse --show-toplevel`/docker-compose.dev.yml
+> ```
+>
+> After setting COMPOSE_FILE, you can just run `docker-compose up -d` from anywhere in the project.
 
 Once you have the services started, you can start a session inside the `web` container:
 
@@ -148,7 +157,6 @@ heroku run POOL_SIZE=2 iex -S mix
 ```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
-
 
 ## Emails
 
