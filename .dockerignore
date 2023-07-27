@@ -21,6 +21,3 @@ ui/out/
 
 # deps
 ui/node_modules/
-
-### misc
-.DS_Store
