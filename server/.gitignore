@@ -1,30 +1,29 @@
-# App artifacts
-/_build
-/db
-/deps
-/*.ez
+# The directory Mix will write compiled artifacts to.
+/_build/
 
-/rel
+# If you run "mix test --cover", coverage assets end up here.
+/cover/
 
-node_modules/
+# The directory Mix downloads your dependencies sources to.
+/deps/
 
-.vscode/
+# Where 3rd-party dependencies like ExDoc output generated docs.
+/doc/
 
-# Generated on crash by the VM
+# Ignore .fetch files in case you like to edit your project deps locally.
+/.fetch
+
+# If the VM crashes, it generates a dump, let's ignore it too.
 erl_crash.dump
 
-# Files matching config/*.secret.exs pattern contain sensitive
-# data and you should not commit them into version control.
-#
-# Alternatively, you may comment the line below and commit the
-# secrets files as long as you replace their contents by environment
-# variables.
-/config/*.secret.exs
+# Also ignore archive artifacts (built via "mix archive.build").
+*.ez
 
 # Temporary files, for example, from tests.
 /tmp/
 
-assets/src/config/
+# Ignore package tarball (built via "mix hex.build").
+hello-*.tar
 
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
@@ -32,13 +31,6 @@ assets/src/config/
 # Ignore digested assets cache.
 /priv/static/cache_manifest.json
 
-# Webstorm
-.idea/
-
-bash /
-
-docker/
-
-*.log
-
-.elixir_ls/
+# In case you use Node.js/npm, you want to ignore these.
+npm-debug.log
+/assets/node_modules/
