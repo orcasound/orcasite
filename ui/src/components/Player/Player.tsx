@@ -149,8 +149,7 @@ export default function Player({
           : 'Select a location to start listening live'}
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: 'end' }}>
-        {currentFeed &&
-          `${currentFeed.latLng['lng']}, ${currentFeed.latLng['lat']}`}
+        {currentFeed && `${currentFeed.latLng.lng}, ${currentFeed.latLng.lat}`}
       </Box>
     </Box>
   )
