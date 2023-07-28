@@ -16,7 +16,7 @@ const FeedPage: NextPageWithLayout = () => {
   return (
     <div>
       <Head>
-        <title>Orcasound - {slug}</title>
+        <title>{`Orcasound - ${slug}`}</title>
       </Head>
 
       <main>
