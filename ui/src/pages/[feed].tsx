@@ -20,7 +20,7 @@ const FeedPage: NextPageWithLayout = () => {
   return (
     <div>
       <Head>
-        <title>Orcasound - {feed.name}</title>
+        <title>{`Orcasound - ${feed.name}`}</title>
       </Head>
 
       <main>
