@@ -1,38 +1,38 @@
-import { Menu } from '@mui/icons-material'
+import { Menu } from "@mui/icons-material";
 import {
   Box,
   Drawer as SideDrawer,
   IconButton,
   SwipeableDrawer,
   Toolbar,
-} from '@mui/material'
-import { ReactNode, useState } from 'react'
+} from "@mui/material";
+import { ReactNode, useState } from "react";
 
-import { BottomNavSpacer } from '@/components/BottomNav'
-import useIsMobile from '@/hooks/useIsMobile'
-import { displayDesktop, displayMobile } from '@/styles/responsive'
+import { BottomNavSpacer } from "@/components/BottomNav";
+import useIsMobile from "@/hooks/useIsMobile";
+import { displayDesktop, displayMobile } from "@/styles/responsive";
 
 export default function Drawer({
   children,
   onOpen,
   onClose,
 }: {
-  children: ReactNode
-  onOpen?: () => void
-  onClose?: () => void
+  children: ReactNode;
+  onOpen?: () => void;
+  onClose?: () => void;
 }) {
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
 
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(true);
 
   const handleOpen = () => {
-    setOpen(true)
-    onOpen?.()
-  }
+    setOpen(true);
+    onOpen?.();
+  };
   const handleClose = () => {
-    setOpen(false)
-    onClose?.()
-  }
+    setOpen(false);
+    onClose?.();
+  };
   return (
     <>
       <Mobile open={open && isMobile} onOpen={handleOpen} onClose={handleClose}>
@@ -43,15 +43,15 @@ export default function Drawer({
         {children}
       </Desktop>
     </>
-  )
+  );
 }
 
 type DrawerProps = {
-  children: ReactNode
-  open: boolean
-  onOpen: () => void
-  onClose: () => void
-}
+  children: ReactNode;
+  open: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+};
 
 function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
   return (
@@ -70,19 +70,19 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
       }}
       sx={{
         ...displayMobile,
-        '& > .MuiPaper-root': {
+        "& > .MuiPaper-root": {
           height: 1,
-          overflow: 'visible',
+          overflow: "visible",
         },
       }}
     >
-      <Box sx={{ overflow: 'auto' }}>
+      <Box sx={{ overflow: "auto" }}>
         <ToolbarSpacer />
         {children}
         <BottomNavSpacer />
       </Box>
     </SwipeableDrawer>
-  )
+  );
 }
 
 function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
@@ -92,28 +92,28 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
       anchor="left"
       open={open}
       onClick={() => {
-        if (!open) onOpen()
+        if (!open) onOpen();
       }}
       sx={(theme) => ({
         ...displayDesktop,
         width: theme.breakpoints.values.sm,
         maxWidth: 0.5,
         flexShrink: 0,
-        transition: theme.transitions.create('width', {
+        transition: theme.transitions.create("width", {
           easing: theme.transitions.easing.easeOut,
           duration: theme.transitions.duration.enteringScreen,
         }),
         ...(!open && {
           width: 30,
-          transition: theme.transitions.create('width', {
+          transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
         }),
-        '& .MuiDrawer-paper': {
+        "& .MuiDrawer-paper": {
           width: theme.breakpoints.values.sm,
           maxWidth: 0.5,
-          boxSizing: 'border-box',
+          boxSizing: "border-box",
         },
       })}
       ModalProps={{
@@ -122,7 +122,7 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
       }}
     >
       <ToolbarSpacer />
-      <Box sx={{ alignSelf: 'end' }}>
+      <Box sx={{ alignSelf: "end" }}>
         {open ? (
           <IconButton onClick={onClose}>
             <Menu />
@@ -135,11 +135,11 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
       </Box>
       {children}
     </SideDrawer>
-  )
+  );
 }
 
 // Render a second toolbar to deal with spacing on fixed AppBar
 // https://mui.com/components/app-bar/#fixed-placement
 function ToolbarSpacer() {
-  return <Toolbar />
+  return <Toolbar />;
 }

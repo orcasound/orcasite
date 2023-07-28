@@ -1,16 +1,16 @@
-import { Container, Stack, Typography } from '@mui/material'
-import { dehydrate, QueryClient } from '@tanstack/react-query'
-import Head from 'next/head'
+import { Container, Stack, Typography } from "@mui/material";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
+import Head from "next/head";
 
-import FeedCard from '@/components/FeedCard'
-import { getMapLayout } from '@/components/MapLayout'
-import { useFeedsQuery } from '@/graphql/generated'
-import type { NextPageWithLayout } from '@/pages/_app'
+import FeedCard from "@/components/FeedCard";
+import { getMapLayout } from "@/components/MapLayout";
+import { useFeedsQuery } from "@/graphql/generated";
+import type { NextPageWithLayout } from "@/pages/_app";
 
 const HomePage: NextPageWithLayout = () => {
-  const feeds = useFeedsQuery().data?.feeds
+  const feeds = useFeedsQuery().data?.feeds;
 
-  if (!feeds) return null
+  if (!feeds) return null;
 
   return (
     <div>
@@ -34,24 +34,24 @@ const HomePage: NextPageWithLayout = () => {
         </Container>
       </main>
     </div>
-  )
-}
+  );
+};
 
-HomePage.getLayout = getMapLayout
+HomePage.getLayout = getMapLayout;
 
 export async function getStaticProps() {
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(
     useFeedsQuery.getKey(),
-    useFeedsQuery.fetcher()
-  )
+    useFeedsQuery.fetcher(),
+  );
 
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
     },
-  }
+  };
 }
 
-export default HomePage
+export default HomePage;

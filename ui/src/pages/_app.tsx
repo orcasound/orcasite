@@ -1,32 +1,32 @@
-import { CacheProvider, EmotionCache } from '@emotion/react'
-import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider } from '@mui/material/styles'
+import { CacheProvider, EmotionCache } from "@emotion/react";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import {
   Hydrate,
   QueryClient,
   QueryClientProvider,
-} from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { NextPage } from 'next'
-import type { AppProps } from 'next/app'
-import Head from 'next/head'
-import { ReactElement, ReactNode, useState } from 'react'
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { NextPage } from "next";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { ReactElement, ReactNode, useState } from "react";
 
-import createEmotionCache from '@/styles/createEmotionCache'
-import theme from '@/styles/theme'
+import createEmotionCache from "@/styles/createEmotionCache";
+import theme from "@/styles/theme";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
-  getLayout?: (page: ReactElement) => ReactNode
-}
+  getLayout?: (page: ReactElement) => ReactNode;
+};
 
 export type MyAppProps = AppProps & {
-  Component: NextPageWithLayout
-  emotionCache?: EmotionCache
-}
+  Component: NextPageWithLayout;
+  emotionCache?: EmotionCache;
+};
 
 // Client-side cache, shared for the whole session of the user in the browser.
 // https://github.com/mui/material-ui/blob/master/examples/material-next-ts/pages/_app.tsx
-const clientSideEmotionCache = createEmotionCache()
+const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp({
   Component,
@@ -35,7 +35,7 @@ export default function MyApp({
 }: MyAppProps) {
   // Allow pages to define custom per-page layout
   // Based on https://nextjs.org/docs/basic-features/layouts
-  const getLayout = Component.getLayout || ((page) => page)
+  const getLayout = Component.getLayout || ((page) => page);
 
   // Configure react-query using the hydration setup
   // https://react-query.tanstack.com/guides/ssr#using-hydration
@@ -47,8 +47,8 @@ export default function MyApp({
             staleTime: 1000 * 20, // 20 seconds
           },
         },
-      })
-  )
+      }),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -69,5 +69,5 @@ export default function MyApp({
       </Hydrate>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  )
+  );
 }

@@ -9,17 +9,17 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
-} from '@mui/material'
-import { useState } from 'react'
+} from "@mui/material";
+import { useState } from "react";
 
-import { useSubmitDetectionMutation } from '@/graphql/generated'
-import vesselIconImage from '@/public/icons/vessel-purple.svg'
-import wavesIconImage from '@/public/icons/water-waves-blue.svg'
-import whaleFlukeIconImage from '@/public/icons/whale-fluke-gray.svg'
+import { useSubmitDetectionMutation } from "@/graphql/generated";
+import vesselIconImage from "@/public/icons/vessel-purple.svg";
+import wavesIconImage from "@/public/icons/water-waves-blue.svg";
+import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
-import DetectionCategoryButton from './DetectionCategoryButton'
+import DetectionCategoryButton from "./DetectionCategoryButton";
 
-type DetectionCategory = 'orca' | 'vessel' | 'other'
+type DetectionCategory = "orca" | "vessel" | "other";
 
 export default function DetectionDialog({
   children,
@@ -29,57 +29,57 @@ export default function DetectionDialog({
   getPlayerTime,
   listenerCount,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
   feed: {
-    id: string
-  }
-  timestamp: string
-  isPlaying: boolean
-  getPlayerTime?: () => number | undefined
-  listenerCount: number
+    id: string;
+  };
+  timestamp: string;
+  isPlaying: boolean;
+  getPlayerTime?: () => number | undefined;
+  listenerCount: number;
 }) {
-  const [open, setOpen] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [category, setCategory] = useState<DetectionCategory>()
-  const [description, setDescription] = useState('')
+  const [open, setOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [category, setCategory] = useState<DetectionCategory>();
+  const [description, setDescription] = useState("");
 
   const submitDetection = useSubmitDetectionMutation({
     onSuccess: () => {
-      setSubmitted(true)
+      setSubmitted(true);
     },
-  })
+  });
 
   const handleClickOpen = () => {
-    setSubmitted(false)
-    setDescription('')
-    setCategory(undefined)
-    setOpen(true)
-  }
+    setSubmitted(false);
+    setDescription("");
+    setCategory(undefined);
+    setOpen(true);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setDescription(e.target.value)
+    setDescription(e.target.value);
 
   const handleCategoryChange = (
     e: React.MouseEvent<HTMLElement>,
-    newCategory: DetectionCategory
+    newCategory: DetectionCategory,
   ) => {
     if (newCategory) {
-      setCategory(newCategory)
+      setCategory(newCategory);
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.which === 13) {
-      onDetect()
+      onDetect();
     }
-  }
+  };
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   const onDetect = () => {
-    const playerOffset = getPlayerTime?.()
+    const playerOffset = getPlayerTime?.();
     if (feedId && playlistTimestamp && playerOffset && isPlaying) {
       submitDetection.mutate({
         feedId,
@@ -88,15 +88,15 @@ export default function DetectionDialog({
         // TODO: send category as a separate field
         description: `[${category}] ${description}`,
         listenerCount,
-      })
+      });
     }
-  }
+  };
 
   const categoryButtons = [
-    { id: 'orca', iconImage: whaleFlukeIconImage },
-    { id: 'vessel', iconImage: vesselIconImage },
-    { id: 'other', iconImage: wavesIconImage },
-  ]
+    { id: "orca", iconImage: whaleFlukeIconImage },
+    { id: "vessel", iconImage: vesselIconImage },
+    { id: "other", iconImage: wavesIconImage },
+  ];
 
   return (
     <>
@@ -107,7 +107,7 @@ export default function DetectionDialog({
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">
-          {!submitted ? 'Report what you heard' : 'Thanks for submitting!'}
+          {!submitted ? "Report what you heard" : "Thanks for submitting!"}
         </DialogTitle>
         {!submitted && (
           <DialogContent>
@@ -129,16 +129,16 @@ export default function DetectionDialog({
                   key={id}
                   component={Paper}
                   sx={{
-                    '&&&': {
+                    "&&&": {
                       marginX: 5,
                       borderRadius: 1,
-                      ':hover': {
-                        borderColor: 'primary.main',
+                      ":hover": {
+                        borderColor: "primary.main",
                       },
                     },
-                    '&&.Mui-selected': {
-                      border: 'solid 2px',
-                      borderColor: 'primary.main',
+                    "&&.Mui-selected": {
+                      border: "solid 2px",
+                      borderColor: "primary.main",
                     },
                   }}
                 >
@@ -183,5 +183,5 @@ export default function DetectionDialog({
         )}
       </Dialog>
     </>
-  )
+  );
 }

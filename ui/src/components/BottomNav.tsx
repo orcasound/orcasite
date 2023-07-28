@@ -1,20 +1,20 @@
-import { GraphicEq, Info, Menu, Notifications } from '@mui/icons-material'
+import { GraphicEq, Info, Menu, Notifications } from "@mui/icons-material";
 import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
   Paper,
-} from '@mui/material'
-import { styled } from '@mui/material/styles'
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 
-import { displayMobile } from '@/styles/responsive'
+import { displayMobile } from "@/styles/responsive";
 
 export default function BottomNav() {
   return (
     <Box sx={displayMobile}>
       <Paper
         sx={{
-          position: 'fixed',
+          position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
@@ -33,11 +33,11 @@ export default function BottomNav() {
         </BottomNavigation>
       </Paper>
     </Box>
-  )
+  );
 }
 
 // Utility component to help with spacing
 // Just a box that's the same height as bottom nav
 export const BottomNavSpacer = styled(Box)(({ theme }) => ({
   height: theme.spacing(8),
-}))
+}));

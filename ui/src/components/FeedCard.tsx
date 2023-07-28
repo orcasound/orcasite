@@ -1,12 +1,12 @@
-import { Card, CardActionArea, CardHeader } from '@mui/material'
+import { Card, CardActionArea, CardHeader } from "@mui/material";
 
-import Link from '@/components/Link'
-import { Feed } from '@/graphql/generated'
+import Link from "@/components/Link";
+import { Feed } from "@/graphql/generated";
 
 export default function FeedCard({
   feed,
 }: {
-  feed: Pick<Feed, 'name' | 'slug'>
+  feed: Pick<Feed, "name" | "slug">;
 }) {
   return (
     <Link href={`/${feed.slug}`} underline="none">
@@ -16,5 +16,5 @@ export default function FeedCard({
         </CardActionArea>
       </Card>
     </Link>
-  )
+  );
 }
