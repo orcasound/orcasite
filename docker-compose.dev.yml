@@ -1,6 +1,11 @@
 version: "3"
 services:
   web:
+    build:
+      context: ./
+      target: setup
     command: sleep infinity
+    depends_on:
+      - db
     volumes:
       - .:/app

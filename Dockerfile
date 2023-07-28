@@ -3,7 +3,7 @@ ARG ELIXIR_VERSION=1.14
 ARG NODE_VERSION=20.2.0
 
 FROM node:${NODE_VERSION}-alpine AS node
-FROM elixir:${ELIXIR_VERSION}-alpine
+FROM elixir:${ELIXIR_VERSION}-alpine AS setup
 
 
 ### Install deps
@@ -46,6 +46,10 @@ WORKDIR $APP_HOME
 EXPOSE 3000
 EXPOSE 4000
 ENV PORT=4000 UI_PORT=3000 MIX_ENV=dev
+
+# Create a new stage so that local dev setup can stop here
+# Local dev mounts into the container so there's no point in adding/compiling
+FROM setup AS compile
 
 ### Install dependencies and compile
 
