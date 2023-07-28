@@ -4,7 +4,7 @@ query feed($slug: String!) {
     name
     slug
     nodeName
-    latitudeLongitude
+    latLng
     introHtml
     thumbUrl
     mapUrl

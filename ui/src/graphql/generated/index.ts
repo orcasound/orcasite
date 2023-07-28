@@ -104,7 +104,7 @@ export type Feed = {
   __typename?: 'Feed'
   id: Scalars['ID']['output']
   introHtml: Scalars['String']['output']
-  latitudeLongitude: Scalars['Json']['output']
+  latLng: Scalars['Json']['output']
   mapUrl: Scalars['String']['output']
   name: Scalars['String']['output']
   nodeName: Scalars['String']['output']
@@ -253,7 +253,7 @@ export type FeedQuery = {
     name: string
     slug: string
     nodeName: string
-    latitudeLongitude: any
+    latLng: any
     introHtml: string
     thumbUrl: string
     mapUrl: string
@@ -270,7 +270,7 @@ export type FeedsQuery = {
     name: string
     slug: string
     nodeName: string
-    latitudeLongitude: any
+    latLng: any
     thumbUrl: string
     mapUrl: string
   }>
@@ -334,7 +334,7 @@ export const FeedDocument = `
     name
     slug
     nodeName
-    latitudeLongitude
+    latLng
     introHtml
     thumbUrl
     mapUrl
@@ -362,7 +362,7 @@ export const FeedsDocument = `
     name
     slug
     nodeName
-    latitudeLongitude
+    latLng
     thumbUrl
     mapUrl
   }

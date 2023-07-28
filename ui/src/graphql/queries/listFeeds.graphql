@@ -4,7 +4,7 @@ query feeds {
     name
     slug
     nodeName
-    latitudeLongitude
+    latLng
     thumbUrl
     mapUrl
   }

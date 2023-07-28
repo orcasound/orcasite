@@ -20,10 +20,7 @@ export type PlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error'
 export default function Player({
   currentFeed,
 }: {
-  currentFeed?: Pick<
-    Feed,
-    'id' | 'slug' | 'nodeName' | 'name' | 'latitudeLongitude'
-  >
+  currentFeed?: Pick<Feed, 'id' | 'slug' | 'nodeName' | 'name' | 'latLng'>
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>('idle')
   const playerRef = useRef<VideoJSPlayer | null>(null)
@@ -153,7 +150,7 @@ export default function Player({
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: 'end' }}>
         {currentFeed &&
-          `${currentFeed.latitudeLongitude["lng"]}, ${currentFeed.latitudeLongitude["lat"]}`}
+          `${currentFeed.latLng['lng']}, ${currentFeed.latLng['lat']}`}
       </Box>
     </Box>
   )
