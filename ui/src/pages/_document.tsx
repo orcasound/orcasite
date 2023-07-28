@@ -27,7 +27,16 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
       <Head>
         {/* PWA primary color */}
         <meta name="theme-color" content={theme.palette.primary.main} />
-        <link rel="shortcut icon" href="/favicon.ico" />
+        {/*
+            prefer svg favicon but use ico as fallback
+            svg will change color based on prefers-color-scheme media query
+            fallback ico is colorful to provide contrast on both light and dark
+            ico is intentionally not multi-size because otherwise chrome selects it over svg
+            (see https://bugs.chromium.org/p/chromium/issues/detail?id=1450857 and
+            https://bugs.chromium.org/p/chromium/issues/detail?id=1162276)
+        */}
+        <link rel="icon" href="/favicon.ico" sizes="48x48"/>
+        <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
         <meta name="emotion-insertion-point" content="" />
         {emotionStyleTags}
       </Head>
