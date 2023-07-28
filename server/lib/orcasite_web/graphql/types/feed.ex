@@ -13,7 +13,7 @@ defmodule OrcasiteWeb.Types.Feed do
     field :lat_lng, non_null(:json) do
       resolve(fn
         %{location_point: %{coordinates: {lng, lat}}}, _, _ ->
-          {:ok, %{lng: lng, lat: lat}}
+          {:ok, %{lat: lat, lng: lng}}
 
         _, _, _ ->
           {:ok, %{}}

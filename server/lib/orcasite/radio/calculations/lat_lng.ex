@@ -1,4 +1,4 @@
-defmodule Orcasite.Radio.Calculations.LongitudeLatitude do
+defmodule Orcasite.Radio.Calculations.LatLng do
   use Ash.Calculation
 
   @impl true
@@ -9,7 +9,7 @@ defmodule Orcasite.Radio.Calculations.LongitudeLatitude do
   @impl true
   def calculate(records, _opts, _arguments) do
     Enum.map(records, fn %{location_point: %{coordinates: {lng, lat}}} ->
-      "#{lng},#{lat}"
+      "#{lat},#{lng}"
     end)
   end
 end

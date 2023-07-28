@@ -72,17 +72,17 @@ defmodule Orcasite.Radio.Feed do
   calculations do
     calculate :lat_lng,
               :string,
-              {Orcasite.Radio.Calculations.LongitudeLatitude,
+              {Orcasite.Radio.Calculations.LatLng,
                keys: [:location_point], select: [:location_point]}
   end
 
   defp change_lat_lng(changeset, _context) do
-    with {:is_string, lng_lat} when is_binary(lng_lat) <-
+    with {:is_string, lat_lng} when is_binary(lat_lng) <-
            {:is_string, Ash.Changeset.get_argument(changeset, :lat_lng)},
-         {:two_els, [lng, lat]} <-
-           {:two_els, lng_lat |> String.split(",") |> Enum.map(&String.trim/1)},
-         {:two_floats, [{longitude, _}, {latitude, _}]} <-
-           {:two_floats, [lng, lat] |> Enum.map(&Float.parse/1)} do
+         {:two_els, [lat, lng]} <-
+           {:two_els, lat_lng |> String.split(",") |> Enum.map(&String.trim/1)},
+         {:two_floats, [{latitude, _}, {longitude, _}]} <-
+           {:two_floats, [lat, lng] |> Enum.map(&Float.parse/1)} do
       changeset
       |> Ash.Changeset.change_attribute(:location_point, %Geo.Point{
         coordinates: {longitude, latitude},
