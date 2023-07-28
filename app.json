@@ -24,7 +24,7 @@
       },
       "addons": ["heroku-postgresql:mini", "autoidle:hobby-web"],
       "scripts": {
-        "postdeploy": "POOL_SIZE=2 mix ecto.migrate && mix run priv/repo/seeds.exs"
+        "postdeploy": "POOL_SIZE=2 mix run priv/repo/seeds.exs"
       }
     }
   }
