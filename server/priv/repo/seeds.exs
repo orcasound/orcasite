@@ -13,14 +13,6 @@
 import Ecto.Query
 alias Orcasite.RadioLegacy.Feed
 
-Orcasite.Accounts.User
-|> Ash.Changeset.for_create(:create, %{
-  email: "admin@example.com",
-  password: "password",
-  admin: true
-})
-|> Orcasite.Accounts.create!()
-
 feeds = [
   %{
     location_point: Geo.WKT.decode!("SRID=4326;POINT(-123.1735774 48.5583362)"),
@@ -68,3 +60,14 @@ for attrs <- feeds do
       |> Orcasite.Repo.insert!()
   end
 end
+
+# Create admin account
+strategy = AshAuthentication.Info.strategy!(Orcasite.Accounts.User, :password)
+Orcasite.Accounts.User
+|> Ash.Changeset.for_create(strategy.register_action_name, %{
+  email: "admin@example.com",
+  password: "password",
+  password_confirmation: "password",
+})
+|> Ash.Changeset.force_change_attribute(:admin, true)
+|> Orcasite.Accounts.create!()
