@@ -54,7 +54,6 @@ export type Scalars = {
   Float: { input: number; output: number }
   DateTime: { input: any; output: any }
   Decimal: { input: any; output: any }
-  Json: { input: any; output: any }
 }
 
 export type Candidate = {
@@ -104,12 +103,18 @@ export type Feed = {
   __typename?: 'Feed'
   id: Scalars['ID']['output']
   introHtml: Scalars['String']['output']
-  latLng: Scalars['Json']['output']
+  latLng: LatLng
   mapUrl: Scalars['String']['output']
   name: Scalars['String']['output']
   nodeName: Scalars['String']['output']
   slug: Scalars['String']['output']
   thumbUrl: Scalars['String']['output']
+}
+
+export type LatLng = {
+  __typename?: 'LatLng'
+  lat: Scalars['Float']['output']
+  lng: Scalars['Float']['output']
 }
 
 /** Pagination options */
@@ -253,10 +258,10 @@ export type FeedQuery = {
     name: string
     slug: string
     nodeName: string
-    latLng: any
     introHtml: string
     thumbUrl: string
     mapUrl: string
+    latLng: { __typename?: 'LatLng'; lat: number; lng: number }
   }
 }
 
@@ -270,9 +275,9 @@ export type FeedsQuery = {
     name: string
     slug: string
     nodeName: string
-    latLng: any
     thumbUrl: string
     mapUrl: string
+    latLng: { __typename?: 'LatLng'; lat: number; lng: number }
   }>
 }
 
@@ -334,7 +339,10 @@ export const FeedDocument = `
     name
     slug
     nodeName
-    latLng
+    latLng {
+      lat
+      lng
+    }
     introHtml
     thumbUrl
     mapUrl
@@ -362,7 +370,10 @@ export const FeedsDocument = `
     name
     slug
     nodeName
-    latLng
+    latLng {
+      lat
+      lng
+    }
     thumbUrl
     mapUrl
   }
