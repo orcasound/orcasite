@@ -22,7 +22,12 @@
           "size": "basic"
         }
       },
-      "addons": ["heroku-postgresql:mini", "autoidle:hobby-web"],
+      "addons": [
+        "heroku-postgresql:mini",
+        "autoidle:hobby-web",
+        "logdna:quaco",
+        "sentry:free"
+      ],
       "scripts": {
         "postdeploy": "POOL_SIZE=2 mix run priv/repo/seeds.exs"
       }
