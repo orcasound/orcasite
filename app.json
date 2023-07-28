@@ -25,8 +25,7 @@
       "addons": [
         "heroku-postgresql:mini",
         "autoidle:hobby-web",
-        "logdna:quaco",
-        "sentry:free"
+        "logdna:quaco"
       ],
       "scripts": {
         "postdeploy": "POOL_SIZE=2 mix run priv/repo/seeds.exs"
