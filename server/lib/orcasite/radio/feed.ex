@@ -9,7 +9,7 @@ defmodule Orcasite.Radio.Feed do
     attribute :name, :string
     attribute :node_name, :string
     attribute :slug, :string
-    attribute :location_point, :geometry
+    attribute :location_point, :geometry, allow_nil?: false
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
