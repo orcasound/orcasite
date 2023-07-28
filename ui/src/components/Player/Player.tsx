@@ -20,10 +20,7 @@ export type PlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error'
 export default function Player({
   currentFeed,
 }: {
-  currentFeed?: Pick<
-    Feed,
-    'id' | 'slug' | 'nodeName' | 'name' | 'locationPoint'
-  >
+  currentFeed?: Pick<Feed, 'id' | 'slug' | 'nodeName' | 'name' | 'latLng'>
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>('idle')
   const playerRef = useRef<VideoJSPlayer | null>(null)
@@ -152,8 +149,7 @@ export default function Player({
           : 'Select a location to start listening live'}
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: 'end' }}>
-        {currentFeed &&
-          `${currentFeed.locationPoint.coordinates[0]}, ${currentFeed.locationPoint.coordinates[1]}`}
+        {currentFeed && `${currentFeed.latLng.lng}, ${currentFeed.latLng.lat}`}
       </Box>
     </Box>
   )

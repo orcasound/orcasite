@@ -5,7 +5,7 @@ defmodule Orcasite.RadioLegacy do
 
   import Ecto.Query, warn: false
   alias Orcasite.Repo
-  alias Orcasite.RadioLegacy.{Feed, Detection, Candidate}
+  alias Orcasite.RadioLegacy.{Detection, Candidate}
 
   def verify_can_submit_detection(
         feed_id,

@@ -17,7 +17,7 @@ export default function Map({
   feeds,
 }: {
   setMap?: (map: LeafletMap) => void
-  currentFeed?: Pick<Feed, 'slug' | 'locationPoint'>
+  currentFeed?: Pick<Feed, 'slug' | 'latLng'>
   feeds: FeedsQuery['feeds']
 }) {
   const router = useRouter()
@@ -50,7 +50,7 @@ export default function Map({
       {feeds.map((feed) => (
         <Marker
           key={feed.slug}
-          position={feed.locationPoint.coordinates}
+          position={feed.latLng}
           icon={
             feed.slug === currentFeed?.slug
               ? hydrophoneActiveIcon

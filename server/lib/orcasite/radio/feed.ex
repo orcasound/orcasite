@@ -9,7 +9,7 @@ defmodule Orcasite.Radio.Feed do
     attribute :name, :string
     attribute :node_name, :string
     attribute :slug, :string
-    attribute :location_point, :geometry
+    attribute :location_point, :geometry, allow_nil?: false
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -32,7 +32,7 @@ defmodule Orcasite.Radio.Feed do
 
       prepare fn query, _context ->
         query
-        |> Ash.Query.load(:longitude_latitude)
+        |> Ash.Query.load(:lat_lng)
       end
     end
 
@@ -44,22 +44,22 @@ defmodule Orcasite.Radio.Feed do
       primary? true
       reject [:location_point]
 
-      argument :longitude_latitude, :string do
+      argument :lat_lng, :string do
         description "A comma-separated string of longitude and latitude"
       end
 
-      change &change_longitude_latitude/2
+      change &change_lat_lng/2
     end
 
     update :update do
       primary? true
       reject [:location_point]
 
-      argument :longitude_latitude, :string do
+      argument :lat_lng, :string do
         description "A comma-separated string of longitude and latitude"
       end
 
-      change &change_longitude_latitude/2
+      change &change_lat_lng/2
     end
   end
 
@@ -70,19 +70,19 @@ defmodule Orcasite.Radio.Feed do
   end
 
   calculations do
-    calculate :longitude_latitude,
+    calculate :lat_lng,
               :string,
-              {Orcasite.Radio.Calculations.LongitudeLatitude,
+              {Orcasite.Radio.Calculations.LatLng,
                keys: [:location_point], select: [:location_point]}
   end
 
-  defp change_longitude_latitude(changeset, _context) do
-    with {:is_string, lng_lat} when is_binary(lng_lat) <-
-           {:is_string, Ash.Changeset.get_argument(changeset, :longitude_latitude)},
-         {:two_els, [lng, lat]} <-
-           {:two_els, lng_lat |> String.split(",") |> Enum.map(&String.trim/1)},
-         {:two_floats, [{longitude, _}, {latitude, _}]} <-
-           {:two_floats, [lng, lat] |> Enum.map(&Float.parse/1)} do
+  defp change_lat_lng(changeset, _context) do
+    with {:is_string, lat_lng} when is_binary(lat_lng) <-
+           {:is_string, Ash.Changeset.get_argument(changeset, :lat_lng)},
+         {:two_els, [lat, lng]} <-
+           {:two_els, lat_lng |> String.split(",") |> Enum.map(&String.trim/1)},
+         {:two_floats, [{latitude, _}, {longitude, _}]} <-
+           {:two_floats, [lat, lng] |> Enum.map(&Float.parse/1)} do
       changeset
       |> Ash.Changeset.change_attribute(:location_point, %Geo.Point{
         coordinates: {longitude, latitude},
@@ -95,13 +95,13 @@ defmodule Orcasite.Radio.Feed do
       {:two_els, _} ->
         changeset
         |> Ash.Changeset.add_error(
-          field: :longitude_latitude,
+          field: :lat_lng,
           message: "must be a comma-separated string"
         )
 
       {:two_floats, _} ->
         changeset
-        |> Ash.Changeset.add_error(field: :longitude_latitude, message: "must be two floats")
+        |> Ash.Changeset.add_error(field: :lat_lng, message: "must be two floats")
     end
   end
 

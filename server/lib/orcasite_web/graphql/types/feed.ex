@@ -4,19 +4,21 @@ defmodule OrcasiteWeb.Types.Feed do
   """
   use Absinthe.Schema.Notation
 
+  object :lat_lng do
+    field(:lat, non_null(:float))
+    field(:lng, non_null(:float))
+  end
+
   object :feed do
     field(:id, non_null(:id))
     field(:name, non_null(:string))
     field(:node_name, non_null(:string))
     field(:slug, non_null(:string))
 
-    field :location_point, non_null(:json) do
+    field :lat_lng, non_null(:lat_lng) do
       resolve(fn
-        %{location_point: point}, _, _ when not is_nil(point) ->
-          Geo.JSON.encode(point)
-
-        _, _, _ ->
-          {:ok, %{}}
+        %{location_point: %{coordinates: {lng, lat}}}, _, _ ->
+          {:ok, %{lat: lat, lng: lng}}
       end)
     end
 
