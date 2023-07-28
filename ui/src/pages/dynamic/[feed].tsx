@@ -1,17 +1,17 @@
-import { NavigateNext } from '@mui/icons-material'
-import { Box, Breadcrumbs, Container, Typography } from '@mui/material'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
+import { NavigateNext } from "@mui/icons-material";
+import { Box, Breadcrumbs, Container, Typography } from "@mui/material";
+import Head from "next/head";
+import { useRouter } from "next/router";
 
-import Link from '@/components/Link'
-import { getMapLayout } from '@/components/MapLayout'
-import type { NextPageWithLayout } from '@/pages/_app'
+import Link from "@/components/Link";
+import { getMapLayout } from "@/components/MapLayout";
+import type { NextPageWithLayout } from "@/pages/_app";
 
 const FeedPage: NextPageWithLayout = () => {
-  const router = useRouter()
-  const slug = router.query.feed as string
+  const router = useRouter();
+  const slug = router.query.feed as string;
 
-  if (!slug) return null
+  if (!slug) return null;
 
   return (
     <div>
@@ -23,7 +23,7 @@ const FeedPage: NextPageWithLayout = () => {
         <Container maxWidth="sm">
           <Box>
             <Breadcrumbs separator={<NavigateNext />} aria-label="breadcrumb">
-              <Link href={'/'} color="inherit">
+              <Link href={"/"} color="inherit">
                 All hydrophones
               </Link>
               <Typography color="textPrimary">dynamic</Typography>
@@ -34,9 +34,9 @@ const FeedPage: NextPageWithLayout = () => {
         </Container>
       </main>
     </div>
-  )
-}
+  );
+};
 
-FeedPage.getLayout = getMapLayout
+FeedPage.getLayout = getMapLayout;
 
-export default FeedPage
+export default FeedPage;

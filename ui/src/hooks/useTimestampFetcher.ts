@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
 if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
-  throw new Error('NEXT_PUBLIC_S3_BUCKET is not set')
+  throw new Error("NEXT_PUBLIC_S3_BUCKET is not set");
 }
-const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET
-const S3_BUCKET_BASE = `https://s3-us-west-2.amazonaws.com/${S3_BUCKET}`
+const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET;
+const S3_BUCKET_BASE = `https://s3-us-west-2.amazonaws.com/${S3_BUCKET}`;
 
 /**
  * @typedef {Object} TimestampFetcherOptions
@@ -27,61 +27,61 @@ const S3_BUCKET_BASE = `https://s3-us-west-2.amazonaws.com/${S3_BUCKET}`
  */
 export default function useTimestampFetcher(
   nodeName?: string,
-  { onStart, onStop }: { onStart?: () => void; onStop?: () => void } = {}
+  { onStart, onStop }: { onStart?: () => void; onStop?: () => void } = {},
 ) {
-  const [timestamp, setTimestamp] = useState<string>()
+  const [timestamp, setTimestamp] = useState<string>();
 
   const hlsURI =
     nodeName && timestamp
       ? `${S3_BUCKET_BASE}/${nodeName}/hls/${timestamp}/live.m3u8`
-      : undefined
+      : undefined;
   const awsConsoleUri =
     nodeName && timestamp
       ? `https://s3.console.aws.amazon.com/s3/buckets/${S3_BUCKET}/${nodeName}/hls/${timestamp}/`
-      : undefined
+      : undefined;
 
   useEffect(() => {
-    let currentXhr: XMLHttpRequest | undefined
-    let intervalId: NodeJS.Timer | undefined
+    let currentXhr: XMLHttpRequest | undefined;
+    let intervalId: NodeJS.Timer | undefined;
 
     const fetchTimestamp = (feed: string) => {
-      const timestampURI = `${S3_BUCKET_BASE}/${feed}/latest.txt`
+      const timestampURI = `${S3_BUCKET_BASE}/${feed}/latest.txt`;
 
-      const xhr = new XMLHttpRequest()
-      currentXhr = xhr
-      xhr.open('GET', timestampURI)
+      const xhr = new XMLHttpRequest();
+      currentXhr = xhr;
+      xhr.open("GET", timestampURI);
       xhr.onload = () => {
         if (xhr.status === 200) {
-          const newTimestamp = xhr.responseText.trim()
-          if (process.env.NODE_ENV === 'development')
-            console.log('Latest timestamp: ' + newTimestamp)
-          setTimestamp(newTimestamp)
+          const newTimestamp = xhr.responseText.trim();
+          if (process.env.NODE_ENV === "development")
+            console.log("Latest timestamp: " + newTimestamp);
+          setTimestamp(newTimestamp);
         }
-      }
-      xhr.send()
-    }
+      };
+      xhr.send();
+    };
 
     const startFetcher = () => {
-      if (!nodeName) return
+      if (!nodeName) return;
 
-      onStart?.()
-      fetchTimestamp(nodeName)
-      const newIntervalId = setInterval(() => fetchTimestamp(nodeName), 10000)
-      intervalId = newIntervalId
-    }
+      onStart?.();
+      fetchTimestamp(nodeName);
+      const newIntervalId = setInterval(() => fetchTimestamp(nodeName), 10000);
+      intervalId = newIntervalId;
+    };
 
     const stopFetcher = () => {
-      if (currentXhr) currentXhr.abort()
-      if (intervalId) clearInterval(intervalId)
-    }
+      if (currentXhr) currentXhr.abort();
+      if (intervalId) clearInterval(intervalId);
+    };
 
-    startFetcher()
+    startFetcher();
 
     return () => {
-      stopFetcher()
-      onStop?.()
-    }
-  }, [nodeName, onStart, onStop])
+      stopFetcher();
+      onStop?.();
+    };
+  }, [nodeName, onStart, onStop]);
 
-  return { timestamp, hlsURI, awsConsoleUri }
+  return { timestamp, hlsURI, awsConsoleUri };
 }

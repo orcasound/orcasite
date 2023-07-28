@@ -1,285 +1,285 @@
-import { endpointUrl, fetchParams } from '@/graphql/client'
+import { endpointUrl, fetchParams } from "@/graphql/client";
 import {
   useMutation,
   useQuery,
   UseMutationOptions,
   UseQueryOptions,
-} from '@tanstack/react-query'
-export type Maybe<T> = T | null
-export type InputMaybe<T> = Maybe<T>
+} from "@tanstack/react-query";
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K]
-}
+  [K in keyof T]: T[K];
+};
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>
-}
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>
-}
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 export type MakeEmpty<
   T extends { [key: string]: unknown },
-  K extends keyof T
-> = { [_ in K]?: never }
+  K extends keyof T,
+> = { [_ in K]?: never };
 export type Incremental<T> =
   | T
   | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
-    }
+      [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
+    };
 
 function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
   return async (): Promise<TData> => {
     const res = await fetch(endpointUrl as string, {
-      method: 'POST',
+      method: "POST",
       ...fetchParams,
       body: JSON.stringify({ query, variables }),
-    })
+    });
 
-    const json = await res.json()
+    const json = await res.json();
 
     if (json.errors) {
-      const { message } = json.errors[0]
+      const { message } = json.errors[0];
 
-      throw new Error(message)
+      throw new Error(message);
     }
 
-    return json.data
-  }
+    return json.data;
+  };
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string }
-  String: { input: string; output: string }
-  Boolean: { input: boolean; output: boolean }
-  Int: { input: number; output: number }
-  Float: { input: number; output: number }
-  DateTime: { input: any; output: any }
-  Decimal: { input: any; output: any }
-}
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  DateTime: { input: any; output: any };
+  Decimal: { input: any; output: any };
+};
 
 export type Candidate = {
-  __typename?: 'Candidate'
-  detectionCount?: Maybe<Scalars['Int']['output']>
-  detections?: Maybe<Array<Maybe<Detection>>>
-  feed?: Maybe<Feed>
-  id?: Maybe<Scalars['ID']['output']>
-  maxTime?: Maybe<Scalars['DateTime']['output']>
-  minTime?: Maybe<Scalars['DateTime']['output']>
-}
+  __typename?: "Candidate";
+  detectionCount?: Maybe<Scalars["Int"]["output"]>;
+  detections?: Maybe<Array<Maybe<Detection>>>;
+  feed?: Maybe<Feed>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  maxTime?: Maybe<Scalars["DateTime"]["output"]>;
+  minTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
 
 /** Pagination version of candidates */
 export type Candidates = {
-  __typename?: 'Candidates'
-  entries?: Maybe<Array<Maybe<Candidate>>>
-  meta?: Maybe<PaginationMeta>
-}
+  __typename?: "Candidates";
+  entries?: Maybe<Array<Maybe<Candidate>>>;
+  meta?: Maybe<PaginationMeta>;
+};
 
 export type Detection = {
-  __typename?: 'Detection'
-  description?: Maybe<Scalars['String']['output']>
-  feed?: Maybe<Feed>
-  id?: Maybe<Scalars['ID']['output']>
-  listenerCount?: Maybe<Scalars['Int']['output']>
-  playerOffset?: Maybe<Scalars['Decimal']['output']>
-  playlistTimestamp?: Maybe<Scalars['Int']['output']>
-  sourceIp?: Maybe<Scalars['String']['output']>
-  timestamp?: Maybe<Scalars['DateTime']['output']>
-}
+  __typename?: "Detection";
+  description?: Maybe<Scalars["String"]["output"]>;
+  feed?: Maybe<Feed>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  listenerCount?: Maybe<Scalars["Int"]["output"]>;
+  playerOffset?: Maybe<Scalars["Decimal"]["output"]>;
+  playlistTimestamp?: Maybe<Scalars["Int"]["output"]>;
+  sourceIp?: Maybe<Scalars["String"]["output"]>;
+  timestamp?: Maybe<Scalars["DateTime"]["output"]>;
+};
 
 export type DetectionWithLockout = {
-  __typename?: 'DetectionWithLockout'
-  detection?: Maybe<Detection>
-  lockoutInitial?: Maybe<Scalars['Float']['output']>
-  lockoutRemaining?: Maybe<Scalars['Float']['output']>
-}
+  __typename?: "DetectionWithLockout";
+  detection?: Maybe<Detection>;
+  lockoutInitial?: Maybe<Scalars["Float"]["output"]>;
+  lockoutRemaining?: Maybe<Scalars["Float"]["output"]>;
+};
 
 /** Pagination version of detections */
 export type Detections = {
-  __typename?: 'Detections'
-  entries?: Maybe<Array<Maybe<Detection>>>
-  meta?: Maybe<PaginationMeta>
-}
+  __typename?: "Detections";
+  entries?: Maybe<Array<Maybe<Detection>>>;
+  meta?: Maybe<PaginationMeta>;
+};
 
 export type Feed = {
-  __typename?: 'Feed'
-  id: Scalars['ID']['output']
-  introHtml: Scalars['String']['output']
-  latLng: LatLng
-  mapUrl: Scalars['String']['output']
-  name: Scalars['String']['output']
-  nodeName: Scalars['String']['output']
-  slug: Scalars['String']['output']
-  thumbUrl: Scalars['String']['output']
-}
+  __typename?: "Feed";
+  id: Scalars["ID"]["output"];
+  introHtml: Scalars["String"]["output"];
+  latLng: LatLng;
+  mapUrl: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  nodeName: Scalars["String"]["output"];
+  slug: Scalars["String"]["output"];
+  thumbUrl: Scalars["String"]["output"];
+};
 
 export type LatLng = {
-  __typename?: 'LatLng'
-  lat: Scalars['Float']['output']
-  lng: Scalars['Float']['output']
-}
+  __typename?: "LatLng";
+  lat: Scalars["Float"]["output"];
+  lng: Scalars["Float"]["output"];
+};
 
 /** Pagination options */
 export type Pagination = {
-  page: Scalars['Int']['input']
-  pageSize: Scalars['Int']['input']
-}
+  page: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
+};
 
 /** Pagination results via scrivener */
 export type PaginationMeta = {
-  __typename?: 'PaginationMeta'
-  currentPage: Scalars['Int']['output']
-  nextPage?: Maybe<Scalars['Int']['output']>
-  previousPage?: Maybe<Scalars['Int']['output']>
-  totalEntries: Scalars['Int']['output']
-  totalPages: Scalars['Int']['output']
-}
+  __typename?: "PaginationMeta";
+  currentPage: Scalars["Int"]["output"];
+  nextPage?: Maybe<Scalars["Int"]["output"]>;
+  previousPage?: Maybe<Scalars["Int"]["output"]>;
+  totalEntries: Scalars["Int"]["output"];
+  totalPages: Scalars["Int"]["output"];
+};
 
 export type RootMutationType = {
-  __typename?: 'RootMutationType'
+  __typename?: "RootMutationType";
   /** Log in */
-  login?: Maybe<User>
+  login?: Maybe<User>;
   /** Log out */
-  logout?: Maybe<User>
+  logout?: Maybe<User>;
   /** Create user */
-  signup?: Maybe<User>
+  signup?: Maybe<User>;
   /** Submit an orca sound detection */
-  submitDetection?: Maybe<DetectionWithLockout>
+  submitDetection?: Maybe<DetectionWithLockout>;
   /** Update user details */
-  updateUser?: Maybe<User>
-}
+  updateUser?: Maybe<User>;
+};
 
 export type RootMutationTypeLoginArgs = {
-  email: Scalars['String']['input']
-  password: Scalars['String']['input']
-}
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+};
 
 export type RootMutationTypeLogoutArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>
-}
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+};
 
 export type RootMutationTypeSignupArgs = {
-  email: Scalars['String']['input']
-  firstName?: InputMaybe<Scalars['String']['input']>
-  lastName?: InputMaybe<Scalars['String']['input']>
-  password: Scalars['String']['input']
-}
+  email: Scalars["String"]["input"];
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  password: Scalars["String"]["input"];
+};
 
 export type RootMutationTypeSubmitDetectionArgs = {
-  description?: InputMaybe<Scalars['String']['input']>
-  feedId?: InputMaybe<Scalars['ID']['input']>
-  listenerCount?: InputMaybe<Scalars['Int']['input']>
-  playerOffset?: InputMaybe<Scalars['Decimal']['input']>
-  playlistTimestamp?: InputMaybe<Scalars['String']['input']>
-}
+  description?: InputMaybe<Scalars["String"]["input"]>;
+  feedId?: InputMaybe<Scalars["ID"]["input"]>;
+  listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
+  playerOffset?: InputMaybe<Scalars["Decimal"]["input"]>;
+  playlistTimestamp?: InputMaybe<Scalars["String"]["input"]>;
+};
 
 export type RootMutationTypeUpdateUserArgs = {
-  admin?: InputMaybe<Scalars['Boolean']['input']>
-  id?: InputMaybe<Scalars['ID']['input']>
-}
+  admin?: InputMaybe<Scalars["Boolean"]["input"]>;
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+};
 
 export type RootQueryType = {
-  __typename?: 'RootQueryType'
+  __typename?: "RootQueryType";
   /** List candidates, paginated */
-  candidates?: Maybe<Candidates>
+  candidates?: Maybe<Candidates>;
   /** Get logged in user */
-  currentUser?: Maybe<User>
+  currentUser?: Maybe<User>;
   /** List detections, paginated */
-  detections?: Maybe<Detections>
+  detections?: Maybe<Detections>;
   /** List detections */
-  detectionsAll?: Maybe<Array<Maybe<Detection>>>
+  detectionsAll?: Maybe<Array<Maybe<Detection>>>;
   /** Get a feed */
-  feed: Feed
+  feed: Feed;
   /** Get a list of feeds */
-  feeds: Array<Feed>
+  feeds: Array<Feed>;
   /** List users, paginated */
-  users?: Maybe<Users>
-}
+  users?: Maybe<Users>;
+};
 
 export type RootQueryTypeCandidatesArgs = {
-  pagination?: InputMaybe<Pagination>
-}
+  pagination?: InputMaybe<Pagination>;
+};
 
 export type RootQueryTypeDetectionsArgs = {
-  pagination?: InputMaybe<Pagination>
-}
+  pagination?: InputMaybe<Pagination>;
+};
 
 export type RootQueryTypeFeedArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>
-}
+  slug?: InputMaybe<Scalars["String"]["input"]>;
+};
 
 export type RootQueryTypeUsersArgs = {
-  pagination?: InputMaybe<Pagination>
-}
+  pagination?: InputMaybe<Pagination>;
+};
 
 /** A user */
 export type User = {
-  __typename?: 'User'
-  admin?: Maybe<Scalars['Boolean']['output']>
-  authToken?: Maybe<Scalars['String']['output']>
-  email?: Maybe<Scalars['String']['output']>
-  firstName?: Maybe<Scalars['String']['output']>
-  id?: Maybe<Scalars['ID']['output']>
-  lastName?: Maybe<Scalars['String']['output']>
-}
+  __typename?: "User";
+  admin?: Maybe<Scalars["Boolean"]["output"]>;
+  authToken?: Maybe<Scalars["String"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  lastName?: Maybe<Scalars["String"]["output"]>;
+};
 
 /** Pagination version of users */
 export type Users = {
-  __typename?: 'Users'
-  entries?: Maybe<Array<Maybe<User>>>
-  meta?: Maybe<PaginationMeta>
-}
+  __typename?: "Users";
+  entries?: Maybe<Array<Maybe<User>>>;
+  meta?: Maybe<PaginationMeta>;
+};
 
 export type SubmitDetectionMutationVariables = Exact<{
-  feedId: Scalars['ID']['input']
-  playlistTimestamp: Scalars['String']['input']
-  playerOffset: Scalars['Decimal']['input']
-  description: Scalars['String']['input']
-  listenerCount?: InputMaybe<Scalars['Int']['input']>
-}>
+  feedId: Scalars["ID"]["input"];
+  playlistTimestamp: Scalars["String"]["input"];
+  playerOffset: Scalars["Decimal"]["input"];
+  description: Scalars["String"]["input"];
+  listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
 
 export type SubmitDetectionMutation = {
-  __typename?: 'RootMutationType'
+  __typename?: "RootMutationType";
   submitDetection?: {
-    __typename?: 'DetectionWithLockout'
-    lockoutInitial?: number | null
-    lockoutRemaining?: number | null
-    detection?: { __typename?: 'Detection'; id?: string | null } | null
-  } | null
-}
+    __typename?: "DetectionWithLockout";
+    lockoutInitial?: number | null;
+    lockoutRemaining?: number | null;
+    detection?: { __typename?: "Detection"; id?: string | null } | null;
+  } | null;
+};
 
 export type FeedQueryVariables = Exact<{
-  slug: Scalars['String']['input']
-}>
+  slug: Scalars["String"]["input"];
+}>;
 
 export type FeedQuery = {
-  __typename?: 'RootQueryType'
+  __typename?: "RootQueryType";
   feed: {
-    __typename?: 'Feed'
-    id: string
-    name: string
-    slug: string
-    nodeName: string
-    introHtml: string
-    thumbUrl: string
-    mapUrl: string
-    latLng: { __typename?: 'LatLng'; lat: number; lng: number }
-  }
-}
+    __typename?: "Feed";
+    id: string;
+    name: string;
+    slug: string;
+    nodeName: string;
+    introHtml: string;
+    thumbUrl: string;
+    mapUrl: string;
+    latLng: { __typename?: "LatLng"; lat: number; lng: number };
+  };
+};
 
-export type FeedsQueryVariables = Exact<{ [key: string]: never }>
+export type FeedsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type FeedsQuery = {
-  __typename?: 'RootQueryType'
+  __typename?: "RootQueryType";
   feeds: Array<{
-    __typename?: 'Feed'
-    id: string
-    name: string
-    slug: string
-    nodeName: string
-    thumbUrl: string
-    mapUrl: string
-    latLng: { __typename?: 'LatLng'; lat: number; lng: number }
-  }>
-}
+    __typename?: "Feed";
+    id: string;
+    name: string;
+    slug: string;
+    nodeName: string;
+    thumbUrl: string;
+    mapUrl: string;
+    latLng: { __typename?: "LatLng"; lat: number; lng: number };
+  }>;
+};
 
 export const SubmitDetectionDocument = `
     mutation submitDetection($feedId: ID!, $playlistTimestamp: String!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int) {
@@ -297,17 +297,17 @@ export const SubmitDetectionDocument = `
     lockoutRemaining
   }
 }
-    `
+    `;
 export const useSubmitDetectionMutation = <
   TError = unknown,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: UseMutationOptions<
     SubmitDetectionMutation,
     TError,
     SubmitDetectionMutationVariables,
     TContext
-  >
+  >,
 ) =>
   useMutation<
     SubmitDetectionMutation,
@@ -315,23 +315,23 @@ export const useSubmitDetectionMutation = <
     SubmitDetectionMutationVariables,
     TContext
   >(
-    ['submitDetection'],
+    ["submitDetection"],
     (variables?: SubmitDetectionMutationVariables) =>
       fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
         SubmitDetectionDocument,
-        variables
+        variables,
       )(),
-    options
-  )
-useSubmitDetectionMutation.getKey = () => ['submitDetection']
+    options,
+  );
+useSubmitDetectionMutation.getKey = () => ["submitDetection"];
 
 useSubmitDetectionMutation.fetcher = (
-  variables: SubmitDetectionMutationVariables
+  variables: SubmitDetectionMutationVariables,
 ) =>
   fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
     SubmitDetectionDocument,
-    variables
-  )
+    variables,
+  );
 export const FeedDocument = `
     query feed($slug: String!) {
   feed(slug: $slug) {
@@ -348,21 +348,21 @@ export const FeedDocument = `
     mapUrl
   }
 }
-    `
+    `;
 export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
   variables: FeedQueryVariables,
-  options?: UseQueryOptions<FeedQuery, TError, TData>
+  options?: UseQueryOptions<FeedQuery, TError, TData>,
 ) =>
   useQuery<FeedQuery, TError, TData>(
-    ['feed', variables],
+    ["feed", variables],
     fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables),
-    options
-  )
-useFeedQuery.document = FeedDocument
+    options,
+  );
+useFeedQuery.document = FeedDocument;
 
-useFeedQuery.getKey = (variables: FeedQueryVariables) => ['feed', variables]
+useFeedQuery.getKey = (variables: FeedQueryVariables) => ["feed", variables];
 useFeedQuery.fetcher = (variables: FeedQueryVariables) =>
-  fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables)
+  fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables);
 export const FeedsDocument = `
     query feeds {
   feeds {
@@ -378,19 +378,19 @@ export const FeedsDocument = `
     mapUrl
   }
 }
-    `
+    `;
 export const useFeedsQuery = <TData = FeedsQuery, TError = unknown>(
   variables?: FeedsQueryVariables,
-  options?: UseQueryOptions<FeedsQuery, TError, TData>
+  options?: UseQueryOptions<FeedsQuery, TError, TData>,
 ) =>
   useQuery<FeedsQuery, TError, TData>(
-    variables === undefined ? ['feeds'] : ['feeds', variables],
+    variables === undefined ? ["feeds"] : ["feeds", variables],
     fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables),
-    options
-  )
-useFeedsQuery.document = FeedsDocument
+    options,
+  );
+useFeedsQuery.document = FeedsDocument;
 
 useFeedsQuery.getKey = (variables?: FeedsQueryVariables) =>
-  variables === undefined ? ['feeds'] : ['feeds', variables]
+  variables === undefined ? ["feeds"] : ["feeds", variables];
 useFeedsQuery.fetcher = (variables?: FeedsQueryVariables) =>
-  fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables)
+  fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables);

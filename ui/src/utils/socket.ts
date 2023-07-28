@@ -1,14 +1,14 @@
-import { Socket } from 'phoenix'
+import { Socket } from "phoenix";
 
 if (!process.env.NEXT_PUBLIC_SOCKET_ENDPOINT) {
-  throw new Error('NEXT_PUBLIC_SOCKET_ENDPOINT is not set')
+  throw new Error("NEXT_PUBLIC_SOCKET_ENDPOINT is not set");
 }
 
-const socketEndpoint = process.env.NEXT_PUBLIC_SOCKET_ENDPOINT
+const socketEndpoint = process.env.NEXT_PUBLIC_SOCKET_ENDPOINT;
 
-const isBrowser = typeof window !== 'undefined'
-const socket = isBrowser ? new Socket(socketEndpoint) : null
+const isBrowser = typeof window !== "undefined";
+const socket = isBrowser ? new Socket(socketEndpoint) : null;
 
-socket?.connect()
+socket?.connect();
 
-export default socket
+export default socket;

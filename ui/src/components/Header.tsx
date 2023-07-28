@@ -1,9 +1,9 @@
-import { Close, Menu } from '@mui/icons-material'
-import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Close, Menu } from "@mui/icons-material";
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import { useState } from "react";
 
-import Link from '@/components/Link'
-import { displayDesktop, displayMobile } from '@/styles/responsive'
+import Link from "@/components/Link";
+import { displayDesktop, displayMobile } from "@/styles/responsive";
 
 export default function Header() {
   return (
@@ -19,29 +19,29 @@ export default function Header() {
         <Desktop />
       </Toolbar>
     </AppBar>
-  )
+  );
 }
 
 function Mobile() {
-  const [menuIsOpen, setMenuOpen] = useState(false)
+  const [menuIsOpen, setMenuOpen] = useState(false);
 
   const handleMenuToggle = () => {
-    setMenuOpen(!menuIsOpen)
-  }
+    setMenuOpen(!menuIsOpen);
+  };
 
   return (
     <Box sx={displayMobile}>
       <Box
         sx={{
           flexGrow: 1,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          alignItems: 'center',
-          textAlign: 'center',
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          alignItems: "center",
+          textAlign: "center",
         }}
       >
         <IconButton
-          sx={{ marginRight: 'auto' }}
+          sx={{ marginRight: "auto" }}
           color="inherit"
           onClick={handleMenuToggle}
         >
@@ -50,7 +50,7 @@ function Mobile() {
         <Brand />
       </Box>
     </Box>
-  )
+  );
 }
 
 function Desktop() {
@@ -58,7 +58,7 @@ function Desktop() {
     <Box sx={displayDesktop}>
       <Brand />
     </Box>
-  )
+  );
 }
 
 function Brand() {
@@ -68,5 +68,5 @@ function Brand() {
         Orcasound
       </Link>
     </Typography>
-  )
+  );
 }

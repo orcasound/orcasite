@@ -1,85 +1,85 @@
 // Self-hosted fonts using https://fontsource.org/
-import '@fontsource/mukta'
-import '@fontsource/montserrat'
+import "@fontsource/mukta";
+import "@fontsource/montserrat";
 
-import { createTheme } from '@mui/material/styles'
+import { createTheme } from "@mui/material/styles";
 
 // Module augmentation for custom colors
 // Based on https://mui.com/customization/palette/#adding-new-colors
-declare module '@mui/material/styles' {
+declare module "@mui/material/styles" {
   interface Palette {
-    base: Palette['primary']
-    accent1: Palette['primary']
-    accent2: Palette['primary']
-    accent3: Palette['primary']
-    accent4: Palette['primary']
+    base: Palette["primary"];
+    accent1: Palette["primary"];
+    accent2: Palette["primary"];
+    accent3: Palette["primary"];
+    accent4: Palette["primary"];
   }
   interface PaletteOptions {
-    base: PaletteOptions['primary']
-    accent1: PaletteOptions['primary']
-    accent2: PaletteOptions['primary']
-    accent3: PaletteOptions['primary']
-    accent4: PaletteOptions['primary']
+    base: PaletteOptions["primary"];
+    accent1: PaletteOptions["primary"];
+    accent2: PaletteOptions["primary"];
+    accent3: PaletteOptions["primary"];
+    accent4: PaletteOptions["primary"];
   }
 }
 
-declare module '@mui/material/AppBar' {
+declare module "@mui/material/AppBar" {
   interface AppBarPropsColorOverrides {
-    base: true
+    base: true;
   }
 }
 
-declare module '@mui/material/Fab' {
+declare module "@mui/material/Fab" {
   interface FabPropsColorOverrides {
-    base: true
+    base: true;
   }
 }
 
 // Fonts with fallbacks
-const mukta = 'Mukta, Helvetica, Arial, sans-serif'
-const montserrat = 'Montserrat, Helvetica, Arial, sans-serif'
+const mukta = "Mukta, Helvetica, Arial, sans-serif";
+const montserrat = "Montserrat, Helvetica, Arial, sans-serif";
 
 // Hack to get access to theme helpers
 // see https://github.com/mui/material-ui/issues/35895#issuecomment-1401579770
-const helperTheme = createTheme()
+const helperTheme = createTheme();
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1b2b7b',
+      main: "#1b2b7b",
     },
     secondary: {
-      main: '#080d26',
+      main: "#080d26",
     },
     base: helperTheme.palette.augmentColor({
       color: {
-        main: '#080d26',
-        contrastText: '#ffffff',
+        main: "#080d26",
+        contrastText: "#ffffff",
       },
     }),
     accent1: {
-      main: '#008bdf',
+      main: "#008bdf",
     },
     accent2: {
-      main: '#7c7cfe',
+      main: "#7c7cfe",
     },
     accent3: {
-      main: '#4760fe',
+      main: "#4760fe",
     },
     accent4: {
-      main: '#f79234',
+      main: "#f79234",
     },
     error: {
-      main: '#e9222f',
+      main: "#e9222f",
     },
     warning: {
-      main: '#f79234',
+      main: "#f79234",
     },
     info: {
-      main: '#008bdf',
+      main: "#008bdf",
     },
     success: {
-      main: '#00c56f',
+      main: "#00c56f",
     },
   },
   typography: {
@@ -91,7 +91,7 @@ const theme = createTheme({
       fontFamily: montserrat,
     },
   },
-})
+});
 
 theme.components = {
   ...theme.components,
@@ -104,14 +104,14 @@ theme.components = {
   },
   MuiAppBar: {
     defaultProps: {
-      color: 'base',
+      color: "base",
     },
   },
   MuiLink: {
     defaultProps: {
       // TODO: Remove the `.main` once this issue is fixed in MUI
       // https://github.com/mui-org/material-ui/issues/29596
-      color: 'accent3.main',
+      color: "accent3.main",
     },
   },
   MuiBottomNavigation: {
@@ -128,6 +128,6 @@ theme.components = {
       },
     },
   },
-}
+};
 
-export default theme
+export default theme;
