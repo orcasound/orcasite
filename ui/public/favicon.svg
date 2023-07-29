@@ -1,20 +1,17 @@
 <svg viewBox="0 0 128 128" version="1.0" xmlns="http://www.w3.org/2000/svg">
-    <style>
-        .dynamic {
-            fill: #000
-        }
+   <style>
+      .dynamic {
+         fill: #000
+      }
 
-        @media (prefers-color-scheme:dark) {
-            .dynamic {
-                fill: #fff
-            }
-        }
-    </style>
-    <g id="group1">
-        <path
-            d="M64 4c34.17 0 57.409 25.996 57.409 59.183 0 33.188-23.239 60.817-57.41 60.817-34.17 0-57.408-26.646-57.408-60.817C6.591 29.013 29.83 4 64 4zm0 100.053c20.93 0 36.037-17.656 36.037-40.87 0-23.213-15.115-39.236-36.037-39.236-20.922 0-35.17 17.006-35.17 39.236 0 22.23 14.248 40.87 35.17 40.87z"
-            id="path1" class="dynamic" />
-        <path id="polygon1" transform="matrix(.83322 0 0 .83322 6.591 4)" class="dynamic"
-            d="M57.9 72.01v30.98l32.37-30.98L57.9 41.03z" />
-    </g>
+      @media (prefers-color-scheme:dark) {
+         .dynamic {
+            fill: #fff
+         }
+      }
+   </style>
+   <path
+      d="M64 4c36 0 56 28 56 60s-20 60-56 60S8 96 8 64 28 4 64 4zm0 100c20 0 36-16 36-40S84 24 64 24 28 40 28 64s16 40 36 40z"
+      id="path1" class="dynamic" />
+   <path id="polygon1" class="dynamic" d="M56 88l28-24-28-24z" />
 </svg>
