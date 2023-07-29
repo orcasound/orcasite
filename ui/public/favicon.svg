@@ -1,0 +1,17 @@
+<svg viewBox="0 0 128 128" version="1.0" xmlns="http://www.w3.org/2000/svg">
+   <style>
+      .dynamic {
+         fill: #000
+      }
+
+      @media (prefers-color-scheme:dark) {
+         .dynamic {
+            fill: #fff
+         }
+      }
+   </style>
+   <path
+      d="M64 4c36 0 56 28 56 60s-20 60-56 60S8 96 8 64 28 4 64 4zm0 100c20 0 36-16 36-40S84 24 64 24 28 40 28 64s16 40 36 40z"
+      id="path1" class="dynamic" />
+   <path id="polygon1" class="dynamic" d="M56 88l28-24-28-24z" />
+</svg>
