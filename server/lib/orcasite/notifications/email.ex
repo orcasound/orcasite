@@ -1,6 +1,5 @@
 defmodule Orcasite.Notifications.Email do
   import Swoosh.Email
-  # import Phoenix.Component, only: [sigil_H: 2]
   use OrcasiteWeb, :html
 
   def new_detection_email(

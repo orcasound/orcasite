@@ -3,7 +3,6 @@ defmodule Orcasite.Accounts.User do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication, AshAdmin.Resource]
 
-
   attributes do
     uuid_primary_key :id
     attribute :email, :ci_string, allow_nil?: false
@@ -22,12 +21,22 @@ defmodule Orcasite.Accounts.User do
     strategies do
       password :password do
         identity_field :email
+
+        resettable do
+          sender fn user, token, opts ->
+            Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+              Orcasite.Accounts.Email.reset_password(user, token, opts)
+              |> Orcasite.Mailer.deliver()
+            end)
+          end
+        end
       end
     end
 
     tokens do
       enabled? true
       token_resource Orcasite.Accounts.Token
+
       signing_secret fn _, _ ->
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
