@@ -22,8 +22,8 @@ defmodule OrcasiteWeb.AuthController do
 
   def failure(conn, _activity, _reason) do
     conn
-    |> put_status(401)
-    |> render("failure.html")
+    |> put_flash(:error, "Couldn't sign in: email not found or password was wrong.")
+    |> redirect(to: ~p"/sign-in")
   end
 
   def sign_out(conn, _params) do
