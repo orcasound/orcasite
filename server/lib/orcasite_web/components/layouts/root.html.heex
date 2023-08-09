@@ -12,6 +12,7 @@
     <script defer type="text/javascript" src={~p"/assets/app.js"}></script>
   </head>
   <body>
+    <.flash_group flash={@flash} />
     <%= @inner_content %>
   </body>
 </html>

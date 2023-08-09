@@ -99,11 +99,10 @@ defmodule OrcasiteWeb.Router do
     pipe_through :browser
 
     sign_in_route(overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default])
+    reset_route overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
 
     sign_out_route OrcasiteWeb.AuthController
     auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController
-
-    reset_route []
   end
 
   scope "/" do
