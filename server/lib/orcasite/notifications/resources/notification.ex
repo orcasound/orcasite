@@ -16,7 +16,7 @@ defmodule Orcasite.Notifications.Notification do
 
   code_interface do
     define_for Orcasite.Notifications
-    define :notify_new_detection, action: :notify_new_detection, args: [:detection_id, :node]
+    define :notify_new_detection, action: :notify_new_detection, args: [:detection_id, :node, :description]
 
     define :notify_confirmed_candidate,
       action: :notify_confirmed_candidate,
@@ -25,6 +25,13 @@ defmodule Orcasite.Notifications.Notification do
 
   actions do
     defaults [:create, :read, :update, :destroy]
+
+    read :since_notification do
+      description "Get all notifications after a given notification ID."
+      argument :notification_id, :uuid
+
+      manual Orcasite.Notifications.ManualReadNotificationsSince
+    end
 
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
@@ -56,6 +63,8 @@ defmodule Orcasite.Notifications.Notification do
       accept [:detection_id]
       argument :detection_id, :integer
       argument :node, :string, allow_nil?: false
+      argument :description, :string, allow_nil?: true
+      argument :listener_count, :integer, allow_nil?: true
 
       change set_attribute(:event_type, :new_detection)
 
@@ -64,7 +73,9 @@ defmodule Orcasite.Notifications.Notification do
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
           detection_id: Ash.Changeset.get_argument(changeset, :detection_id),
-          node: Ash.Changeset.get_argument(changeset, :node)
+          node: Ash.Changeset.get_argument(changeset, :node),
+          description: Ash.Changeset.get_argument(changeset, :description),
+          listener_count: Ash.Changeset.get_argument(changeset, :listener_count)
         })
       end
     end

@@ -2,7 +2,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
   use Oban.Worker, queue: :email, unique: [keys: [:notification_id, :subscription_id]]
 
   alias Orcasite.Notifications
-  alias Orcasite.Notifications.{Subscription, NotificationInstance}
+  alias Orcasite.Notifications.{Subscription, NotificationInstance, Notification}
 
   @impl Oban.Worker
   def perform(%Oban.Job{
@@ -15,20 +15,37 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
     params =
       notif_instance.meta
+      |> Map.merge(notif_instance.subscription.meta)
+      |> Map.merge(notif_instance.notification.meta)
       |> stringify_map()
-      |> Map.merge(stringify_map(notif_instance.subscription.meta))
-      |> Map.merge(stringify_map(notif_instance.notification.meta))
 
     unsubscribe_token =
       Orcasite.Notifications.Subscription.unsubscribe_token(notif_instance.subscription)
 
+    notifications_since =
+      notif_instance.subscription.last_notification_id
+      |> case do
+        nil ->
+          []
+
+        notif_id ->
+          Notification
+          |> Ash.Query.for_read(:since_notification, %{notification_id: notif_id})
+          |> Orcasite.Notifications.read!()
+      end
+      |> Enum.filter(& &1.id != notif_instance.notification_id)
+
     :ok = Orcasite.RateLimiter.continue?(:ses, 1)
-    %{
+
+    %{meta: params}
+    |> Map.merge(%{
       to: params["email"],
       name: params["subscriber_name"],
       node: params["node"] || "",
-      unsubscribe_token: unsubscribe_token
-    }
+      unsubscribe_token: unsubscribe_token,
+      notifications_since: notifications_since |> Enum.map(& &1.meta),
+      notifications_since_count: Enum.count(notifications_since)
+    })
     |> email_for_notif(stringify(params["event_type"]))
     |> Orcasite.Mailer.deliver()
 

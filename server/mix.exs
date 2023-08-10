@@ -77,11 +77,9 @@ defmodule Orcasite.Mixfile do
       {:oban, "~> 2.14"},
       {:gen_smtp, "~> 1.0"},
       {:ash_authentication, "~> 3.11.6"},
-      {:ash_authentication_phoenix,
-       github: "skanderm/ash_authentication_phoenix", branch: "pass-reset-banner-overrides"},
+      {:ash_authentication_phoenix, "~> 1.7.3"},
       {:syn, "~> 3.3"},
       {:mjml, "~> 1.5.0"},
-      {:mjml_eex, "~> 0.9.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"}
     ]
   end

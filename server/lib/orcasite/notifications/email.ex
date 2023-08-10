@@ -36,6 +36,35 @@ defmodule Orcasite.Notifications.Email do
           A new detection has been submitted at {{ node_name }} ({{ node }})!
         </mj-text>
 
+        <mj-text font-size="20px" font-family="helvetica">
+          Description: {{#if meta["description"]}}{{ meta["description"] }}{{else}}(no description){{/if}}
+        </mj-text>
+        {{#if meta["listener_count"]}}
+          <mj-text font-size="20px" font-family="helvetica">
+            Listeners: {{ meta["listener_count"] }}
+          </mj-text>
+        {{/if}}
+
+        {{#if notifications_since_count > 0}}
+          <mj-text font-size="20px" font-family="helvetica">
+            There have been {{ notifications_since_count }} other detections since the last notification.
+          </mj-text>
+          <ul>
+          {{#each notifications_since as |notif_meta|}}
+            <li>
+              <mj-text font-size="20px" font-family="helvetica">
+                {{#if notif_meta["description"]}}
+                  {{ notif_meta["description"] }}
+                {{else}}
+                  (no description)
+                {{/if}}
+              </mj-text>
+            </li>
+          {{/each}}
+          </ul>
+        {{/if}}
+
+
         <mj-text font-size="20px">
           Listen here: <a href="https://live.orcasound.net/{{node}}">https://live.orcasound.net/{{ node }}</a>
         </mj-text>
@@ -74,7 +103,7 @@ defmodule Orcasite.Notifications.Email do
         <mj-section>
           <mj-column background-color="#404040" padding="18px">
             <mj-text font-size="14px" color="#F2F2F2" font-family="Helvetica" line-height="150%">
-              {{ message }}
+              {{ meta.message }}
             </mj-text>
           </mj-column>
         </mj-section>
@@ -130,31 +159,6 @@ defmodule Orcasite.Notifications.Email do
     |> compile_mjml(assigns)
   end
 
-  def new_detection_body(assigns) do
-    ~H"""
-    <div>
-      <p>
-        A new detection has been submitted at <%= @node_name %> (<%= @node %>)!
-      </p>
-
-      <p>
-        Listen here:
-        <a href={"https://live.orcasound.net/#{@node}"}>https://live.orcasound.net/<%= @node %></a>
-      </p>
-
-      <%= if @unsubscribe_token do %>
-        <p>
-          If you no longer wish to receive these emails, you can unsubscribe <a href={
-            url(~p"/auth/subscription/unsubscribe?token=#{@unsubscribe_token}")
-          }>here</a>.
-        </p>
-      <% end %>
-    </div>
-    """
-    |> Phoenix.HTML.Safe.to_iodata()
-    |> List.to_string()
-  end
-
   def confirmed_candidate_email(
         %{
           to: email,
@@ -172,34 +176,8 @@ defmodule Orcasite.Notifications.Email do
       mjml_confirmed_candidate_body(
         params
         |> Map.put(:node_name, node_name)
-        |> Map.put_new(:message, "Orcas can be heard near #{node_name}!")
       )
     )
-  end
-
-  def confirmed_candidate_body(assigns) do
-    ~H"""
-    <div>
-      <p>
-        Don't miss the concert!
-      </p>
-
-      <p>
-        Listen to orcas here:
-        <a href={"https://live.orcasound.net/#{@node}"}>https://live.orcasound.net/<%= @node %></a>
-      </p>
-
-      <%= if @unsubscribe_token do %>
-        <p>
-          If you no longer wish to receive these emails, you can unsubscribe <a href={
-            url(~p"/auth/subscription/unsubscribe?token=#{@unsubscribe_token}")
-          }>here</a>.
-        </p>
-      <% end %>
-    </div>
-    """
-    |> Phoenix.HTML.Safe.to_iodata()
-    |> List.to_string()
   end
 
   def compile_mjml(mjml, assigns) do
