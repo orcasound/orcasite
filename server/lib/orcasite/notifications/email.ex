@@ -49,19 +49,20 @@ defmodule Orcasite.Notifications.Email do
           <mj-text font-size="20px" font-family="helvetica">
             There have been {{ notifications_since_count }} other detections since the last notification.
           </mj-text>
-          <ul>
+          <mj-table>
+          <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
+            <th style="padding: 0 5px 0 0;">Feed</th>
+            <th style="padding: 0 15px; text-align: right;">#</th>
+            <th style="padding: 0 0 0 15px;">Description</th>
+          </tr>
           {{#each notifications_since as |notif_meta|}}
-            <li>
-              <mj-text font-size="20px" font-family="helvetica">
-                {{#if notif_meta["description"]}}
-                  {{ notif_meta["description"] }}
-                {{else}}
-                  (no description)
-                {{/if}}
-              </mj-text>
-            </li>
+            <tr>
+              <td style="padding: 0 5px 0 0;white-space:nowrap;">{{ notif_meta["node"] }}</td>
+              <td style="padding: 0 15px;text-align:right;">{{ notif_meta["listener_count"] }}</td>
+              <td style="padding: 0 0 0 15px;">{{ notif_meta["description"] }}</td>
+            </tr>
           {{/each}}
-          </ul>
+        </mj-table>
         {{/if}}
 
 

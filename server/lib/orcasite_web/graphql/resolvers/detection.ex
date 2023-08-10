@@ -41,7 +41,8 @@ defmodule OrcasiteWeb.Resolvers.Detection do
             Orcasite.Notifications.Notification.notify_new_detection(
               detection.id,
               node,
-              detection.description
+              detection.description,
+              detection.listener_count
             )
           end)
 

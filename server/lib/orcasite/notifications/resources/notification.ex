@@ -16,7 +16,7 @@ defmodule Orcasite.Notifications.Notification do
 
   code_interface do
     define_for Orcasite.Notifications
-    define :notify_new_detection, action: :notify_new_detection, args: [:detection_id, :node, :description]
+    define :notify_new_detection, action: :notify_new_detection, args: [:detection_id, :node, :description, :listener_count]
 
     define :notify_confirmed_candidate,
       action: :notify_confirmed_candidate,

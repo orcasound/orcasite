@@ -103,7 +103,7 @@ defmodule Orcasite.Notifications.Subscription do
         default nil
       end
 
-      argument :minutes_ago, :integer, default: 1
+      argument :minutes_ago, :integer, default: 5
 
       filter expr(
                active and
