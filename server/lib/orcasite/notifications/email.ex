@@ -15,7 +15,7 @@ defmodule Orcasite.Notifications.Email do
     |> to({name, email})
     |> from({"Orcasound", "info@orcasound.net"})
     |> subject(
-      "New detection at #{node_name}#{if params.notifications_since_count > 0, do: " [#{params.notifications_since_count} since last]", else: ""}"
+      "New detection at #{node_name}#{if params.notifications_since_count > 0, do: " [+#{params.notifications_since_count}]", else: ""}"
     )
     |> html_body(mjml_new_detection_body(params |> Map.put(:node_name, node_name)))
   end
