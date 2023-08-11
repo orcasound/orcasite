@@ -106,7 +106,7 @@ defmodule Orcasite.Notifications.Email do
         <mj-section>
           <mj-column background-color="#404040" padding="18px">
             <mj-text font-size="14px" color="#F2F2F2" font-family="Helvetica" line-height="150%">
-              {{ meta.message }}
+              {{ meta["message"] }}
             </mj-text>
           </mj-column>
         </mj-section>
