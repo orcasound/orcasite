@@ -19,6 +19,10 @@ defmodule Orcasite.Radio.Calculations.DecodeUUID do
       |> Map.get(:id)
       |> String.split("_")
 
-    AshUUID.Encoder.decode(encoded_id)
+    with {:ok, uuid} <- AshUUID.Encoder.decode(encoded_id) do
+      uuid
+    else
+      _ -> nil
+    end
   end
 end
