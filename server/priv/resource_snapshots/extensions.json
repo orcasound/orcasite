@@ -2,6 +2,7 @@
   "installed": [
     "citext",
     "uuid-ossp",
-    "postgis"
+    "postgis",
+    "ash-uuid_v1"
   ]
 }

@@ -4,7 +4,7 @@ defmodule Orcasite.RadioLegacy.Candidate do
 
   alias Orcasite.RadioLegacy.{Detection, Feed}
 
-  schema "candidates" do
+  schema "candidates_legacy" do
     field(:detection_count, :integer)
     field(:min_time, :utc_datetime)
     field(:max_time, :utc_datetime)

@@ -10,5 +10,5 @@ defmodule Orcasite.Repo do
     {:ok, Keyword.put(opts, :url, System.get_env("DATABASE_URL"))}
   end
 
-  def installed_extensions, do: ["citext", "uuid-ossp", "postgis"]
+  def installed_extensions, do: ["citext", "uuid-ossp", "postgis", AshUUID.PostgresExtension]
 end

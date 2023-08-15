@@ -5,7 +5,7 @@ defmodule Orcasite.RadioLegacy.Detection do
   alias Orcasite.RadioLegacy.{Feed, Candidate}
   alias __MODULE__
 
-  schema "detections" do
+  schema "detections_legacy" do
     field(:source_ip, :string)
     field(:playlist_timestamp, :integer)
     field(:player_offset, :decimal)

@@ -1,6 +1,6 @@
 defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource],
+    extensions: [AshAdmin.Resource, AshUUID],
     data_layer: AshPostgres.DataLayer
 
   attributes do
