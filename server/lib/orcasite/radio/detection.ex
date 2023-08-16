@@ -33,6 +33,15 @@ defmodule Orcasite.Radio.Detection do
   actions do
     defaults [:update, :destroy]
 
+    read :index do
+      pagination do
+        offset? true
+        countable true
+        default_limit 100
+      end
+      prepare build(load: [:uuid])
+    end
+
     read :read do
       primary? true
       prepare build(load: [:uuid])

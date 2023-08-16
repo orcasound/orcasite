@@ -5,7 +5,7 @@ defmodule OrcasiteWeb.Types.Detection do
   use Absinthe.Schema.Notation
 
   object :detection do
-    field(:id, :id)
+    field(:id, :string)
     field(:feed, :feed)
     field(:description, :string)
     field(:playlist_timestamp, :integer)
