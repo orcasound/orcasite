@@ -112,11 +112,12 @@ export default function Player({
         minHeight: 80,
         color: "base.contrastText",
         backgroundColor: "base.main",
-        mb: [8, 0],
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         position: "relative",
+        // Keep player above the sliding drawer
+        zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
       <Box display="none">
@@ -135,20 +136,36 @@ export default function Player({
             <DetectionButton />
           </DetectionDialog>
         )}
-      <Box mx={2}>
+      <Box mx={1}>
         <PlayPauseButton
           playerStatus={playerStatus}
           onClick={handlePlayPauseClick}
           disabled={!currentFeed}
         />
       </Box>
-      <Box mx={2}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
-      <Box mx={2}>
+      <Box mx={1}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
+      <Box
+        sx={{
+          mx: 1,
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }}
+      >
         {currentFeed
           ? `${currentFeed.name} - ${currentFeed.nodeName}`
           : "Select a location to start listening live"}
       </Box>
-      <Box sx={{ mx: 4, flexGrow: 1, textAlign: "end" }}>
+      <Box
+        sx={{
+          mx: 1,
+          flexGrow: 1,
+          textAlign: "end",
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }}
+      >
         {currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
       </Box>
     </Box>

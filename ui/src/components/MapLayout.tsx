@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 
-import BottomNav from "@/components/BottomNav";
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
 import Player from "@/components/Player";
@@ -59,7 +58,13 @@ function MapLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Header />
       <Box sx={{ flexGrow: 1, display: "flex" }}>
         <Drawer onClose={invalidateSize} onOpen={invalidateSize}>
@@ -70,6 +75,7 @@ function MapLayout({ children }: { children: ReactNode }) {
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
+            minWidth: 0,
           }}
         >
           <Box sx={{ flexGrow: 1 }}>
@@ -82,7 +88,6 @@ function MapLayout({ children }: { children: ReactNode }) {
           <Player currentFeed={currentFeed} />
         </Box>
       </Box>
-      <BottomNav />
     </Box>
   );
 }
