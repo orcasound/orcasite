@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -109,7 +110,7 @@ export default function Player({
   return (
     <Box
       sx={{
-        minHeight: 80,
+        minHeight: (theme) => theme.spacing(10),
         color: "base.contrastText",
         backgroundColor: "base.main",
         display: "flex",
@@ -171,3 +172,9 @@ export default function Player({
     </Box>
   );
 }
+
+// Utility component to help with spacing
+// Just a box that's the same height as the player
+export const PlayerSpacer = styled(Box)(({ theme }) => ({
+  height: theme.spacing(10),
+}));

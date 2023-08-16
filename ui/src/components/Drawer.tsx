@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { ReactNode, useState } from "react";
 
-import { BottomNavSpacer } from "@/components/BottomNav";
+import { PlayerSpacer } from "@/components/Player";
 import useIsMobile from "@/hooks/useIsMobile";
 import { displayDesktop, displayMobile } from "@/styles/responsive";
 
@@ -79,7 +79,7 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
       <Box sx={{ overflow: "auto" }}>
         <ToolbarSpacer />
         {children}
-        <BottomNavSpacer />
+        <PlayerSpacer />
       </Box>
     </SwipeableDrawer>
   );
