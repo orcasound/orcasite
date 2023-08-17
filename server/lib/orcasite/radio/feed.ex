@@ -1,6 +1,6 @@
 defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource, AshUUID],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
     data_layer: AshPostgres.DataLayer
 
   attributes do
@@ -33,11 +33,7 @@ defmodule Orcasite.Radio.Feed do
 
     read :read do
       primary? true
-
-      prepare fn query, _context ->
-        query
-        |> Ash.Query.load(:lat_lng)
-      end
+      prepare build(load: [:lat_lng])
     end
 
     read :get_by_slug do
@@ -80,6 +76,21 @@ defmodule Orcasite.Radio.Feed do
                keys: [:location_point], select: [:location_point]}
   end
 
+  admin do
+    table_columns [:id, :name, :slug, :node_name, :location_point]
+
+    format_fields location_point: {Jason, :encode!, []}
+  end
+
+  graphql do
+    type :feed
+    queries do
+      get :feed, :get_by_slug
+      list :feeds, :read
+    end
+  end
+
+
   defp change_lat_lng(changeset, _context) do
     with {:is_string, lat_lng} when is_binary(lat_lng) <-
            {:is_string, Ash.Changeset.get_argument(changeset, :lat_lng)},
@@ -109,9 +120,4 @@ defmodule Orcasite.Radio.Feed do
     end
   end
 
-  admin do
-    table_columns [:id, :name, :slug, :node_name, :location_point]
-
-    format_fields location_point: {Jason, :encode!, []}
-  end
 end

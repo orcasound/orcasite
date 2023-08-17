@@ -54,7 +54,7 @@ defmodule OrcasiteWeb.Router do
 
   pipeline :graphql do
     plug(:parsers)
-    plug(OrcasiteWeb.Context)
+    plug AshGraphql.Plug
   end
 
   scope "/graphql" do
@@ -69,7 +69,7 @@ defmodule OrcasiteWeb.Router do
 
     forward("/", Absinthe.Plug.GraphiQL,
       schema: OrcasiteWeb.Schema,
-      interface: :simple,
+      interface: :playground,
       json_codec: Jason
     )
   end
