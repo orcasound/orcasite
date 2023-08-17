@@ -101,7 +101,7 @@ defmodule Orcasite.Radio.Feed do
     type :feed
 
     queries do
-      get :feed, :get_by_slug
+      get :feed, :read
       list :feeds, :read
     end
   end

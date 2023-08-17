@@ -1,6 +1,6 @@
 defmodule Orcasite.Radio.Candidate do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource, AshUUID],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
     data_layer: AshPostgres.DataLayer
 
   alias Orcasite.Radio.{Detection, Feed}
@@ -34,6 +34,15 @@ defmodule Orcasite.Radio.Candidate do
       prepare build(load: [:uuid])
     end
 
+    read :index do
+      pagination do
+        offset? true
+        countable true
+        default_limit 100
+      end
+      prepare build(load: [:uuid])
+    end
+
     create :create do
       primary? true
 
@@ -57,5 +66,14 @@ defmodule Orcasite.Radio.Candidate do
 
   admin do
     table_columns [:id, :detection_count, :feed, :min_time, :max_time, :inserted_at]
+  end
+
+  graphql do
+    type :candidate
+
+    queries do
+      get :candidate, :read
+      list :candidates, :index
+    end
   end
 end

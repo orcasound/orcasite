@@ -1,6 +1,6 @@
 defmodule Orcasite.Radio.Detection do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource, AshUUID],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
     data_layer: AshPostgres.DataLayer
 
   alias Orcasite.Radio.{Feed, Candidate}
@@ -55,6 +55,14 @@ defmodule Orcasite.Radio.Detection do
       change manage_relationship(:candidate, type: :append)
       change manage_relationship(:feed, type: :append)
     end
+
+    create :submit_detection do
+      accept [:playlist_timestamp, :player_offset, :listener_count, :description]
+      argument :feed_id, :string, allow_nil?: false
+
+
+      change manage_relationship(:feed_id, :feed, type: :append)
+    end
   end
 
   calculations do
@@ -64,5 +72,17 @@ defmodule Orcasite.Radio.Detection do
   relationships do
     belongs_to :candidate, Candidate
     belongs_to :feed, Feed
+  end
+
+  graphql do
+    type :detection
+    queries do
+      get :detection, :read
+      list :detections, :index
+    end
+
+    mutations do
+      create :submit_detection, :submit_detection
+    end
   end
 end
