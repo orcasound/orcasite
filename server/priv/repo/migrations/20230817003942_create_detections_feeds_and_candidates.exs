@@ -1,4 +1,4 @@
-defmodule Orcasite.Repo.Migrations.CreateDetectionsAndCandidates do
+defmodule Orcasite.Repo.Migrations.CreateDetectionsFeedsAndCandidates do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -8,6 +8,22 @@ defmodule Orcasite.Repo.Migrations.CreateDetectionsAndCandidates do
   use Ecto.Migration
 
   def up do
+    create table(:feeds, primary_key: false) do
+      add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
+      add :name, :text
+      add :node_name, :text
+      add :slug, :text
+      add :location_point, :geometry, null: false
+      add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
+      add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
+    end
+
+    create index(:feeds, ["node_name"])
+
+    create index(:feeds, ["name"])
+
+    create unique_index(:feeds, [:slug], name: "feeds_unique_slug_index")
+
     create table(:detections, primary_key: false) do
       add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
       add :source_ip, :text
@@ -19,13 +35,16 @@ defmodule Orcasite.Repo.Migrations.CreateDetectionsAndCandidates do
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :candidate_id, :uuid
-      add :feed_id, :bigint
+      add :feed_id, :uuid
     end
 
     create index(:detections, ["description"])
+
     create index(:detections, ["timestamp"])
-    create index(:detections, ["playlist_timestamp"])
+
     create index(:detections, ["player_offset"])
+
+    create index(:detections, ["playlist_timestamp"])
 
     create table(:candidates, primary_key: false) do
       add :id, :uuid, null: false, default: fragment("uuid_generate_v7()"), primary_key: true
@@ -40,7 +59,7 @@ defmodule Orcasite.Repo.Migrations.CreateDetectionsAndCandidates do
              )
 
       modify :feed_id,
-             references(:feeds, column: :id, name: "detections_feed_id_fkey", type: :bigint)
+             references(:feeds, column: :id, name: "detections_feed_id_fkey", type: :uuid)
     end
 
     alter table(:candidates) do
@@ -49,9 +68,7 @@ defmodule Orcasite.Repo.Migrations.CreateDetectionsAndCandidates do
       add :max_time, :utc_datetime_usec
       add :inserted_at, :utc_datetime_usec, null: false, default: fragment("now()")
       add :updated_at, :utc_datetime_usec, null: false, default: fragment("now()")
-
-      add :feed_id,
-          references(:feeds, column: :id, name: "candidates_feed_id_fkey", type: :bigint)
+      add :feed_id, references(:feeds, column: :id, name: "candidates_feed_id_fkey", type: :uuid)
     end
 
     create index(:candidates, ["max_time"])
@@ -80,7 +97,7 @@ defmodule Orcasite.Repo.Migrations.CreateDetectionsAndCandidates do
     drop constraint(:detections, "detections_feed_id_fkey")
 
     alter table(:detections) do
-      modify :feed_id, :bigint
+      modify :feed_id, :uuid
       modify :candidate_id, :uuid
     end
 
@@ -90,10 +107,20 @@ defmodule Orcasite.Repo.Migrations.CreateDetectionsAndCandidates do
                      name: "detections_playlist_timestamp_index"
                    )
 
+    drop_if_exists index(:detections, ["player_offset"], name: "detections_player_offset_index")
+
     drop_if_exists index(:detections, ["timestamp"], name: "detections_timestamp_index")
 
     drop_if_exists index(:detections, ["description"], name: "detections_description_index")
 
     drop table(:detections)
+
+    drop_if_exists unique_index(:feeds, [:slug], name: "feeds_unique_slug_index")
+
+    drop_if_exists index(:feeds, ["name"], name: "feeds_name_index")
+
+    drop_if_exists index(:feeds, ["node_name"], name: "feeds_node_name_index")
+
+    drop table(:feeds)
   end
 end

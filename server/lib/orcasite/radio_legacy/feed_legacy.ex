@@ -4,7 +4,7 @@ defmodule Orcasite.RadioLegacy.Feed do
 
   alias __MODULE__
 
-  schema "feeds" do
+  schema "feeds_legacy" do
     field(:name, :string)
     field(:slug, :string)
     field(:node_name, :string)

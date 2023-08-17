@@ -52,9 +52,7 @@ defmodule Orcasite.Radio.Candidate do
   relationships do
     has_many :detections, Detection
 
-    belongs_to :feed, Feed do
-      attribute_type :integer
-    end
+    belongs_to :feed, Feed
   end
 
   admin do

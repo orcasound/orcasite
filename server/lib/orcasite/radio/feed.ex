@@ -4,7 +4,7 @@ defmodule Orcasite.Radio.Feed do
     data_layer: AshPostgres.DataLayer
 
   attributes do
-    integer_primary_key :id
+    uuid_attribute :id, prefix: "feed"
 
     attribute :name, :string
     attribute :node_name, :string
@@ -18,6 +18,10 @@ defmodule Orcasite.Radio.Feed do
   postgres do
     table "feeds"
     repo Orcasite.Repo
+    custom_indexes do
+      index [:name]
+      index [:node_name]
+    end
   end
 
   identities do

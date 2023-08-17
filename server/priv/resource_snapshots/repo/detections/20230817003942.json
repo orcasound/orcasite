@@ -140,7 +140,7 @@
       },
       "size": null,
       "source": "feed_id",
-      "type": "bigint"
+      "type": "uuid"
     }
   ],
   "base_filter": null,
@@ -204,8 +204,8 @@
     }
   ],
   "custom_statements": [],
-  "has_create_action": false,
-  "hash": "5A15D93EDD85DB4AED20FA9900F03BB60C8718F455345A2302677A42B981FE0D",
+  "has_create_action": true,
+  "hash": "3CCB791E16022E5955B653DF234193237DAFDB5A1C3FC02601E719DCFCE45488",
   "identities": [],
   "multitenancy": {
     "attribute": null,
