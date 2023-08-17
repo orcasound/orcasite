@@ -78,6 +78,7 @@ config :orcasite, :ash_uuid, migration_default?: true
 config :ash, :use_all_identities_in_manage_relationship?, false
 config :ash, :custom_types, [geometry: Orcasite.Types.Geometry]
 config :ash_graphql, :default_managed_relationship_type_name_template, :action_name
+config :ash_graphql, :json_type, :json
 
 config :orcasite, Oban,
   repo: Orcasite.Repo,
