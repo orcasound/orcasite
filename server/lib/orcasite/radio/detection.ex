@@ -60,6 +60,15 @@ defmodule Orcasite.Radio.Detection do
       accept [:playlist_timestamp, :player_offset, :listener_count, :description]
       argument :feed_id, :string, allow_nil?: false
 
+      argument :playlist_timestamp, :integer, allow_nil?: false
+      argument :player_offset, :decimal, allow_nil?: false
+      argument :listener_count, :integer, allow_nil?: false
+      argument :description, :string, allow_nil?: false
+
+      change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
+      change set_attribute(:player_offset, arg(:player_offset))
+      change set_attribute(:listener_count, arg(:listener_count))
+      change set_attribute(:description, arg(:description))
 
       change manage_relationship(:feed_id, :feed, type: :append)
     end
