@@ -73,7 +73,7 @@ defmodule Orcasite.Radio.Feed do
 
   calculations do
     calculate :lat_lng,
-              :map,
+              Orcasite.Types.LatLng,
               {Orcasite.Radio.Calculations.LatLng,
                keys: [:location_point], select: [:location_point]}
 
