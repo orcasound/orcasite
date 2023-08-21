@@ -93,7 +93,7 @@ defmodule Orcasite.Radio.Detection do
             player_offset: player_offset
           })
         )
-        |> Ash.Changeset.after_action(fn detection ->
+        |> Ash.Changeset.after_action(fn changeset, detection ->
           # Find or create candidate, update detection with candidate
           candidate =
             Candidate

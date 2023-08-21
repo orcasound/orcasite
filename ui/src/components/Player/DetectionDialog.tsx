@@ -18,6 +18,7 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
 import DetectionCategoryButton from "./DetectionCategoryButton";
+import { timeStamp } from "console";
 
 type DetectionCategory = "orca" | "vessel" | "other";
 
@@ -42,6 +43,7 @@ export default function DetectionDialog({
   const [submitted, setSubmitted] = useState(false);
   const [category, setCategory] = useState<DetectionCategory>();
   const [description, setDescription] = useState("");
+  const [playerOffset, setPlayerOffset] = useState<number | undefined>();
 
   const submitDetection = useSubmitDetectionMutation({
     onSuccess: () => {
@@ -53,6 +55,8 @@ export default function DetectionDialog({
     setSubmitted(false);
     setDescription("");
     setCategory(undefined);
+    const offset = getPlayerTime?.();
+    setPlayerOffset(offset);
     setOpen(true);
   };
 
@@ -79,7 +83,6 @@ export default function DetectionDialog({
   };
 
   const onDetect = () => {
-    const playerOffset = getPlayerTime?.();
     if (
       feedId &&
       playlistTimestamp &&
