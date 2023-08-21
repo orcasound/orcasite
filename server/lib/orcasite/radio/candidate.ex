@@ -40,6 +40,7 @@ defmodule Orcasite.Radio.Candidate do
         countable true
         default_limit 100
       end
+
       prepare build(load: [:uuid])
     end
 
@@ -51,6 +52,40 @@ defmodule Orcasite.Radio.Candidate do
 
       change manage_relationship(:feed, type: :append)
       change manage_relationship(:detections, type: :append)
+    end
+
+    read :find_nearby_candidate do
+      get? true
+      argument :timestamp, :utc_datetime
+      argument :within_minutes, :integer, default: 3
+      argument :feed_id, :string
+
+      prepare fn query, _context ->
+        require Ash.Query
+        timestamp = Ash.Query.get_argument(query, :timestamp)
+        within_minutes = Ash.Query.get_argument(query, :within_minutes)
+
+        feed_id =
+          Ash.Query.get_argument(query, :feed_id)
+          |> AshUUID.identify_format()
+          |> case do
+            :raw ->
+              Ash.Query.get_argument(query, :feed_id)
+
+            _ ->
+              "feed_" <> id = Ash.Query.get_argument(query, :feed_id)
+              {:ok, feed_id} = AshUUID.Encoder.decode(id)
+              feed_id
+          end
+
+        min_time = DateTime.add(timestamp, -within_minutes, :minute)
+        max_time = DateTime.add(timestamp, within_minutes, :minute)
+
+        query
+        |> Ash.Query.filter(
+          feed_id == ^feed_id and ^max_time >= min_time and max_time >= ^min_time
+        )
+      end
     end
   end
 

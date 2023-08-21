@@ -4,11 +4,11 @@ defmodule Orcasite.Radio.Feed do
     data_layer: AshPostgres.DataLayer
 
   attributes do
-    uuid_attribute(:id, prefix: "feed")
+    uuid_attribute :id, prefix: "feed"
 
-    attribute :name, :string
-    attribute :node_name, :string
-    attribute :slug, :string
+    attribute :name, :string, allow_nil?: false
+    attribute :node_name, :string, allow_nil?: false
+    attribute :slug, :string, allow_nil?: false
     attribute :location_point, :geometry, allow_nil?: false
     attribute :intro_html, :string, default: ""
 
@@ -101,7 +101,7 @@ defmodule Orcasite.Radio.Feed do
     type :feed
 
     queries do
-      get :feed, :read
+      read_one :feed, :get_by_slug
       list :feeds, :read
     end
   end

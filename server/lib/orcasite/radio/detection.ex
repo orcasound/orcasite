@@ -8,6 +8,7 @@ defmodule Orcasite.Radio.Detection do
   postgres do
     table "detections"
     repo Orcasite.Repo
+
     custom_indexes do
       index [:playlist_timestamp]
       index [:player_offset]
@@ -31,7 +32,7 @@ defmodule Orcasite.Radio.Detection do
   end
 
   actions do
-    defaults [:update, :destroy]
+    defaults [:destroy]
 
     read :index do
       pagination do
@@ -39,12 +40,20 @@ defmodule Orcasite.Radio.Detection do
         countable true
         default_limit 100
       end
+
       prepare build(load: [:uuid])
     end
 
     read :read do
       primary? true
       prepare build(load: [:uuid])
+    end
+
+    update :update do
+      primary? true
+      argument :candidate, :map
+
+      change manage_relationship(:candidate, type: :append)
     end
 
     create :create do
@@ -62,7 +71,7 @@ defmodule Orcasite.Radio.Detection do
 
       argument :playlist_timestamp, :integer, allow_nil?: false
       argument :player_offset, :decimal, allow_nil?: false
-      argument :listener_count, :integer, allow_nil?: false
+      argument :listener_count, :integer, allow_nil?: true
       argument :description, :string, allow_nil?: false
 
       change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
@@ -71,6 +80,54 @@ defmodule Orcasite.Radio.Detection do
       change set_attribute(:description, arg(:description))
 
       change manage_relationship(:feed_id, :feed, type: :append)
+
+      change fn changeset, _context ->
+        playlist_timestamp = changeset |> Ash.Changeset.get_argument(:playlist_timestamp)
+        player_offset = changeset |> Ash.Changeset.get_argument(:player_offset)
+
+        changeset
+        |> Ash.Changeset.change_attribute(
+          :timestamp,
+          calculate_timestamp(%{
+            playlist_timestamp: playlist_timestamp,
+            player_offset: player_offset
+          })
+        )
+        |> Ash.Changeset.after_action(fn detection ->
+          # Find or create candidate, update detection with candidate
+          candidate =
+            Candidate
+            |> Ash.Query.for_read(:find_nearby_candidate, %{
+              timestamp: detection.timestamp,
+              feed_id: detection.feed_id
+            })
+            |> Orcasite.Radio.read!()
+            |> case do
+              [] ->
+                Candidate
+                |> Ash.Changeset.for_create(:create, %{
+                  min_time: detection.timestamp,
+                  max_time: detection.timestamp,
+                  detection_count: 1,
+                  feed: %{id: detection.feed_id}
+                })
+                |> Orcasite.Radio.create!()
+
+              [candidate] ->
+                candidate
+                |> Ash.Changeset.for_update(:update, %{
+                  detection_count: candidate.detection_count + 1,
+                  min_time: datetime_min(candidate.min_time, detection.timestamp),
+                  max_time: datetime_max(candidate.max_time, detection.timestamp)
+                })
+                |> Orcasite.Radio.update!()
+            end
+
+          detection
+          |> Ash.Changeset.for_update(:update, %{candidate: candidate})
+          |> Orcasite.Radio.update()
+        end)
+      end
     end
   end
 
@@ -85,6 +142,7 @@ defmodule Orcasite.Radio.Detection do
 
   graphql do
     type :detection
+
     queries do
       get :detection, :read
       list :detections, :index
@@ -93,5 +151,46 @@ defmodule Orcasite.Radio.Detection do
     mutations do
       create :submit_detection, :submit_detection
     end
+  end
+
+  defp datetime_min(time_1, time_2) do
+    case DateTime.compare(time_1, time_2) do
+      :lt -> time_1
+      _ -> time_2
+    end
+  end
+
+  defp datetime_max(time_1, time_2) do
+    case DateTime.compare(time_1, time_2) do
+      :gt -> time_1
+      _ -> time_2
+    end
+  end
+
+  defp calculate_timestamp(%{playlist_timestamp: ts, player_offset: offset})
+       when is_nil(ts) or is_nil(offset),
+       do: nil
+
+  defp calculate_timestamp(%{
+         playlist_timestamp: playlist_timestamp,
+         player_offset: player_offset
+       }) do
+    epoch =
+      playlist_timestamp
+      |> case do
+        ts when is_integer(ts) -> ts
+        ts when is_binary(ts) -> String.to_integer(ts)
+      end
+
+    offset =
+      player_offset
+      |> case do
+        %Decimal{} = offset -> round(Decimal.to_float(offset))
+        offset when is_float(offset) -> round(offset)
+      end
+
+    epoch
+    |> DateTime.from_unix!()
+    |> DateTime.add(offset)
   end
 end

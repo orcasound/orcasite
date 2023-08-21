@@ -33,7 +33,7 @@ export default function DetectionDialog({
   feed: {
     id: string;
   };
-  timestamp: string;
+  timestamp: number;
   isPlaying: boolean;
   getPlayerTime?: () => number | undefined;
   listenerCount: number;
@@ -61,7 +61,7 @@ export default function DetectionDialog({
 
   const handleCategoryChange = (
     e: React.MouseEvent<HTMLElement>,
-    newCategory: DetectionCategory,
+    newCategory: DetectionCategory
   ) => {
     if (newCategory) {
       setCategory(newCategory);
@@ -80,7 +80,12 @@ export default function DetectionDialog({
 
   const onDetect = () => {
     const playerOffset = getPlayerTime?.();
-    if (feedId && playlistTimestamp && playerOffset && isPlaying) {
+    if (
+      feedId &&
+      playlistTimestamp &&
+      isPlaying &&
+      playerOffset !== undefined
+    ) {
       submitDetection.mutate({
         feedId,
         playlistTimestamp,

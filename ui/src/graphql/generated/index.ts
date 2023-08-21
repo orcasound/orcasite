@@ -54,183 +54,410 @@ export type Scalars = {
   Float: { input: number; output: number };
   DateTime: { input: any; output: any };
   Decimal: { input: any; output: any };
+  Json: { input: any; output: any };
 };
 
 export type Candidate = {
   __typename?: "Candidate";
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
-  detections?: Maybe<Array<Maybe<Detection>>>;
+  detections: Array<Detection>;
   feed?: Maybe<Feed>;
-  id?: Maybe<Scalars["ID"]["output"]>;
+  id: Scalars["ID"]["output"];
   maxTime?: Maybe<Scalars["DateTime"]["output"]>;
   minTime?: Maybe<Scalars["DateTime"]["output"]>;
+  uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** Pagination version of candidates */
-export type Candidates = {
-  __typename?: "Candidates";
-  entries?: Maybe<Array<Maybe<Candidate>>>;
-  meta?: Maybe<PaginationMeta>;
+export type CandidateDetectionsArgs = {
+  filter?: InputMaybe<DetectionFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
+};
+
+export type CandidateFilterDetectionCount = {
+  eq?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Int"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  notEq?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type CandidateFilterId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type CandidateFilterInput = {
+  and?: InputMaybe<Array<CandidateFilterInput>>;
+  detectionCount?: InputMaybe<CandidateFilterDetectionCount>;
+  detections?: InputMaybe<DetectionFilterInput>;
+  feed?: InputMaybe<FeedFilterInput>;
+  id?: InputMaybe<CandidateFilterId>;
+  maxTime?: InputMaybe<CandidateFilterMaxTime>;
+  minTime?: InputMaybe<CandidateFilterMinTime>;
+  or?: InputMaybe<Array<CandidateFilterInput>>;
+};
+
+export type CandidateFilterMaxTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type CandidateFilterMinTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export enum CandidateSortField {
+  DetectionCount = "DETECTION_COUNT",
+  Id = "ID",
+  MaxTime = "MAX_TIME",
+  MinTime = "MIN_TIME",
+}
+
+export type CandidateSortInput = {
+  field: CandidateSortField;
+  order?: InputMaybe<SortOrder>;
 };
 
 export type Detection = {
   __typename?: "Detection";
+  candidate?: Maybe<Candidate>;
   description?: Maybe<Scalars["String"]["output"]>;
   feed?: Maybe<Feed>;
-  id?: Maybe<Scalars["ID"]["output"]>;
+  id: Scalars["ID"]["output"];
   listenerCount?: Maybe<Scalars["Int"]["output"]>;
   playerOffset?: Maybe<Scalars["Decimal"]["output"]>;
   playlistTimestamp?: Maybe<Scalars["Int"]["output"]>;
   sourceIp?: Maybe<Scalars["String"]["output"]>;
   timestamp?: Maybe<Scalars["DateTime"]["output"]>;
+  uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type DetectionWithLockout = {
-  __typename?: "DetectionWithLockout";
-  detection?: Maybe<Detection>;
-  lockoutInitial?: Maybe<Scalars["Float"]["output"]>;
-  lockoutRemaining?: Maybe<Scalars["Float"]["output"]>;
+export type DetectionFilterDescription = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** Pagination version of detections */
-export type Detections = {
-  __typename?: "Detections";
-  entries?: Maybe<Array<Maybe<Detection>>>;
-  meta?: Maybe<PaginationMeta>;
+export type DetectionFilterId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type DetectionFilterInput = {
+  and?: InputMaybe<Array<DetectionFilterInput>>;
+  candidate?: InputMaybe<CandidateFilterInput>;
+  description?: InputMaybe<DetectionFilterDescription>;
+  feed?: InputMaybe<FeedFilterInput>;
+  id?: InputMaybe<DetectionFilterId>;
+  listenerCount?: InputMaybe<DetectionFilterListenerCount>;
+  or?: InputMaybe<Array<DetectionFilterInput>>;
+  playerOffset?: InputMaybe<DetectionFilterPlayerOffset>;
+  playlistTimestamp?: InputMaybe<DetectionFilterPlaylistTimestamp>;
+  sourceIp?: InputMaybe<DetectionFilterSourceIp>;
+  timestamp?: InputMaybe<DetectionFilterTimestamp>;
+};
+
+export type DetectionFilterListenerCount = {
+  eq?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Int"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  notEq?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type DetectionFilterPlayerOffset = {
+  eq?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Decimal"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  notEq?: InputMaybe<Scalars["Decimal"]["input"]>;
+};
+
+export type DetectionFilterPlaylistTimestamp = {
+  eq?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Int"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  notEq?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type DetectionFilterSourceIp = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type DetectionFilterTimestamp = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export enum DetectionSortField {
+  Description = "DESCRIPTION",
+  Id = "ID",
+  ListenerCount = "LISTENER_COUNT",
+  PlayerOffset = "PLAYER_OFFSET",
+  PlaylistTimestamp = "PLAYLIST_TIMESTAMP",
+  SourceIp = "SOURCE_IP",
+  Timestamp = "TIMESTAMP",
+}
+
+export type DetectionSortInput = {
+  field: DetectionSortField;
+  order?: InputMaybe<SortOrder>;
 };
 
 export type Feed = {
   __typename?: "Feed";
   id: Scalars["ID"]["output"];
-  introHtml: Scalars["String"]["output"];
-  latLng: LatLng;
-  mapUrl: Scalars["String"]["output"];
+  introHtml?: Maybe<Scalars["String"]["output"]>;
+  latLng?: Maybe<LatLng>;
+  latLngString?: Maybe<Scalars["String"]["output"]>;
+  locationPoint: Scalars["Json"]["output"];
+  mapUrl?: Maybe<Scalars["String"]["output"]>;
   name: Scalars["String"]["output"];
   nodeName: Scalars["String"]["output"];
   slug: Scalars["String"]["output"];
-  thumbUrl: Scalars["String"]["output"];
+  thumbUrl?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type FeedFilterId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type FeedFilterInput = {
+  and?: InputMaybe<Array<FeedFilterInput>>;
+  id?: InputMaybe<FeedFilterId>;
+  introHtml?: InputMaybe<FeedFilterIntroHtml>;
+  locationPoint?: InputMaybe<FeedFilterLocationPoint>;
+  name?: InputMaybe<FeedFilterName>;
+  nodeName?: InputMaybe<FeedFilterNodeName>;
+  or?: InputMaybe<Array<FeedFilterInput>>;
+  slug?: InputMaybe<FeedFilterSlug>;
+};
+
+export type FeedFilterIntroHtml = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedFilterLocationPoint = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type FeedFilterName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedFilterNodeName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedFilterSlug = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export enum FeedSortField {
+  Id = "ID",
+  IntroHtml = "INTRO_HTML",
+  LocationPoint = "LOCATION_POINT",
+  Name = "NAME",
+  NodeName = "NODE_NAME",
+  Slug = "SLUG",
+}
+
+export type FeedSortInput = {
+  field: FeedSortField;
+  order?: InputMaybe<SortOrder>;
 };
 
 export type LatLng = {
   __typename?: "LatLng";
-  lat: Scalars["Float"]["output"];
-  lng: Scalars["Float"]["output"];
+  lat?: Maybe<Scalars["Float"]["output"]>;
+  lng?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** Pagination options */
-export type Pagination = {
-  page: Scalars["Int"]["input"];
-  pageSize: Scalars["Int"]["input"];
+/** An error generated by a failed mutation */
+export type MutationError = {
+  __typename?: "MutationError";
+  /** An error code for the given error */
+  code?: Maybe<Scalars["String"]["output"]>;
+  /** The field or fields that produced the error */
+  fields?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  /** The human readable error message */
+  message?: Maybe<Scalars["String"]["output"]>;
+  /** A shorter error message, with vars not replaced */
+  shortMessage?: Maybe<Scalars["String"]["output"]>;
+  /** Replacements for the short message */
+  vars?: Maybe<Scalars["Json"]["output"]>;
 };
 
-/** Pagination results via scrivener */
-export type PaginationMeta = {
-  __typename?: "PaginationMeta";
-  currentPage: Scalars["Int"]["output"];
-  nextPage?: Maybe<Scalars["Int"]["output"]>;
-  previousPage?: Maybe<Scalars["Int"]["output"]>;
-  totalEntries: Scalars["Int"]["output"];
-  totalPages: Scalars["Int"]["output"];
+/** A page of :candidate */
+export type PageOfCandidate = {
+  __typename?: "PageOfCandidate";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<Candidate>>;
+};
+
+/** A page of :detection */
+export type PageOfDetection = {
+  __typename?: "PageOfDetection";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<Detection>>;
 };
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
-  /** Log in */
-  login?: Maybe<User>;
-  /** Log out */
-  logout?: Maybe<User>;
-  /** Create user */
-  signup?: Maybe<User>;
-  /** Submit an orca sound detection */
-  submitDetection?: Maybe<DetectionWithLockout>;
-  /** Update user details */
-  updateUser?: Maybe<User>;
-};
-
-export type RootMutationTypeLoginArgs = {
-  email: Scalars["String"]["input"];
-  password: Scalars["String"]["input"];
-};
-
-export type RootMutationTypeLogoutArgs = {
-  id?: InputMaybe<Scalars["ID"]["input"]>;
-};
-
-export type RootMutationTypeSignupArgs = {
-  email: Scalars["String"]["input"];
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  password: Scalars["String"]["input"];
+  submitDetection?: Maybe<SubmitDetectionResult>;
 };
 
 export type RootMutationTypeSubmitDetectionArgs = {
-  description?: InputMaybe<Scalars["String"]["input"]>;
-  feedId?: InputMaybe<Scalars["ID"]["input"]>;
-  listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
-  playerOffset?: InputMaybe<Scalars["Decimal"]["input"]>;
-  playlistTimestamp?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type RootMutationTypeUpdateUserArgs = {
-  admin?: InputMaybe<Scalars["Boolean"]["input"]>;
-  id?: InputMaybe<Scalars["ID"]["input"]>;
+  input?: InputMaybe<SubmitDetectionInput>;
 };
 
 export type RootQueryType = {
   __typename?: "RootQueryType";
-  /** List candidates, paginated */
-  candidates?: Maybe<Candidates>;
-  /** Get logged in user */
-  currentUser?: Maybe<User>;
-  /** List detections, paginated */
-  detections?: Maybe<Detections>;
-  /** List detections */
-  detectionsAll?: Maybe<Array<Maybe<Detection>>>;
-  /** Get a feed */
-  feed: Feed;
-  /** Get a list of feeds */
+  candidate?: Maybe<Candidate>;
+  candidates?: Maybe<PageOfCandidate>;
+  detection?: Maybe<Detection>;
+  detections?: Maybe<PageOfDetection>;
+  feed?: Maybe<Feed>;
   feeds: Array<Feed>;
-  /** List users, paginated */
-  users?: Maybe<Users>;
+};
+
+export type RootQueryTypeCandidateArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 export type RootQueryTypeCandidatesArgs = {
-  pagination?: InputMaybe<Pagination>;
+  filter?: InputMaybe<CandidateFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<CandidateSortInput>>>;
+};
+
+export type RootQueryTypeDetectionArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 export type RootQueryTypeDetectionsArgs = {
-  pagination?: InputMaybe<Pagination>;
+  filter?: InputMaybe<DetectionFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
 };
 
 export type RootQueryTypeFeedArgs = {
+  filter?: InputMaybe<FeedFilterInput>;
   slug?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-export type RootQueryTypeUsersArgs = {
-  pagination?: InputMaybe<Pagination>;
+export type RootQueryTypeFeedsArgs = {
+  filter?: InputMaybe<FeedFilterInput>;
+  sort?: InputMaybe<Array<InputMaybe<FeedSortInput>>>;
 };
 
-/** A user */
-export type User = {
-  __typename?: "User";
-  admin?: Maybe<Scalars["Boolean"]["output"]>;
-  authToken?: Maybe<Scalars["String"]["output"]>;
-  email?: Maybe<Scalars["String"]["output"]>;
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  id?: Maybe<Scalars["ID"]["output"]>;
-  lastName?: Maybe<Scalars["String"]["output"]>;
+export enum SortOrder {
+  Asc = "ASC",
+  Desc = "DESC",
+}
+
+export type SubmitDetectionInput = {
+  description: Scalars["String"]["input"];
+  feedId: Scalars["String"]["input"];
+  listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
+  playerOffset: Scalars["Decimal"]["input"];
+  playlistTimestamp: Scalars["Int"]["input"];
 };
 
-/** Pagination version of users */
-export type Users = {
-  __typename?: "Users";
-  entries?: Maybe<Array<Maybe<User>>>;
-  meta?: Maybe<PaginationMeta>;
+/** The result of the :submit_detection mutation */
+export type SubmitDetectionResult = {
+  __typename?: "SubmitDetectionResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Detection>;
 };
 
 export type SubmitDetectionMutationVariables = Exact<{
-  feedId: Scalars["ID"]["input"];
-  playlistTimestamp: Scalars["String"]["input"];
+  feedId: Scalars["String"]["input"];
+  playlistTimestamp: Scalars["Int"]["input"];
   playerOffset: Scalars["Decimal"]["input"];
   description: Scalars["String"]["input"];
   listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
@@ -239,10 +466,8 @@ export type SubmitDetectionMutationVariables = Exact<{
 export type SubmitDetectionMutation = {
   __typename?: "RootMutationType";
   submitDetection?: {
-    __typename?: "DetectionWithLockout";
-    lockoutInitial?: number | null;
-    lockoutRemaining?: number | null;
-    detection?: { __typename?: "Detection"; id?: string | null } | null;
+    __typename?: "SubmitDetectionResult";
+    result?: { __typename?: "Detection"; id: string } | null;
   } | null;
 };
 
@@ -252,17 +477,21 @@ export type FeedQueryVariables = Exact<{
 
 export type FeedQuery = {
   __typename?: "RootQueryType";
-  feed: {
+  feed?: {
     __typename?: "Feed";
     id: string;
     name: string;
     slug: string;
     nodeName: string;
-    introHtml: string;
-    thumbUrl: string;
-    mapUrl: string;
-    latLng: { __typename?: "LatLng"; lat: number; lng: number };
-  };
+    introHtml?: string | null;
+    thumbUrl?: string | null;
+    mapUrl?: string | null;
+    latLng?: {
+      __typename?: "LatLng";
+      lat?: number | null;
+      lng?: number | null;
+    } | null;
+  } | null;
 };
 
 export type FeedsQueryVariables = Exact<{ [key: string]: never }>;
@@ -275,26 +504,24 @@ export type FeedsQuery = {
     name: string;
     slug: string;
     nodeName: string;
-    thumbUrl: string;
-    mapUrl: string;
-    latLng: { __typename?: "LatLng"; lat: number; lng: number };
+    thumbUrl?: string | null;
+    mapUrl?: string | null;
+    latLng?: {
+      __typename?: "LatLng";
+      lat?: number | null;
+      lng?: number | null;
+    } | null;
   }>;
 };
 
 export const SubmitDetectionDocument = `
-    mutation submitDetection($feedId: ID!, $playlistTimestamp: String!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int) {
+    mutation submitDetection($feedId: String!, $playlistTimestamp: Int!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int) {
   submitDetection(
-    feedId: $feedId
-    playlistTimestamp: $playlistTimestamp
-    playerOffset: $playerOffset
-    listenerCount: $listenerCount
-    description: $description
+    input: {feedId: $feedId, playlistTimestamp: $playlistTimestamp, playerOffset: $playerOffset, listenerCount: $listenerCount, description: $description}
   ) {
-    detection {
+    result {
       id
     }
-    lockoutInitial
-    lockoutRemaining
   }
 }
     `;

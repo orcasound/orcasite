@@ -29,7 +29,7 @@ export default function useTimestampFetcher(
   nodeName?: string,
   { onStart, onStop }: { onStart?: () => void; onStop?: () => void } = {},
 ) {
-  const [timestamp, setTimestamp] = useState<string>();
+  const [timestamp, setTimestamp] = useState<number>();
 
   const hlsURI =
     nodeName && timestamp
@@ -55,7 +55,7 @@ export default function useTimestampFetcher(
           const newTimestamp = xhr.responseText.trim();
           if (process.env.NODE_ENV === "development")
             console.log("Latest timestamp: " + newTimestamp);
-          setTimestamp(newTimestamp);
+          setTimestamp(parseInt(newTimestamp));
         }
       };
       xhr.send();
