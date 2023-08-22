@@ -10,36 +10,35 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 #
-import Ecto.Query
-alias Orcasite.RadioLegacy.Feed
+require Ash.Query
 
 feeds = [
   %{
-    location_point: Geo.WKT.decode!("SRID=4326;POINT(-123.1735774 48.5583362)"),
+    lat_lng_string: "48.5583362, -123.1735774",
     name: "Orcasound Lab (Haro Strait)",
     node_name: "rpi_orcasound_lab",
     slug: "orcasound-lab"
   },
   %{
-    location_point: Geo.WKT.decode!("SRID=4326;POINT(-122.6040035 48.0336664)"),
+    lat_lng_string: "48.0336664, -122.6040035",
     name: "Bush Point",
     node_name: "rpi_bush_point",
     slug: "bush-point"
   },
   %{
-    location_point: Geo.WKT.decode!("SRID=4326;POINT(-122.760614 48.135743)"),
+    lat_lng_string: "48.135743, -122.760614",
     name: "Port Townsend",
     node_name: "rpi_port_townsend",
     slug: "port-townsend"
   },
   %{
-    location_point: Geo.WKT.decode!("SRID=4326;POINT(-122.33393605795372 47.86497296593844)"),
+    lat_lng_string: "47.86497296593844, -122.33393605795372",
     name: "Sunset Bay",
     node_name: "rpi_sunset_bay",
     slug: "sunset-bay"
   },
   %{
-    location_point: Geo.WKT.decode!("SRID=4326;POINT(-123.058779 48.591294)"),
+    lat_lng_string: "48.591294, -123.058779",
     name: "North San Juan Channel",
     node_name: "rpi_north_sjc",
     slug: "north-sjc"
@@ -47,17 +46,17 @@ feeds = [
 ]
 
 for attrs <- feeds do
-  from(f in Feed, where: ^Map.to_list(attrs))
-  |> Orcasite.Repo.exists?()
+  Orcasite.Radio.Feed
+  |> Ash.Query.for_read(:read)
+  |> Ash.Query.filter(slug == ^attrs.slug)
+  |> Orcasite.Radio.read()
   |> case do
-    true ->
-      IO.puts("[info] Feed already created")
-      {:error, :already_created}
-
+    {:ok, []} ->
+      Orcasite.Radio.Feed
+      |> Ash.Changeset.for_create(:create, attrs)
+      |> Orcasite.Radio.create()
     _ ->
-      %Feed{}
-      |> Feed.changeset(attrs)
-      |> Orcasite.Repo.insert!()
+      nil
   end
 end
 
