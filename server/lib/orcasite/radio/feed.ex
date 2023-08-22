@@ -75,7 +75,8 @@ defmodule Orcasite.Radio.Feed do
     calculate :lat_lng,
               Orcasite.Types.LatLng,
               {Orcasite.Radio.Calculations.LatLng,
-               keys: [:location_point], select: [:location_point]}
+               keys: [:location_point], select: [:location_point]},
+               allow_nil?: false
 
     calculate :lat_lng_string,
               :string,
@@ -99,6 +100,7 @@ defmodule Orcasite.Radio.Feed do
 
   graphql do
     type :feed
+
 
     queries do
       read_one :feed, :get_by_slug

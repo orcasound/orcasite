@@ -17,7 +17,7 @@ export default function Map({
   feeds,
 }: {
   setMap?: (map: LeafletMap) => void;
-  currentFeed?: Pick<Feed, "slug" | "latLng">;
+  currentFeed?: Pick<Feed, "slug" | "latLng"> | null;
   feeds: FeedsQuery["feeds"];
 }) {
   const router = useRouter();

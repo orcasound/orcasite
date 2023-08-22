@@ -36,26 +36,32 @@ const FeedPage: NextPageWithLayout = () => {
             <div
               style={{ position: "relative", width: "100%", height: "15em" }}
             >
-              <Image
-                src={feed.thumbUrl}
-                layout="fill"
-                alt=""
-                objectFit="contain"
-                objectPosition="left"
-              />
+              {feed.thumbUrl && (
+                <Image
+                  src={feed.thumbUrl}
+                  layout="fill"
+                  alt=""
+                  objectFit="contain"
+                  objectPosition="left"
+                />
+              )}
             </div>
-            <div dangerouslySetInnerHTML={{ __html: feed.introHtml }} />
-            <div
-              style={{ position: "relative", width: "100%", height: "15em" }}
-            >
-              <Image
-                src={feed.mapUrl}
-                layout="fill"
-                alt=""
-                objectFit="contain"
-                objectPosition="left"
-              />
-            </div>
+            {feed.introHtml && (
+              <div dangerouslySetInnerHTML={{ __html: feed.introHtml }} />
+            )}
+            {feed.mapUrl && (
+              <div
+                style={{ position: "relative", width: "100%", height: "15em" }}
+              >
+                <Image
+                  src={feed.mapUrl}
+                  layout="fill"
+                  alt=""
+                  objectFit="contain"
+                  objectPosition="left"
+                />
+              </div>
+            )}
           </Box>
         </Container>
       </main>
@@ -72,7 +78,7 @@ export async function getStaticPaths() {
   try {
     response = await queryClient.fetchQuery(
       useFeedsQuery.getKey(),
-      useFeedsQuery.fetcher(),
+      useFeedsQuery.fetcher()
     );
   } catch (error) {
     console.error(error);
@@ -90,7 +96,7 @@ export async function getStaticProps({ params }: { params: { feed: string } }) {
   await getMapStaticProps(queryClient);
   await queryClient.prefetchQuery(
     useFeedQuery.getKey({ slug: params.feed }),
-    useFeedQuery.fetcher({ slug: params.feed }),
+    useFeedQuery.fetcher({ slug: params.feed })
   );
 
   return {

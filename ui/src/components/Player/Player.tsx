@@ -20,20 +20,14 @@ export type PlayerStatus = "idle" | "loading" | "playing" | "paused" | "error";
 export default function Player({
   currentFeed,
 }: {
-  currentFeed?: Pick<Feed, "id" | "slug" | "nodeName" | "name" | "latLng">;
+  currentFeed?: Pick<Feed, "id" | "slug" | "nodeName" | "name" | "latLng"> | null;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
-  const { timestamp, hlsURI } = useTimestampFetcher(
-    typeof currentFeed?.nodeName === "string"
-      ? currentFeed?.nodeName
-      : undefined,
-  );
+  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName);
 
-  const feedPresence = useFeedPresence(
-    typeof currentFeed?.slug === "string" ? currentFeed?.slug : undefined,
-  );
+  const feedPresence = useFeedPresence(currentFeed?.slug);
   const listenerCount = feedPresence?.metas.length ?? 0;
 
   const playerOptions = useMemo(
@@ -155,8 +149,7 @@ export default function Player({
           : "Select a location to start listening live"}
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: "end" }}>
-        {currentFeed &&
-          `${currentFeed?.latLng?.lng}, ${currentFeed?.latLng?.lat}`}
+        {currentFeed && `${currentFeed.latLng.lng}, ${currentFeed.latLng.lat}`}
       </Box>
     </Box>
   );

@@ -42,15 +42,9 @@ function MapLayout({ children }: { children: ReactNode }) {
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
-    if (
-      feed &&
-      feed !== null &&
-      feed.slug !== currentFeed?.slug &&
-      typeof feed?.latLng?.lng === "number" &&
-      typeof feed?.latLng?.lat === "number"
-    ) {
+    if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed);
-      map?.panTo({ lat: feed.latLng.lat, lng: feed.latLng.lng });
+      map?.panTo(feed.latLng);
     }
   }, [feed, map, currentFeed]);
 
