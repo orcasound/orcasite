@@ -18,7 +18,7 @@ defmodule Orcasite.Radio.Detection do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "det"
+    uuid_attribute(:id, prefix: "det")
 
     attribute :source_ip, :string
     attribute :playlist_timestamp, :integer
@@ -94,6 +94,24 @@ defmodule Orcasite.Radio.Detection do
           })
         )
         |> Ash.Changeset.after_action(fn changeset, detection ->
+          # Happens second
+          detection =
+            detection
+            |> Orcasite.Radio.load!(:feed)
+
+          Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+            Orcasite.Notifications.Notification.notify_new_detection(
+              detection.id,
+              detection.feed.slug,
+              detection.description,
+              detection.listener_count
+            )
+          end)
+
+          {:ok, detection}
+        end)
+        |> Ash.Changeset.after_action(fn changeset, detection ->
+          # Happens first
           # Find or create candidate, update detection with candidate
           candidate =
             Candidate
