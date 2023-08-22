@@ -32,7 +32,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   // don't make feed request if there's no feed slug or is dynamic
   const feedFromQuery = useFeedQuery(
     { slug: slug },
-    { enabled: !!slug || isDynamic }
+    { enabled: !!slug || isDynamic },
   ).data?.feed;
   const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery;
 
@@ -46,11 +46,11 @@ function MapLayout({ children }: { children: ReactNode }) {
       feed &&
       feed !== null &&
       feed.slug !== currentFeed?.slug &&
-      typeof(feed?.latLng?.lng) === "number" &&
-      typeof(feed?.latLng?.lat) === "number"
+      typeof feed?.latLng?.lng === "number" &&
+      typeof feed?.latLng?.lat === "number"
     ) {
       setCurrentFeed(feed);
-      map?.panTo({lat: feed.latLng.lat, lng: feed.latLng.lng});
+      map?.panTo({ lat: feed.latLng.lat, lng: feed.latLng.lng });
     }
   }, [feed, map, currentFeed]);
 
@@ -100,6 +100,6 @@ export function getMapLayout(page: ReactElement) {
 export async function getMapStaticProps(queryClient: QueryClient) {
   await queryClient.prefetchQuery(
     useFeedsQuery.getKey(),
-    useFeedsQuery.fetcher()
+    useFeedsQuery.fetcher(),
   );
 }

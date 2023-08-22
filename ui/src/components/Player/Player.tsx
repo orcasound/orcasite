@@ -25,9 +25,15 @@ export default function Player({
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
-  const { timestamp, hlsURI } = useTimestampFetcher(typeof(currentFeed?.nodeName) === "string" ? currentFeed?.nodeName : undefined);
+  const { timestamp, hlsURI } = useTimestampFetcher(
+    typeof currentFeed?.nodeName === "string"
+      ? currentFeed?.nodeName
+      : undefined,
+  );
 
-  const feedPresence = useFeedPresence(typeof(currentFeed?.slug) === "string" ? currentFeed?.slug : undefined);
+  const feedPresence = useFeedPresence(
+    typeof currentFeed?.slug === "string" ? currentFeed?.slug : undefined,
+  );
   const listenerCount = feedPresence?.metas.length ?? 0;
 
   const playerOptions = useMemo(
@@ -149,7 +155,8 @@ export default function Player({
           : "Select a location to start listening live"}
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: "end" }}>
-        {currentFeed && `${currentFeed?.latLng?.lng}, ${currentFeed?.latLng?.lat}`}
+        {currentFeed &&
+          `${currentFeed?.latLng?.lng}, ${currentFeed?.latLng?.lat}`}
       </Box>
     </Box>
   );

@@ -18,7 +18,6 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
 import DetectionCategoryButton from "./DetectionCategoryButton";
-import { timeStamp } from "console";
 
 type DetectionCategory = "orca" | "vessel" | "other";
 
@@ -65,7 +64,7 @@ export default function DetectionDialog({
 
   const handleCategoryChange = (
     e: React.MouseEvent<HTMLElement>,
-    newCategory: DetectionCategory
+    newCategory: DetectionCategory,
   ) => {
     if (newCategory) {
       setCategory(newCategory);

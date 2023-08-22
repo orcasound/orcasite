@@ -35,7 +35,7 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
             (see https://bugs.chromium.org/p/chromium/issues/detail?id=1450857 and
             https://bugs.chromium.org/p/chromium/issues/detail?id=1162276)
         */}
-        <link rel="icon" href="/favicon.ico?v=2" sizes="48x48"/>
+        <link rel="icon" href="/favicon.ico?v=2" sizes="48x48" />
         <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
         <meta name="emotion-insertion-point" content="" />
         {emotionStyleTags}
