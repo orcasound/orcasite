@@ -7,44 +7,39 @@ defmodule Orcasite.Repo.Migrations.PopulateFeedsCandidatesAndDetections do
 
   def up do
     # Iterate through feeds_legacy, create a new feed
-    {:ok, feed_map} =
-      Repo.transaction(
-        fn ->
-          from(feed in Orcasite.RadioLegacy.Feed, order_by: [asc: feed.inserted_at])
-          |> Repo.stream()
-          |> Stream.map(fn feed ->
-            Orcasite.Radio.Feed
-            |> Ash.Query.for_read(:read)
-            |> Ash.Query.filter(slug == ^feed.slug)
-            |> Orcasite.Radio.read()
-            |> case do
-              {:ok, [%Orcasite.Radio.Feed{} = new_feed | _]} ->
-                {feed.id, new_feed.id}
+    feed_map =
+      from(feed in Orcasite.RadioLegacy.Feed, order_by: [asc: feed.inserted_at])
+      |> Repo.all()
+      |> Enum.map(fn feed ->
+        Orcasite.Radio.Feed
+        |> Ash.Query.for_read(:read)
+        |> Ash.Query.filter(slug == ^feed.slug)
+        |> Orcasite.Radio.read()
+        |> case do
+          {:ok, [%Orcasite.Radio.Feed{} = new_feed | _]} ->
+            {feed.id, new_feed.id}
 
-              _ ->
-                {:ok, new_feed, _} =
-                  Orcasite.Radio.Feed
-                  |> Ash.Changeset.for_create(:create, %{
-                    slug: feed.slug,
-                    name: feed.name,
-                    node_name: feed.node_name,
-                  })
-                  |> Ash.Changeset.force_change_attributes(%{
-                    inserted_at: feed.inserted_at,
-                    updated_at: feed.updated_at,
-                    location_point: feed.location_point
-                  })
-                  |> Orcasite.Radio.create(return_notifications?: true)
-                  |> IO.inspect(label: "new_feed (server/priv/repo/migrations/20230817004024_populate_feeds_candidates_and_detections.exs:#{__ENV__.line})")
+          _ ->
+            {:ok, new_feed, _} =
+              Orcasite.Radio.Feed
+              |> Ash.Changeset.for_create(:create, %{
+                slug: feed.slug,
+                name: feed.name,
+                node_name: feed.node_name,
+              })
+              |> Ash.Changeset.force_change_attributes(%{
+                inserted_at: feed.inserted_at,
+                updated_at: feed.updated_at,
+                location_point: feed.location_point
+              })
+              |> Orcasite.Radio.create(return_notifications?: true)
+              |> IO.inspect(label: "new_feed (server/priv/repo/migrations/20230817004024_populate_feeds_candidates_and_detections.exs:#{__ENV__.line})")
 
-                {feed.id, new_feed.id}
-            end
-          end)
-          |> Enum.to_list()
-          |> Map.new()
-        end,
-        timeout: :infinity
-      )
+            {feed.id, new_feed.id}
+        end
+      end)
+      |> Enum.to_list()
+      |> Map.new()
       |> IO.inspect(label: "feed map? (server/priv/repo/migrations/20230817004024_populate_feeds_candidates_and_detections.exs:#{__ENV__.line})")
 
     # Iterate through candidates_legacy, create a new candidate
