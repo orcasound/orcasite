@@ -1,2 +1,1 @@
 web: source load_env.sh && MIX_ENV=prod mix phx.server
-release: POOL_SIZE=2 mix ecto.migrate
