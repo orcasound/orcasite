@@ -96,6 +96,9 @@ defmodule Orcasite.Radio.Feed do
     table_columns [:id, :name, :slug, :node_name, :location_point]
 
     format_fields location_point: {Jason, :encode!, []}, lat_lng: {Jason, :encode!, []}
+    form do
+      field :intro_html, type: :long_text
+    end
   end
 
   graphql do
