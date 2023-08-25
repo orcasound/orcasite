@@ -56,7 +56,7 @@ export default function Player({
           ]
         : [],
     }),
-    [hlsURI, currentFeed?.nodeName],
+    [hlsURI, currentFeed?.nodeName]
   );
 
   const handleReady = useCallback((player: VideoJSPlayer) => {
