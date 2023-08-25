@@ -54,6 +54,8 @@ defmodule OrcasiteWeb.Router do
 
   pipeline :graphql do
     plug(:parsers)
+    plug :load_from_bearer
+    plug :set_current_user_as_actor
     plug AshGraphql.Plug
   end
 
@@ -147,4 +149,11 @@ defmodule OrcasiteWeb.Router do
         conn
     end
   end
+
+  defp set_current_user_as_actor(%{assigns: %{current_user: actor}} = conn, _opts) do
+    conn
+    |> update_in([Access.key!(:assigns)], &Map.drop(&1, [:current_user]))
+    |> Ash.PlugHelpers.set_actor(actor)
+  end
+  defp set_current_user_as_actor(conn, _opts), do: conn
 end

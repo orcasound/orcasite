@@ -1,12 +1,12 @@
 defmodule Orcasite.Accounts.User do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication, AshAdmin.Resource]
+    extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource]
 
   attributes do
     uuid_primary_key :id
     attribute :email, :ci_string, allow_nil?: false
-    attribute :hashed_password, :string, allow_nil?: false, sensitive?: true
+    attribute :hashed_password, :string, allow_nil?: false, sensitive?: true, private?: true
     attribute :first_name, :string
     attribute :last_name, :string
     attribute :admin, :boolean
@@ -21,6 +21,7 @@ defmodule Orcasite.Accounts.User do
     strategies do
       password :password do
         identity_field :email
+        sign_in_tokens_enabled? true
 
         resettable do
           sender fn user, token, opts ->
@@ -36,10 +37,7 @@ defmodule Orcasite.Accounts.User do
     tokens do
       enabled? true
       token_resource Orcasite.Accounts.Token
-
-      signing_secret fn _, _ ->
-        {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
-      end
+      signing_secret Orcasite.Accounts.Secrets
     end
   end
 
@@ -52,11 +50,49 @@ defmodule Orcasite.Accounts.User do
     identity :unique_email, [:email]
   end
 
+  code_interface do
+    define_for Orcasite.Accounts
+
+    define :register_with_password
+    define :sign_in_with_password
+  end
+
   actions do
     defaults [:read, :create, :update, :destroy]
+
+    create :sign_in_with_password_create do
+      argument :email, :string do
+        allow_nil? false
+        sensitive? true
+      end
+
+      argument :password, :string do
+        allow_nil? false
+        sensitive? true
+      end
+
+      argument :password_confirmation, :string do
+        allow_nil? false
+        sensitive? true
+      end
+
+      metadata :token, :string do
+        allow_nil? false
+      end
+
+      manual fn changeset, _ ->
+        __MODULE__
+        |> Ash.Query.for_read(:sign_in_with_password, changeset.arguments)
+        |> Orcasite.Accounts.read_one()
+      end
+    end
   end
 
   admin do
     table_columns [:id, :email, :first_name, :last_name, :admin, :inserted_at]
+  end
+
+  graphql do
+    type :user
   end
 end
