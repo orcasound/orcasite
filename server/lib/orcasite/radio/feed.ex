@@ -105,7 +105,6 @@ defmodule Orcasite.Radio.Feed do
   graphql do
     type :feed
 
-
     queries do
       read_one :feed, :get_by_slug
       list :feeds, :read

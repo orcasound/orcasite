@@ -6,7 +6,7 @@ defmodule Orcasite.Accounts.User do
   attributes do
     uuid_primary_key :id
     attribute :email, :ci_string, allow_nil?: false
-    attribute :hashed_password, :string, allow_nil?: false, sensitive?: true, private?: true
+    attribute :hashed_password, :string, allow_nil?: false, sensitive?: true
     attribute :first_name, :string
     attribute :last_name, :string
     attribute :admin, :boolean
@@ -67,5 +67,6 @@ defmodule Orcasite.Accounts.User do
 
   graphql do
     type :user
+    hide_fields [:hashed_password]
   end
 end
