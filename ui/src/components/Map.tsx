@@ -17,7 +17,7 @@ export default function Map({
   feeds,
 }: {
   setMap?: (map: LeafletMap) => void;
-  currentFeed?: Pick<Feed, "slug" | "latLng">;
+  currentFeed?: Pick<Feed, "slug" | "latLng"> | null;
   feeds: FeedsQuery["feeds"];
 }) {
   const router = useRouter();
@@ -47,22 +47,31 @@ export default function Map({
       />
       <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
 
-      {feeds.map((feed) => (
-        <Marker
-          key={feed.slug}
-          position={feed.latLng}
-          icon={
-            feed.slug === currentFeed?.slug
-              ? hydrophoneActiveIcon
-              : hydrophoneDefaultIcon
-          }
-          eventHandlers={{
-            click: () => {
-              router.push(`/${feed.slug}`);
-            },
-          }}
-        />
-      ))}
+      {feeds.flatMap((feed) => {
+        if (
+          typeof feed.latLng?.lat === "number" &&
+          typeof feed.latLng?.lng === "number"
+        ) {
+          return [
+            <Marker
+              key={feed.slug}
+              position={{ lat: feed.latLng?.lat, lng: feed.latLng?.lng }}
+              icon={
+                feed.slug === currentFeed?.slug
+                  ? hydrophoneActiveIcon
+                  : hydrophoneDefaultIcon
+              }
+              eventHandlers={{
+                click: () => {
+                  router.push(`/${feed.slug}`);
+                },
+              }}
+            />,
+          ];
+        } else {
+          return [];
+        }
+      })}
     </MapContainer>
   );
 }

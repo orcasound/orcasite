@@ -1,21 +1,21 @@
 mutation submitDetection(
-  $feedId: ID!
-  $playlistTimestamp: String!
+  $feedId: String!
+  $playlistTimestamp: Int!
   $playerOffset: Decimal!
   $description: String!
   $listenerCount: Int
 ) {
   submitDetection(
-    feedId: $feedId
-    playlistTimestamp: $playlistTimestamp
-    playerOffset: $playerOffset
-    listenerCount: $listenerCount
-    description: $description
+    input: {
+      feedId: $feedId
+      playlistTimestamp: $playlistTimestamp
+      playerOffset: $playerOffset
+      listenerCount: $listenerCount
+      description: $description
+    }
   ) {
-    detection {
+    result {
       id
     }
-    lockoutInitial
-    lockoutRemaining
   }
 }

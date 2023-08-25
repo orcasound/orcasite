@@ -7,9 +7,14 @@ defmodule Orcasite.Radio.Calculations.LatLng do
   end
 
   @impl true
-  def calculate(records, _opts, _arguments) do
+  def calculate(records, opts, _arguments) do
+    return_type = Keyword.get(opts, :return_type, :map)
     Enum.map(records, fn %{location_point: %{coordinates: {lng, lat}}} ->
-      "#{lat},#{lng}"
+      case return_type do
+        :map -> %{lat: lat, lng: lng}
+        :string -> "#{lat},#{lng}"
+        _ -> %{lat: lat, lng: lng}
+      end
     end)
   end
 end

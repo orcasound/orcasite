@@ -1,9 +1,13 @@
 defmodule OrcasiteWeb.Resolvers.Detection do
   alias Orcasite.RadioLegacy
+  alias Orcasite.Radio
   alias OrcasiteWeb.Paginated
 
   def index(_, _) do
-    {:ok, RadioLegacy.list_all_detections()}
+    Radio.Detection
+    |> Ash.Query.for_read(:read)
+    |> Ash.Query.load(:feed)
+    |> Radio.read()
   end
 
   def list_candidates(args, _) do

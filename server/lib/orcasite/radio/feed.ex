@@ -1,15 +1,16 @@
 defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
     data_layer: AshPostgres.DataLayer
 
   attributes do
-    integer_primary_key :id
+    uuid_attribute :id, prefix: "feed"
 
-    attribute :name, :string
-    attribute :node_name, :string
-    attribute :slug, :string
+    attribute :name, :string, allow_nil?: false
+    attribute :node_name, :string, allow_nil?: false
+    attribute :slug, :string, allow_nil?: false
     attribute :location_point, :geometry, allow_nil?: false
+    attribute :intro_html, :string, default: ""
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -18,6 +19,11 @@ defmodule Orcasite.Radio.Feed do
   postgres do
     table "feeds"
     repo Orcasite.Repo
+
+    custom_indexes do
+      index [:name]
+      index [:node_name]
+    end
   end
 
   identities do
@@ -29,11 +35,7 @@ defmodule Orcasite.Radio.Feed do
 
     read :read do
       primary? true
-
-      prepare fn query, _context ->
-        query
-        |> Ash.Query.load(:lat_lng)
-      end
+      prepare build(load: [:lat_lng, :lat_lng_string])
     end
 
     read :get_by_slug do
@@ -44,7 +46,8 @@ defmodule Orcasite.Radio.Feed do
       primary? true
       reject [:location_point]
 
-      argument :lat_lng, :string do
+      argument :lat_lng_string, :string do
+        allow_nil? false
         description "A comma-separated string of longitude and latitude"
       end
 
@@ -55,7 +58,7 @@ defmodule Orcasite.Radio.Feed do
       primary? true
       reject [:location_point]
 
-      argument :lat_lng, :string do
+      argument :lat_lng_string, :string do
         description "A comma-separated string of longitude and latitude"
       end
 
@@ -71,14 +74,47 @@ defmodule Orcasite.Radio.Feed do
 
   calculations do
     calculate :lat_lng,
+              Orcasite.Types.LatLng,
+              {Orcasite.Radio.Calculations.LatLng,
+               keys: [:location_point], select: [:location_point]},
+               allow_nil?: false
+
+    calculate :lat_lng_string,
               :string,
               {Orcasite.Radio.Calculations.LatLng,
-               keys: [:location_point], select: [:location_point]}
+               return_type: :string, keys: [:location_point], select: [:location_point]}
+
+    calculate :thumb_url,
+              :string,
+              {Orcasite.Radio.Calculations.FeedImageUrl, object: "thumbnail.png"}
+
+    calculate :map_url,
+              :string,
+              {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"}
+  end
+
+  admin do
+    table_columns [:id, :name, :slug, :node_name, :location_point]
+
+    format_fields location_point: {Jason, :encode!, []}, lat_lng: {Jason, :encode!, []}
+    form do
+      field :intro_html, type: :long_text
+    end
+  end
+
+  graphql do
+    type :feed
+
+
+    queries do
+      read_one :feed, :get_by_slug
+      list :feeds, :read
+    end
   end
 
   defp change_lat_lng(changeset, _context) do
     with {:is_string, lat_lng} when is_binary(lat_lng) <-
-           {:is_string, Ash.Changeset.get_argument(changeset, :lat_lng)},
+           {:is_string, Ash.Changeset.get_argument(changeset, :lat_lng_string)},
          {:two_els, [lat, lng]} <-
            {:two_els, lat_lng |> String.split(",") |> Enum.map(&String.trim/1)},
          {:two_floats, [{latitude, _}, {longitude, _}]} <-
@@ -103,11 +139,5 @@ defmodule Orcasite.Radio.Feed do
         changeset
         |> Ash.Changeset.add_error(field: :lat_lng, message: "must be two floats")
     end
-  end
-
-  admin do
-    table_columns [:id, :name, :slug, :node_name, :location_point]
-
-    format_fields location_point: {Jason, :encode!, []}
   end
 end

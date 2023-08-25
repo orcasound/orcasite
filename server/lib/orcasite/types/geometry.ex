@@ -26,6 +26,8 @@ defmodule Orcasite.Types.Geometry do
   def dump_to_native(value, _) do
     Geo.PostGIS.Geometry.dump(value)
   end
+
+  def graphql_type, do: :json
 end
 
 if Code.ensure_loaded?(Ecto.DevLogger) do

@@ -3,6 +3,8 @@ defmodule Orcasite.Radio.Registry do
 
   entries do
     entry Orcasite.Radio.Feed
+    entry Orcasite.Radio.Candidate
+    entry Orcasite.Radio.Detection
   end
 
 end

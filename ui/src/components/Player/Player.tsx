@@ -20,7 +20,7 @@ export type PlayerStatus = "idle" | "loading" | "playing" | "paused" | "error";
 export default function Player({
   currentFeed,
 }: {
-  currentFeed?: Pick<Feed, "id" | "slug" | "nodeName" | "name" | "latLng">;
+  currentFeed?: Pick<Feed, "id" | "slug" | "nodeName" | "name" | "latLng"> | null;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
@@ -149,7 +149,7 @@ export default function Player({
           : "Select a location to start listening live"}
       </Box>
       <Box sx={{ mx: 4, flexGrow: 1, textAlign: "end" }}>
-        {currentFeed && `${currentFeed.latLng.lng}, ${currentFeed.latLng.lat}`}
+        {currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
       </Box>
     </Box>
   );

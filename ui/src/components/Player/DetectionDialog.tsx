@@ -18,13 +18,14 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
 import DetectionCategoryButton from "./DetectionCategoryButton";
+import { set } from "video.js/dist/types/tech/middleware";
 
 type DetectionCategory = "orca" | "vessel" | "other";
 
 export default function DetectionDialog({
   children,
   feed: { id: feedId },
-  timestamp: playlistTimestamp,
+  timestamp,
   isPlaying,
   getPlayerTime,
   listenerCount,
@@ -33,7 +34,7 @@ export default function DetectionDialog({
   feed: {
     id: string;
   };
-  timestamp: string;
+  timestamp: number;
   isPlaying: boolean;
   getPlayerTime?: () => number | undefined;
   listenerCount: number;
@@ -42,6 +43,8 @@ export default function DetectionDialog({
   const [submitted, setSubmitted] = useState(false);
   const [category, setCategory] = useState<DetectionCategory>();
   const [description, setDescription] = useState("");
+  const [playerOffset, setPlayerOffset] = useState<number | undefined>();
+  const [playlistTimestamp, setPlaylistTimestamp] = useState<number>(timestamp);
 
   const submitDetection = useSubmitDetectionMutation({
     onSuccess: () => {
@@ -53,6 +56,9 @@ export default function DetectionDialog({
     setSubmitted(false);
     setDescription("");
     setCategory(undefined);
+    const offset = getPlayerTime?.();
+    setPlayerOffset(offset);
+    setPlaylistTimestamp(timestamp);
     setOpen(true);
   };
 
@@ -79,8 +85,12 @@ export default function DetectionDialog({
   };
 
   const onDetect = () => {
-    const playerOffset = getPlayerTime?.();
-    if (feedId && playlistTimestamp && playerOffset && isPlaying) {
+    if (
+      feedId &&
+      playlistTimestamp &&
+      isPlaying &&
+      playerOffset !== undefined
+    ) {
       submitDetection.mutate({
         feedId,
         playlistTimestamp,
