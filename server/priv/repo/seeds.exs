@@ -11,6 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 #
 require Ash.Query
+require Ash.Query
 
 feeds = [
   %{
@@ -54,7 +55,7 @@ for attrs <- feeds do
     {:ok, []} ->
       Orcasite.Radio.Feed
       |> Ash.Changeset.for_create(:create, attrs)
-      |> Orcasite.Radio.create()
+      |> Orcasite.Radio.create!(verbose?: true)
     _ ->
       nil
   end
@@ -69,4 +70,4 @@ Orcasite.Accounts.User
   password_confirmation: "password",
 })
 |> Ash.Changeset.force_change_attribute(:admin, true)
-|> Orcasite.Accounts.create!()
+|> Orcasite.Accounts.create()

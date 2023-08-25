@@ -47,6 +47,7 @@ defmodule Orcasite.Radio.Feed do
       reject [:location_point]
 
       argument :lat_lng_string, :string do
+        allow_nil? false
         description "A comma-separated string of longitude and latitude"
       end
 
@@ -113,7 +114,7 @@ defmodule Orcasite.Radio.Feed do
 
   defp change_lat_lng(changeset, _context) do
     with {:is_string, lat_lng} when is_binary(lat_lng) <-
-           {:is_string, Ash.Changeset.get_argument(changeset, :lat_lng)},
+           {:is_string, Ash.Changeset.get_argument(changeset, :lat_lng_string)},
          {:two_els, [lat, lng]} <-
            {:two_els, lat_lng |> String.split(",") |> Enum.map(&String.trim/1)},
          {:two_floats, [{latitude, _}, {longitude, _}]} <-
