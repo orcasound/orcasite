@@ -59,33 +59,6 @@ defmodule Orcasite.Accounts.User do
 
   actions do
     defaults [:read, :create, :update, :destroy]
-
-    create :sign_in_with_password_create do
-      argument :email, :string do
-        allow_nil? false
-        sensitive? true
-      end
-
-      argument :password, :string do
-        allow_nil? false
-        sensitive? true
-      end
-
-      argument :password_confirmation, :string do
-        allow_nil? false
-        sensitive? true
-      end
-
-      metadata :token, :string do
-        allow_nil? false
-      end
-
-      manual fn changeset, _ ->
-        __MODULE__
-        |> Ash.Query.for_read(:sign_in_with_password, changeset.arguments)
-        |> Orcasite.Accounts.read_one()
-      end
-    end
   end
 
   admin do
