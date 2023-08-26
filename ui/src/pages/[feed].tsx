@@ -78,7 +78,7 @@ export async function getStaticPaths() {
   try {
     response = await queryClient.fetchQuery(
       useFeedsQuery.getKey(),
-      useFeedsQuery.fetcher()
+      useFeedsQuery.fetcher(),
     );
   } catch (error) {
     console.error(error);
@@ -96,7 +96,7 @@ export async function getStaticProps({ params }: { params: { feed: string } }) {
   await getMapStaticProps(queryClient);
   await queryClient.prefetchQuery(
     useFeedQuery.getKey({ slug: params.feed }),
-    useFeedQuery.fetcher({ slug: params.feed })
+    useFeedQuery.fetcher({ slug: params.feed }),
   );
 
   return {
