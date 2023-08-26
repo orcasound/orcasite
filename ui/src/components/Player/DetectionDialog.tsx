@@ -42,8 +42,8 @@ export default function DetectionDialog({
   const [submitted, setSubmitted] = useState(false);
   const [category, setCategory] = useState<DetectionCategory>();
   const [description, setDescription] = useState("");
-  const [playerOffset, setPlayerOffset] = useState<number | undefined>();
-  const [playlistTimestamp, setPlaylistTimestamp] = useState<number>(timestamp);
+  const [playerOffset, setPlayerOffset] = useState<number>();
+  const [playlistTimestamp, setPlaylistTimestamp] = useState<number>();
 
   const submitDetection = useSubmitDetectionMutation({
     onSuccess: () => {
@@ -55,9 +55,10 @@ export default function DetectionDialog({
     setSubmitted(false);
     setDescription("");
     setCategory(undefined);
-    const offset = getPlayerTime?.();
-    setPlayerOffset(offset);
+
+    setPlayerOffset(getPlayerTime?.());
     setPlaylistTimestamp(timestamp);
+
     setOpen(true);
   };
 

@@ -14,7 +14,7 @@ const S3_BUCKET_BASE = `https://s3-us-west-2.amazonaws.com/${S3_BUCKET}`;
 
 /**
  * @typedef {Object} TimestampFetcherResult
- * @property {string} timestamp The latest timestamp
+ * @property {number} timestamp The latest timestamp
  * @property {string} hlsURI The URI to the latest HLS stream
  * @property {string} awsConsoleUri The URI to the AWS console for the latest HLS stream
  */
@@ -52,10 +52,10 @@ export default function useTimestampFetcher(
       xhr.open("GET", timestampURI);
       xhr.onload = () => {
         if (xhr.status === 200) {
-          const newTimestamp = xhr.responseText.trim();
+          const newTimestamp = Number(xhr.responseText.trim());
           if (process.env.NODE_ENV === "development")
             console.log("Latest timestamp: " + newTimestamp);
-          setTimestamp(parseInt(newTimestamp));
+          setTimestamp(newTimestamp);
         }
       };
       xhr.send();
