@@ -1,7 +1,7 @@
 defmodule Orcasite.Accounts.User do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication, AshAdmin.Resource]
+    extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource]
 
   attributes do
     uuid_primary_key :id
@@ -21,6 +21,7 @@ defmodule Orcasite.Accounts.User do
     strategies do
       password :password do
         identity_field :email
+        sign_in_tokens_enabled? true
 
         resettable do
           sender fn user, token, opts ->
@@ -36,10 +37,7 @@ defmodule Orcasite.Accounts.User do
     tokens do
       enabled? true
       token_resource Orcasite.Accounts.Token
-
-      signing_secret fn _, _ ->
-        {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
-      end
+      signing_secret Orcasite.Accounts.Secrets
     end
   end
 
@@ -52,11 +50,23 @@ defmodule Orcasite.Accounts.User do
     identity :unique_email, [:email]
   end
 
+  code_interface do
+    define_for Orcasite.Accounts
+
+    define :register_with_password
+    define :sign_in_with_password
+  end
+
   actions do
     defaults [:read, :create, :update, :destroy]
   end
 
   admin do
     table_columns [:id, :email, :first_name, :last_name, :admin, :inserted_at]
+  end
+
+  graphql do
+    type :user
+    hide_fields [:hashed_password]
   end
 end
