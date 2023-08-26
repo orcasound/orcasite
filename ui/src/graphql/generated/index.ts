@@ -397,7 +397,7 @@ export type RootQueryType = {
   candidates?: Maybe<PageOfCandidate>;
   detection?: Maybe<Detection>;
   detections?: Maybe<PageOfDetection>;
-  feed?: Maybe<Feed>;
+  feed: Feed;
   feeds: Array<Feed>;
 };
 
@@ -477,7 +477,7 @@ export type FeedQueryVariables = Exact<{
 
 export type FeedQuery = {
   __typename?: "RootQueryType";
-  feed?: {
+  feed: {
     __typename?: "Feed";
     id: string;
     name: string;
@@ -487,7 +487,7 @@ export type FeedQuery = {
     thumbUrl?: string | null;
     mapUrl?: string | null;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
-  } | null;
+  };
 };
 
 export type FeedsQueryVariables = Exact<{ [key: string]: never }>;

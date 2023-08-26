@@ -18,7 +18,6 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
 import DetectionCategoryButton from "./DetectionCategoryButton";
-import { set } from "video.js/dist/types/tech/middleware";
 
 type DetectionCategory = "orca" | "vessel" | "other";
 

@@ -20,7 +20,7 @@ export type PlayerStatus = "idle" | "loading" | "playing" | "paused" | "error";
 export default function Player({
   currentFeed,
 }: {
-  currentFeed?: Pick<Feed, "id" | "slug" | "nodeName" | "name" | "latLng"> | null;
+  currentFeed?: Pick<Feed, "id" | "slug" | "nodeName" | "name" | "latLng">;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
@@ -56,7 +56,7 @@ export default function Player({
           ]
         : [],
     }),
-    [hlsURI, currentFeed?.nodeName],
+    [hlsURI, currentFeed?.nodeName]
   );
 
   const handleReady = useCallback((player: VideoJSPlayer) => {
