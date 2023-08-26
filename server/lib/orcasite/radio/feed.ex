@@ -47,7 +47,6 @@ defmodule Orcasite.Radio.Feed do
       reject [:location_point]
 
       argument :lat_lng_string, :string do
-        allow_nil? false
         description "A comma-separated string of longitude and latitude"
       end
 
