@@ -50,7 +50,7 @@ export default function Map({
       {feeds.map((feed) => (
         <Marker
           key={feed.slug}
-          position={{ lat: feed.latLng.lat, lng: feed.latLng.lng }}
+          position={feed.latLng}
           icon={
             feed.slug === currentFeed?.slug
               ? hydrophoneActiveIcon
