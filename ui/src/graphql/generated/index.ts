@@ -382,9 +382,32 @@ export type PageOfDetection = {
   results?: Maybe<Array<Detection>>;
 };
 
+export type RegisterWithPasswordInput = {
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+  passwordConfirmation: Scalars["String"]["input"];
+};
+
+export type RegisterWithPasswordResult = {
+  __typename?: "RegisterWithPasswordResult";
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  token?: Maybe<Scalars["String"]["output"]>;
+  user?: Maybe<User>;
+};
+
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  registerWithPassword?: Maybe<RegisterWithPasswordResult>;
+  signInWithPassword?: Maybe<SignInWithPasswordResult>;
   submitDetection?: Maybe<SubmitDetectionResult>;
+};
+
+export type RootMutationTypeRegisterWithPasswordArgs = {
+  input: RegisterWithPasswordInput;
+};
+
+export type RootMutationTypeSignInWithPasswordArgs = {
+  input: SignInWithPasswordInput;
 };
 
 export type RootMutationTypeSubmitDetectionArgs = {
@@ -433,6 +456,18 @@ export type RootQueryTypeFeedsArgs = {
   sort?: InputMaybe<Array<InputMaybe<FeedSortInput>>>;
 };
 
+export type SignInWithPasswordInput = {
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+};
+
+export type SignInWithPasswordResult = {
+  __typename?: "SignInWithPasswordResult";
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  token?: Maybe<Scalars["String"]["output"]>;
+  user?: Maybe<User>;
+};
+
 export enum SortOrder {
   Asc = "ASC",
   Desc = "DESC",
@@ -453,6 +488,15 @@ export type SubmitDetectionResult = {
   errors?: Maybe<Array<Maybe<MutationError>>>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
+};
+
+export type User = {
+  __typename?: "User";
+  admin?: Maybe<Scalars["Boolean"]["output"]>;
+  email: Scalars["String"]["output"];
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["ID"]["output"];
+  lastName?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type SubmitDetectionMutationVariables = Exact<{
