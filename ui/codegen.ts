@@ -30,6 +30,14 @@ const config: CodegenConfig = {
         exposeFetcher: true,
         exposeQueryKeys: true,
         exposeMutationKeys: true,
+        strictScalars: true,
+        scalars: {
+          // TODO: Choose a decimal library and use that type instead
+          // For custom scalars config, see https://github.com/dotansimha/graphql-code-generator/issues/153
+          Decimal: "number",
+          DateTime: "Date",
+          Json: "{ [key: string]: any }",
+        },
       },
     },
   },

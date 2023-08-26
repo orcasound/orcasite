@@ -52,9 +52,9 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
-  DateTime: { input: any; output: any };
-  Decimal: { input: any; output: any };
-  Json: { input: any; output: any };
+  DateTime: { input: Date; output: Date };
+  Decimal: { input: number; output: number };
+  Json: { input: { [key: string]: any }; output: { [key: string]: any } };
 };
 
 export type Candidate = {
