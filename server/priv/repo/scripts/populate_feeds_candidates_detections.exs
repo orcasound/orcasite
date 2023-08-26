@@ -21,7 +21,7 @@ feed_map =
           |> Ash.Changeset.for_create(:create, %{
             slug: feed.slug,
             name: feed.name,
-            node_name: feed.node_name,
+            node_name: feed.node_name
           })
           |> Ash.Changeset.force_change_attributes(%{
             inserted_at: feed.inserted_at,
@@ -44,6 +44,7 @@ from(cand in Orcasite.RadioLegacy.Candidate,
 |> Repo.all()
 |> Enum.map(fn candidate ->
   feed_id = Map.get(feed_map, candidate.feed_id)
+
   Orcasite.Radio.Candidate
   |> Ash.Query.for_read(:read)
   |> Ash.Query.filter(
@@ -77,6 +78,7 @@ from(det in Orcasite.RadioLegacy.Detection, order_by: [asc: det.inserted_at])
 |> Repo.all()
 |> Enum.map(fn detection ->
   feed_id = Map.get(feed_map, detection.feed_id)
+
   Orcasite.Radio.Detection
   |> Ash.Query.for_read(:read)
   |> Ash.Query.filter(
@@ -90,35 +92,35 @@ from(det in Orcasite.RadioLegacy.Detection, order_by: [asc: det.inserted_at])
       nil
 
     _ ->
-      [candidate] =
-        Orcasite.Radio.Candidate
-        |> Ash.Query.for_read(:read)
-        |> Ash.Query.filter(
-          feed_id == ^feed_id and min_time <= ^detection.timestamp and
-            max_time >= ^detection.timestamp
+      with [candidate] <-
+             Orcasite.Radio.Candidate
+             |> Ash.Query.for_read(:read)
+             |> Ash.Query.filter(
+               feed_id == ^feed_id and min_time <= ^detection.timestamp and
+                 max_time >= ^detection.timestamp
+             )
+             |> Orcasite.Radio.read!() do
+        Orcasite.Radio.Detection
+        |> Ash.Changeset.for_create(
+          :create,
+          Map.take(detection, [
+            :playlist_timestamp,
+            :player_offset,
+            :source_ip,
+            :listener_count,
+            :timestamp,
+            :description
+          ])
+          |> Map.merge(%{
+            candidate: %{id: candidate.id},
+            feed: %{id: feed_id}
+          })
         )
-        |> Orcasite.Radio.read!()
-
-      Orcasite.Radio.Detection
-      |> Ash.Changeset.for_create(
-        :create,
-        Map.take(detection, [
-          :playlist_timestamp,
-          :player_offset,
-          :source_ip,
-          :listener_count,
-          :timestamp,
-          :description
-        ])
-        |> Map.merge(%{
-          candidate: %{id: candidate.id},
-          feed: %{id: feed_id}
+        |> Ash.Changeset.force_change_attributes(%{
+          inserted_at: detection.inserted_at,
+          updated_at: detection.updated_at
         })
-      )
-      |> Ash.Changeset.force_change_attributes(%{
-        inserted_at: detection.inserted_at,
-        updated_at: detection.updated_at
-      })
-      |> Orcasite.Radio.create(return_notifications?: true)
-    end
+        |> Orcasite.Radio.create(return_notifications?: true)
+      end
+  end
 end)
