@@ -1,5 +1,5 @@
 defmodule Orcasite.Notifications do
-  use Ash.Api, extensions: [AshAdmin.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshJsonApi.Api]
 
   resources do
     registry Orcasite.Notifications.Registry
@@ -7,5 +7,9 @@ defmodule Orcasite.Notifications do
 
   admin do
     show? true
+  end
+
+  json_api do
+    log_errors? true
   end
 end

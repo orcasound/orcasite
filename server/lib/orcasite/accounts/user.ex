@@ -55,10 +55,15 @@ defmodule Orcasite.Accounts.User do
 
     define :register_with_password
     define :sign_in_with_password
+    define :by_email, args: [:email]
   end
 
   actions do
     defaults [:read, :create, :update, :destroy]
+
+    read :by_email do
+      get_by :email
+    end
   end
 
   admin do

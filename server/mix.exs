@@ -79,7 +79,10 @@ defmodule Orcasite.Mixfile do
       {:mjml, "~> 1.5.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
       {:ash_uuid, "~> 0.4"},
-      {:ash_graphql, github: "ash-project/ash_graphql", branch: "main"}
+      {:ash_graphql, github: "ash-project/ash_graphql", branch: "main"},
+      {:ash_json_api, "~> 0.33.0"},
+      {:open_api_spex, "~> 3.16"},
+      {:redoc_ui_plug, "~> 0.2.1"}
     ]
   end
 
