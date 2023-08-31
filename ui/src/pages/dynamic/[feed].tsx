@@ -22,7 +22,11 @@ const FeedPage: NextPageWithLayout = () => {
       <main>
         <Container maxWidth="sm">
           <Box>
-            <Breadcrumbs separator={<NavigateNext />} aria-label="breadcrumb">
+            <Breadcrumbs
+              separator={<NavigateNext />}
+              aria-label="breadcrumb"
+              sx={{ mt: 2 }}
+            >
               <Link href={"/"} color="inherit">
                 All hydrophones
               </Link>
