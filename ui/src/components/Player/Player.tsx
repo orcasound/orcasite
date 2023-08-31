@@ -117,6 +117,7 @@ export default function Player({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        px: [0, 2],
         position: "relative",
         [mobileOnly(theme)]: {
           position: "fixed",
