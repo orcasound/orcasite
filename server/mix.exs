@@ -20,7 +20,7 @@ defmodule Orcasite.Mixfile do
   def application do
     [
       mod: {Orcasite.Application, []},
-      extra_applications: [:logger, :runtime_tools, :scrivener_ecto, :inets]
+      extra_applications: [:logger, :runtime_tools, :inets]
     ]
   end
 
@@ -54,8 +54,6 @@ defmodule Orcasite.Mixfile do
       {:absinthe_plug, "~> 1.5"},
       # Provides helper functions for easy batching of Ecto associations
       {:dataloader, "~> 1.0.0"},
-      # Authenitication library for admin dashboard
-      {:guardian, "~> 2.3"},
       # Algorithm used by Comeonin to hash password
       {:bcrypt_elixir, "~> 3.0"},
       # JSON parser, works with Absinthe out of the box
@@ -63,7 +61,6 @@ defmodule Orcasite.Mixfile do
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 3.0"},
       {:jason, "~> 1.2"},
-      {:scrivener_ecto, "~> 2.0"},
       # Reverse proxy for proxying to nextjs app
       {:reverse_proxy_plug, "~> 2.1"},
       {:httpoison, "~> 1.8"},

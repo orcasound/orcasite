@@ -41,11 +41,6 @@ defmodule OrcasiteWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  pipeline :authorized do
-    plug(:parsers)
-    plug(OrcasiteWeb.Auth.AuthAccessPipeline)
-  end
-
   pipeline :api do
     plug(:parsers)
     plug(:accepts, ["json"])
