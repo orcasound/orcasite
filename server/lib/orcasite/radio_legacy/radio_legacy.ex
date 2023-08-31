@@ -35,11 +35,11 @@ defmodule Orcasite.RadioLegacy do
     |> Repo.all()
   end
 
-  def list_detections(params \\ %{pagination: %{page: 1, page_size: 10}}) do
+  def list_detections(params) do
     Detection
     |> order_by(desc: :inserted_at)
     |> preload(:feed)
-    |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
+    |> Repo.all()
   end
 
   def get_detection!(id), do: Repo.get!(Detection, id)
@@ -155,11 +155,11 @@ defmodule Orcasite.RadioLegacy do
     Map.merge(attrs, %{timestamp: timestamp})
   end
 
-  def list_candidates(params \\ %{pagination: %{page: 1, page_size: 10}}) do
+  def list_candidates(params) do
     Candidate
     |> order_by(desc: :inserted_at)
     |> preload([:feed, :detections])
-    |> Repo.paginate(page: params.pagination.page, page_size: params.pagination.page_size)
+    |> Repo.all()
   end
 
   def update_detection_timestamp(detection) do

@@ -41,11 +41,6 @@ defmodule OrcasiteWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  pipeline :authorized do
-    plug(:parsers)
-    plug(OrcasiteWeb.Auth.AuthAccessPipeline)
-  end
-
   pipeline :api do
     plug(:parsers)
     plug(:accepts, ["json"])
@@ -93,15 +88,23 @@ defmodule OrcasiteWeb.Router do
     sign_out_route OrcasiteWeb.SubscriberAuthController
     auth_routes_for Orcasite.Notifications.Subscriber, to: OrcasiteWeb.SubscriberAuthController
 
-    auth_routes_for Orcasite.Notifications.Subscription, to: OrcasiteWeb.SubscriptionAuthController
+    auth_routes_for Orcasite.Notifications.Subscription,
+      to: OrcasiteWeb.SubscriptionAuthController
+
     sign_out_route OrcasiteWeb.SubscriptionAuthController
   end
 
   scope "/" do
     pipe_through :browser
 
-    sign_in_route(overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default])
-    reset_route overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    sign_in_route(
+      overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
+
+    reset_route overrides: [
+                  OrcasiteWeb.AuthOverrides,
+                  AshAuthentication.Phoenix.Overrides.Default
+                ]
 
     sign_out_route OrcasiteWeb.AuthController
     auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController
@@ -155,5 +158,6 @@ defmodule OrcasiteWeb.Router do
     |> update_in([Access.key!(:assigns)], &Map.drop(&1, [:current_user]))
     |> Ash.PlugHelpers.set_actor(actor)
   end
+
   defp set_current_user_as_actor(conn, _opts), do: conn
 end
