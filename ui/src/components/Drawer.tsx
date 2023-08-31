@@ -63,7 +63,7 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
       swipeAreaWidth={100}
       disableSwipeToOpen={false}
       SwipeAreaProps={{
-        sx: { ...displayMobile },
+        sx: displayMobile,
       }}
       ModalProps={{
         keepMounted: true,
@@ -72,7 +72,6 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
         ...displayMobile,
         "& > .MuiPaper-root": {
           height: 1,
-          overflow: "visible",
         },
       }}
     >

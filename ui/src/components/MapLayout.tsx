@@ -7,8 +7,9 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
-import Player from "@/components/Player";
+import Player, { PlayerSpacer } from "@/components/Player";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import { displayMobile } from "@/styles/responsive";
 
 const MapWithNoSSR = dynamic(() => import("./Map"), {
   ssr: false,
@@ -60,7 +61,13 @@ function MapLayout({ children }: { children: ReactNode }) {
   return (
     <Box
       sx={{
-        height: "100%",
+        // use `dvh` for dynamic viewport height to handle mobile browser weirdness
+        // but fallback to `vh` for browsers that don't support `dvh`
+        // `&` is a workaround because sx prop can't have identical keys
+        "&": {
+          height: "100dvh",
+        },
+        height: "100vh",
         display: "flex",
         flexDirection: "column",
       }}
@@ -85,6 +92,7 @@ function MapLayout({ children }: { children: ReactNode }) {
               feeds={feeds}
             />
           </Box>
+          <PlayerSpacer sx={displayMobile} />
           <Player currentFeed={currentFeed} />
         </Box>
       </Box>

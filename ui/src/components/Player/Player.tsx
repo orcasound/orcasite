@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import useTimestampFetcher from "@/hooks/useTimestampFetcher";
+import { mobileOnly } from "@/styles/responsive";
 
 import DetectionButton from "./DetectionButton";
 import DetectionDialog from "./DetectionDialog";
@@ -109,17 +110,23 @@ export default function Player({
 
   return (
     <Box
-      sx={{
-        minHeight: (theme) => theme.spacing(10),
+      sx={(theme) => ({
+        minHeight: theme.spacing(10),
         color: "base.contrastText",
         backgroundColor: "base.main",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         position: "relative",
+        [mobileOnly(theme)]: {
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
         // Keep player above the sliding drawer
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-      }}
+        zIndex: theme.zIndex.drawer + 1,
+      })}
     >
       <Box display="none">
         <VideoJS options={playerOptions} onReady={handleReady} />
