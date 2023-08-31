@@ -33,7 +33,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
           |> Ash.Query.for_read(:since_notification, %{notification_id: notif_id})
           |> Orcasite.Notifications.read!()
       end
-      |> Enum.filter(& &1.id != notif_instance.notification_id)
+      |> Enum.filter(&(&1.id != notif_instance.notification_id))
 
     :ok = Orcasite.RateLimiter.continue?(:ses, 1)
 
