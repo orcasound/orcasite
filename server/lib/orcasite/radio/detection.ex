@@ -41,12 +41,34 @@ defmodule Orcasite.Radio.Detection do
         default_limit 100
       end
 
-      prepare build(load: [:uuid])
+      prepare build(load: [:uuid], sort: [inserted_at: :desc])
     end
 
     read :read do
       primary? true
-      prepare build(load: [:uuid])
+      prepare build(load: [:uuid], sort: [inserted_at: :desc])
+    end
+
+    read :by_detection_type do
+      pagination do
+        offset? true
+        countable true
+        default_limit 100
+      end
+
+      argument :detection_type, :atom do
+        allow_nil? false
+        constraints one_of: [:orca, :vessel, :other]
+      end
+
+      prepare build(load: [:uuid], sort: [inserted_at: :desc])
+
+      filter expr(
+               fragment(
+                 "description ilike ?",
+                 "[" <> ^arg(:detection_type) <> "]%"
+               )
+             )
     end
 
     update :update do
@@ -169,6 +191,19 @@ defmodule Orcasite.Radio.Detection do
     mutations do
       create :submit_detection, :submit_detection
     end
+  end
+
+  admin do
+    table_columns [
+      :id,
+      :feed_id,
+      :playlist_timestamp,
+      :player_offset,
+      :listener_count,
+      :description,
+      :candidate_id,
+      :inserted_at
+    ]
   end
 
   defp datetime_min(time_1, time_2) do

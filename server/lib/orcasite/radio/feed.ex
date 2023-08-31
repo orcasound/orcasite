@@ -4,7 +4,7 @@ defmodule Orcasite.Radio.Feed do
     data_layer: AshPostgres.DataLayer
 
   attributes do
-    uuid_attribute :id, prefix: "feed"
+    uuid_attribute(:id, prefix: "feed")
 
     attribute :name, :string, allow_nil?: false
     attribute :node_name, :string, allow_nil?: false
@@ -76,7 +76,7 @@ defmodule Orcasite.Radio.Feed do
               Orcasite.Types.LatLng,
               {Orcasite.Radio.Calculations.LatLng,
                keys: [:location_point], select: [:location_point]},
-               allow_nil?: false
+              allow_nil?: false
 
     calculate :lat_lng_string,
               :string,
@@ -96,6 +96,7 @@ defmodule Orcasite.Radio.Feed do
     table_columns [:id, :name, :slug, :node_name, :location_point]
 
     format_fields location_point: {Jason, :encode!, []}, lat_lng: {Jason, :encode!, []}
+
     form do
       field :intro_html, type: :long_text
     end
