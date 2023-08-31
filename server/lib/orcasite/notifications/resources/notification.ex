@@ -49,6 +49,7 @@ defmodule Orcasite.Notifications.Notification do
 
           {:ok, record}
         end)
+      end
     end
 
     create :notify_confirmed_candidate do
