@@ -9,7 +9,7 @@ import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
 import Player, { PlayerSpacer } from "@/components/Player";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
-import { displayMobile } from "@/styles/responsive";
+import { displayMobileOnly } from "@/styles/responsive";
 
 const MapWithNoSSR = dynamic(() => import("./Map"), {
   ssr: false,
@@ -92,7 +92,7 @@ function MapLayout({ children }: { children: ReactNode }) {
               feeds={feeds}
             />
           </Box>
-          <PlayerSpacer sx={displayMobile} />
+          <PlayerSpacer sx={displayMobileOnly} />
           <Player currentFeed={currentFeed} />
         </Box>
       </Box>

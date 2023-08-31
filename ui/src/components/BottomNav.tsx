@@ -7,11 +7,11 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-import { displayMobile } from "@/styles/responsive";
+import { displayMobileOnly } from "@/styles/responsive";
 
 export default function BottomNav() {
   return (
-    <Box sx={displayMobile}>
+    <Box sx={displayMobileOnly}>
       <Paper
         sx={{
           position: "fixed",

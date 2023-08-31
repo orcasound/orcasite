@@ -10,7 +10,7 @@ import { ReactNode, useState } from "react";
 
 import { PlayerSpacer } from "@/components/Player";
 import useIsMobile from "@/hooks/useIsMobile";
-import { displayDesktop, displayMobile } from "@/styles/responsive";
+import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 export default function Drawer({
   children,
@@ -63,13 +63,13 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
       swipeAreaWidth={100}
       disableSwipeToOpen={false}
       SwipeAreaProps={{
-        sx: displayMobile,
+        sx: displayMobileOnly,
       }}
       ModalProps={{
         keepMounted: true,
       }}
       sx={{
-        ...displayMobile,
+        ...displayMobileOnly,
         "& > .MuiPaper-root": {
           height: 1,
         },
@@ -94,7 +94,7 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
         if (!open) onOpen();
       }}
       sx={(theme) => ({
-        ...displayDesktop,
+        ...displayDesktopOnly,
         width: theme.breakpoints.values.sm,
         maxWidth: 0.5,
         flexShrink: 0,
