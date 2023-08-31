@@ -1,6 +1,6 @@
 defmodule Orcasite.Notifications.Subscriber do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource, AshAuthentication],
+    extensions: [AshAdmin.Resource, AshAuthentication, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
   alias Orcasite.Notifications.{Subscription}
@@ -16,8 +16,36 @@ defmodule Orcasite.Notifications.Subscriber do
     identity :id, [:id]
   end
 
+  code_interface do
+    define_for Orcasite.Notifications
+    define :by_email, args: [:email]
+  end
+
+  validations do
+    validate fn changeset ->
+      # Check if email subscriber already exists
+      with email when is_binary(email) <- changeset |> Ash.Changeset.get_argument(:email),
+           %{action_type: :create} <- changeset,
+           {:get, {:error, _}} <- {:get, Orcasite.Notifications.Subscriber.by_email(email)} do
+        :ok
+      else
+        {:get, other} ->
+          {:error, [field: :email, message: "email already exists"]}
+
+        err ->
+          :ok
+      end
+    end
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
+
+    read :by_email do
+      get? true
+      argument :email, :string
+      filter expr(fragment("lower(meta->>'email') = lower(?)", ^arg(:email)))
+    end
 
     create :individual_subscriber do
       description "Create a subscriber for an individual"
@@ -37,6 +65,38 @@ defmodule Orcasite.Notifications.Subscriber do
         })
       end
     end
+
+    create :confirmed_candidate_subscribe do
+      argument :name, :string
+      argument :email, :string
+
+      change set_attribute(:name, arg(:name))
+      change set_attribute(:subscriber_type, :individual)
+
+      change fn changeset, _context ->
+        meta =
+          case Orcasite.Accounts.User.by_email(Ash.Changeset.get_argument(changeset, :email)) do
+            {:ok, %{id: user_id}} -> %{user_id: user_id}
+            _ -> %{}
+          end
+          |> Map.put(:email, Ash.Changeset.get_argument(changeset, :email))
+
+        changeset
+        |> Ash.Changeset.change_attribute(:meta, meta)
+        |> Ash.Changeset.manage_relationship(
+          :subscriptions,
+          %{
+            name: Ash.Changeset.get_argument(changeset, :name),
+            event_type: "confirmed_candidate",
+            meta: %{
+              email: Ash.Changeset.get_argument(changeset, :email),
+              name: Ash.Changeset.get_argument(changeset, :name)
+            }
+          },
+          type: :create
+        )
+      end
+    end
   end
 
   postgres do
@@ -52,7 +112,8 @@ defmodule Orcasite.Notifications.Subscriber do
         identity_field :id
 
         single_use_token? false
-        token_lifetime 1_209_600 # 14 days (in minutes)
+        # 14 days (in minutes)
+        token_lifetime 1_209_600
 
         sender fn subscriber, token, _opts ->
           IO.inspect({subscriber, token},
@@ -68,6 +129,7 @@ defmodule Orcasite.Notifications.Subscriber do
     tokens do
       enabled? true
       token_resource Orcasite.Notifications.Token
+
       signing_secret fn _, _ ->
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
@@ -100,6 +162,16 @@ defmodule Orcasite.Notifications.Subscriber do
 
     form do
       field :event_type, type: :default
+    end
+  end
+
+  json_api do
+    type "subscriber"
+
+    routes do
+      base "/subscribers"
+
+      post :confirmed_candidate_subscribe
     end
   end
 end

@@ -54,6 +54,22 @@ defmodule OrcasiteWeb.Router do
     plug AshGraphql.Plug
   end
 
+  scope "/api/json" do
+    pipe_through(:api)
+
+    forward "/swaggerui",
+            OpenApiSpex.Plug.SwaggerUI,
+            path: "/api/json/open_api",
+            title: "Orcasite JSON-API - Swagger UI",
+            default_model_expand_depth: 4
+
+    forward "/redoc",
+            Redoc.Plug.RedocUI,
+            spec_url: "/api/json/open_api"
+
+    forward "/", OrcasiteWeb.JsonApiRouter
+  end
+
   scope "/graphql" do
     pipe_through(:graphql)
 
