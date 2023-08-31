@@ -9,9 +9,7 @@ defmodule Orcasite.Repo.Migrations.AddActiveToNotifications do
 
   def up do
     alter table(:notifications) do
-      # Attribute removal has been commented out to avoid data loss. See the migration generator documentation for more
-      # If you uncomment this, be sure to also uncomment the corresponding attribute *addition* in the `down` migration
-      # remove :processed_at
+      remove :processed_at
 
       add :active, :boolean, default: true
     end
@@ -20,12 +18,7 @@ defmodule Orcasite.Repo.Migrations.AddActiveToNotifications do
   def down do
     alter table(:notifications) do
       remove :active
-      # This is the `down` migration of the statement:
-      #
-      #     remove :processed_at
-      #
-
-      # add :processed_at, :utc_datetime_usec
+      add :processed_at, :utc_datetime_usec
     end
   end
 end
