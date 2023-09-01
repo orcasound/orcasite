@@ -26,6 +26,9 @@ defmodule Orcasite.Radio.Detection do
     attribute :listener_count, :integer
     attribute :timestamp, :utc_datetime_usec
     attribute :description, :string
+    attribute :category, :atom do
+      constraints one_of: [:orca, :vessel, :other]
+    end
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -56,19 +59,14 @@ defmodule Orcasite.Radio.Detection do
         default_limit 100
       end
 
-      argument :detection_type, :atom do
+      argument :category, :atom do
         allow_nil? false
         constraints one_of: [:orca, :vessel, :other]
       end
 
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
 
-      filter expr(
-               fragment(
-                 "description ilike ?",
-                 "[" <> ^arg(:detection_type) <> "]%"
-               )
-             )
+      filter expr(category == ^arg(:category))
     end
 
     update :update do
@@ -88,18 +86,20 @@ defmodule Orcasite.Radio.Detection do
     end
 
     create :submit_detection do
-      accept [:playlist_timestamp, :player_offset, :listener_count, :description]
+      accept [:playlist_timestamp, :player_offset, :listener_count, :description, :category]
       argument :feed_id, :string, allow_nil?: false
 
       argument :playlist_timestamp, :integer, allow_nil?: false
       argument :player_offset, :decimal, allow_nil?: false
       argument :listener_count, :integer, allow_nil?: true
       argument :description, :string, allow_nil?: false
+      argument :category, :atom, allow_nil?: false, constraints: [one_of: [:orca, :vessel, :other]]
 
       change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
       change set_attribute(:player_offset, arg(:player_offset))
       change set_attribute(:listener_count, arg(:listener_count))
       change set_attribute(:description, arg(:description))
+      change set_attribute(:category, arg(:category))
 
       change manage_relationship(:feed_id, :feed, type: :append)
 

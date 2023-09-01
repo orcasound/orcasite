@@ -138,6 +138,7 @@ export type CandidateSortInput = {
 export type Detection = {
   __typename?: "Detection";
   candidate?: Maybe<Candidate>;
+  category?: Maybe<DetectionCategory>;
   description?: Maybe<Scalars["String"]["output"]>;
   feed?: Maybe<Feed>;
   id: Scalars["ID"]["output"];
@@ -147,6 +148,23 @@ export type Detection = {
   sourceIp?: Maybe<Scalars["String"]["output"]>;
   timestamp?: Maybe<Scalars["DateTime"]["output"]>;
   uuid?: Maybe<Scalars["String"]["output"]>;
+};
+
+export enum DetectionCategory {
+  Orca = "ORCA",
+  Other = "OTHER",
+  Vessel = "VESSEL",
+}
+
+export type DetectionFilterCategory = {
+  eq?: InputMaybe<DetectionCategory>;
+  greaterThan?: InputMaybe<DetectionCategory>;
+  greaterThanOrEqual?: InputMaybe<DetectionCategory>;
+  in?: InputMaybe<Array<InputMaybe<DetectionCategory>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<DetectionCategory>;
+  lessThanOrEqual?: InputMaybe<DetectionCategory>;
+  notEq?: InputMaybe<DetectionCategory>;
 };
 
 export type DetectionFilterDescription = {
@@ -167,6 +185,7 @@ export type DetectionFilterId = {
 export type DetectionFilterInput = {
   and?: InputMaybe<Array<DetectionFilterInput>>;
   candidate?: InputMaybe<CandidateFilterInput>;
+  category?: InputMaybe<DetectionFilterCategory>;
   description?: InputMaybe<DetectionFilterDescription>;
   feed?: InputMaybe<FeedFilterInput>;
   id?: InputMaybe<DetectionFilterId>;
@@ -234,6 +253,7 @@ export type DetectionFilterTimestamp = {
 };
 
 export enum DetectionSortField {
+  Category = "CATEGORY",
   Description = "DESCRIPTION",
   Id = "ID",
   ListenerCount = "LISTENER_COUNT",
@@ -474,6 +494,7 @@ export enum SortOrder {
 }
 
 export type SubmitDetectionInput = {
+  category: DetectionCategory;
   description: Scalars["String"]["input"];
   feedId: Scalars["String"]["input"];
   listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
@@ -505,6 +526,7 @@ export type SubmitDetectionMutationVariables = Exact<{
   playerOffset: Scalars["Decimal"]["input"];
   description: Scalars["String"]["input"];
   listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
+  category: DetectionCategory;
 }>;
 
 export type SubmitDetectionMutation = {
@@ -551,9 +573,9 @@ export type FeedsQuery = {
 };
 
 export const SubmitDetectionDocument = `
-    mutation submitDetection($feedId: String!, $playlistTimestamp: Int!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int) {
+    mutation submitDetection($feedId: String!, $playlistTimestamp: Int!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int, $category: DetectionCategory!) {
   submitDetection(
-    input: {feedId: $feedId, playlistTimestamp: $playlistTimestamp, playerOffset: $playerOffset, listenerCount: $listenerCount, description: $description}
+    input: {feedId: $feedId, playlistTimestamp: $playlistTimestamp, playerOffset: $playerOffset, listenerCount: $listenerCount, description: $description, category: $category}
   ) {
     result {
       id
