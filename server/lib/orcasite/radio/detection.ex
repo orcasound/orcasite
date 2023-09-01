@@ -52,7 +52,7 @@ defmodule Orcasite.Radio.Detection do
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
     end
 
-    read :by_detection_type do
+    read :by_category do
       pagination do
         offset? true
         countable true
