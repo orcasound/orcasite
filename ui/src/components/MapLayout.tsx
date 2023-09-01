@@ -5,11 +5,11 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 
-import BottomNav from "@/components/BottomNav";
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
-import Player from "@/components/Player";
+import Player, { PlayerSpacer } from "@/components/Player";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import { displayMobileOnly } from "@/styles/responsive";
 
 const MapWithNoSSR = dynamic(() => import("./Map"), {
   ssr: false,
@@ -59,7 +59,19 @@ function MapLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        // use `dvh` for dynamic viewport height to handle mobile browser weirdness
+        // but fallback to `vh` for browsers that don't support `dvh`
+        // `&` is a workaround because sx prop can't have identical keys
+        "&": {
+          height: "100dvh",
+        },
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Header />
       <Box sx={{ flexGrow: 1, display: "flex" }}>
         <Drawer onClose={invalidateSize} onOpen={invalidateSize}>
@@ -70,6 +82,7 @@ function MapLayout({ children }: { children: ReactNode }) {
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
+            minWidth: 0,
           }}
         >
           <Box sx={{ flexGrow: 1 }}>
@@ -79,10 +92,10 @@ function MapLayout({ children }: { children: ReactNode }) {
               feeds={feeds}
             />
           </Box>
+          <PlayerSpacer sx={displayMobileOnly} />
           <Player currentFeed={currentFeed} />
         </Box>
       </Box>
-      <BottomNav />
     </Box>
   );
 }
