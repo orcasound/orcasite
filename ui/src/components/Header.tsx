@@ -3,7 +3,7 @@ import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 
 import Link from "@/components/Link";
-import { displayDesktop, displayMobile } from "@/styles/responsive";
+import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 export default function Header() {
   return (
@@ -30,7 +30,7 @@ function Mobile() {
   };
 
   return (
-    <Box sx={displayMobile}>
+    <Box sx={displayMobileOnly}>
       <Box
         sx={{
           flexGrow: 1,
@@ -55,7 +55,7 @@ function Mobile() {
 
 function Desktop() {
   return (
-    <Box sx={displayDesktop}>
+    <Box sx={displayDesktopOnly}>
       <Brand />
     </Box>
   );

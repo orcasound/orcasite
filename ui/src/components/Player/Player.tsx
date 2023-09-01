@@ -1,10 +1,12 @@
 import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import useTimestampFetcher from "@/hooks/useTimestampFetcher";
+import { mobileOnly } from "@/styles/responsive";
 
 import DetectionButton from "./DetectionButton";
 import DetectionDialog from "./DetectionDialog";
@@ -108,16 +110,24 @@ export default function Player({
 
   return (
     <Box
-      sx={{
-        minHeight: 80,
+      sx={(theme) => ({
+        minHeight: theme.spacing(10),
         color: "base.contrastText",
         backgroundColor: "base.main",
-        mb: [8, 0],
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        px: [0, 2],
         position: "relative",
-      }}
+        [mobileOnly(theme)]: {
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
+        // Keep player above the sliding drawer
+        zIndex: theme.zIndex.drawer + 1,
+      })}
     >
       <Box display="none">
         <VideoJS options={playerOptions} onReady={handleReady} />
@@ -135,22 +145,44 @@ export default function Player({
             <DetectionButton />
           </DetectionDialog>
         )}
-      <Box mx={2}>
+      <Box mx={1}>
         <PlayPauseButton
           playerStatus={playerStatus}
           onClick={handlePlayPauseClick}
           disabled={!currentFeed}
         />
       </Box>
-      <Box mx={2}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
-      <Box mx={2}>
+      <Box mx={1}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
+      <Box
+        sx={{
+          mx: 1,
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }}
+      >
         {currentFeed
           ? `${currentFeed.name} - ${currentFeed.nodeName}`
           : "Select a location to start listening live"}
       </Box>
-      <Box sx={{ mx: 4, flexGrow: 1, textAlign: "end" }}>
+      <Box
+        sx={{
+          mx: 1,
+          flexGrow: 1,
+          textAlign: "end",
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }}
+      >
         {currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
       </Box>
     </Box>
   );
 }
+
+// Utility component to help with spacing
+// Just a box that's the same height as the player
+export const PlayerSpacer = styled(Box)(({ theme }) => ({
+  height: theme.spacing(10),
+}));
