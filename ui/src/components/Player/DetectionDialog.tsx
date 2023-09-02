@@ -12,14 +12,13 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
+import type { DetectionCategory } from "@/graphql/generated";
 import { useSubmitDetectionMutation } from "@/graphql/generated";
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
 import DetectionCategoryButton from "./DetectionCategoryButton";
-
-type DetectionCategory = "orca" | "vessel" | "other";
 
 export default function DetectionDialog({
   children,
@@ -40,7 +39,7 @@ export default function DetectionDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [category, setCategory] = useState<DetectionCategory>();
+  const [category, setCategory] = useState<DetectionCategory | undefined>();
   const [description, setDescription] = useState("");
   const [playerOffset, setPlayerOffset] = useState<number>();
   const [playlistTimestamp, setPlaylistTimestamp] = useState<number>();
@@ -69,9 +68,7 @@ export default function DetectionDialog({
     e: React.MouseEvent<HTMLElement>,
     newCategory: DetectionCategory,
   ) => {
-    if (newCategory) {
-      setCategory(newCategory);
-    }
+    setCategory(newCategory);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -89,7 +86,8 @@ export default function DetectionDialog({
       feedId &&
       playlistTimestamp &&
       isPlaying &&
-      playerOffset !== undefined
+      playerOffset !== undefined &&
+      category
     ) {
       submitDetection.mutate({
         feedId,
@@ -97,6 +95,7 @@ export default function DetectionDialog({
         playerOffset,
         // TODO: send category as a separate field
         description: `[${category}] ${description}`,
+        category: category,
         listenerCount,
       });
     }

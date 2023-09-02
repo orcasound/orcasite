@@ -4,6 +4,7 @@ mutation submitDetection(
   $playerOffset: Decimal!
   $description: String!
   $listenerCount: Int
+  $category: DetectionCategory!
 ) {
   submitDetection(
     input: {
@@ -12,6 +13,7 @@ mutation submitDetection(
       playerOffset: $playerOffset
       listenerCount: $listenerCount
       description: $description
+      category: $category
     }
   ) {
     result {
