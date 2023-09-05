@@ -16,7 +16,10 @@ defmodule Orcasite.Notifications.Notification do
 
   code_interface do
     define_for Orcasite.Notifications
-    define :notify_new_detection, action: :notify_new_detection, args: [:detection_id, :node, :description, :listener_count]
+
+    define :notify_new_detection,
+      action: :notify_new_detection,
+      args: [:detection_id, :node, :description, :listener_count]
 
     define :notify_confirmed_candidate,
       action: :notify_confirmed_candidate,
@@ -33,16 +36,34 @@ defmodule Orcasite.Notifications.Notification do
       manual Orcasite.Notifications.ManualReadNotificationsSince
     end
 
+    update :cancel_notification do
+      change set_attribute(:active, false)
+      change fn changeset, _context ->
+        require Ecto.Query
+        changeset
+        |> Ash.Changeset.after_action(fn _, record ->
+          Oban.Job
+          |> Ecto.Query.where(worker: "Orcasite.Notifications.Workers.SendNotificationEmail")
+          |> Ecto.Query.where([o], o.args["notification_id"] == ^record.id)
+          |> Oban.cancel_all_jobs()
+
+          {:ok, record}
+        end)
+      end
+    end
+
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       accept [:candidate_id]
       argument :candidate_id, :integer
       argument :node, :string, allow_nil?: false
+
       argument :message, :string do
         description """
         What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
         and clicks can be heard at Orcasound Lab!')
         """
+
         allow_nil? false
       end
 
@@ -90,9 +111,7 @@ defmodule Orcasite.Notifications.Notification do
     uuid_primary_key :id
 
     attribute :meta, :map
-
-    attribute :processed_at, :utc_datetime_usec,
-      description: "The time at which the notification was processed."
+    attribute :active, :boolean, default: true
 
     attribute :event_type, :atom do
       constraints one_of: Event.types()
