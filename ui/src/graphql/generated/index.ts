@@ -271,6 +271,7 @@ export type DetectionSortInput = {
 export type Feed = {
   __typename?: "Feed";
   id: Scalars["ID"]["output"];
+  imageUrl?: Maybe<Scalars["String"]["output"]>;
   introHtml?: Maybe<Scalars["String"]["output"]>;
   latLng: LatLng;
   latLngString?: Maybe<Scalars["String"]["output"]>;
@@ -286,9 +287,21 @@ export type FeedFilterId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+export type FeedFilterImageUrl = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type FeedFilterInput = {
   and?: InputMaybe<Array<FeedFilterInput>>;
   id?: InputMaybe<FeedFilterId>;
+  imageUrl?: InputMaybe<FeedFilterImageUrl>;
   introHtml?: InputMaybe<FeedFilterIntroHtml>;
   locationPoint?: InputMaybe<FeedFilterLocationPoint>;
   name?: InputMaybe<FeedFilterName>;
@@ -347,6 +360,7 @@ export type FeedFilterSlug = {
 
 export enum FeedSortField {
   Id = "ID",
+  ImageUrl = "IMAGE_URL",
   IntroHtml = "INTRO_HTML",
   LocationPoint = "LOCATION_POINT",
   Name = "NAME",
@@ -551,6 +565,7 @@ export type FeedQuery = {
     nodeName: string;
     introHtml?: string | null;
     thumbUrl?: string | null;
+    imageUrl?: string | null;
     mapUrl?: string | null;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
   };
@@ -566,6 +581,7 @@ export type FeedsQuery = {
     name: string;
     slug: string;
     nodeName: string;
+    imageUrl?: string | null;
     thumbUrl?: string | null;
     mapUrl?: string | null;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
@@ -630,6 +646,7 @@ export const FeedDocument = `
     }
     introHtml
     thumbUrl
+    imageUrl
     mapUrl
   }
 }
@@ -659,6 +676,7 @@ export const FeedsDocument = `
       lat
       lng
     }
+    imageUrl
     thumbUrl
     mapUrl
   }

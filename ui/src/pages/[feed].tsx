@@ -40,9 +40,9 @@ const FeedPage: NextPageWithLayout = () => {
             <div
               style={{ position: "relative", width: "100%", height: "15em" }}
             >
-              {feed.thumbUrl && (
+              {feed.imageUrl && (
                 <Image
-                  src={feed.thumbUrl}
+                  src={feed.imageUrl}
                   layout="fill"
                   alt=""
                   objectFit="contain"

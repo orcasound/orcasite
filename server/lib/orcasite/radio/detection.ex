@@ -14,6 +14,7 @@ defmodule Orcasite.Radio.Detection do
       index [:player_offset]
       index [:timestamp]
       index [:description]
+      index [:inserted_at]
     end
   end
 
@@ -26,6 +27,7 @@ defmodule Orcasite.Radio.Detection do
     attribute :listener_count, :integer
     attribute :timestamp, :utc_datetime_usec
     attribute :description, :string
+
     attribute :category, :atom do
       constraints one_of: [:orca, :vessel, :other]
     end
@@ -93,7 +95,10 @@ defmodule Orcasite.Radio.Detection do
       argument :player_offset, :decimal, allow_nil?: false
       argument :listener_count, :integer, allow_nil?: true
       argument :description, :string, allow_nil?: false
-      argument :category, :atom, allow_nil?: false, constraints: [one_of: [:orca, :vessel, :other]]
+
+      argument :category, :atom,
+        allow_nil?: false,
+        constraints: [one_of: [:orca, :vessel, :other]]
 
       change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
       change set_attribute(:player_offset, arg(:player_offset))
