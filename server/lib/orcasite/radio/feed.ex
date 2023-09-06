@@ -11,6 +11,7 @@ defmodule Orcasite.Radio.Feed do
     attribute :slug, :string, allow_nil?: false
     attribute :location_point, :geometry, allow_nil?: false
     attribute :intro_html, :string, default: ""
+    attribute :image_url, :string, default: ""
 
     create_timestamp :inserted_at
     update_timestamp :updated_at

@@ -12,11 +12,12 @@ defmodule Orcasite.Radio.Candidate do
     custom_indexes do
       index [:min_time]
       index [:max_time]
+      index [:inserted_at]
     end
   end
 
   attributes do
-    uuid_attribute :id, prefix: "cand"
+    uuid_attribute(:id, prefix: "cand")
 
     attribute :detection_count, :integer
     attribute :min_time, :utc_datetime_usec
@@ -31,7 +32,7 @@ defmodule Orcasite.Radio.Candidate do
 
     read :read do
       primary? true
-      prepare build(load: [:uuid])
+      prepare build(load: [:uuid], sort: [inserted_at: :desc])
     end
 
     read :index do
@@ -41,7 +42,7 @@ defmodule Orcasite.Radio.Candidate do
         default_limit 100
       end
 
-      prepare build(load: [:uuid])
+      prepare build(load: [:uuid], sort: [inserted_at: :desc])
     end
 
     create :create do
