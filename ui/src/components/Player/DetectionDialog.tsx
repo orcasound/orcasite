@@ -89,7 +89,6 @@ export default function DetectionDialog({
       playerOffset !== undefined &&
       category
     ) {
-      console.log("submitting detection with category", category);
       submitDetection.mutate({
         feedId,
         playlistTimestamp,
