@@ -38,8 +38,10 @@ defmodule Orcasite.Notifications.Notification do
 
     update :cancel_notification do
       change set_attribute(:active, false)
+
       change fn changeset, _context ->
         require Ecto.Query
+
         changeset
         |> Ash.Changeset.after_action(fn _, record ->
           Oban.Job
@@ -82,7 +84,7 @@ defmodule Orcasite.Notifications.Notification do
     create :notify_new_detection do
       description "Create a notification for a new detection (e.g. button push from user)."
       accept [:detection_id]
-      argument :detection_id, :integer
+      argument :detection_id, :string
       argument :node, :string, allow_nil?: false
       argument :description, :string, allow_nil?: true
       argument :listener_count, :integer, allow_nil?: true
