@@ -68,7 +68,6 @@ export default function DetectionDialog({
     e: React.MouseEvent<HTMLElement>,
     newCategory: DetectionCategory,
   ) => {
-    console.log(newCategory);
     setCategory(newCategory);
   };
 
