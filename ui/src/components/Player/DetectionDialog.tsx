@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-import type { DetectionCategory } from "@/graphql/generated";
+import { DetectionCategory } from "@/graphql/generated";
 import { useSubmitDetectionMutation } from "@/graphql/generated";
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
@@ -39,7 +39,7 @@ export default function DetectionDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [category, setCategory] = useState<DetectionCategory | undefined>();
+  const [category, setCategory] = useState<DetectionCategory>();
   const [description, setDescription] = useState("");
   const [playerOffset, setPlayerOffset] = useState<number>();
   const [playlistTimestamp, setPlaylistTimestamp] = useState<number>();
@@ -68,6 +68,7 @@ export default function DetectionDialog({
     e: React.MouseEvent<HTMLElement>,
     newCategory: DetectionCategory,
   ) => {
+    console.log(newCategory);
     setCategory(newCategory);
   };
 
@@ -89,22 +90,22 @@ export default function DetectionDialog({
       playerOffset !== undefined &&
       category
     ) {
+      console.log("submitting detection with category", category);
       submitDetection.mutate({
         feedId,
         playlistTimestamp,
         playerOffset,
-        // TODO: send category as a separate field
         description: `[${category}] ${description}`,
-        category: category,
+        category,
         listenerCount,
       });
     }
   };
 
   const categoryButtons = [
-    { id: "orca", iconImage: whaleFlukeIconImage },
-    { id: "vessel", iconImage: vesselIconImage },
-    { id: "other", iconImage: wavesIconImage },
+    { id: DetectionCategory.Orca, iconImage: whaleFlukeIconImage },
+    { id: DetectionCategory.Vessel, iconImage: vesselIconImage },
+    { id: DetectionCategory.Other, iconImage: wavesIconImage },
   ];
 
   return (

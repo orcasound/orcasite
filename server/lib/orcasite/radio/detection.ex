@@ -133,6 +133,9 @@ defmodule Orcasite.Radio.Detection do
               detection.description,
               detection.listener_count
             )
+            |> IO.inspect(
+              label: "new_not (server/lib/orcasite/radio/detection.ex:#{__ENV__.line})"
+            )
           end)
 
           {:ok, detection}
