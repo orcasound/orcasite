@@ -1,6 +1,6 @@
 defmodule OrcasiteWeb.JsonApiRouter do
   use AshJsonApi.Api.Router,
-    apis: [Orcasite.Notifications],
+    apis: [Orcasite.Notifications, Orcasite.Radio],
     json_schema: "/json_schema",
     open_api: "/open_api",
     modify_open_api: {__MODULE__, :modify_open_api, []}

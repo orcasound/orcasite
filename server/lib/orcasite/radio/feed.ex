@@ -1,6 +1,6 @@
 defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
   attributes do
@@ -109,6 +109,16 @@ defmodule Orcasite.Radio.Feed do
     queries do
       read_one :feed, :get_by_slug, allow_nil?: false
       list :feeds, :read
+    end
+  end
+
+  json_api do
+    type "feed"
+
+    routes do
+      base "/feeds"
+
+      index :read
     end
   end
 
