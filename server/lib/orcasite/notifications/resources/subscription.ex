@@ -50,7 +50,13 @@ defmodule Orcasite.Notifications.Subscription do
   end
 
   actions do
-    defaults [:create, :read, :update, :destroy]
+    defaults [:create, :read, :destroy]
+
+    update :update do
+      argument :subscriber_id, :uuid
+
+      change manage_relationship(:subscriber_id, :subscriber, type: :append)
+    end
 
     create :email_subscribe do
       description "Create a subscription for an individual email"
