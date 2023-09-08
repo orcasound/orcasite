@@ -571,6 +571,48 @@ export type FeedQuery = {
   };
 };
 
+export type CandidatesQueryVariables = Exact<{
+  filter?: InputMaybe<CandidateFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<
+    Array<InputMaybe<CandidateSortInput>> | InputMaybe<CandidateSortInput>
+  >;
+}>;
+
+export type CandidatesQuery = {
+  __typename?: "RootQueryType";
+  candidates?: {
+    __typename?: "PageOfCandidate";
+    count?: number | null;
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "Candidate";
+      id: string;
+      minTime?: Date | null;
+      maxTime?: Date | null;
+      detectionCount?: number | null;
+      feed?: {
+        __typename?: "Feed";
+        id: string;
+        slug: string;
+        name: string;
+        nodeName: string;
+      } | null;
+      detections: Array<{
+        __typename?: "Detection";
+        id: string;
+        category?: DetectionCategory | null;
+        description?: string | null;
+        listenerCount?: number | null;
+        playlistTimestamp?: number | null;
+        playerOffset?: number | null;
+        timestamp?: Date | null;
+      }>;
+    }> | null;
+  } | null;
+};
+
 export type FeedsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type FeedsQuery = {
@@ -665,6 +707,56 @@ useFeedQuery.document = FeedDocument;
 useFeedQuery.getKey = (variables: FeedQueryVariables) => ["feed", variables];
 useFeedQuery.fetcher = (variables: FeedQueryVariables) =>
   fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables);
+export const CandidatesDocument = `
+    query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {
+  candidates(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+    count
+    hasNextPage
+    results {
+      id
+      minTime
+      maxTime
+      detectionCount
+      feed {
+        id
+        slug
+        name
+        nodeName
+      }
+      detections {
+        id
+        category
+        description
+        listenerCount
+        playlistTimestamp
+        playerOffset
+        timestamp
+      }
+    }
+  }
+}
+    `;
+export const useCandidatesQuery = <TData = CandidatesQuery, TError = unknown>(
+  variables?: CandidatesQueryVariables,
+  options?: UseQueryOptions<CandidatesQuery, TError, TData>,
+) =>
+  useQuery<CandidatesQuery, TError, TData>(
+    variables === undefined ? ["candidates"] : ["candidates", variables],
+    fetcher<CandidatesQuery, CandidatesQueryVariables>(
+      CandidatesDocument,
+      variables,
+    ),
+    options,
+  );
+useCandidatesQuery.document = CandidatesDocument;
+
+useCandidatesQuery.getKey = (variables?: CandidatesQueryVariables) =>
+  variables === undefined ? ["candidates"] : ["candidates", variables];
+useCandidatesQuery.fetcher = (variables?: CandidatesQueryVariables) =>
+  fetcher<CandidatesQuery, CandidatesQueryVariables>(
+    CandidatesDocument,
+    variables,
+  );
 export const FeedsDocument = `
     query feeds {
   feeds {
