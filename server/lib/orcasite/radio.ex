@@ -1,5 +1,5 @@
 defmodule Orcasite.Radio do
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
 
   resources do
     registry Orcasite.Radio.Registry
@@ -11,5 +11,9 @@ defmodule Orcasite.Radio do
 
   graphql do
     authorize? false
+  end
+
+  json_api do
+    log_errors? true
   end
 end
