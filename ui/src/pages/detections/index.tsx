@@ -1,6 +1,8 @@
 import {
   Box,
+  Button,
   Container,
+  Modal,
   Paper,
   Table,
   TableBody,
@@ -13,8 +15,10 @@ import {
 import Head from "next/head";
 import { useState } from "react";
 
+import DetectionsTable from "@/components/DetectionsTable";
 import Header from "@/components/Header";
 import {
+  Candidate,
   CandidateSortField,
   SortOrder,
   useCandidatesQuery,
@@ -22,9 +26,15 @@ import {
 import type { NextPageWithLayout } from "@/pages/_app";
 import { formatTimestamp } from "@/utils/time";
 
+// type Unpacked<T> = T extends (infer U)[] ? U : T;
+
 const DetectionsPage: NextPageWithLayout = () => {
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
+
+  const [detectionModalOpen, setDetectionModalOpen] = useState(false);
+  // const [selectedCandidate, setSelectedCandidate] = useState<Unpacked<Extract<CandidatesQuery, 'candidates'>>>();
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate>();
 
   const candidatesQuery = useCandidatesQuery({
     limit: rowsPerPage,
@@ -32,7 +42,6 @@ const DetectionsPage: NextPageWithLayout = () => {
     sort: [{ field: CandidateSortField.MinTime, order: SortOrder.Desc }],
   });
   const candidates = candidatesQuery?.data?.candidates?.results ?? [];
-  // console.log("candidatesQuery", candidatesQuery);
 
   return (
     <div>
@@ -60,15 +69,22 @@ const DetectionsPage: NextPageWithLayout = () => {
               <h1>Detections</h1>
 
               <Paper elevation={1}>
-                {/* <Modal
+                <Modal
                   open={detectionModalOpen}
-                  onClose={this.handleModalClose}
+                  onClose={() => setDetectionModalOpen(false)}
                   className="p-4"
                 >
                   <Paper classes={{ root: "p-5" }}>
-                    <Detections detections={detections} feed={feed} /> 
+                    {selectedCandidate && (
+                      <DetectionsTable
+                        candidate={selectedCandidate}
+                        detections={selectedCandidate.detections}
+                        feed={selectedCandidate.feed}
+                      />
+                    )}
+                    {/* <Detections detections={detections} feed={feed} />  */}
                   </Paper>
-                </Modal> */}
+                </Modal>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -111,11 +127,14 @@ const DetectionsPage: NextPageWithLayout = () => {
                             .join(", ")}
                         </TableCell>
                         <TableCell align="center">
-                          {/* <Button
-                            onClick={this.handleCandidateClick(candidate)}
+                          <Button
+                            onClick={() => {
+                              setDetectionModalOpen(true);
+                              setSelectedCandidate(candidate as Candidate);
+                            }}
                           >
                             View
-                          </Button> */}
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -131,10 +150,9 @@ const DetectionsPage: NextPageWithLayout = () => {
                             setPage(pg);
                           }}
                           onRowsPerPageChange={(e) => {
-                            console.log(e.target.value);
                             setRowsPerPage(Number(e.target.value));
                           }}
-                          rowsPerPageOptions={[10, 25, 50, 100]}
+                          rowsPerPageOptions={[10, 50, 100, 1000]}
                         />
                       </TableRow>
                     </TableFooter>

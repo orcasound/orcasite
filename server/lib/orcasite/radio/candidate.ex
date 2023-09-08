@@ -20,8 +20,8 @@ defmodule Orcasite.Radio.Candidate do
     uuid_attribute(:id, prefix: "cand")
 
     attribute :detection_count, :integer
-    attribute :min_time, :utc_datetime_usec
-    attribute :max_time, :utc_datetime_usec
+    attribute :min_time, :utc_datetime_usec, allow_nil?: false
+    attribute :max_time, :utc_datetime_usec, allow_nil?: false
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -97,7 +97,7 @@ defmodule Orcasite.Radio.Candidate do
   relationships do
     has_many :detections, Detection
 
-    belongs_to :feed, Feed
+    belongs_to :feed, Feed, allow_nil?: false
   end
 
   admin do

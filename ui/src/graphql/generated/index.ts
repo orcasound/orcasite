@@ -61,10 +61,10 @@ export type Candidate = {
   __typename?: "Candidate";
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
   detections: Array<Detection>;
-  feed?: Maybe<Feed>;
+  feed: Feed;
   id: Scalars["ID"]["output"];
-  maxTime?: Maybe<Scalars["DateTime"]["output"]>;
-  minTime?: Maybe<Scalars["DateTime"]["output"]>;
+  maxTime: Scalars["DateTime"]["output"];
+  minTime: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
@@ -105,7 +105,7 @@ export type CandidateFilterMaxTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -116,7 +116,7 @@ export type CandidateFilterMinTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -589,16 +589,16 @@ export type CandidatesQuery = {
     results?: Array<{
       __typename?: "Candidate";
       id: string;
-      minTime?: Date | null;
-      maxTime?: Date | null;
+      minTime: Date;
+      maxTime: Date;
       detectionCount?: number | null;
-      feed?: {
+      feed: {
         __typename?: "Feed";
         id: string;
         slug: string;
         name: string;
         nodeName: string;
-      } | null;
+      };
       detections: Array<{
         __typename?: "Detection";
         id: string;
