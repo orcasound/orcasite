@@ -17,7 +17,7 @@ export default function DetectionsTable({
   feed,
 }: {
   detections: Detection[];
-  feed: Feed;
+  feed: Pick<Feed, "slug" | "nodeName">;
 }) {
   const offsetPadding = 5;
   const minOffset = Math.min(...detections.map((d) => +d.playerOffset));

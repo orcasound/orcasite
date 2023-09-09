@@ -23,7 +23,7 @@ export function DetectionsPlayer({
   startOffset,
   endOffset,
 }: {
-  feed: Feed;
+  feed: Pick<Feed, "nodeName">;
   marks: { label: string; value: number }[];
   timestamp: number;
   startOffset: number;

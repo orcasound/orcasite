@@ -18,20 +18,23 @@ import { useState } from "react";
 import DetectionsTable from "@/components/DetectionsTable";
 import Header from "@/components/Header";
 import {
-  Candidate,
   CandidateSortField,
+  CandidatesQuery,
   SortOrder,
   useCandidatesQuery,
 } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { formatTimestamp } from "@/utils/time";
 
+type CandidateQueryCandidates = NonNullable<CandidatesQuery["candidates"]>;
+type CandidateQueryResult = NonNullable<CandidateQueryCandidates["results"]>[0];
+
 const DetectionsPage: NextPageWithLayout = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
 
   const [detectionModalOpen, setDetectionModalOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate>();
+  const [selectedCandidate, setSelectedCandidate] = useState<CandidateQueryResult>();
 
   // TODO: Filter by feed
   const candidatesQuery = useCandidatesQuery({
@@ -130,7 +133,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                           <Button
                             onClick={() => {
                               setDetectionModalOpen(true);
-                              setSelectedCandidate(candidate as Candidate);
+                              setSelectedCandidate(candidate);
                             }}
                           >
                             View
