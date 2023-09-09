@@ -47,7 +47,7 @@ const DetectionsPage: NextPageWithLayout = () => {
   return (
     <div>
       <Head>
-        <title>Submissions | Orcasound</title>
+        <title>Reports | Orcasound</title>
       </Head>
 
       <main>
@@ -67,7 +67,7 @@ const DetectionsPage: NextPageWithLayout = () => {
           <Header />
           <Box sx={{ flexGrow: 1, display: "flex" }}>
             <Container>
-              <h1>Submissions</h1>
+              <h1>Reports</h1>
 
               <Paper elevation={1}>
                 <Modal
