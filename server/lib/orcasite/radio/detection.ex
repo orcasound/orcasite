@@ -22,13 +22,15 @@ defmodule Orcasite.Radio.Detection do
     uuid_attribute(:id, prefix: "det")
 
     attribute :source_ip, :string
-    attribute :playlist_timestamp, :integer
-    attribute :player_offset, :decimal
+    attribute :playlist_timestamp, :integer, allow_nil?: false
+    attribute :player_offset, :decimal, allow_nil?: false
     attribute :listener_count, :integer
-    attribute :timestamp, :utc_datetime_usec
+    attribute :timestamp, :utc_datetime_usec, allow_nil?: false
     attribute :description, :string
 
     attribute :category, :atom do
+      # TODO: Make non-null after we migrate
+      # allow_nil? false
       constraints one_of: [:orca, :vessel, :other]
     end
 

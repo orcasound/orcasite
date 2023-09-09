@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
-import useTimestampFetcher from "@/hooks/useTimestampFetcher";
+import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
 import { mobileOnly } from "@/styles/responsive";
 
 import DetectionButton from "./DetectionButton";

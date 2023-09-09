@@ -61,10 +61,10 @@ export type Candidate = {
   __typename?: "Candidate";
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
   detections: Array<Detection>;
-  feed?: Maybe<Feed>;
+  feed: Feed;
   id: Scalars["ID"]["output"];
-  maxTime?: Maybe<Scalars["DateTime"]["output"]>;
-  minTime?: Maybe<Scalars["DateTime"]["output"]>;
+  maxTime: Scalars["DateTime"]["output"];
+  minTime: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
@@ -105,7 +105,7 @@ export type CandidateFilterMaxTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -116,7 +116,7 @@ export type CandidateFilterMinTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -143,10 +143,10 @@ export type Detection = {
   feed?: Maybe<Feed>;
   id: Scalars["ID"]["output"];
   listenerCount?: Maybe<Scalars["Int"]["output"]>;
-  playerOffset?: Maybe<Scalars["Decimal"]["output"]>;
-  playlistTimestamp?: Maybe<Scalars["Int"]["output"]>;
+  playerOffset: Scalars["Decimal"]["output"];
+  playlistTimestamp: Scalars["Int"]["output"];
   sourceIp?: Maybe<Scalars["String"]["output"]>;
-  timestamp?: Maybe<Scalars["DateTime"]["output"]>;
+  timestamp: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
@@ -212,7 +212,7 @@ export type DetectionFilterPlayerOffset = {
   eq?: InputMaybe<Scalars["Decimal"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Decimal"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Decimal"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["Decimal"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["Decimal"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
@@ -223,7 +223,7 @@ export type DetectionFilterPlaylistTimestamp = {
   eq?: InputMaybe<Scalars["Int"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["Int"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["Int"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
@@ -245,7 +245,7 @@ export type DetectionFilterTimestamp = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -571,6 +571,48 @@ export type FeedQuery = {
   };
 };
 
+export type CandidatesQueryVariables = Exact<{
+  filter?: InputMaybe<CandidateFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<
+    Array<InputMaybe<CandidateSortInput>> | InputMaybe<CandidateSortInput>
+  >;
+}>;
+
+export type CandidatesQuery = {
+  __typename?: "RootQueryType";
+  candidates?: {
+    __typename?: "PageOfCandidate";
+    count?: number | null;
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "Candidate";
+      id: string;
+      minTime: Date;
+      maxTime: Date;
+      detectionCount?: number | null;
+      feed: {
+        __typename?: "Feed";
+        id: string;
+        slug: string;
+        name: string;
+        nodeName: string;
+      };
+      detections: Array<{
+        __typename?: "Detection";
+        id: string;
+        category?: DetectionCategory | null;
+        description?: string | null;
+        listenerCount?: number | null;
+        playlistTimestamp: number;
+        playerOffset: number;
+        timestamp: Date;
+      }>;
+    }> | null;
+  } | null;
+};
+
 export type FeedsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type FeedsQuery = {
@@ -665,6 +707,56 @@ useFeedQuery.document = FeedDocument;
 useFeedQuery.getKey = (variables: FeedQueryVariables) => ["feed", variables];
 useFeedQuery.fetcher = (variables: FeedQueryVariables) =>
   fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables);
+export const CandidatesDocument = `
+    query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {
+  candidates(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+    count
+    hasNextPage
+    results {
+      id
+      minTime
+      maxTime
+      detectionCount
+      feed {
+        id
+        slug
+        name
+        nodeName
+      }
+      detections {
+        id
+        category
+        description
+        listenerCount
+        playlistTimestamp
+        playerOffset
+        timestamp
+      }
+    }
+  }
+}
+    `;
+export const useCandidatesQuery = <TData = CandidatesQuery, TError = unknown>(
+  variables?: CandidatesQueryVariables,
+  options?: UseQueryOptions<CandidatesQuery, TError, TData>,
+) =>
+  useQuery<CandidatesQuery, TError, TData>(
+    variables === undefined ? ["candidates"] : ["candidates", variables],
+    fetcher<CandidatesQuery, CandidatesQueryVariables>(
+      CandidatesDocument,
+      variables,
+    ),
+    options,
+  );
+useCandidatesQuery.document = CandidatesDocument;
+
+useCandidatesQuery.getKey = (variables?: CandidatesQueryVariables) =>
+  variables === undefined ? ["candidates"] : ["candidates", variables];
+useCandidatesQuery.fetcher = (variables?: CandidatesQueryVariables) =>
+  fetcher<CandidatesQuery, CandidatesQueryVariables>(
+    CandidatesDocument,
+    variables,
+  );
 export const FeedsDocument = `
     query feeds {
   feeds {

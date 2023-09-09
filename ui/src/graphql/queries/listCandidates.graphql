@@ -1,0 +1,32 @@
+query candidates(
+  $filter: CandidateFilterInput
+  $limit: Int
+  $offset: Int
+  $sort: [CandidateSortInput]
+) {
+  candidates(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+    count
+    hasNextPage
+    results {
+      id
+      minTime
+      maxTime
+      detectionCount
+      feed {
+        id
+        slug
+        name
+        nodeName
+      }
+      detections {
+        id
+        category
+        description
+        listenerCount
+        playlistTimestamp
+        playerOffset
+        timestamp
+      }
+    }
+  }
+}
