@@ -1,6 +1,6 @@
 import "videojs-offset";
 
-import { Box, Slider } from "@mui/material";
+import { Box, Slider, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -36,7 +36,7 @@ export function DetectionsPlayer({
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
 
-  const hlsURI = getHlsURI(feed?.nodeName, timestamp);
+  const hlsURI = getHlsURI(feed.nodeName, timestamp);
 
   const playerOptions = useMemo(
     () => ({
@@ -51,25 +51,18 @@ export function DetectionsPlayer({
           overrideNative: true,
         },
       },
-      offset: {
-        start: startOffset,
-        end: endOffset,
-        restart_beginning: true,
-      },
-      sources: feed?.nodeName
-        ? [
-            {
-              // If hlsURI isn't set, use a dummy URI to trigger an error
-              // The dummy URI doesn't actually exist, it should return 404
-              // This is the only way to get videojs to throw an error, otherwise
-              // it just won't initialize (if src is undefined/null/empty))
-              src: hlsURI ?? `${feed?.nodeName}/404`,
-              type: "application/x-mpegurl",
-            },
-          ]
-        : [],
+      sources: [
+        {
+          // If hlsURI isn't set, use a dummy URI to trigger an error
+          // The dummy URI doesn't actually exist, it should return 404
+          // This is the only way to get videojs to throw an error, otherwise
+          // it just won't initialize (if src is undefined/null/empty))
+          src: hlsURI ?? `${feed.nodeName}/404`,
+          type: "application/x-mpegurl",
+        },
+      ],
     }),
-    [hlsURI, feed?.nodeName, startOffset, endOffset],
+    [hlsURI, feed?.nodeName],
   );
 
   const handleReady = useCallback(
@@ -138,7 +131,7 @@ export function DetectionsPlayer({
     return () => {
       setPlayerStatus("idle");
     };
-  }, [hlsURI, feed?.nodeName]);
+  }, [hlsURI, feed.nodeName]);
 
   const handleSliderChange = (
     _e: Event,
@@ -188,18 +181,37 @@ export function DetectionsPlayer({
           disabled={!feed}
         />
       </Box>
-      <Box width={"100%"}>
-        <Slider
-          valueLabelDisplay="on"
-          valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
-          step={0.1}
-          max={sliderMax}
-          value={sliderValue}
-          marks={marks}
-          onChange={handleSliderChange}
-          onChangeCommitted={handleSliderChangeCommitted}
-        />
+      <Box sx={{ display: "flex", flexDirection: "column", width: 1 }}>
+        <Box width={"100%"}>
+          <Slider
+            valueLabelDisplay="auto"
+            valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
+            step={0.1}
+            max={sliderMax}
+            value={sliderValue}
+            marks={marks}
+            onChange={handleSliderChange}
+            onChangeCommitted={handleSliderChangeCommitted}
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography>
+            {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
+          </Typography>
+          <Typography>
+            {formattedSeconds(Number((endOffset - startOffset).toFixed(0)))}
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );
 }
+
+const formattedSeconds = (seconds: number) => {
+  const mm = Math.floor(seconds / 60);
+  const ss = seconds % 60;
+  return `${Number(mm).toString().padStart(2, "0")}:${ss
+    .toFixed(0)
+    .padStart(2, "0")}`;
+};

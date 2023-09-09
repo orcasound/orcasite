@@ -67,7 +67,7 @@ const DetectionsPage: NextPageWithLayout = () => {
           <Header />
           <Box sx={{ flexGrow: 1, display: "flex" }}>
             <Container>
-              <h1>Candidates</h1>
+              <h1>Submissions</h1>
 
               <Paper elevation={1}>
                 <Modal
@@ -96,7 +96,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                       <TableCell>Node</TableCell>
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
-                      <TableCell align="right">Descriptions</TableCell>
+                      <TableCell>Descriptions</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -118,7 +118,6 @@ const DetectionsPage: NextPageWithLayout = () => {
                           {formatTimestamp(candidate.minTime)}
                         </TableCell>
                         <TableCell
-                          align="right"
                           title={candidate.minTime.toString()}
                         >
                           {candidate.detections

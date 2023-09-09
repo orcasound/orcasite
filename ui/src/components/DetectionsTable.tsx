@@ -45,6 +45,7 @@ export default function DetectionsTable({
             <TableCell>ID</TableCell>
             <TableCell>Node</TableCell>
             <TableCell>Listeners</TableCell>
+            <TableCell>Category</TableCell>
             <TableCell>Description</TableCell>
             <TableCell align="right">Timestamp</TableCell>
           </TableRow>
@@ -59,6 +60,7 @@ export default function DetectionsTable({
                 <TableCell>{detection.id}</TableCell>
                 <TableCell>{feed.slug}</TableCell>
                 <TableCell>{detection.listenerCount}</TableCell>
+                <TableCell>{detection.category?.toLowerCase()}</TableCell>
                 <TableCell>{detection.description}</TableCell>
                 <TableCell align="right" title={detection.timestamp.toString()}>
                   {formatTimestamp(detection.timestamp)}
