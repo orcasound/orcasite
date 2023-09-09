@@ -93,7 +93,7 @@ export default function DetectionDialog({
         feedId,
         playlistTimestamp,
         playerOffset,
-        description: `[${category}] ${description}`,
+        description,
         category,
         listenerCount,
       });
