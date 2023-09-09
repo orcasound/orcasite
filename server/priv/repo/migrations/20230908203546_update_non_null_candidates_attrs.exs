@@ -1,4 +1,4 @@
-defmodule :"Elixir.Orcasite.Repo.Migrations.Make minTime, maxTime, and feedId non-null for candidates" do
+defmodule Orcasite.Repo.Migrations.UpdateNonNullCandidatesAttrs do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 

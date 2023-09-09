@@ -33,6 +33,7 @@ const DetectionsPage: NextPageWithLayout = () => {
   const [detectionModalOpen, setDetectionModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate>();
 
+  // TODO: Filter by feed
   const candidatesQuery = useCandidatesQuery({
     limit: rowsPerPage,
     offset: page * rowsPerPage,
@@ -43,7 +44,7 @@ const DetectionsPage: NextPageWithLayout = () => {
   return (
     <div>
       <Head>
-        <title>Detections | Orcasound</title>
+        <title>Submissions | Orcasound</title>
       </Head>
 
       <main>
@@ -82,7 +83,6 @@ const DetectionsPage: NextPageWithLayout = () => {
                           />
                         )}
                       </Box>
-                      {/* <Detections detections={detections} feed={feed} />  */}
                     </Paper>
                   </Box>
                 </Modal>
@@ -102,22 +102,21 @@ const DetectionsPage: NextPageWithLayout = () => {
                       <TableRow key={candidate.id} hover={true}>
                         <TableCell>{candidate.id}</TableCell>
                         <TableCell sx={{ whiteSpace: "nowrap" }}>
-                          {candidate.feed?.slug}
+                          {candidate.feed.slug}
                         </TableCell>
                         <TableCell align="right">
                           {candidate.detectionCount}
                         </TableCell>
                         <TableCell
                           align="right"
-                          title={candidate.minTime?.toString() || ""}
+                          title={candidate.minTime.toString()}
                           sx={{ whiteSpace: "nowrap" }}
                         >
-                          {candidate.minTime &&
-                            formatTimestamp(candidate.minTime)}
+                          {formatTimestamp(candidate.minTime)}
                         </TableCell>
                         <TableCell
                           align="right"
-                          title={candidate.minTime?.toString() || ""}
+                          title={candidate.minTime.toString()}
                         >
                           {candidate.detections
                             .map((d) => d.description)

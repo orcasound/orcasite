@@ -143,10 +143,10 @@ export type Detection = {
   feed?: Maybe<Feed>;
   id: Scalars["ID"]["output"];
   listenerCount?: Maybe<Scalars["Int"]["output"]>;
-  playerOffset?: Maybe<Scalars["Decimal"]["output"]>;
-  playlistTimestamp?: Maybe<Scalars["Int"]["output"]>;
+  playerOffset: Scalars["Decimal"]["output"];
+  playlistTimestamp: Scalars["Int"]["output"];
   sourceIp?: Maybe<Scalars["String"]["output"]>;
-  timestamp?: Maybe<Scalars["DateTime"]["output"]>;
+  timestamp: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
@@ -212,7 +212,7 @@ export type DetectionFilterPlayerOffset = {
   eq?: InputMaybe<Scalars["Decimal"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Decimal"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Decimal"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["Decimal"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["Decimal"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
@@ -223,7 +223,7 @@ export type DetectionFilterPlaylistTimestamp = {
   eq?: InputMaybe<Scalars["Int"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["Int"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["Int"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
@@ -245,7 +245,7 @@ export type DetectionFilterTimestamp = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -605,9 +605,9 @@ export type CandidatesQuery = {
         category?: DetectionCategory | null;
         description?: string | null;
         listenerCount?: number | null;
-        playlistTimestamp?: number | null;
-        playerOffset?: number | null;
-        timestamp?: Date | null;
+        playlistTimestamp: number;
+        playerOffset: number;
+        timestamp: Date;
       }>;
     }> | null;
   } | null;

@@ -6,6 +6,9 @@ if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
 const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET;
 const S3_BUCKET_BASE = `https://s3-us-west-2.amazonaws.com/${S3_BUCKET}`;
 
+export const getHlsURI = (nodeName: string, timestamp: number) =>
+  `${S3_BUCKET_BASE}/${nodeName}/hls/${timestamp}/live.m3u8`;
+
 /**
  * @typedef {Object} TimestampFetcherOptions
  * @property {() => void} onStart Callback when the fetcher starts
@@ -25,16 +28,14 @@ const S3_BUCKET_BASE = `https://s3-us-west-2.amazonaws.com/${S3_BUCKET}`;
  * @param {TimestampFetcherOptions} options Callbacks for when the fetcher starts and stops
  * @returns {TimestampFetcherResult} The latest timestamp, HLS URI, and AWS console URI
  */
-export default function useTimestampFetcher(
+export function useTimestampFetcher(
   nodeName?: string,
   { onStart, onStop }: { onStart?: () => void; onStop?: () => void } = {},
 ) {
   const [timestamp, setTimestamp] = useState<number>();
 
   const hlsURI =
-    nodeName && timestamp
-      ? `${S3_BUCKET_BASE}/${nodeName}/hls/${timestamp}/live.m3u8`
-      : undefined;
+    nodeName && timestamp ? getHlsURI(nodeName, timestamp) : undefined;
   const awsConsoleUri =
     nodeName && timestamp
       ? `https://s3.console.aws.amazon.com/s3/buckets/${S3_BUCKET}/${nodeName}/hls/${timestamp}/`

@@ -1,3 +1,4 @@
+import "videojs-offset";
 import "video.js/dist/video-js.css";
 
 import React from "react";
