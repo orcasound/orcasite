@@ -161,3 +161,14 @@ The `POOL_SIZE` config var is necessary due to the current Postgres db having 20
 ## Emails
 
 Orcasite uses MJML for email templating. There are a few online MJML renderers, including: [mjml.io](https://mjml.io/try-it-live) and [grapes.js](https://grapesjs.com/demo-mjml.html)
+
+
+## API
+
+An API is available using the [JSON API spec](https://jsonapi.org/format/). For access to available endpoints, navigate to the server's `/api/json/swaggerui` or `/api/json/redoc` path for documentation and examples. As an example, you may access the full list of feeds with:
+
+```
+curl -s https://beta.orcasound.net/api/json/feeds \
+-H "Content-Type: application/vnd.api+json" \
+-H "Accept: application/vnd.api+json"
+```

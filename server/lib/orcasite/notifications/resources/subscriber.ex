@@ -70,6 +70,9 @@ defmodule Orcasite.Notifications.Subscriber do
       argument :name, :string
       argument :email, :string
 
+      # TODO: Remove this argument once we deploy to production.
+      argument :active_subscription, :boolean, default: true
+
       change set_attribute(:name, arg(:name))
       change set_attribute(:subscriber_type, :individual)
 
@@ -91,7 +94,9 @@ defmodule Orcasite.Notifications.Subscriber do
             meta: %{
               email: Ash.Changeset.get_argument(changeset, :email),
               name: Ash.Changeset.get_argument(changeset, :name)
-            }
+            },
+            # TODO: Remove this active field once we deploy to production.
+            active: Ash.Changeset.get_argument(changeset, :active_subscription)
           },
           type: :create
         )
