@@ -69,6 +69,7 @@ defmodule Orcasite.Notifications.Subscriber do
     create :confirmed_candidate_subscribe do
       argument :name, :string
       argument :email, :string
+      argument :response_data, :map
 
       # TODO: Remove this argument once we deploy to production.
       argument :active_subscription, :boolean, default: true
@@ -83,6 +84,7 @@ defmodule Orcasite.Notifications.Subscriber do
             _ -> %{}
           end
           |> Map.put(:email, Ash.Changeset.get_argument(changeset, :email))
+          |> Map.put(:response_data, Ash.Changeset.get_argument(changeset, :response_data))
 
         changeset
         |> Ash.Changeset.change_attribute(:meta, meta)
