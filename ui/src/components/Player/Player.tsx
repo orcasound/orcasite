@@ -59,7 +59,7 @@ export default function Player({
           ]
         : [],
     }),
-    [hlsURI, currentFeed?.nodeName],
+    [hlsURI, currentFeed?.nodeName, currentFeed?.imageUrl],
   );
 
   const handleReady = useCallback((player: VideoJSPlayer) => {
