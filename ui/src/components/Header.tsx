@@ -1,8 +1,10 @@
 import { Close, Menu } from "@mui/icons-material";
 import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import Image from "next/image";
 import { useState } from "react";
 
 import Link from "@/components/Link";
+import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 export default function Header() {
@@ -64,8 +66,13 @@ function Desktop() {
 function Brand() {
   return (
     <Typography variant="h6" noWrap>
-      <Link href="/" color="inherit" underline="none">
-        Orcasound
+      <Link
+        href="/"
+        color="inherit"
+        underline="none"
+        sx={{ height: "100%", display: "flex", alignItems: "center" }}
+      >
+        <Image src={wordmark.src} alt="Orcasound" width={140} height={60} />
       </Link>
     </Typography>
   );
