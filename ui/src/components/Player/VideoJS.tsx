@@ -12,6 +12,7 @@ export type VideoJSOptions = {
     src: string;
     type: string;
   }[];
+  playsinline?: boolean;
   [key: string]: unknown;
 };
 
@@ -51,6 +52,7 @@ export default function VideoJS({
 
       player.autoplay(options.autoplay);
       player.src(options.sources);
+      player.playsinline("playsinline" in options ? options.playsinline : true);
     }
   }, [options, videoRef, onReady]);
 
