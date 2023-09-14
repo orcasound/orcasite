@@ -5,6 +5,8 @@ import React from "react";
 import videojs from "video.js";
 import type Player from "video.js/dist/types/player";
 
+import { Maybe } from "@/graphql/generated";
+
 export type VideoJSPlayer = Player;
 export type VideoJSOptions = {
   autoplay?: boolean;
@@ -13,7 +15,7 @@ export type VideoJSOptions = {
     type: string;
   }[];
   playsinline?: boolean;
-  poster?: string;
+  poster?: Maybe<string> | undefined;
   [key: string]: unknown;
 };
 
