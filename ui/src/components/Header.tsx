@@ -1,11 +1,5 @@
 import { Close, Menu, Notifications } from "@mui/icons-material";
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -62,27 +56,6 @@ function Mobile() {
 }
 
 function Desktop() {
-  // const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  // const [closing, setClosing] = useState(false);
-
-  // const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
-  //   // setClosing(false);
-  //   console.log("open")
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handlePopoverClose = () => {
-  //   // setClosing(true);
-  //   console.log("closing");
-  //   // setTimeout(() => {
-  //   //   if (closing) {
-  //       setAnchorEl(null);
-  //   //   }
-  //   // }, 1000);
-  // };
-
-  // const open = Boolean(anchorEl);
-
   return (
     <Box sx={{ ...displayDesktopOnly, width: "100%" }}>
       <Box
@@ -106,31 +79,11 @@ function Desktop() {
               textTransform: "uppercase",
               "&:hover": { color: "#ccc" },
             }}
-            // onMouseEnter={handlePopoverOpen}
-            // onMouseLeave={handlePopoverClose}
           >
             <IconButton color="inherit">
               <Notifications />
             </IconButton>
           </Link>
-          {/* <Popover
-            id="notifications-popover"
-            open={open}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "center",
-              horizontal: "left",
-            }}
-            transformOrigin={{
-              vertical: "center",
-              horizontal: "right",
-            }}
-            disableRestoreFocus
-          >
-            <Typography sx={{ p: 2 }}>
-              {"Get notified when there's whale activity."}
-            </Typography>
-          </Popover> */}
         </Box>
       </Box>
     </Box>
