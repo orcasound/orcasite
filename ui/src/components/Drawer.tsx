@@ -1,10 +1,11 @@
-import { Menu } from "@mui/icons-material";
+import { KeyboardArrowDown, Menu } from "@mui/icons-material";
 import {
   Box,
   Drawer as SideDrawer,
   IconButton,
   SwipeableDrawer,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import { ReactNode, useState } from "react";
 
@@ -77,6 +78,20 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
     >
       <Box sx={{ overflow: "auto" }}>
         <ToolbarSpacer />
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h4" mt={4} ml={2}>
+            Listen live
+          </Typography>
+          {open ? (
+            <IconButton onClick={onClose}>
+              <KeyboardArrowDown fontSize="large" />
+            </IconButton>
+          ) : (
+            <IconButton onClick={onOpen}>
+              <Menu />
+            </IconButton>
+          )}
+        </Box>
         {children}
         <PlayerSpacer />
       </Box>
@@ -132,6 +147,9 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
           </IconButton>
         )}
       </Box>
+      <Typography variant="h4" mt={4} ml={3}>
+        Listen live
+      </Typography>
       {children}
     </SideDrawer>
   );

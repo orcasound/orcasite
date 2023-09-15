@@ -20,9 +20,6 @@ const HomePage: NextPageWithLayout = () => {
 
       <main>
         <Container maxWidth="sm">
-          <Typography variant="h4" mt={4}>
-            Listen live
-          </Typography>
           <Typography variant="body1">
             Select a location to start listening live
           </Typography>

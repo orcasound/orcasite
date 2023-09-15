@@ -1,5 +1,18 @@
 import { Close, Menu, Notifications } from "@mui/icons-material";
-import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -24,15 +37,27 @@ export default function Header() {
   );
 }
 
-function Mobile() {
+function Mobile(props: { window?: () => Window }) {
+  const { window } = props;
+  const drawerWidth = "100%";
   const [menuIsOpen, setMenuOpen] = useState(false);
 
   const handleMenuToggle = () => {
     setMenuOpen(!menuIsOpen);
   };
 
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
+
+  const navItems = [
+    {
+      label: "Get notified",
+      url: "https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit",
+    },
+  ];
+
   return (
-    <Box sx={displayMobileOnly}>
+    <Box sx={displayMobileOnly} width={1}>
       <Box
         sx={{
           flexGrow: 1,
@@ -51,6 +76,68 @@ function Mobile() {
         </IconButton>
         <Brand />
       </Box>
+      <nav>
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={menuIsOpen}
+          onClose={handleMenuToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              backgroundColor: "base.main",
+            },
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+        >
+          <Box
+            onClick={handleMenuToggle}
+            sx={{ textAlign: "center", height: "100%" }}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+          >
+            <Box sx={{ my: 2 }}>
+              <Image
+                src={wordmark.src}
+                alt="Orcasound"
+                width={140}
+                height={60}
+              />
+            </Box>
+            <Divider color="base.contrastText" />
+            <List sx={{ maxWidth: (theme) => theme.breakpoints.values.sm }}>
+              {navItems.map((item) => (
+                <ListItem key={item.label} disablePadding>
+                  <ListItemButton href={item.url}>
+                    <ListItemIcon
+                      sx={{
+                        color: "base.contrastText",
+                        displa: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Notifications />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.label}
+                      sx={{
+                        color: "base.contrastText",
+                        textTransform: "uppercase",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Drawer>
+      </nav>
     </Box>
   );
 }
@@ -92,12 +179,17 @@ function Desktop() {
 
 function Brand() {
   return (
-    <Typography variant="h6" noWrap>
+    <Typography variant="h6" noWrap overflow="visible">
       <Link
         href="/"
         color="inherit"
         underline="none"
-        sx={{ height: "100%", display: "flex", alignItems: "center" }}
+        sx={{
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
         <Image src={wordmark.src} alt="Orcasound" width={140} height={60} />
       </Link>
