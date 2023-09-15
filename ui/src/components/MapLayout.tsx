@@ -100,7 +100,7 @@ function MapLayout({ children }: { children: ReactNode }) {
               position: "absolute",
               right: 15,
               bottom: 100,
-              zIndex: (theme) => theme.zIndex.drawer + 1,
+              zIndex: (theme) => theme.zIndex.drawer - 1,
             }}
           >
             <IconButton sx={{ background: "white" }}>
