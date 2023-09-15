@@ -1,4 +1,5 @@
-import { Box } from "@mui/material";
+import { List } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
@@ -7,9 +8,10 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
-import Player, { PlayerSpacer } from "@/components/Player";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import { displayMobileOnly } from "@/styles/responsive";
+
+import Player, { PlayerSpacer } from "./Player";
 
 const MapWithNoSSR = dynamic(() => import("./Map"), {
   ssr: false,
@@ -91,6 +93,19 @@ function MapLayout({ children }: { children: ReactNode }) {
               currentFeed={currentFeed}
               feeds={feeds}
             />
+          </Box>
+          <Box
+            sx={{
+              ...displayMobileOnly,
+              position: "absolute",
+              right: 15,
+              bottom: 100,
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
+          >
+            <IconButton sx={{ background: "white" }}>
+              <List />
+            </IconButton>
           </Box>
           <PlayerSpacer sx={displayMobileOnly} />
           <Player currentFeed={currentFeed} />
