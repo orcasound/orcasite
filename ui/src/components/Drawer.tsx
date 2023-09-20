@@ -7,7 +7,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 import useIsMobile from "@/hooks/useIsMobile";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
@@ -16,16 +16,18 @@ import { PlayerSpacer } from "./Player";
 
 export default function Drawer({
   children,
+  open,
+  setOpen,
   onOpen,
   onClose,
 }: {
   children: ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
   onOpen?: () => void;
   onClose?: () => void;
 }) {
   const isMobile = useIsMobile();
-
-  const [open, setOpen] = useState(true);
 
   const handleOpen = () => {
     setOpen(true);

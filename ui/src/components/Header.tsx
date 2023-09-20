@@ -1,7 +1,14 @@
-import { Close, Menu, Notifications } from "@mui/icons-material";
+import {
+  Close,
+  Feedback,
+  Home,
+  Menu,
+  Notifications,
+} from "@mui/icons-material";
 import {
   AppBar,
   Box,
+  Button,
   Divider,
   Drawer,
   IconButton,
@@ -51,8 +58,19 @@ function Mobile(props: { window?: () => Window }) {
 
   const navItems = [
     {
+      label: "About us",
+      url: "https://www.orcasound.net/",
+      ItemIcon: Home,
+    },
+    {
       label: "Get notified",
       url: "https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit",
+      ItemIcon: Notifications,
+    },
+    {
+      label: "Send feedback",
+      url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
+      ItemIcon: Feedback,
     },
   ];
 
@@ -120,9 +138,10 @@ function Mobile(props: { window?: () => Window }) {
                         color: "base.contrastText",
                         displa: "flex",
                         justifyContent: "center",
+                        opacity: 0.9,
                       }}
                     >
-                      <Notifications />
+                      <item.ItemIcon />
                     </ListItemIcon>
                     <ListItemText
                       primary={item.label}
@@ -143,17 +162,37 @@ function Mobile(props: { window?: () => Window }) {
 }
 
 function Desktop() {
+  const pages = [
+    {
+      label: "About us",
+      url: "https://www.orcasound.net/",
+    },
+    {
+      label: "Send feedback",
+      url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
+    },
+  ];
   return (
     <Box sx={{ ...displayDesktopOnly, width: "100%" }}>
       <Box
         sx={{
           display: "flex",
-          justifyContent: "flex-start",
+          justifyContent: "space-between",
           alignItems: "center",
+          width: 1,
         }}
       >
         <Brand />
-        <Box sx={{ marginLeft: "auto" }}>
+        <Box sx={{ display: "flex" }}>
+          {pages.map((page) => (
+            <Button
+              href={page.url}
+              key={page.label}
+              sx={{ my: 2, mx: 1, color: "base.contrastText", display: "block" }}
+            >
+              {page.label}
+            </Button>
+          ))}
           <Link
             href="https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit"
             title="Get notified when there's whale activity."
@@ -161,10 +200,11 @@ function Desktop() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "white",
+              color: "base.contrastText",
               textDecoration: "none",
               textTransform: "uppercase",
               "&:hover": { color: "#ccc" },
+              mx: 1,
             }}
           >
             <IconButton color="inherit">

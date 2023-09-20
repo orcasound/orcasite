@@ -27,6 +27,7 @@ const feedFromSlug = (feedSlug: string) => ({
 });
 
 function MapLayout({ children }: { children: ReactNode }) {
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const router = useRouter();
   const slug = router.query.feed as string;
 
@@ -76,7 +77,12 @@ function MapLayout({ children }: { children: ReactNode }) {
     >
       <Header />
       <Box sx={{ flexGrow: 1, display: "flex" }}>
-        <Drawer onClose={invalidateSize} onOpen={invalidateSize}>
+        <Drawer
+          setOpen={setDrawerOpen}
+          open={drawerOpen}
+          onClose={invalidateSize}
+          onOpen={invalidateSize}
+        >
           {children}
         </Drawer>
         <Box
@@ -103,7 +109,13 @@ function MapLayout({ children }: { children: ReactNode }) {
               zIndex: (theme) => theme.zIndex.drawer - 1,
             }}
           >
-            <IconButton sx={{ background: "white" }}>
+            <IconButton
+              sx={{
+                background: "white",
+                "&:hover": { background: "white", opacity: 0.8 },
+              }}
+              onClick={() => setDrawerOpen(true)}
+            >
               <List />
             </IconButton>
           </Box>
