@@ -1,8 +1,30 @@
-import { Close, Menu } from "@mui/icons-material";
-import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import {
+  Close,
+  Feedback,
+  Home,
+  Menu,
+  Notifications,
+} from "@mui/icons-material";
+import {
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import Image from "next/image";
 import { useState } from "react";
 
 import Link from "@/components/Link";
+import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 export default function Header() {
@@ -22,15 +44,38 @@ export default function Header() {
   );
 }
 
-function Mobile() {
+function Mobile(props: { window?: () => Window }) {
+  const { window } = props;
+  const drawerWidth = "100%";
   const [menuIsOpen, setMenuOpen] = useState(false);
 
   const handleMenuToggle = () => {
     setMenuOpen(!menuIsOpen);
   };
 
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
+
+  const navItems = [
+    {
+      label: "About us",
+      url: "https://www.orcasound.net/",
+      ItemIcon: Home,
+    },
+    {
+      label: "Get notified",
+      url: "https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit",
+      ItemIcon: Notifications,
+    },
+    {
+      label: "Send feedback",
+      url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
+      ItemIcon: Feedback,
+    },
+  ];
+
   return (
-    <Box sx={displayMobileOnly}>
+    <Box sx={displayMobileOnly} width={1}>
       <Box
         sx={{
           flexGrow: 1,
@@ -49,23 +94,144 @@ function Mobile() {
         </IconButton>
         <Brand />
       </Box>
+      <nav>
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={menuIsOpen}
+          onClose={handleMenuToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              backgroundColor: "base.main",
+            },
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+        >
+          <Box
+            onClick={handleMenuToggle}
+            sx={{ textAlign: "center", height: "100%" }}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+          >
+            <Box sx={{ my: 2 }}>
+              <Image
+                src={wordmark.src}
+                alt="Orcasound"
+                width={140}
+                height={60}
+              />
+            </Box>
+            <Divider color="base.contrastText" />
+            <List sx={{ maxWidth: (theme) => theme.breakpoints.values.sm }}>
+              {navItems.map((item) => (
+                <ListItem key={item.label} disablePadding>
+                  <ListItemButton href={item.url}>
+                    <ListItemIcon
+                      sx={{
+                        color: "base.contrastText",
+                        displa: "flex",
+                        justifyContent: "center",
+                        opacity: 0.9,
+                      }}
+                    >
+                      <item.ItemIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.label}
+                      sx={{
+                        color: "base.contrastText",
+                        textTransform: "uppercase",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Drawer>
+      </nav>
     </Box>
   );
 }
 
 function Desktop() {
+  const pages = [
+    {
+      label: "About us",
+      url: "https://www.orcasound.net/",
+    },
+    {
+      label: "Send feedback",
+      url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
+    },
+  ];
   return (
-    <Box sx={displayDesktopOnly}>
-      <Brand />
+    <Box sx={{ ...displayDesktopOnly, width: "100%" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: 1,
+        }}
+      >
+        <Brand />
+        <Box sx={{ display: "flex" }}>
+          {pages.map((page) => (
+            <Button
+              href={page.url}
+              key={page.label}
+              sx={{ my: 2, mx: 1, color: "base.contrastText", display: "block" }}
+            >
+              {page.label}
+            </Button>
+          ))}
+          <Link
+            href="https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit"
+            title="Get notified when there's whale activity."
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "base.contrastText",
+              textDecoration: "none",
+              textTransform: "uppercase",
+              "&:hover": { color: "#ccc" },
+              mx: 1,
+            }}
+          >
+            <IconButton color="inherit">
+              <Notifications />
+            </IconButton>
+          </Link>
+        </Box>
+      </Box>
     </Box>
   );
 }
 
 function Brand() {
   return (
-    <Typography variant="h6" noWrap>
-      <Link href="/" color="inherit" underline="none">
-        Orcasound
+    <Typography variant="h6" noWrap overflow="visible">
+      <Link
+        href="/"
+        color="inherit"
+        underline="none"
+        sx={{
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Image src={wordmark.src} alt="Orcasound" width={140} height={60} />
       </Link>
     </Typography>
   );

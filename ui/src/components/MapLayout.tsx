@@ -1,4 +1,5 @@
-import { Box } from "@mui/material";
+import { List } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
@@ -7,9 +8,10 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
-import Player, { PlayerSpacer } from "@/components/Player";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import { displayMobileOnly } from "@/styles/responsive";
+
+import Player, { PlayerSpacer } from "./Player";
 
 const MapWithNoSSR = dynamic(() => import("./Map"), {
   ssr: false,
@@ -25,6 +27,7 @@ const feedFromSlug = (feedSlug: string) => ({
 });
 
 function MapLayout({ children }: { children: ReactNode }) {
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const router = useRouter();
   const slug = router.query.feed as string;
 
@@ -74,7 +77,12 @@ function MapLayout({ children }: { children: ReactNode }) {
     >
       <Header />
       <Box sx={{ flexGrow: 1, display: "flex" }}>
-        <Drawer onClose={invalidateSize} onOpen={invalidateSize}>
+        <Drawer
+          setOpen={setDrawerOpen}
+          open={drawerOpen}
+          onClose={invalidateSize}
+          onOpen={invalidateSize}
+        >
           {children}
         </Drawer>
         <Box
@@ -91,6 +99,25 @@ function MapLayout({ children }: { children: ReactNode }) {
               currentFeed={currentFeed}
               feeds={feeds}
             />
+          </Box>
+          <Box
+            sx={{
+              ...displayMobileOnly,
+              position: "absolute",
+              right: 15,
+              bottom: 100,
+              zIndex: (theme) => theme.zIndex.drawer - 1,
+            }}
+          >
+            <IconButton
+              sx={{
+                background: "white",
+                "&:hover": { background: "white", opacity: 0.8 },
+              }}
+              onClick={() => setDrawerOpen(true)}
+            >
+              <List />
+            </IconButton>
           </Box>
           <PlayerSpacer sx={displayMobileOnly} />
           <Player currentFeed={currentFeed} />

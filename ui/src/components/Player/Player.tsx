@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
-import { mobileOnly } from "@/styles/responsive";
+import { displayDesktopOnly, mobileOnly } from "@/styles/responsive";
 
 import DetectionButton from "./DetectionButton";
 import DetectionDialog from "./DetectionDialog";
@@ -168,6 +168,7 @@ export default function Player({
       </Box>
       <Box
         sx={{
+          ...displayDesktopOnly,
           mx: 1,
           flexGrow: 1,
           textAlign: "end",

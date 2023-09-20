@@ -1,29 +1,33 @@
-import { Menu } from "@mui/icons-material";
+import { KeyboardArrowDown, Menu } from "@mui/icons-material";
 import {
   Box,
   Drawer as SideDrawer,
   IconButton,
   SwipeableDrawer,
   Toolbar,
+  Typography,
 } from "@mui/material";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
-import { PlayerSpacer } from "@/components/Player";
 import useIsMobile from "@/hooks/useIsMobile";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
+import { PlayerSpacer } from "./Player";
+
 export default function Drawer({
   children,
+  open,
+  setOpen,
   onOpen,
   onClose,
 }: {
   children: ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
   onOpen?: () => void;
   onClose?: () => void;
 }) {
   const isMobile = useIsMobile();
-
-  const [open, setOpen] = useState(true);
 
   const handleOpen = () => {
     setOpen(true);
@@ -60,7 +64,7 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
       open={open}
       onClose={onClose}
       onOpen={onOpen}
-      swipeAreaWidth={100}
+      swipeAreaWidth={80}
       disableSwipeToOpen={false}
       SwipeAreaProps={{
         sx: displayMobileOnly,
@@ -72,11 +76,26 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
         ...displayMobileOnly,
         "& > .MuiPaper-root": {
           height: 1,
+          minHeight: "150px"
         },
       }}
     >
       <Box sx={{ overflow: "auto" }}>
         <ToolbarSpacer />
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h4" mt={4} ml={2}>
+            Listen live
+          </Typography>
+          {open ? (
+            <IconButton onClick={onClose}>
+              <KeyboardArrowDown fontSize="large" />
+            </IconButton>
+          ) : (
+            <IconButton onClick={onOpen}>
+              <Menu />
+            </IconButton>
+          )}
+        </Box>
         {children}
         <PlayerSpacer />
       </Box>
@@ -132,6 +151,9 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
           </IconButton>
         )}
       </Box>
+      <Typography variant="h4" mt={4} ml={3}>
+        Listen live
+      </Typography>
       {children}
     </SideDrawer>
   );
