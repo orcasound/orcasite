@@ -173,10 +173,12 @@ function Desktop() {
     {
       label: "About us",
       url: "https://www.orcasound.net/",
+      onClick: () => analytics.nav.aboutTabClicked(),
     },
     {
       label: "Send feedback",
       url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
+      onClick: () => analytics.nav.feedbackTabClicked(),
     },
   ];
   return (
@@ -193,6 +195,7 @@ function Desktop() {
         <Box sx={{ display: "flex" }}>
           {pages.map((page) => (
             <Button
+            onClick={() => page.onClick && page.onClick()}
               href={page.url}
               key={page.label}
               sx={{
@@ -218,7 +221,7 @@ function Desktop() {
               "&:hover": { color: "#ccc" },
               mx: 1,
             }}
-            onClick={() => analytics.nav.notificationsClickedDesktop()}
+            onClick={() => analytics.nav.notificationsClicked()}
           >
             <IconButton color="inherit">
               <Notifications />
