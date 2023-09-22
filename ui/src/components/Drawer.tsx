@@ -103,15 +103,12 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
   );
 }
 
-function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
+function Desktop({ children, open }: DrawerProps) {
   return (
     <SideDrawer
       variant="persistent"
       anchor="left"
       open={open}
-      onClick={() => {
-        if (!open) onOpen();
-      }}
       sx={(theme) => ({
         ...displayDesktopOnly,
         width: theme.breakpoints.values.sm,
@@ -122,7 +119,7 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
           duration: theme.transitions.duration.enteringScreen,
         }),
         ...(!open && {
-          width: 30,
+          width: 0,
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -140,17 +137,6 @@ function Desktop({ children, open, onOpen, onClose }: DrawerProps) {
       }}
     >
       <ToolbarSpacer />
-      <Box sx={{ alignSelf: "end" }}>
-        {open ? (
-          <IconButton onClick={onClose}>
-            <Menu />
-          </IconButton>
-        ) : (
-          <IconButton onClick={onOpen}>
-            <Menu />
-          </IconButton>
-        )}
-      </Box>
       <Typography variant="h4" mt={4} ml={3}>
         Listen live
       </Typography>
