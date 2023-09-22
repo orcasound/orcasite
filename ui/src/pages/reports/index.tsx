@@ -29,12 +29,28 @@ import { formatTimestamp } from "@/utils/time";
 type CandidateQueryCandidates = NonNullable<CandidatesQuery["candidates"]>;
 type CandidateQueryResult = NonNullable<CandidateQueryCandidates["results"]>[0];
 
+const getCategoryCounts = (candidate: CandidateQueryResult) => {
+  return candidate.detections.reduce(
+    (counts, detection) => {
+      const category = detection.category;
+      if (category && category in counts) {
+        counts[category] += 1;
+      } else if (category) {
+        counts[category] = 1;
+      }
+      return counts;
+    },
+    {} as Record<string, number>,
+  );
+};
+
 const DetectionsPage: NextPageWithLayout = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
 
   const [detectionModalOpen, setDetectionModalOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState<CandidateQueryResult>();
+  const [selectedCandidate, setSelectedCandidate] =
+    useState<CandidateQueryResult>();
 
   // TODO: Filter by feed
   const candidatesQuery = useCandidatesQuery({
@@ -96,6 +112,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                       <TableCell>Node</TableCell>
                       <TableCell align="right">Detections</TableCell>
                       <TableCell align="right">Timestamp</TableCell>
+                      <TableCell>Categories</TableCell>
                       <TableCell>Descriptions</TableCell>
                       <TableCell align="center">Actions</TableCell>
                     </TableRow>
@@ -117,9 +134,14 @@ const DetectionsPage: NextPageWithLayout = () => {
                         >
                           {formatTimestamp(candidate.minTime)}
                         </TableCell>
-                        <TableCell
-                          title={candidate.minTime.toString()}
-                        >
+                        <TableCell>
+                          {Object.entries(getCategoryCounts(candidate))
+                            .map(
+                              ([category, count]) => `${category.toLowerCase()} [${count}]`,
+                            )
+                            .join(", ")}{" "}
+                        </TableCell>
+                        <TableCell title={candidate.minTime.toString()}>
                           {candidate.detections
                             .map((d) => d.description)
                             .filter(

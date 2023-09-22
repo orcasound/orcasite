@@ -19,7 +19,7 @@ export default function DetectionsTable({
   detections: Detection[];
   feed: Pick<Feed, "slug" | "nodeName">;
 }) {
-  const offsetPadding = 5;
+  const offsetPadding = 15;
   const minOffset = Math.min(...detections.map((d) => +d.playerOffset));
   const maxOffset = Math.max(...detections.map((d) => +d.playerOffset));
   const startOffset = Math.max(0, minOffset - offsetPadding);
