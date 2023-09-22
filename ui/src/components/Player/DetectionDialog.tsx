@@ -12,26 +12,25 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-import { DetectionCategory } from "@/graphql/generated";
+import { DetectionCategory, Feed } from "@/graphql/generated";
 import { useSubmitDetectionMutation } from "@/graphql/generated";
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
+import { analytics } from "@/utils/analytics";
 
 import DetectionCategoryButton from "./DetectionCategoryButton";
 
 export default function DetectionDialog({
   children,
-  feed: { id: feedId },
+  feed: { id: feedId, slug },
   timestamp,
   isPlaying,
   getPlayerTime,
   listenerCount,
 }: {
   children: React.ReactNode;
-  feed: {
-    id: string;
-  };
+  feed: Pick<Feed, "id" | "slug">;
   timestamp: number;
   isPlaying: boolean;
   getPlayerTime?: () => number | undefined;
@@ -59,6 +58,7 @@ export default function DetectionDialog({
     setPlaylistTimestamp(timestamp);
 
     setOpen(true);
+    analytics.detection.dialogOpened(slug);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -79,6 +79,7 @@ export default function DetectionDialog({
 
   const handleClose = () => {
     setOpen(false);
+    analytics.detection.dialogClosed(slug);
   };
 
   const onDetect = () => {
@@ -97,6 +98,7 @@ export default function DetectionDialog({
         category,
         listenerCount,
       });
+      analytics.detection.submitted(slug);
     }
   };
 

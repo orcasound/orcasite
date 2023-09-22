@@ -7,6 +7,7 @@ import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
 import { displayDesktopOnly, mobileOnly } from "@/styles/responsive";
+import { analytics } from "@/utils/analytics";
 
 import DetectionButton from "./DetectionButton";
 import DetectionDialog from "./DetectionDialog";
@@ -87,8 +88,10 @@ export default function Player({
     try {
       if (playerStatus === "loading" || playerStatus === "playing") {
         await player.pause();
+        currentFeed?.slug && analytics.stream.paused(currentFeed.slug);
       } else {
         await player.play();
+        currentFeed?.slug && analytics.stream.started(currentFeed.slug);
       }
     } catch (e) {
       console.error(e);
