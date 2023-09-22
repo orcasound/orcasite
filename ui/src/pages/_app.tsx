@@ -11,9 +11,12 @@ import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ReactElement, ReactNode, useState } from "react";
+import ReactGA from "react-ga4";
 
 import createEmotionCache from "@/styles/createEmotionCache";
 import theme from "@/styles/theme";
+import { GA_TRACKING_ID } from "@/utils/analytics";
+
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -23,6 +26,10 @@ export type MyAppProps = AppProps & {
   Component: NextPageWithLayout;
   emotionCache?: EmotionCache;
 };
+
+if (GA_TRACKING_ID) {
+  ReactGA.initialize(GA_TRACKING_ID);
+}
 
 // Client-side cache, shared for the whole session of the user in the browser.
 // https://github.com/mui/material-ui/blob/master/examples/material-next-ts/pages/_app.tsx

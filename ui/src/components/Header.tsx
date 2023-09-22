@@ -26,6 +26,7 @@ import { useState } from "react";
 import Link from "@/components/Link";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
+import { analytics } from "@/utils/analytics";
 
 export default function Header() {
   return (
@@ -61,16 +62,19 @@ function Mobile(props: { window?: () => Window }) {
       label: "About us",
       url: "https://www.orcasound.net/",
       ItemIcon: Home,
+      onClick: () => analytics.nav.aboutTabClicked(),
     },
     {
       label: "Get notified",
       url: "https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit",
       ItemIcon: Notifications,
+      onClick: () => analytics.nav.notificationsClicked(),
     },
     {
       label: "Send feedback",
       url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
       ItemIcon: Feedback,
+      onClick: () => analytics.nav.feedbackTabClicked(),
     },
   ];
 
@@ -132,7 +136,10 @@ function Mobile(props: { window?: () => Window }) {
             <List sx={{ maxWidth: (theme) => theme.breakpoints.values.sm }}>
               {navItems.map((item) => (
                 <ListItem key={item.label} disablePadding>
-                  <ListItemButton href={item.url}>
+                  <ListItemButton
+                    href={item.url}
+                    onClick={() => item.onClick && item.onClick()}
+                  >
                     <ListItemIcon
                       sx={{
                         color: "base.contrastText",
@@ -166,10 +173,12 @@ function Desktop() {
     {
       label: "About us",
       url: "https://www.orcasound.net/",
+      onClick: () => analytics.nav.aboutTabClicked(),
     },
     {
       label: "Send feedback",
       url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
+      onClick: () => analytics.nav.feedbackTabClicked(),
     },
   ];
   return (
@@ -186,9 +195,15 @@ function Desktop() {
         <Box sx={{ display: "flex" }}>
           {pages.map((page) => (
             <Button
+            onClick={() => page.onClick && page.onClick()}
               href={page.url}
               key={page.label}
-              sx={{ my: 2, mx: 1, color: "base.contrastText", display: "block" }}
+              sx={{
+                my: 2,
+                mx: 1,
+                color: "base.contrastText",
+                display: "block",
+              }}
             >
               {page.label}
             </Button>
@@ -206,6 +221,7 @@ function Desktop() {
               "&:hover": { color: "#ccc" },
               mx: 1,
             }}
+            onClick={() => analytics.nav.notificationsClicked()}
           >
             <IconButton color="inherit">
               <Notifications />
@@ -230,6 +246,7 @@ function Brand() {
           alignItems: "center",
           justifyContent: "center",
         }}
+        onClick={() => analytics.nav.logoClicked()}
       >
         <Image src={wordmark.src} alt="Orcasound" width={140} height={60} />
       </Link>

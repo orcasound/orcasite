@@ -39,17 +39,11 @@ export default function PlayPauseButton({
         <Pause
           className="icon"
           fontSize="large"
-          // onClick={() =>
-          //   analyticsEvents.stream.paused(currentFeed.slug)
-          // }
         />
       ) : (
         <PlayArrow
           className="icon"
           fontSize="large"
-          // onClick={() =>
-          //   analyticsEvents.stream.started(currentFeed.slug)
-          // }
         />
       )}
     </Fab>
