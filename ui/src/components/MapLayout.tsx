@@ -116,7 +116,7 @@ function MapLayout({ children }: { children: ReactNode }) {
                 background: "white",
                 "&:hover": { background: "white", opacity: 0.8 },
               }}
-              title="Open menu"
+              title={drawerOpen ? "Full screen map" : "Open menu"}
               onClick={() => {
                 setDrawerOpen(!drawerOpen);
                 invalidateSize();
