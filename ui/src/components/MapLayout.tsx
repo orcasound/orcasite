@@ -1,4 +1,4 @@
-import { List } from "@mui/icons-material";
+import { Fullscreen, List } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
@@ -91,6 +91,7 @@ function MapLayout({ children }: { children: ReactNode }) {
             display: "flex",
             flexDirection: "column",
             minWidth: 0,
+            position: "relative",
           }}
         >
           <Box sx={{ flexGrow: 1 }}>
@@ -102,10 +103,11 @@ function MapLayout({ children }: { children: ReactNode }) {
           </Box>
           <Box
             sx={{
-              ...displayMobileOnly,
-              position: "absolute",
-              right: 15,
-              bottom: 100,
+              position: { xs: "absolute", sm: "absolute" },
+              left: { sm: 15 },
+              top: { sm: 15 },
+              right: { xs: 15, sm: "unset" },
+              bottom: { xs: 100, sm: "unset" },
               zIndex: (theme) => theme.zIndex.drawer - 1,
             }}
           >
@@ -114,9 +116,14 @@ function MapLayout({ children }: { children: ReactNode }) {
                 background: "white",
                 "&:hover": { background: "white", opacity: 0.8 },
               }}
-              onClick={() => setDrawerOpen(true)}
+              title={drawerOpen ? "Full screen map" : "Open menu"}
+              onClick={() => {
+                setDrawerOpen(!drawerOpen);
+                invalidateSize();
+              }}
             >
-              <List />
+              {!drawerOpen && <List />}
+              {drawerOpen && <Fullscreen />}
             </IconButton>
           </Box>
           <PlayerSpacer sx={displayMobileOnly} />
