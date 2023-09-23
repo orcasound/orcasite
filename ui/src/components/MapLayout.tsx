@@ -47,6 +47,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed);
+      map?.setZoom(9);
       map?.panTo(feed.latLng);
     }
   }, [feed, map, currentFeed]);
