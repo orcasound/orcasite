@@ -1,0 +1,63 @@
+import { MutableRefObject, useEffect, useState } from "react";
+
+export function useIsRelativeOverflow(
+  containerRef: MutableRefObject<HTMLElement | undefined>,
+  targetRef: MutableRefObject<HTMLElement | undefined>,
+  callback?: (isOverflow: boolean) => void,
+) {
+  const [isOverflow, setIsOverflow] = useState<boolean>(false);
+
+  const size = useWindowSize();
+
+  useEffect(() => {
+    const { current: currentContainer } = containerRef;
+    const { current: currentTarget } = targetRef;
+
+    const trigger = () => {
+      if (!currentContainer || !currentTarget) return;
+      const hasOverflow =
+        currentTarget.clientWidth > currentContainer.clientWidth;
+
+      setIsOverflow(hasOverflow);
+
+      if (callback) callback(hasOverflow);
+    };
+
+    if (currentContainer && currentTarget) {
+      trigger();
+    }
+  }, [callback, containerRef, targetRef, size.width]);
+
+  return isOverflow;
+}
+
+
+function useWindowSize(): { height: number | undefined; width: number | undefined } {
+  const isClient = typeof window === 'object';
+
+  function getSize(): { height: number | undefined; width: number | undefined } {
+    return {
+      width: isClient ? window.innerWidth : undefined,
+      height: isClient ? window.innerHeight : undefined
+    };
+  }
+
+  const [windowSize, setWindowSize] = useState(getSize);
+
+  useEffect(() => {
+    if (!isClient) {
+      return;
+    }
+
+    function handleResize(): void {
+      setWindowSize(getSize());
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    return (): void => window.removeEventListener('resize', handleResize);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty array ensures that effect is only run on mount and unmount
+
+  return windowSize;
+}

@@ -1,14 +1,21 @@
-import { Box } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Box, Typography, useMediaQuery } from "@mui/material";
+import { styled, useTheme } from "@mui/material/styles";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Marquee from "react-fast-marquee";
 
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
-import { displayDesktopOnly, mobileOnly } from "@/styles/responsive";
+import {
+  displayDesktopOnly,
+  displayMobileOnly,
+  mobileOnly,
+} from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
+import { useIsRelativeOverflow } from "@/utils/layout";
 
+import { TitlePopover } from "../TitlePopover";
 import DetectionButton from "./DetectionButton";
 import DetectionDialog from "./DetectionDialog";
 import ListenerCount from "./ListenerCount";
@@ -39,6 +46,15 @@ export default function Player({
   const playerText = currentFeed
     ? `${currentFeed.name} - ${currentFeed.nodeName}`
     : "Select a location to start listening live";
+
+  const playerTextContainerRef = useRef<HTMLElement>();
+  const playerTextRef = useRef<HTMLElement>();
+  const playerTextOverflowing = useIsRelativeOverflow(
+    playerTextContainerRef,
+    playerTextRef,
+  );
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const playerOptions = useMemo(
     () => ({
@@ -165,14 +181,41 @@ export default function Player({
       <Box mx={1}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
       <Box
         sx={{
-          mx: 1,
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
           overflow: "hidden",
         }}
-        title={playerText}
+        ref={playerTextContainerRef}
       >
-        {playerText}
+        <TitlePopover title={playerText}>
+          <Typography
+            sx={{
+              ...displayDesktopOnly,
+              px: 1,
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              width: 1,
+            }}
+          >
+            {playerText}
+          </Typography>
+        </TitlePopover>
+        <Box sx={displayMobileOnly}>
+          <Marquee
+            speed={20}
+            play={playerTextOverflowing && !isDesktop}
+            key={`${playerTextOverflowing}`}
+          >
+            <Box ref={playerTextRef}>
+              <Typography
+                sx={{
+                  mx: 1,
+                }}
+              >
+                {playerText}
+              </Typography>
+            </Box>
+          </Marquee>
+        </Box>
       </Box>
       <Box
         sx={{

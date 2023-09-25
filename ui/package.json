@@ -33,8 +33,10 @@
     "phoenix": "^1.7.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-fast-marquee": "^1.6.1",
     "react-ga4": "^2.1.0",
     "react-leaflet": "^4.2.1",
+    "use-overflow": "^1.2.0",
     "video.js": "^8.3.0",
     "videojs-offset": "^2.1.3"
   },
