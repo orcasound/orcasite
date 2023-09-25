@@ -31,7 +31,7 @@ export default function DetectionDialog({
 }: {
   children: React.ReactNode;
   feed: Pick<Feed, "id" | "slug">;
-  timestamp: number;
+  timestamp?: number;
   isPlaying: boolean;
   getPlayerTime?: () => number | undefined;
   listenerCount: number;
@@ -55,7 +55,9 @@ export default function DetectionDialog({
     setCategory(undefined);
 
     setPlayerOffset(getPlayerTime?.());
-    setPlaylistTimestamp(timestamp);
+    if (timestamp) {
+      setPlaylistTimestamp(timestamp);
+    }
 
     setOpen(true);
     analytics.detection.dialogOpened(slug);
