@@ -36,6 +36,10 @@ export default function Player({
   const feedPresence = useFeedPresence(currentFeed?.slug);
   const listenerCount = feedPresence?.metas.length ?? 0;
 
+  const playerText = currentFeed
+    ? `${currentFeed.name} - ${currentFeed.nodeName}`
+    : "Select a location to start listening live";
+
   const playerOptions = useMemo(
     () => ({
       poster: currentFeed?.imageUrl,
@@ -166,10 +170,9 @@ export default function Player({
           textOverflow: "ellipsis",
           overflow: "hidden",
         }}
+        title={playerText}
       >
-        {currentFeed
-          ? `${currentFeed.name} - ${currentFeed.nodeName}`
-          : "Select a location to start listening live"}
+        {playerText}
       </Box>
       <Box
         sx={{
@@ -181,6 +184,10 @@ export default function Player({
           textOverflow: "ellipsis",
           overflow: "hidden",
         }}
+        title={
+          currentFeed?.latLng &&
+          `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`
+        }
       >
         {currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
       </Box>
