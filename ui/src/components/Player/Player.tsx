@@ -233,7 +233,9 @@ export default function Player({
           `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`
         }
       >
-        {currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
+        <TitlePopover title={currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}>
+          {currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
+        </TitlePopover>
       </Box>
     </Box>
   );

@@ -6,7 +6,7 @@ export function TitlePopover({
   title,
 }: {
   children: ReactNode;
-  title: string;
+  title?: string;
 }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -23,21 +23,23 @@ export function TitlePopover({
   return (
     <>
       <div onClick={handleClick}>{children}</div>
-      <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-      >
-        <Typography sx={{ p: 2 }}>{title}</Typography>
-      </Popover>
+      {title && (
+        <Popover
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+        >
+          <Typography sx={{ p: 2 }}>{title}</Typography>
+        </Popover>
+      )}
     </>
   );
 }
