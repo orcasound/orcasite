@@ -184,6 +184,7 @@ export default function Player({
           overflow: "hidden",
         }}
         ref={playerTextContainerRef}
+        title={playerText}
       >
         <TitlePopover title={playerText}>
           <Typography
