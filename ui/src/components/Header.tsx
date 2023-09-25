@@ -130,6 +130,7 @@ function Mobile(props: { window?: () => Window }) {
                 alt="Orcasound"
                 width={140}
                 height={60}
+                priority={true}
               />
             </Box>
             <Divider color="base.contrastText" />
@@ -195,7 +196,7 @@ function Desktop() {
         <Box sx={{ display: "flex" }}>
           {pages.map((page) => (
             <Button
-            onClick={() => page.onClick && page.onClick()}
+              onClick={() => page.onClick && page.onClick()}
               href={page.url}
               key={page.label}
               sx={{
@@ -248,7 +249,13 @@ function Brand() {
         }}
         onClick={() => analytics.nav.logoClicked()}
       >
-        <Image src={wordmark.src} alt="Orcasound" width={140} height={60} />
+        <Image
+          src={wordmark.src}
+          alt="Orcasound"
+          width={140}
+          height={60}
+          priority={true}
+        />
       </Link>
     </Typography>
   );
