@@ -23,7 +23,10 @@ export type PlayerStatus = "idle" | "loading" | "playing" | "paused" | "error";
 export default function Player({
   currentFeed,
 }: {
-  currentFeed?: Pick<Feed, "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl">;
+  currentFeed?: Pick<
+    Feed,
+    "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl"
+  >;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
@@ -137,8 +140,7 @@ export default function Player({
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
       {(playerStatus === "playing" || playerStatus === "loading") &&
-        currentFeed &&
-        timestamp && (
+        currentFeed && (
           <DetectionDialog
             isPlaying={playerStatus === "playing"}
             feed={currentFeed}

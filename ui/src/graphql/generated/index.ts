@@ -504,12 +504,16 @@ export type SignInWithPasswordResult = {
 
 export enum SortOrder {
   Asc = "ASC",
+  AscNullsFirst = "ASC_NULLS_FIRST",
+  AscNullsLast = "ASC_NULLS_LAST",
   Desc = "DESC",
+  DescNullsFirst = "DESC_NULLS_FIRST",
+  DescNullsLast = "DESC_NULLS_LAST",
 }
 
 export type SubmitDetectionInput = {
   category: DetectionCategory;
-  description: Scalars["String"]["input"];
+  description?: InputMaybe<Scalars["String"]["input"]>;
   feedId: Scalars["String"]["input"];
   listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
   playerOffset: Scalars["Decimal"]["input"];

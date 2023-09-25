@@ -96,7 +96,7 @@ defmodule Orcasite.Radio.Detection do
       argument :playlist_timestamp, :integer, allow_nil?: false
       argument :player_offset, :decimal, allow_nil?: false
       argument :listener_count, :integer, allow_nil?: true
-      argument :description, :string, allow_nil?: false
+      argument :description, :string
 
       argument :category, :atom,
         allow_nil?: false,
