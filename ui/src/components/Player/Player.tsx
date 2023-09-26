@@ -35,7 +35,6 @@ export default function Player({
     "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl"
   >;
 }) {
-  const [playMarquee, setPlayMarquee] = useState(false);
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
@@ -56,6 +55,13 @@ export default function Player({
   );
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  const [playMarquee, setPlayMarquee] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setPlayMarquee(true);
+    }, 3000);
+  }, [])
 
   const playerOptions = useMemo(
     () => ({
@@ -209,7 +215,7 @@ export default function Player({
           }}
         >
           <Marquee
-            speed={20}
+            speed={15}
             play={playerTextOverflowing && !isDesktop && playMarquee}
             key={`${playerText}-${playerTextOverflowing}-${playMarquee}`}
           >
