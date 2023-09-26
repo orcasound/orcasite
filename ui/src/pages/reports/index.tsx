@@ -17,12 +17,7 @@ import { useState } from "react";
 
 import DetectionsTable from "@/components/DetectionsTable";
 import Header from "@/components/Header";
-import {
-  CandidateSortField,
-  CandidatesQuery,
-  SortOrder,
-  useCandidatesQuery,
-} from "@/graphql/generated";
+import { CandidatesQuery, useCandidatesQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { formatTimestamp } from "@/utils/time";
 
@@ -56,7 +51,7 @@ const DetectionsPage: NextPageWithLayout = () => {
   const candidatesQuery = useCandidatesQuery({
     limit: rowsPerPage,
     offset: page * rowsPerPage,
-    sort: [{ field: CandidateSortField.MinTime, order: SortOrder.Desc }],
+    sort: [{ field: "MIN_TIME", order: "DESC" }],
   });
   const candidates = candidatesQuery?.data?.candidates?.results ?? [];
 
@@ -137,7 +132,8 @@ const DetectionsPage: NextPageWithLayout = () => {
                         <TableCell>
                           {Object.entries(getCategoryCounts(candidate))
                             .map(
-                              ([category, count]) => `${category.toLowerCase()} [${count}]`,
+                              ([category, count]) =>
+                                `${category.toLowerCase()} [${count}]`,
                             )
                             .join(", ")}{" "}
                         </TableCell>
