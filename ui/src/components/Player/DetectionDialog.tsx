@@ -10,10 +10,10 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import { StaticImageData } from "next/legacy/image";
+import type { StaticImageData } from "next/legacy/image";
 import { useState } from "react";
 
-import { DetectionCategory, Feed } from "@/graphql/generated";
+import type { DetectionCategory, Feed } from "@/graphql/generated";
 import { useSubmitDetectionMutation } from "@/graphql/generated";
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
