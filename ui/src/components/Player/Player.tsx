@@ -208,7 +208,7 @@ export default function Player({
           <Marquee
             speed={20}
             play={playerTextOverflowing && !isDesktop && playMarquee}
-            key={`${playerTextOverflowing}`}
+            key={`${playerText}-${playerTextOverflowing}`}
           >
             <Box ref={playerTextRef}>
               <Typography
