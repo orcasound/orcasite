@@ -28,7 +28,7 @@ export function useIsRelativeOverflow(
     if (currentContainer && currentTarget) {
       trigger();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     callback,
     size.width,
