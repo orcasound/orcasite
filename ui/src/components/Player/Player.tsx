@@ -35,6 +35,7 @@ export default function Player({
     "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl"
   >;
 }) {
+  const [playMarquee, setPlayMarquee] = useState(true);
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
@@ -200,11 +201,14 @@ export default function Player({
             {playerText}
           </Typography>
         </TitlePopover>
-        <Box sx={displayMobileOnly}>
+        <Box
+          sx={displayMobileOnly}
+          onClick={() => setPlayMarquee(!playMarquee)}
+        >
           <Marquee
             speed={20}
-            play={playerTextOverflowing && !isDesktop}
-            key={`${playerTextOverflowing}`}
+            play={playerTextOverflowing && !isDesktop && playMarquee}
+            key={`${playerText}-${playerTextOverflowing}`}
           >
             <Box ref={playerTextRef}>
               <Typography
@@ -233,8 +237,14 @@ export default function Player({
           `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`
         }
       >
-        <TitlePopover title={currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}>
-          {currentFeed && `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
+        <TitlePopover
+          title={
+            currentFeed &&
+            `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`
+          }
+        >
+          {currentFeed &&
+            `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
         </TitlePopover>
       </Box>
     </Box>
