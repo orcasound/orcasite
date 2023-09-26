@@ -31,8 +31,14 @@
   "overrides": [
     {
       "files": ["**/*.ts?(x)"],
-      "extends": ["plugin:@typescript-eslint/recommended"],
+      "extends": [
+        "plugin:@typescript-eslint/recommended"
+        // TODO: Enable strict type checking
+        // "plugin:@typescript-eslint/strict-type-checked",
+        // "plugin:@typescript-eslint/stylistic-type-checked"
+      ],
       "plugins": ["@typescript-eslint"],
+      "parserOptions": { "project": "./tsconfig.json" },
       "rules": {
         // typescript only rules go here
         "@typescript-eslint/no-unused-vars": "off",

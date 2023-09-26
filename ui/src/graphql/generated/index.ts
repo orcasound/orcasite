@@ -123,12 +123,11 @@ export type CandidateFilterMinTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export enum CandidateSortField {
-  DetectionCount = "DETECTION_COUNT",
-  Id = "ID",
-  MaxTime = "MAX_TIME",
-  MinTime = "MIN_TIME",
-}
+export type CandidateSortField =
+  | "DETECTION_COUNT"
+  | "ID"
+  | "MAX_TIME"
+  | "MIN_TIME";
 
 export type CandidateSortInput = {
   field: CandidateSortField;
@@ -150,11 +149,7 @@ export type Detection = {
   uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
-export enum DetectionCategory {
-  Orca = "ORCA",
-  Other = "OTHER",
-  Vessel = "VESSEL",
-}
+export type DetectionCategory = "ORCA" | "OTHER" | "VESSEL";
 
 export type DetectionFilterCategory = {
   eq?: InputMaybe<DetectionCategory>;
@@ -252,16 +247,15 @@ export type DetectionFilterTimestamp = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export enum DetectionSortField {
-  Category = "CATEGORY",
-  Description = "DESCRIPTION",
-  Id = "ID",
-  ListenerCount = "LISTENER_COUNT",
-  PlayerOffset = "PLAYER_OFFSET",
-  PlaylistTimestamp = "PLAYLIST_TIMESTAMP",
-  SourceIp = "SOURCE_IP",
-  Timestamp = "TIMESTAMP",
-}
+export type DetectionSortField =
+  | "CATEGORY"
+  | "DESCRIPTION"
+  | "ID"
+  | "LISTENER_COUNT"
+  | "PLAYER_OFFSET"
+  | "PLAYLIST_TIMESTAMP"
+  | "SOURCE_IP"
+  | "TIMESTAMP";
 
 export type DetectionSortInput = {
   field: DetectionSortField;
@@ -358,15 +352,14 @@ export type FeedFilterSlug = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-export enum FeedSortField {
-  Id = "ID",
-  ImageUrl = "IMAGE_URL",
-  IntroHtml = "INTRO_HTML",
-  LocationPoint = "LOCATION_POINT",
-  Name = "NAME",
-  NodeName = "NODE_NAME",
-  Slug = "SLUG",
-}
+export type FeedSortField =
+  | "ID"
+  | "IMAGE_URL"
+  | "INTRO_HTML"
+  | "LOCATION_POINT"
+  | "NAME"
+  | "NODE_NAME"
+  | "SLUG";
 
 export type FeedSortInput = {
   field: FeedSortField;
@@ -502,14 +495,13 @@ export type SignInWithPasswordResult = {
   user?: Maybe<User>;
 };
 
-export enum SortOrder {
-  Asc = "ASC",
-  AscNullsFirst = "ASC_NULLS_FIRST",
-  AscNullsLast = "ASC_NULLS_LAST",
-  Desc = "DESC",
-  DescNullsFirst = "DESC_NULLS_FIRST",
-  DescNullsLast = "DESC_NULLS_LAST",
-}
+export type SortOrder =
+  | "ASC"
+  | "ASC_NULLS_FIRST"
+  | "ASC_NULLS_LAST"
+  | "DESC"
+  | "DESC_NULLS_FIRST"
+  | "DESC_NULLS_LAST";
 
 export type SubmitDetectionInput = {
   category: DetectionCategory;

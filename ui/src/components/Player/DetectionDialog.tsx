@@ -10,6 +10,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
+import { StaticImageData } from "next/legacy/image";
 import { useState } from "react";
 
 import { DetectionCategory, Feed } from "@/graphql/generated";
@@ -104,10 +105,13 @@ export default function DetectionDialog({
     }
   };
 
-  const categoryButtons = [
-    { id: DetectionCategory.Orca, iconImage: whaleFlukeIconImage },
-    { id: DetectionCategory.Vessel, iconImage: vesselIconImage },
-    { id: DetectionCategory.Other, iconImage: wavesIconImage },
+  const categoryButtons: {
+    id: DetectionCategory;
+    iconImage: StaticImageData;
+  }[] = [
+    { id: "ORCA", iconImage: whaleFlukeIconImage },
+    { id: "VESSEL", iconImage: vesselIconImage },
+    { id: "OTHER", iconImage: wavesIconImage },
   ];
 
   return (
