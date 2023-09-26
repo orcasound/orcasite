@@ -35,7 +35,7 @@ export default function Player({
     "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl"
   >;
 }) {
-  const [playMarquee, setPlayMarquee] = useState(true);
+  const [playMarquee, setPlayMarquee] = useState(false);
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
@@ -203,12 +203,15 @@ export default function Player({
         </TitlePopover>
         <Box
           sx={displayMobileOnly}
-          onClick={() => setPlayMarquee(!playMarquee)}
+          onClick={() => {
+            setPlayMarquee(!playMarquee);
+            analytics.stream.playerTextClicked(playerText);
+          }}
         >
           <Marquee
             speed={20}
             play={playerTextOverflowing && !isDesktop && playMarquee}
-            key={`${playerText}-${playerTextOverflowing}`}
+            key={`${playerText}-${playerTextOverflowing}-${playMarquee}`}
           >
             <Box ref={playerTextRef}>
               <Typography

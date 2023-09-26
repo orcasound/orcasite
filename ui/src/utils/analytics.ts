@@ -45,6 +45,13 @@ const stream = {
       action: "Player paused",
       label: feedSlug,
     }),
+  playerTextClicked: (playerText: string) => {
+    sendEvent({
+      category: "Stream",
+      action: "Player text clicked",
+      label: playerText,
+    })
+  }
 };
 
 function sendEvent(...eventParams: Parameters<typeof ReactGA.event>) {
