@@ -17,7 +17,6 @@ import createEmotionCache from "@/styles/createEmotionCache";
 import theme from "@/styles/theme";
 import { GA_TRACKING_ID } from "@/utils/analytics";
 
-
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };

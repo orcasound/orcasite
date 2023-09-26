@@ -36,15 +36,9 @@ export default function PlayPauseButton({
       ) : playerStatus === "loading" ? (
         <CircularProgress sx={{ color: "base.contrastText" }} />
       ) : playerStatus === "playing" ? (
-        <Pause
-          className="icon"
-          fontSize="large"
-        />
+        <Pause className="icon" fontSize="large" />
       ) : (
-        <PlayArrow
-          className="icon"
-          fontSize="large"
-        />
+        <PlayArrow className="icon" fontSize="large" />
       )}
     </Fab>
   );

@@ -76,7 +76,7 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
         ...displayMobileOnly,
         "& > .MuiPaper-root": {
           height: 1,
-          minHeight: "150px"
+          minHeight: "150px",
         },
       }}
     >

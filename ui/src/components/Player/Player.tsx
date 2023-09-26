@@ -61,7 +61,7 @@ export default function Player({
     setTimeout(() => {
       setPlayMarquee(true);
     }, 3000);
-  }, [])
+  }, []);
 
   const playerOptions = useMemo(
     () => ({
