@@ -14,31 +14,46 @@ export function useIsRelativeOverflow(
     const { current: currentTarget } = targetRef;
 
     const trigger = () => {
-      if (!currentContainer || !currentTarget) return;
-      const hasOverflow =
-        currentTarget.clientWidth > currentContainer.clientWidth;
+      setTimeout(() => {
+        if (!currentContainer || !currentTarget) return;
+        const hasOverflow =
+          currentTarget.clientWidth > currentContainer.clientWidth;
 
-      setIsOverflow(hasOverflow);
+        setIsOverflow(hasOverflow);
 
-      if (callback) callback(hasOverflow);
+        if (callback) callback(hasOverflow);
+      }, 100);
     };
 
     if (currentContainer && currentTarget) {
       trigger();
     }
-  }, [callback, containerRef, targetRef, size.width]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    callback,
+    size.width,
+    containerRef,
+    targetRef,
+    containerRef.current,
+    targetRef.current,
+  ]);
 
   return isOverflow;
 }
 
+function useWindowSize(): {
+  height: number | undefined;
+  width: number | undefined;
+} {
+  const isClient = typeof window === "object";
 
-function useWindowSize(): { height: number | undefined; width: number | undefined } {
-  const isClient = typeof window === 'object';
-
-  function getSize(): { height: number | undefined; width: number | undefined } {
+  function getSize(): {
+    height: number | undefined;
+    width: number | undefined;
+  } {
     return {
       width: isClient ? window.innerWidth : undefined,
-      height: isClient ? window.innerHeight : undefined
+      height: isClient ? window.innerHeight : undefined,
     };
   }
 
@@ -53,10 +68,10 @@ function useWindowSize(): { height: number | undefined; width: number | undefine
       setWindowSize(getSize());
     }
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
-    return (): void => window.removeEventListener('resize', handleResize);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return (): void => window.removeEventListener("resize", handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty array ensures that effect is only run on mount and unmount
 
   return windowSize;
