@@ -137,9 +137,6 @@ function Desktop({ children, open }: DrawerProps) {
       }}
     >
       <ToolbarSpacer />
-      <Typography variant="h4" mt={4} ml={3}>
-        Listen live
-      </Typography>
       {children}
     </SideDrawer>
   );
