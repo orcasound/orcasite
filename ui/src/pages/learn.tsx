@@ -10,7 +10,6 @@ import Head from "next/head";
 
 import Link from "@/components/Link";
 import { getMapLayout } from "@/components/MapLayout";
-import { useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const examples = [
@@ -32,10 +31,6 @@ const examples = [
 ];
 
 const LearnPage: NextPageWithLayout = () => {
-  const feeds = useFeedsQuery().data?.feeds;
-
-  if (!feeds) return null;
-
   return (
     <div>
       <Head>
