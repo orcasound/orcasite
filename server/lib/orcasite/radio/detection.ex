@@ -31,7 +31,7 @@ defmodule Orcasite.Radio.Detection do
     attribute :category, :atom do
       # TODO: Make non-null after we migrate
       # allow_nil? false
-      constraints one_of: [:orca, :vessel, :other]
+      constraints one_of: [:whale, :vessel, :other]
     end
 
     create_timestamp :inserted_at
@@ -65,7 +65,7 @@ defmodule Orcasite.Radio.Detection do
 
       argument :category, :atom do
         allow_nil? false
-        constraints one_of: [:orca, :vessel, :other]
+        constraints one_of: [:whale, :vessel, :other]
       end
 
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
@@ -100,7 +100,7 @@ defmodule Orcasite.Radio.Detection do
 
       argument :category, :atom,
         allow_nil?: false,
-        constraints: [one_of: [:orca, :vessel, :other]]
+        constraints: [one_of: [:whale, :vessel, :other]]
 
       change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
       change set_attribute(:player_offset, arg(:player_offset))

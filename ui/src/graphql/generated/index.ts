@@ -98,6 +98,7 @@ export type CandidateFilterInput = {
   id?: InputMaybe<CandidateFilterId>;
   maxTime?: InputMaybe<CandidateFilterMaxTime>;
   minTime?: InputMaybe<CandidateFilterMinTime>;
+  not?: InputMaybe<Array<CandidateFilterInput>>;
   or?: InputMaybe<Array<CandidateFilterInput>>;
 };
 
@@ -149,7 +150,7 @@ export type Detection = {
   uuid?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type DetectionCategory = "ORCA" | "OTHER" | "VESSEL";
+export type DetectionCategory = "OTHER" | "VESSEL" | "WHALE";
 
 export type DetectionFilterCategory = {
   eq?: InputMaybe<DetectionCategory>;
@@ -185,6 +186,7 @@ export type DetectionFilterInput = {
   feed?: InputMaybe<FeedFilterInput>;
   id?: InputMaybe<DetectionFilterId>;
   listenerCount?: InputMaybe<DetectionFilterListenerCount>;
+  not?: InputMaybe<Array<DetectionFilterInput>>;
   or?: InputMaybe<Array<DetectionFilterInput>>;
   playerOffset?: InputMaybe<DetectionFilterPlayerOffset>;
   playlistTimestamp?: InputMaybe<DetectionFilterPlaylistTimestamp>;
@@ -300,6 +302,7 @@ export type FeedFilterInput = {
   locationPoint?: InputMaybe<FeedFilterLocationPoint>;
   name?: InputMaybe<FeedFilterName>;
   nodeName?: InputMaybe<FeedFilterNodeName>;
+  not?: InputMaybe<Array<FeedFilterInput>>;
   or?: InputMaybe<Array<FeedFilterInput>>;
   slug?: InputMaybe<FeedFilterSlug>;
 };

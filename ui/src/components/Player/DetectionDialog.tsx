@@ -9,7 +9,9 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import type { StaticImageData } from "next/legacy/image";
 import { useState } from "react";
 
@@ -43,6 +45,8 @@ export default function DetectionDialog({
   const [description, setDescription] = useState("");
   const [playerOffset, setPlayerOffset] = useState<number>();
   const [playlistTimestamp, setPlaylistTimestamp] = useState<number>();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const submitDetection = useSubmitDetectionMutation({
     onSuccess: () => {
@@ -109,7 +113,7 @@ export default function DetectionDialog({
     id: DetectionCategory;
     iconImage: StaticImageData;
   }[] = [
-    { id: "ORCA", iconImage: whaleFlukeIconImage },
+    { id: "WHALE", iconImage: whaleFlukeIconImage },
     { id: "VESSEL", iconImage: vesselIconImage },
     { id: "OTHER", iconImage: wavesIconImage },
   ];
@@ -134,8 +138,9 @@ export default function DetectionDialog({
               size="large"
               aria-label="Report sound"
               fullWidth
+              orientation={isDesktop ? "horizontal" : "vertical"}
               sx={{
-                marginY: 4,
+                marginY: isDesktop ? 4 : 1,
               }}
             >
               {categoryButtons.map(({ id, iconImage }) => (
@@ -146,8 +151,12 @@ export default function DetectionDialog({
                   component={Paper}
                   sx={{
                     "&&&": {
-                      marginX: 5,
+                      marginX: isDesktop ? 5 : 0,
+                      marginY: isDesktop ? 0 : 1,
                       borderRadius: 1,
+                      overflow: "visible",
+                      border: "solid 2px",
+                      borderColor: "transparent",
                       ":hover": {
                         borderColor: "primary.main",
                       },
