@@ -113,7 +113,7 @@ export default function DetectionDialog({
     id: DetectionCategory;
     iconImage: StaticImageData;
   }[] = [
-    { id: "ORCA", iconImage: whaleFlukeIconImage },
+    { id: "WHALE", iconImage: whaleFlukeIconImage },
     { id: "VESSEL", iconImage: vesselIconImage },
     { id: "OTHER", iconImage: wavesIconImage },
   ];
