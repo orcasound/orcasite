@@ -3,14 +3,9 @@ import Head from "next/head";
 
 import Link from "@/components/Link";
 import { getMapLayout } from "@/components/MapLayout";
-import { useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const HomePage: NextPageWithLayout = () => {
-  const feeds = useFeedsQuery().data?.feeds;
-
-  if (!feeds) return null;
-
   return (
     <div>
       <Head>
@@ -36,7 +31,6 @@ const HomePage: NextPageWithLayout = () => {
             whales at any of our hydrophone locations.
           </Typography>
 
-          {/* Buttons for "Listen" and "Learn" */}
           <Box
             display="flex"
             flexDirection="column"
@@ -45,11 +39,12 @@ const HomePage: NextPageWithLayout = () => {
             mt={5}
             gap={3}
           >
-            <Link href={"/learn"} underline="none">
+            {/* TODO: Figure out how/where to show learning section */}
+            {/* <Link href={"/learn"} underline="none">
               <Button variant="outlined" color="secondary" size="large">
                 Learn the sounds
               </Button>
-            </Link>
+            </Link> */}
             <Link href={"/feeds"} underline="none">
               <Button variant="contained" color="primary" size="large">
                 Start listening
