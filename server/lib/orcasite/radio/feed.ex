@@ -3,6 +3,20 @@ defmodule Orcasite.Radio.Feed do
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
+  postgres do
+    table "feeds"
+    repo Orcasite.Repo
+
+    custom_indexes do
+      index [:name]
+      index [:node_name]
+    end
+  end
+
+  identities do
+    identity :unique_slug, [:slug]
+  end
+
   attributes do
     uuid_attribute(:id, prefix: "feed")
 
@@ -17,18 +31,25 @@ defmodule Orcasite.Radio.Feed do
     update_timestamp :updated_at
   end
 
-  postgres do
-    table "feeds"
-    repo Orcasite.Repo
+  calculations do
+    calculate :lat_lng,
+              Orcasite.Types.LatLng,
+              {Orcasite.Radio.Calculations.LatLng,
+               keys: [:location_point], select: [:location_point]},
+              allow_nil?: false
 
-    custom_indexes do
-      index [:name]
-      index [:node_name]
-    end
-  end
+    calculate :lat_lng_string,
+              :string,
+              {Orcasite.Radio.Calculations.LatLng,
+               return_type: :string, keys: [:location_point], select: [:location_point]}
 
-  identities do
-    identity :unique_slug, [:slug]
+    calculate :thumb_url,
+              :string,
+              {Orcasite.Radio.Calculations.FeedImageUrl, object: "thumbnail.png"}
+
+    calculate :map_url,
+              :string,
+              {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"}
   end
 
   actions do
@@ -66,33 +87,6 @@ defmodule Orcasite.Radio.Feed do
     end
   end
 
-  code_interface do
-    define_for Orcasite.Radio
-
-    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
-  end
-
-  calculations do
-    calculate :lat_lng,
-              Orcasite.Types.LatLng,
-              {Orcasite.Radio.Calculations.LatLng,
-               keys: [:location_point], select: [:location_point]},
-              allow_nil?: false
-
-    calculate :lat_lng_string,
-              :string,
-              {Orcasite.Radio.Calculations.LatLng,
-               return_type: :string, keys: [:location_point], select: [:location_point]}
-
-    calculate :thumb_url,
-              :string,
-              {Orcasite.Radio.Calculations.FeedImageUrl, object: "thumbnail.png"}
-
-    calculate :map_url,
-              :string,
-              {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"}
-  end
-
   admin do
     table_columns [:id, :name, :slug, :node_name, :location_point]
 
@@ -103,13 +97,10 @@ defmodule Orcasite.Radio.Feed do
     end
   end
 
-  graphql do
-    type :feed
+  code_interface do
+    define_for Orcasite.Radio
 
-    queries do
-      read_one :feed, :get_by_slug, allow_nil?: false
-      list :feeds, :read
-    end
+    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
   end
 
   json_api do
@@ -119,6 +110,15 @@ defmodule Orcasite.Radio.Feed do
       base "/feeds"
 
       index :read
+    end
+  end
+
+  graphql do
+    type :feed
+
+    queries do
+      read_one :feed, :get_by_slug, allow_nil?: false
+      list :feeds, :read
     end
   end
 
