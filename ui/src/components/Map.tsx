@@ -60,7 +60,7 @@ export default function Map({
           }
           eventHandlers={{
             click: () => {
-              router.push(`/${feed.slug}`);
+              router.push(`/listen/${feed.slug}`);
             },
           }}
         />
