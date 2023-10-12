@@ -14,7 +14,7 @@ const HomePage: NextPageWithLayout = () => {
 
       <main>
         <Container maxWidth="sm">
-          <Typography variant="h5" mt={4}>
+          <Typography variant="h4" mt={4}>
             Listen for Whales!
           </Typography>
           <Typography variant="body1" my={2}>

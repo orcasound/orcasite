@@ -1,4 +1,4 @@
-import { Fullscreen, List } from "@mui/icons-material";
+import { ExpandLess, Fullscreen, List, Map } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
@@ -9,7 +9,7 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
-import { displayMobileOnly } from "@/styles/responsive";
+import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 import Player, { PlayerSpacer } from "./Player";
 
@@ -102,36 +102,82 @@ function MapLayout({ children }: { children: ReactNode }) {
               feeds={feeds}
             />
           </Box>
-          <Box
-            sx={{
-              position: { xs: "absolute", sm: "absolute" },
-              left: { sm: 15 },
-              top: { sm: 15 },
-              right: { xs: 15, sm: "unset" },
-              bottom: { xs: 100, sm: "unset" },
-              zIndex: (theme) => theme.zIndex.drawer - 1,
+          <ToggleDrawerButton
+            drawerOpen={drawerOpen}
+            onClick={() => {
+              setDrawerOpen(!drawerOpen);
+              invalidateSize();
             }}
-          >
-            <IconButton
-              sx={{
-                background: "white",
-                "&:hover": { background: "white", opacity: 0.8 },
-              }}
-              title={drawerOpen ? "Full screen map" : "Open menu"}
-              onClick={() => {
-                setDrawerOpen(!drawerOpen);
-                invalidateSize();
-              }}
-            >
-              {!drawerOpen && <List />}
-              {drawerOpen && <Fullscreen />}
-            </IconButton>
-          </Box>
+          />
           <PlayerSpacer sx={displayMobileOnly} />
           <Player currentFeed={currentFeed} />
         </Box>
       </Box>
     </Box>
+  );
+}
+
+function ToggleDrawerButton({
+  drawerOpen,
+  onClick,
+}: {
+  drawerOpen: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <>
+      {/* Mobile */}
+      <Box
+        sx={{
+          ...displayMobileOnly,
+          position: { xs: "absolute" },
+          right: { xs: 15 },
+          bottom: { xs: 103 },
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+      >
+        <IconButton
+          sx={{
+            backgroundColor: (theme) =>
+              drawerOpen ? theme.palette.primary.main : "white",
+            color: (theme) =>
+              drawerOpen ? "white" : theme.palette.primary.main,
+            "&:hover": (theme) =>
+              drawerOpen
+                ? { background: theme.palette.primary.main, opacity: 0.8 }
+                : { background: "white", opacity: 0.8 },
+          }}
+          title={drawerOpen ? "Show map" : "Expand details"}
+          onClick={onClick}
+        >
+          {!drawerOpen && <ExpandLess />}
+          {drawerOpen && <Map />}
+        </IconButton>
+      </Box>
+
+      {/* Desktop */}
+      <Box
+        sx={{
+          ...displayDesktopOnly,
+          position: { sm: "absolute" },
+          left: { sm: 15 },
+          top: { sm: 15 },
+          zIndex: (theme) => theme.zIndex.drawer - 1,
+        }}
+      >
+        <IconButton
+          sx={{
+            backgroundColor: "white",
+            "&:hover": { background: "white", opacity: 0.8 },
+          }}
+          title={drawerOpen ? "Full screen map" : "Expand details"}
+          onClick={onClick}
+        >
+          {!drawerOpen && <List />}
+          {drawerOpen && <Fullscreen />}
+        </IconButton>
+      </Box>
+    </>
   );
 }
 
