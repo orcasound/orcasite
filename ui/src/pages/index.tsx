@@ -45,7 +45,7 @@ const HomePage: NextPageWithLayout = () => {
                 Learn the sounds
               </Button>
             </Link> */}
-            <Link href={"/feeds"} underline="none">
+            <Link href={"/listen"} underline="none">
               <Button variant="contained" color="primary" size="large">
                 Start listening
               </Button>

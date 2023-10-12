@@ -9,7 +9,7 @@ export default function FeedCard({
   feed: Pick<Feed, "name" | "slug">;
 }) {
   return (
-    <Link href={`/${feed.slug}`} underline="none">
+    <Link href={`/listen/${feed.slug}`} underline="none">
       <Card variant="outlined">
         <CardActionArea>
           <CardHeader title={feed.name} />

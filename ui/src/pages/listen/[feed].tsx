@@ -32,6 +32,9 @@ const FeedPage: NextPageWithLayout = () => {
               sx={{ mt: 2 }}
             >
               <Link href={"/"} color="inherit">
+                Home
+              </Link>
+              <Link href={"/listen"} color="inherit">
                 All hydrophones
               </Link>
               <Typography color="textPrimary">{feed.name}</Typography>
