@@ -67,6 +67,7 @@ if config_env() == :prod do
     # If 'DYNO' doesn't exist, add:
     # Use https://devcenter.heroku.com/articles/dyno-metadata
     config :orcasite, :pub_sub_redis,
+      enabled: true,
       url: System.get_env("REDIS_URL"),
       node_name: System.get_env("DYNO") || System.get_env("USER")
   end
