@@ -8,14 +8,12 @@ defmodule OrcasiteWeb.FeedChannel do
   end
 
   def handle_info({:join, _presences}, socket) do
-    counts = listener_count(Presence.list(socket))
-    publish_listener_counts(socket.assigns.feed_slug, counts)
+    publish_listener_counts(socket)
     {:noreply, socket}
   end
 
   def handle_info({:leave, _presences}, socket) do
-    counts = listener_count(Presence.list(socket))
-    publish_listener_counts(socket.assigns.feed_slug, counts)
+    publish_listener_counts(socket)
     {:noreply, socket}
   end
 
@@ -27,14 +25,13 @@ defmodule OrcasiteWeb.FeedChannel do
       })
 
     presence_list = Presence.list(socket)
-    publish_listener_counts(socket.assigns.feed_slug, listener_count(presence_list))
+    publish_listener_counts({socket.assigns.feed_slug, listener_count(presence_list)})
     push(socket, "presence_state", presence_list)
     {:noreply, socket}
   end
 
   def terminate(reason, socket) do
-    counts = listener_count(Presence.list(socket))
-    publish_listener_counts(socket.assigns.feed_slug, counts - 1)
+    publish_listener_counts(socket)
     reason
   end
 
@@ -46,7 +43,7 @@ defmodule OrcasiteWeb.FeedChannel do
     |> Enum.count()
   end
 
-  def publish_listener_counts(feed_slug, count) do
+  def publish_listener_counts({feed_slug, count}) do
     key = "listener_counts:" <> feed_slug
 
     Orcasite.Cache.put(
@@ -55,5 +52,10 @@ defmodule OrcasiteWeb.FeedChannel do
     )
 
     Phoenix.PubSub.broadcast(Orcasite.PubSub, key, :update_counts)
+  end
+
+  def publish_listener_counts(socket) do
+    counts = listener_count(Presence.list(socket))
+    publish_listener_counts({socket.assigns.feed_slug, counts})
   end
 end
