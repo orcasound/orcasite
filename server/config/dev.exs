@@ -79,8 +79,8 @@ config :orcasite, :pub_sub_redis, enabled: true, node_name: Base.encode16(:crypt
 config :orcasite, Orcasite.Cache,
   conn_opts: [
     # Redix options
-    host: "127.0.0.1",
-    port: 6379
+    host: System.get_env("REDIS_HOST") || "127.0.0.1",
+    port: String.to_integer(System.get_env("REDIS_PORT") || "6379")
   ]
 config :orcasite, :cache_adapter, NebulexRedisAdapter
 # config :orcasite, :cache_adapter, Nebulex.Adapters.Local
