@@ -35,7 +35,7 @@ const FeedPage: NextPageWithLayout = () => {
                 Home
               </Link>
               <Link href={"/listen"} color="inherit">
-                All hydrophones
+                Listen
               </Link>
               <Typography color="textPrimary">{feed.name}</Typography>
             </Breadcrumbs>
