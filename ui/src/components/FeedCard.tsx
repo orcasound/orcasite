@@ -17,12 +17,12 @@ export default function FeedCard({
         <CardActionArea>
           <CardHeader
             title={feed.name}
-            subheader={
-              `${listenerCount} listening`
-            }
             // subheader={
-            //   listenerCount !== undefined && `${listenerCount} listening`
+            //   `${listenerCount} listening`
             // }
+            subheader={
+              listenerCount !== undefined && `${listenerCount} listening`
+            }
           />
         </CardActionArea>
       </Card>
