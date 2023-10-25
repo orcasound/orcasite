@@ -1,3 +1,4 @@
+import { GraphicEq, PlayLessonOutlined } from "@mui/icons-material";
 import { Box, Button, Container, Typography } from "@mui/material";
 import Head from "next/head";
 
@@ -32,21 +33,36 @@ const HomePage: NextPageWithLayout = () => {
           </Typography>
 
           <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="space-evenly"
-            alignItems="center"
-            mt={5}
-            gap={3}
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: "center",
+              justifyContent: "space-evenly",
+              mt: 6,
+              gap: 4,
+            }}
           >
-            {/* TODO: Figure out how/where to show learning section */}
-            {/* <Link href={"/learn"} underline="none">
-              <Button variant="outlined" color="secondary" size="large">
+            <Link href={"/learn"} underline="none" width={0.9}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                size="large"
+                startIcon={<PlayLessonOutlined />}
+                fullWidth
+                sx={{ py: 2 }}
+              >
                 Learn the sounds
               </Button>
-            </Link> */}
-            <Link href={"/listen"} underline="none">
-              <Button variant="contained" color="primary" size="large">
+            </Link>
+            <Link href={"/listen"} underline="none" width={0.9}>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                startIcon={<GraphicEq />}
+                fullWidth
+                sx={{ py: 2 }}
+              >
                 Start listening
               </Button>
             </Link>
