@@ -63,5 +63,14 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  if System.get_env("REDIS_URL") do
+    # If 'DYNO' doesn't exist, add:
+    # Use https://devcenter.heroku.com/articles/dyno-metadata
+    config :orcasite, :pub_sub_redis,
+      url: System.get_env("REDIS_URL"),
+      node_name: System.get_env("DYNO") || System.get_env("USER")
+  end
+
+
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
 end

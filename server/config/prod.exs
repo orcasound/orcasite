@@ -45,3 +45,12 @@ config :orcasite, OrcasiteWeb.Guardian,
 config :orcasite, OrcasiteWeb.BasicAuth,
   username: System.get_env("ADMIN_USER"),
   password: System.get_env("ADMIN_PASSWORD")
+
+if System.get_env("REDIS_URL") do
+  config :orcasite, :cache_adapter, NebulexRedisAdapter
+
+  config :orcasite, Orcasite.Cache,
+    conn_opts: [
+      url: System.get_env("REDIS_URL")
+    ]
+end
