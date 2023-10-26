@@ -39,12 +39,14 @@ services:
     image: redis:6.2-alpine
     restart: always
     ports:
-      - '6379:6379'
+      - "6379:6379"
     command: redis-server --save 20 1 --loglevel warning
-    volumes: 
+    volumes:
       - cache:/data
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
 
 volumes:
   cache:
