@@ -10,16 +10,12 @@ export default function FeedCard({
   feed: Pick<Feed, "name" | "slug">;
 }) {
   const listenerCount = useListenerCount(feed.slug);
-  console.log("listener count", feed.slug, listenerCount);
   return (
     <Link href={`/listen/${feed.slug}`} underline="none">
       <Card variant="outlined">
         <CardActionArea>
           <CardHeader
             title={feed.name}
-            // subheader={
-            //   `${listenerCount} listening`
-            // }
             subheader={
               listenerCount !== undefined && `${listenerCount} listening`
             }

@@ -47,7 +47,6 @@ export function useListenerCount(feedSlug: string) {
       channel = newChannel;
 
       channel.on("listener_counts_state", (payload) => {
-        console.log("Got payload", feedSlug, payload);
         setListenerCount(payload.count || 0);
       });
 
