@@ -44,7 +44,7 @@ export default function Player({
   const listenerCount = feedPresence?.metas.length ?? 0;
 
   const playerText = currentFeed
-    ? `${currentFeed.name} - ${currentFeed.nodeName}`
+    ? currentFeed.name
     : "Select a location to start listening live";
 
   const playerTextContainerRef = useRef<HTMLElement>();
@@ -232,30 +232,12 @@ export default function Player({
         </Box>
       </Box>
       <Box
+        // dummy element for spacing
         sx={{
           ...displayDesktopOnly,
-          mx: 1,
           flexGrow: 1,
-          textAlign: "end",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-          overflow: "hidden",
         }}
-        title={
-          currentFeed?.latLng &&
-          `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`
-        }
-      >
-        <TitlePopover
-          title={
-            currentFeed &&
-            `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`
-          }
-        >
-          {currentFeed &&
-            `${currentFeed.latLng.lat}, ${currentFeed.latLng.lng}`}
-        </TitlePopover>
-      </Box>
+      ></Box>
     </Box>
   );
 }
