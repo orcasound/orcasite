@@ -4,7 +4,7 @@ defmodule Orcasite.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    pub_sub_redis = Application.get_env(:orcasite, :pub_sub_redis)
+    pub_sub_redis = Application.get_env(:orcasite, :pub_sub_redis, [])
 
     pubsub_options =
       case Keyword.get(pub_sub_redis, :enabled) do
