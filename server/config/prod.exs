@@ -51,6 +51,7 @@ if System.get_env("REDIS_URL") do
 
   config :orcasite, Orcasite.Cache,
     conn_opts: [
-      url: System.get_env("REDIS_URL")
+      url: System.get_env("REDIS_URL"),
+      pool_size: String.to_integer(System.get_env("REDIS_POOL_SIZE") || "5")
     ]
 end
