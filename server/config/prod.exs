@@ -53,4 +53,13 @@ if System.get_env("REDIS_URL") do
     conn_opts: [
       url: System.get_env("REDIS_URL")
     ]
+
+  config :hammer,
+    backend:
+      {Hammer.Backend.Redis,
+       [
+         delete_buckets_timeout: 10_0000,
+         expiry_ms: 60_000 * 60 * 2,
+         redis_url: System.get_env("REDIS_URL"),
+       ]}
 end

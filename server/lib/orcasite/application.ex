@@ -4,8 +4,6 @@ defmodule Orcasite.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    :syn.add_node_to_scopes([:rate_limiters])
-
     pub_sub_redis = Application.get_env(:orcasite, :pub_sub_redis)
 
     pubsub_options =
@@ -17,15 +15,6 @@ defmodule Orcasite.Application do
     children = [
       OrcasiteWeb.Telemetry,
       Orcasite.Repo,
-      Supervisor.child_spec(
-        {Orcasite.RateLimiter,
-         name: :ses,
-         rate_limiting: [
-           interval: 1_000,
-           allowed_messages: 14
-         ]},
-        id: :ses_email_rate_limiter
-      ),
       {Orcasite.Cache, []},
       {Oban, Application.fetch_env!(:orcasite, Oban)},
       {Phoenix.PubSub, Keyword.merge([name: Orcasite.PubSub], pubsub_options)},

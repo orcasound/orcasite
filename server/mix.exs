@@ -90,7 +90,9 @@ defmodule Orcasite.Mixfile do
       {:redoc_ui_plug, "~> 0.2.1"},
       {:phoenix_pubsub_redis, "~> 3.0.1"},
       {:nebulex, "~> 2.5"},
-      {:nebulex_redis_adapter, "~> 2.3"}
+      {:nebulex_redis_adapter, "~> 2.3"},
+      {:hammer_backend_redis, "~> 6.1"},
+      {:hammer, "~> 6.0"}
     ]
   end
 
