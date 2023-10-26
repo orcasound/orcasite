@@ -75,21 +75,25 @@ config :phoenix, :plug_init_mode, :runtime
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-config :orcasite,
-       :pub_sub_redis,
-       enabled: true,
-       node_name: Base.encode16(:crypto.strong_rand_bytes(6)),
-       host: System.get_env("REDIS_HOST") || "127.0.0.1",
-       port: String.to_integer(System.get_env("REDIS_PORT") || "6379")
+# Redis-based pubsub and cache configuration
+# config :orcasite,
+#        :pub_sub_redis,
+#        enabled: true,
+#        node_name: Base.encode16(:crypto.strong_rand_bytes(6)),
+#        host: System.get_env("REDIS_HOST") || "127.0.0.1",
+#        port: String.to_integer(System.get_env("REDIS_PORT") || "6379")
 
-config :orcasite, Orcasite.Cache,
-  conn_opts: [
-    # Redix options
-    host: System.get_env("REDIS_HOST") || "127.0.0.1",
-    port: String.to_integer(System.get_env("REDIS_PORT") || "6379")
-  ]
+# config :orcasite, Orcasite.Cache,
+#   conn_opts: [
+#     # Redix options
+#     host: System.get_env("REDIS_HOST") || "127.0.0.1",
+#     port: String.to_integer(System.get_env("REDIS_PORT") || "6379")
+#   ]
+# config :orcasite, :cache_adapter, NebulexRedisAdapter
 
-config :orcasite, :cache_adapter, NebulexRedisAdapter
-# config :orcasite, :cache_adapter, Nebulex.Adapters.Local
+config :orcasite, :cache_adapter, Nebulex.Adapters.Local
+
+config :hammer,
+  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 
 config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"
