@@ -20,7 +20,14 @@ defmodule Orcasite.Mixfile do
   def application do
     [
       mod: {Orcasite.Application, []},
-      extra_applications: [:logger, :runtime_tools, :inets]
+      extra_applications: [
+        :logger,
+        :runtime_tools,
+        :inets,
+        :phoenix_pubsub_redis,
+        :wx,
+        :observer
+      ]
     ]
   end
 
@@ -82,7 +89,10 @@ defmodule Orcasite.Mixfile do
       {:ash_graphql, github: "ash-project/ash_graphql", branch: "main"},
       {:ash_json_api, "~> 0.33.0"},
       {:open_api_spex, "~> 3.16"},
-      {:redoc_ui_plug, "~> 0.2.1"}
+      {:redoc_ui_plug, "~> 0.2.1"},
+      {:phoenix_pubsub_redis, "~> 3.0.1"},
+      {:nebulex, "~> 2.5"},
+      {:nebulex_redis_adapter, "~> 2.3"}
     ]
   end
 

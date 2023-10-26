@@ -153,7 +153,7 @@ The new version (v3) is currently under development, rapidly changing, and has n
 For the moment, this app is running in a Heroku instance with `mix phx.server`. To access the console, run:
 
 ```
-heroku run POOL_SIZE=2 iex -S mix
+heroku run POOL_SIZE=2 iex -a <app name> -- -S mix
 ```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).

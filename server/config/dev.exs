@@ -75,4 +75,21 @@ config :phoenix, :plug_init_mode, :runtime
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
+config :orcasite,
+       :pub_sub_redis,
+       enabled: true,
+       node_name: Base.encode16(:crypto.strong_rand_bytes(6)),
+       host: System.get_env("REDIS_HOST") || "127.0.0.1",
+       port: String.to_integer(System.get_env("REDIS_PORT") || "6379")
+
+config :orcasite, Orcasite.Cache,
+  conn_opts: [
+    # Redix options
+    host: System.get_env("REDIS_HOST") || "127.0.0.1",
+    port: String.to_integer(System.get_env("REDIS_PORT") || "6379")
+  ]
+
+config :orcasite, :cache_adapter, NebulexRedisAdapter
+# config :orcasite, :cache_adapter, Nebulex.Adapters.Local
+
 config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"

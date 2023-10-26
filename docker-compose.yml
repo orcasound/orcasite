@@ -6,14 +6,19 @@ services:
     environment:
       - POSTGRES_HOST=db
       - NEXT_TELEMETRY_DISABLED=1
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
     ports:
       - "3000:3000"
       - "4000:4000"
     depends_on:
       db:
         condition: service_healthy
+      cache:
+        condition: service_healthy
     links:
       - db
+      - cache
 
   db:
     image: kartoza/postgis:15
@@ -29,3 +34,20 @@ services:
       # https://github.com/moby/moby/issues/45897
       # start_period: 60s
       # start_interval: 5s
+
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - cache:/data
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+
+volumes:
+  cache:
+    driver: local

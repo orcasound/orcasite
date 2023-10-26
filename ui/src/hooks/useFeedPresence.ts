@@ -35,3 +35,29 @@ export default function useFeedPresence(feedId?: string) {
 
   return feedPresence;
 }
+
+export function useListenerCount(feedSlug: string) {
+  const [listenerCount, setListenerCount] = useState<Record<string, number>>();
+
+  useEffect(() => {
+    let channel: Channel | undefined;
+
+    if (socket) {
+      const newChannel = socket.channel(`listener_counts:${feedSlug}`, {});
+      channel = newChannel;
+
+      channel.on("listener_counts_state", (payload) => {
+        console.log("Got payload", feedSlug, payload);
+        setListenerCount(payload.count || 0);
+      });
+
+      newChannel.join();
+    }
+
+    return () => {
+      channel?.leave();
+    };
+  }, [feedSlug]);
+
+  return listenerCount;
+}

@@ -4,8 +4,15 @@ defmodule Orcasite.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-
     :syn.add_node_to_scopes([:rate_limiters])
+
+    pub_sub_redis = Application.get_env(:orcasite, :pub_sub_redis)
+
+    pubsub_options =
+      case Keyword.get(pub_sub_redis, :enabled) do
+        true -> Keyword.merge(pub_sub_redis, adapter: Phoenix.PubSub.Redis)
+        _ -> []
+      end
 
     children = [
       OrcasiteWeb.Telemetry,
@@ -19,13 +26,14 @@ defmodule Orcasite.Application do
          ]},
         id: :ses_email_rate_limiter
       ),
+      {Orcasite.Cache, []},
       {Oban, Application.fetch_env!(:orcasite, Oban)},
-      {Phoenix.PubSub, name: Orcasite.PubSub},
+      {Phoenix.PubSub, Keyword.merge([name: Orcasite.PubSub], pubsub_options)},
+      OrcasiteWeb.Presence,
       {Finch, name: Orcasite.Finch},
       {Task.Supervisor, name: Orcasite.TaskSupervisor},
       {AshAuthentication.Supervisor, otp_app: :orcasite},
-      OrcasiteWeb.Endpoint,
-      OrcasiteWeb.Presence
+      OrcasiteWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
