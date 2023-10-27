@@ -24,7 +24,8 @@ defmodule Orcasite.Mixfile do
         :logger,
         :runtime_tools,
         :inets,
-        :phoenix_pubsub_redis
+        :phoenix_pubsub_redis,
+        :os_mon
       ]
     ]
   end
