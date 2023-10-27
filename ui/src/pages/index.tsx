@@ -5,6 +5,7 @@ import Head from "next/head";
 import Link from "@/components/Link";
 import { getMapLayout } from "@/components/MapLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
+import { analytics } from "@/utils/analytics";
 
 const HomePage: NextPageWithLayout = () => {
   return (
@@ -50,6 +51,7 @@ const HomePage: NextPageWithLayout = () => {
                 startIcon={<PlayLessonOutlined />}
                 fullWidth
                 sx={{ py: 2 }}
+                onClick={() => analytics.about.learnTabClicked()}
               >
                 Learn the sounds
               </Button>
@@ -62,6 +64,7 @@ const HomePage: NextPageWithLayout = () => {
                 startIcon={<GraphicEq />}
                 fullWidth
                 sx={{ py: 2 }}
+                onClick={() => analytics.about.listenTabClicked()}
               >
                 Start listening
               </Button>
