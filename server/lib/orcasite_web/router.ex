@@ -1,6 +1,7 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
   use AshAuthentication.Phoenix.Router
+  import Phoenix.LiveDashboard.Router
 
   import AshAdmin.Router
 
@@ -95,6 +96,7 @@ defmodule OrcasiteWeb.Router do
 
   scope "/" do
     pipe_through [:browser, :require_admin]
+    live_dashboard "/admin/dashboard", metrics: OrcasiteWeb.Telemetry
     ash_admin "/admin"
   end
 

@@ -23,7 +23,10 @@ config :orcasite, OrcasiteWeb.Endpoint,
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
   ssl: true,
-  types: Orcasite.PostgresTypes
+  types: Orcasite.PostgresTypes,
+  ssl_opts: [
+    verify: :verify_none,
+  ]
 
 # Do not print debug messages in production
 config :logger, level: :info, format: {Orcasite.Logger, :format}
@@ -60,6 +63,6 @@ if System.get_env("REDIS_URL") do
        [
          delete_buckets_timeout: 10_0000,
          expiry_ms: 60_000 * 60 * 2,
-         redis_url: System.get_env("REDIS_URL"),
+         redis_url: System.get_env("REDIS_URL")
        ]}
 end
