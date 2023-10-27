@@ -23,7 +23,8 @@ config :orcasite, OrcasiteWeb.Endpoint,
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
   ssl: true,
-  types: Orcasite.PostgresTypes
+  types: Orcasite.PostgresTypes,
+  verify: :verify_none
 
 # Do not print debug messages in production
 config :logger, level: :info, format: {Orcasite.Logger, :format}
