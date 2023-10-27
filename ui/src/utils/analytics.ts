@@ -9,6 +9,10 @@ const about = {
       action: "Sample audio played",
       label: exampleTitle,
     }),
+  learnTabClicked: () =>
+    sendEvent({ category: "About", action: "Learn tab clicked" }),
+  listenTabClicked: () =>
+    sendEvent({ category: "About", action: "Listen tab clicked" }),
 };
 
 const detection = {

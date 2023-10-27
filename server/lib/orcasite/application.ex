@@ -6,11 +6,10 @@ defmodule Orcasite.Application do
   def start(_type, _args) do
     pub_sub_redis = Application.get_env(:orcasite, :pub_sub_redis, [])
 
-    pubsub_options =
-      case Keyword.get(pub_sub_redis, :enabled) do
-        true -> Keyword.merge(pub_sub_redis, adapter: Phoenix.PubSub.Redis)
-        _ -> []
-      end
+    pubsub_options = case(Keyword.get(pub_sub_redis, :enabled)) do
+      true -> Keyword.merge(pub_sub_redis, adapter: Phoenix.PubSub.Redis)
+      _ -> []
+    end
 
     children = [
       OrcasiteWeb.Telemetry,

@@ -212,11 +212,11 @@ function Desktop() {
           <Link
             href="https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit"
             title="Get notified when there's whale activity."
+            target="_blank"
             sx={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "base.contrastText",
               textDecoration: "none",
               textTransform: "uppercase",
               "&:hover": { color: "#ccc" },
@@ -224,9 +224,25 @@ function Desktop() {
             }}
             onClick={() => analytics.nav.notificationsClicked()}
           >
-            <IconButton color="inherit">
-              <Notifications />
-            </IconButton>
+            <Button
+              variant="outlined"
+              // color="info"
+              startIcon={<Notifications />}
+              sx={{
+                borderRadius: 8,
+                backgroundColor: "white",
+                "&:hover": {
+                  borderColor: "#a2d1cf",
+                  backgroundColor: "#efefef",
+                },
+                "&:focus": {
+                  borderColor: "#a2d1cf",
+                  backgroundColor: "#efefef",
+                },
+              }}
+            >
+              Get notified
+            </Button>
           </Link>
         </Box>
       </Box>
