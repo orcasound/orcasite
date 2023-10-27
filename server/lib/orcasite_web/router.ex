@@ -50,8 +50,11 @@ defmodule OrcasiteWeb.Router do
 
   pipeline :graphql do
     plug(:parsers)
-    plug :load_from_bearer
-    plug :set_current_user_as_actor
+    # plug :load_from_bearer
+    plug :fetch_session
+    plug :load_from_session
+    # plug :set_current_user_as_actor
+    plug :inspect_conn
     plug AshGraphql.Plug
   end
 
@@ -178,4 +181,9 @@ defmodule OrcasiteWeb.Router do
   end
 
   defp set_current_user_as_actor(conn, _opts), do: conn
+
+  defp inspect_conn(conn, _opts) do
+    IO.inspect(conn, label: "GraphQL Conn")
+    conn
+  end
 end
