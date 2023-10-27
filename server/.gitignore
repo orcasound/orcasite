@@ -36,3 +36,5 @@ npm-debug.log
 /assets/node_modules/
 
 config/*.secret.exs
+
+.elixir_ls
