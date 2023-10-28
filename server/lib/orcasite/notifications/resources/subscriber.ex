@@ -95,7 +95,8 @@ defmodule Orcasite.Notifications.Subscriber do
             event_type: "confirmed_candidate",
             meta: %{
               email: Ash.Changeset.get_argument(changeset, :email),
-              name: Ash.Changeset.get_argument(changeset, :name)
+              name: Ash.Changeset.get_argument(changeset, :name),
+              channel: :email
             },
             # TODO: Remove this active field once we deploy to production.
             active: Ash.Changeset.get_argument(changeset, :active_subscription)
