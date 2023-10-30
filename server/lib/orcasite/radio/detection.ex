@@ -133,7 +133,8 @@ defmodule Orcasite.Radio.Detection do
               detection.id,
               detection.feed.slug,
               detection.description,
-              detection.listener_count
+              detection.listener_count,
+              detection.candidate_id
             )
           end)
 

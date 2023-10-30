@@ -46,6 +46,11 @@ defmodule Orcasite.Notifications.Email do
             Listeners: {{ meta["listener_count"] }}
           </mj-text>
         {{/if}}
+        {{#if meta["candidate_id"]}}
+          <mj-text font-size="20px" font-family="helvetica">
+            Review here: <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}">{{ meta["candidate_id"] }}</a>
+          </mj-text>
+        {{/if}}
 
         {{#if notifications_since_count > 0}}
           <mj-text font-size="20px" font-family="helvetica">
@@ -69,7 +74,7 @@ defmodule Orcasite.Notifications.Email do
 
 
         <mj-text font-size="20px">
-          Listen here: <a href="https://live.orcasound.net/{{node}}">https://live.orcasound.net/{{ node }}</a>
+          Listen here: <a href="https://live.orcasound.net/listen/{{node}}">https://live.orcasound.net/listen/{{ node }}</a>
         </mj-text>
 
         {{#if unsubscribe_token }}
@@ -115,7 +120,7 @@ defmodule Orcasite.Notifications.Email do
           <mj-column>
             <mj-image src="https://orcasite.s3.us-west-2.amazonaws.com/email_assets/orcasound_dont_miss.jpg"></mj-image>
 
-            <mj-button href="http://live.orcasound.net/{{ node }}" background-color="#0F0F0F" border-radius="31px" font-size="18px" padding="18px" font-weight="bold">LISTEN NOW!</mj-button>
+            <mj-button href="http://live.orcasound.net/listen/{{ node }}" background-color="#0F0F0F" border-radius="31px" font-size="18px" padding="18px" font-weight="bold">LISTEN NOW!</mj-button>
           </mj-column>
         </mj-section>
 

@@ -1,4 +1,4 @@
-defmodule Orcasite.Notifications.Notifiers.NotifySubscriptions do
+defmodule Orcasite.Notifications.Notifiers.NotificationCreate do
   use Ash.Notifier
   require Logger
 
