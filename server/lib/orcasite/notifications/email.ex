@@ -41,12 +41,12 @@ defmodule Orcasite.Notifications.Email do
         <mj-text font-size="20px" font-family="helvetica">
           Description: {{#if meta["description"]}}{{ meta["description"] }}{{else}}(no description){{/if}}
         </mj-text>
-        {{#if meta["listener_count"]}}
+        {{#if meta["listener_count"] }}
           <mj-text font-size="20px" font-family="helvetica">
             Listeners: {{ meta["listener_count"] }}
           </mj-text>
         {{/if}}
-        {{#if meta["candidate_id"]}}
+        {{#if meta["candidate_id"] }}
           <mj-text font-size="20px" font-family="helvetica">
             Review here: <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}">{{ meta["candidate_id"] }}</a>
           </mj-text>
@@ -61,12 +61,18 @@ defmodule Orcasite.Notifications.Email do
             <th style="padding: 0 5px 0 0;">Feed</th>
             <th style="padding: 0 15px; text-align: right;">#</th>
             <th style="padding: 0 0 0 15px;">Description</th>
+            <th style="padding: 0 0 0 15px;">Action</th>
           </tr>
           {{#each notifications_since as |notif_meta|}}
             <tr>
               <td style="padding: 0 5px 0 0;white-space:nowrap;">{{ notif_meta["node"] }}</td>
               <td style="padding: 0 15px;text-align:right;">{{ notif_meta["listener_count"] }}</td>
               <td style="padding: 0 0 0 15px;">{{ notif_meta["description"] }}</td>
+              <td style="padding: 0 0 0 15px;">
+                {{#if notif_meta["candidate_id"] }}
+                  <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}">Review</a>
+                {{/if}}
+              </td>
             </tr>
           {{/each}}
         </mj-table>
