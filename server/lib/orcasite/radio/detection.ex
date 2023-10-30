@@ -38,6 +38,15 @@ defmodule Orcasite.Radio.Detection do
     update_timestamp :updated_at
   end
 
+  calculations do
+    calculate :uuid, :string, Orcasite.Radio.Calculations.DecodeUUID
+  end
+
+  relationships do
+    belongs_to :candidate, Candidate
+    belongs_to :feed, Feed
+  end
+
   actions do
     defaults [:destroy]
 
@@ -123,23 +132,6 @@ defmodule Orcasite.Radio.Detection do
           })
         )
         |> Ash.Changeset.after_action(fn changeset, detection ->
-          # Happens second
-          detection =
-            detection
-            |> Orcasite.Radio.load!(:feed)
-
-          Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-            Orcasite.Notifications.Notification.notify_new_detection(
-              detection.id,
-              detection.feed.slug,
-              detection.description,
-              detection.listener_count
-            )
-          end)
-
-          {:ok, detection}
-        end)
-        |> Ash.Changeset.after_action(fn changeset, detection ->
           # Happens first
           # Find or create candidate, update detection with candidate
           candidate =
@@ -174,29 +166,25 @@ defmodule Orcasite.Radio.Detection do
           |> Ash.Changeset.for_update(:update, %{candidate: candidate})
           |> Orcasite.Radio.update()
         end)
+        |> Ash.Changeset.after_action(fn changeset, detection ->
+          # Happens second
+          detection =
+            detection
+            |> Orcasite.Radio.load!([:feed, :candidate])
+
+          Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+            Orcasite.Notifications.Notification.notify_new_detection(
+              detection.id,
+              detection.feed.slug,
+              detection.description,
+              detection.listener_count,
+              detection.candidate.id
+            )
+          end)
+
+          {:ok, detection}
+        end)
       end
-    end
-  end
-
-  calculations do
-    calculate :uuid, :string, Orcasite.Radio.Calculations.DecodeUUID
-  end
-
-  relationships do
-    belongs_to :candidate, Candidate
-    belongs_to :feed, Feed
-  end
-
-  graphql do
-    type :detection
-
-    queries do
-      get :detection, :read
-      list :detections, :index
-    end
-
-    mutations do
-      create :submit_detection, :submit_detection
     end
   end
 
@@ -211,6 +199,19 @@ defmodule Orcasite.Radio.Detection do
       :candidate_id,
       :inserted_at
     ]
+  end
+
+  graphql do
+    type :detection
+
+    queries do
+      get :detection, :read
+      list :detections, :index
+    end
+
+    mutations do
+      create :submit_detection, :submit_detection
+    end
   end
 
   defp datetime_min(time_1, time_2) do

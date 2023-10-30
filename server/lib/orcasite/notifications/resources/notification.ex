@@ -2,7 +2,7 @@ defmodule Orcasite.Notifications.Notification do
   use Ash.Resource,
     extensions: [AshAdmin.Resource],
     data_layer: AshPostgres.DataLayer,
-    notifiers: [Orcasite.Notifications.Notifiers.NotifySubscriptions]
+    notifiers: [Orcasite.Notifications.Notifiers.NotificationCreate]
 
   alias Orcasite.Notifications.{Event, NotificationInstance, Subscription}
 
@@ -19,7 +19,7 @@ defmodule Orcasite.Notifications.Notification do
 
     define :notify_new_detection,
       action: :notify_new_detection,
-      args: [:detection_id, :node, :description, :listener_count]
+      args: [:detection_id, :node, :description, :listener_count, :candidate_id]
 
     define :notify_confirmed_candidate,
       action: :notify_confirmed_candidate,
@@ -88,6 +88,7 @@ defmodule Orcasite.Notifications.Notification do
       argument :node, :string, allow_nil?: false
       argument :description, :string, allow_nil?: true
       argument :listener_count, :integer, allow_nil?: true
+      argument :candidate_id, :string, allow_nil?: true
 
       change set_attribute(:event_type, :new_detection)
 
@@ -98,7 +99,8 @@ defmodule Orcasite.Notifications.Notification do
           detection_id: Ash.Changeset.get_argument(changeset, :detection_id),
           node: Ash.Changeset.get_argument(changeset, :node),
           description: Ash.Changeset.get_argument(changeset, :description),
-          listener_count: Ash.Changeset.get_argument(changeset, :listener_count)
+          listener_count: Ash.Changeset.get_argument(changeset, :listener_count),
+          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id)
         })
       end
     end
