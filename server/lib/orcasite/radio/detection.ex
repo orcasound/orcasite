@@ -16,6 +16,8 @@ defmodule Orcasite.Radio.Detection do
       index [:description]
       index [:inserted_at]
     end
+
+    migration_defaults id: "fragment(\"uuid_generate_v7()\")"
   end
 
   attributes do

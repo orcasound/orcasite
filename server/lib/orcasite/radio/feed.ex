@@ -11,6 +11,8 @@ defmodule Orcasite.Radio.Feed do
       index [:name]
       index [:node_name]
     end
+
+    migration_defaults id: "fragment(\"uuid_generate_v7()\")"
   end
 
   identities do
@@ -26,6 +28,7 @@ defmodule Orcasite.Radio.Feed do
     attribute :location_point, :geometry, allow_nil?: false
     attribute :intro_html, :string, default: ""
     attribute :image_url, :string, default: ""
+    attribute :visible, :boolean, default: true
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -60,6 +63,11 @@ defmodule Orcasite.Radio.Feed do
       prepare build(load: [:lat_lng, :lat_lng_string])
     end
 
+    read :index do
+      filter expr(visible)
+      prepare build(load: [:lat_lng, :lat_lng_string])
+    end
+
     read :get_by_slug do
       get_by :slug
     end
@@ -88,7 +96,7 @@ defmodule Orcasite.Radio.Feed do
   end
 
   admin do
-    table_columns [:id, :name, :slug, :node_name, :location_point]
+    table_columns [:id, :name, :slug, :node_name, :location_point, :visible]
 
     format_fields location_point: {Jason, :encode!, []}, lat_lng: {Jason, :encode!, []}
 
@@ -109,7 +117,7 @@ defmodule Orcasite.Radio.Feed do
     routes do
       base "/feeds"
 
-      index :read
+      index :index
     end
   end
 
@@ -118,7 +126,7 @@ defmodule Orcasite.Radio.Feed do
 
     queries do
       read_one :feed, :get_by_slug, allow_nil?: false
-      list :feeds, :read
+      list :feeds, :index
     end
   end
 
