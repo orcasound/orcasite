@@ -14,6 +14,8 @@ defmodule Orcasite.Radio.Candidate do
       index [:max_time]
       index [:inserted_at]
     end
+
+    migration_defaults id: "fragment(\"uuid_generate_v7()\")"
   end
 
   attributes do
