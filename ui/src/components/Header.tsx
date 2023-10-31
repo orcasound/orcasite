@@ -24,7 +24,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import Link from "@/components/Link";
-import wordmark from "@/public/wordmark/wordmark-white.svg";
+import logo from "@/public/logo/logo-darkblue.png";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 
@@ -266,7 +266,7 @@ function Brand() {
         onClick={() => analytics.nav.logoClicked()}
       >
         <Image
-          src={wordmark.src}
+          src={logo.src}
           alt="Orcasound"
           width={140}
           height={60}

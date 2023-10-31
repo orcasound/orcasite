@@ -7,6 +7,7 @@ import Marquee from "react-fast-marquee";
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
+import wordmark from "@/public/wordmark/wordmark-white.svg";
 import {
   displayDesktopOnly,
   displayMobileOnly,
@@ -93,14 +94,21 @@ export default function Player({
     [hlsURI, currentFeed?.nodeName, currentFeed?.imageUrl],
   );
 
-  const handleReady = useCallback((player: VideoJSPlayer) => {
-    playerRef.current = player;
+  const handleReady = useCallback(
+    (player: VideoJSPlayer) => {
+      playerRef.current = player;
 
-    player.on("playing", () => setPlayerStatus("playing"));
-    player.on("pause", () => setPlayerStatus("paused"));
-    player.on("waiting", () => setPlayerStatus("loading"));
-    player.on("error", () => setPlayerStatus("error"));
-  }, []);
+      player.on("playing", () => setPlayerStatus("playing"));
+      player.on("pause", () => setPlayerStatus("paused"));
+      player.on("waiting", () => setPlayerStatus("loading"));
+      player.on("error", () => setPlayerStatus("error"));
+
+      if (currentFeed) {
+        setMediaSessionAPI(currentFeed, player);
+      }
+    },
+    [currentFeed],
+  );
 
   const handlePlayPauseClick = async () => {
     const player = playerRef.current;
@@ -241,6 +249,31 @@ export default function Player({
     </Box>
   );
 }
+
+const setMediaSessionAPI = (
+  feed: Pick<Feed, "name" | "imageUrl">,
+  player: VideoJSPlayer,
+) => {
+  if ("mediaSession" in navigator && feed) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: feed.name,
+      artist: "Orcasound",
+      artwork: [
+        {
+          src: feed.imageUrl ? feed.imageUrl : wordmark.src,
+        },
+      ],
+    });
+
+    navigator.mediaSession.setActionHandler("play", () => {
+      player.play();
+    });
+
+    navigator.mediaSession.setActionHandler("pause", () => {
+      player.pause();
+    });
+  }
+};
 
 // Utility component to help with spacing
 // Just a box that's the same height as the player
