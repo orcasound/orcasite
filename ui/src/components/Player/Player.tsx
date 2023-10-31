@@ -7,7 +7,7 @@ import Marquee from "react-fast-marquee";
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
-import wordmark from "@/public/wordmark/wordmark-white.svg";
+import logo from "@/public/logo/logo-darkblue.png";
 import {
   displayDesktopOnly,
   displayMobileOnly,
@@ -260,7 +260,7 @@ const setMediaSessionAPI = (
       artist: "Orcasound",
       artwork: [
         {
-          src: feed.imageUrl ? feed.imageUrl : wordmark.src,
+          src: feed.imageUrl ? feed.imageUrl : logo.src,
         },
       ],
     });
