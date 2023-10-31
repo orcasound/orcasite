@@ -101,7 +101,15 @@ defmodule Orcasite.Radio.Detection do
     end
 
     create :submit_detection do
-      accept [:playlist_timestamp, :player_offset, :listener_count, :description, :category]
+      accept [
+        :playlist_timestamp,
+        :player_offset,
+        :listener_count,
+        :description,
+        :category,
+        :send_notifications
+      ]
+
       argument :feed_id, :string, allow_nil?: false
 
       argument :playlist_timestamp, :integer, allow_nil?: false
@@ -112,6 +120,8 @@ defmodule Orcasite.Radio.Detection do
       argument :category, :atom,
         allow_nil?: false,
         constraints: [one_of: [:whale, :vessel, :other]]
+
+      argument :send_notifications, :boolean, default: true
 
       change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
       change set_attribute(:player_offset, arg(:player_offset))
@@ -174,15 +184,17 @@ defmodule Orcasite.Radio.Detection do
             detection
             |> Orcasite.Radio.load!([:feed, :candidate])
 
-          Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-            Orcasite.Notifications.Notification.notify_new_detection(
-              detection.id,
-              detection.feed.slug,
-              detection.description,
-              detection.listener_count,
-              detection.candidate.id
-            )
-          end)
+          if Ash.Changeset.get_argument(changeset, :send_notifications) do
+            Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+              Orcasite.Notifications.Notification.notify_new_detection(
+                detection.id,
+                detection.feed.slug,
+                detection.description,
+                detection.listener_count,
+                detection.candidate.id
+              )
+            end)
+          end
 
           {:ok, detection}
         end)
