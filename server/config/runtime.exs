@@ -70,7 +70,7 @@ if config_env() == :prod do
       enabled: true,
       url: System.get_env("REDIS_URL"),
       node_name: System.get_env("DYNO") || System.get_env("USER"),
-      socket_opts: [ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")]
+      ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://") |> IO.inspect(label: "pub_sub_redis redis URL ssl?")
   end
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
