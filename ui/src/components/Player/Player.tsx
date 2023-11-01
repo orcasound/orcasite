@@ -33,7 +33,7 @@ export default function Player({
 }: {
   currentFeed?: Pick<
     Feed,
-    "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl"
+    "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl" | "thumbUrl"
   >;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
@@ -94,18 +94,27 @@ export default function Player({
     [hlsURI, currentFeed?.nodeName, currentFeed?.imageUrl],
   );
 
+  const updateMediaSession = useCallback(
+    (player: VideoJSPlayer) => {
+      if (currentFeed) {
+        setMediaSessionAPI(currentFeed, player);
+      }
+    },
+    [currentFeed],
+  );
+
   const handleReady = useCallback(
     (player: VideoJSPlayer) => {
       playerRef.current = player;
 
-      player.on("playing", () => setPlayerStatus("playing"));
+      player.on("playing", () => {
+        setPlayerStatus("playing");
+        updateMediaSession(player);
+      });
       player.on("pause", () => setPlayerStatus("paused"));
       player.on("waiting", () => setPlayerStatus("loading"));
       player.on("error", () => setPlayerStatus("error"));
-
-      if (currentFeed) {
-        setMediaSessionAPI(currentFeed, player);
-      }
+      updateMediaSession(player);
     },
     [currentFeed],
   );
@@ -251,16 +260,18 @@ export default function Player({
 }
 
 const setMediaSessionAPI = (
-  feed: Pick<Feed, "name" | "imageUrl">,
+  feed: Pick<Feed, "name" | "imageUrl" | "thumbUrl">,
   player: VideoJSPlayer,
 ) => {
   if ("mediaSession" in navigator && feed) {
+    console.log("Setting media session with feed", feed);
     navigator.mediaSession.metadata = new MediaMetadata({
       title: feed.name,
       artist: "Orcasound",
       artwork: [
         {
-          src: feed.imageUrl ? feed.imageUrl : logo.src,
+          src: feed.imageUrl || feed.thumbUrl || logo.src,
+          sizes: "144x144",
         },
       ],
     });
