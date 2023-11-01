@@ -49,7 +49,7 @@ config :orcasite, OrcasiteWeb.BasicAuth,
   username: System.get_env("ADMIN_USER"),
   password: System.get_env("ADMIN_PASSWORD")
 
-if System.get_env("REDIS_URL") do
+if System.get_env("REDIS_URL", "") != "" do
   config :orcasite, :cache_adapter, NebulexRedisAdapter
 
   config :orcasite, Orcasite.Cache,
@@ -61,7 +61,7 @@ else
   config :orcasite, :cache_adapter, Nebulex.Adapters.Local
 end
 
-if System.get_env("REDIS_URL") do
+if System.get_env("REDIS_URL", "") != "" do
   config :hammer,
     backend:
       {Hammer.Backend.Redis,
