@@ -17,12 +17,15 @@ defmodule OrcasiteWeb.Endpoint do
   end
 
   socket "/socket", OrcasiteWeb.UserSocket,
-    websocket: []
+    websocket: [
+      timeout: 45_000 # Timeout for Heroku
+  ]
 
 
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [
-      connect_info: [:user_agent, session: @session_options]
+      connect_info: [:user_agent, session: @session_options],
+      timeout: 45_000 # Timeout for Heroku
     ]
 
   # Serve at "/" the static files from "priv/static" directory.
