@@ -7,7 +7,7 @@ import Marquee from "react-fast-marquee";
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
-import logo from "@/public/logo/logo-darkblue.png";
+import fin512 from "@/public/photos/fin-512x512.png";
 import {
   displayDesktopOnly,
   displayMobileOnly,
@@ -96,28 +96,29 @@ export default function Player({
 
   const updateMediaSession = useCallback(
     (player: VideoJSPlayer) => {
-      if (currentFeed) {
+      if (currentFeed?.nodeName) {
         setMediaSessionAPI(currentFeed, player);
       }
     },
     [currentFeed],
   );
 
-  const handleReady = useCallback(
-    (player: VideoJSPlayer) => {
-      playerRef.current = player;
+  useEffect(() => {
+    if (playerRef.current) {
+      updateMediaSession(playerRef.current);
+    }
+  }, [playerRef, updateMediaSession]);
 
-      player.on("playing", () => {
-        setPlayerStatus("playing");
-        updateMediaSession(player);
-      });
-      player.on("pause", () => setPlayerStatus("paused"));
-      player.on("waiting", () => setPlayerStatus("loading"));
-      player.on("error", () => setPlayerStatus("error"));
-      updateMediaSession(player);
-    },
-    [currentFeed],
-  );
+  const handleReady = useCallback((player: VideoJSPlayer) => {
+    playerRef.current = player;
+
+    player.on("playing", () => {
+      setPlayerStatus("playing");
+    });
+    player.on("pause", () => setPlayerStatus("paused"));
+    player.on("waiting", () => setPlayerStatus("loading"));
+    player.on("error", () => setPlayerStatus("error"));
+  }, []);
 
   const handlePlayPauseClick = async () => {
     const player = playerRef.current;
@@ -264,14 +265,14 @@ const setMediaSessionAPI = (
   player: VideoJSPlayer,
 ) => {
   if ("mediaSession" in navigator && feed) {
-    console.log("Setting media session with feed", feed);
     navigator.mediaSession.metadata = new MediaMetadata({
       title: feed.name,
       artist: "Orcasound",
       artwork: [
         {
-          src: feed.imageUrl || feed.thumbUrl || logo.src,
-          sizes: "144x144",
+          src: feed.thumbUrl || fin512.src,
+          sizes: "512x512",
+          type: "image/png",
         },
       ],
     });
