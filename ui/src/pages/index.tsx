@@ -23,23 +23,13 @@ const HomePage: NextPageWithLayout = () => {
             Learn what orcas sound like. Then listen live for them on underwater
             microphones (hydrophones).
           </Typography>
-          <Typography variant="body1" my={2}>
-            Let us know when you hear them, or any sound you think is
-            interesting! That will help researchers and stewards protect the
-            orcas and their environment.
-          </Typography>
-          <Typography variant="body1" my={2}>
-            You can also get notified when our listeners or algorithms detect
-            whales at any of our hydrophone locations.
-          </Typography>
-
           <Box
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
+              flexDirection: { xs: "column", md: "row" },
               alignItems: "center",
               justifyContent: "space-evenly",
-              mt: 6,
+              my: 6,
               gap: 4,
             }}
           >
@@ -70,6 +60,16 @@ const HomePage: NextPageWithLayout = () => {
               </Button>
             </Link>
           </Box>
+
+          <Typography variant="body1" my={2}>
+            Let us know when you hear them, or any sound you think is
+            interesting! That will help researchers and stewards protect the
+            orcas and their environment.
+          </Typography>
+          <Typography variant="body1" my={2}>
+            You can also get notified when our listeners or algorithms detect
+            whales at any of our hydrophone locations.
+          </Typography>
         </Container>
       </main>
     </div>
