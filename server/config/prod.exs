@@ -25,7 +25,7 @@ config :orcasite, Orcasite.Repo,
   ssl: true,
   types: Orcasite.PostgresTypes,
   ssl_opts: [
-    verify: :verify_none,
+    verify: :verify_none
   ]
 
 # Do not print debug messages in production
@@ -63,6 +63,7 @@ if System.get_env("REDIS_URL") do
        [
          delete_buckets_timeout: 10_0000,
          expiry_ms: 60_000 * 60 * 2,
-         redis_url: System.get_env("REDIS_URL")
+         redis_url: System.get_env("REDIS_URL"),
+         redix_config: [ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")]
        ]}
 end
