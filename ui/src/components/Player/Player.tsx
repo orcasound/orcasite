@@ -270,7 +270,7 @@ const setMediaSessionAPI = (
       artist: "Orcasound",
       artwork: [
         {
-          src: fin512.src,
+          src: feed.thumbUrl || fin512.src,
           sizes: "512x512",
           type: "image/png",
         },
