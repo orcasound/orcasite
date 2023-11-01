@@ -57,7 +57,11 @@ if System.get_env("REDIS_URL") do
       url: System.get_env("REDIS_URL"),
       ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
     ]
+else
+  config :orcasite, :cache_adapter, Nebulex.Adapters.Local
+end
 
+if System.get_env("REDIS_URL") do
   config :hammer,
     backend:
       {Hammer.Backend.Redis,
@@ -69,4 +73,7 @@ if System.get_env("REDIS_URL") do
            ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
          ]
        ]}
+else
+  config :hammer,
+    backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 end
