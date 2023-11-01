@@ -54,7 +54,8 @@ if System.get_env("REDIS_URL") do
 
   config :orcasite, Orcasite.Cache,
     conn_opts: [
-      url: System.get_env("REDIS_URL")
+      url: System.get_env("REDIS_URL"),
+      ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
     ]
 
   config :hammer,
@@ -65,9 +66,7 @@ if System.get_env("REDIS_URL") do
          expiry_ms: 60_000 * 60 * 2,
          redis_url: System.get_env("REDIS_URL"),
          redix_config: [
-           ssl:
-             String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
-             |> IO.inspect(label: "Hammer redis URL ssl?")
+           ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
          ]
        ]}
 end
