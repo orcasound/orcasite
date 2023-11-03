@@ -56,7 +56,8 @@ if System.get_env("REDIS_URL", "") != "" do
     conn_opts: [
       url: System.get_env("REDIS_URL"),
       ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
-    ]
+    ],
+    pool_size: System.get("REDIS_CACHE_POOL_SIZE", "5") |> String.to_integer()
 else
   config :orcasite, :cache_adapter, Nebulex.Adapters.Local
 end

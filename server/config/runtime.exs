@@ -69,8 +69,10 @@ if config_env() == :prod do
     config :orcasite, :pub_sub_redis,
       enabled: true,
       url: System.get_env("REDIS_URL"),
-      node_name: System.get_env("DYNO") || System.get_env("USER"),
-      ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
+      node_name:
+        (System.get_env("DYNO") || System.get_env("USER")) |> IO.inspect(label: "Node name"),
+      ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://"),
+      redis_pool_size: String.to_integer(System.get_env("REDIS_PUBSUB_POOL_SIZE", "5"))
   end
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
