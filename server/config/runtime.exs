@@ -72,7 +72,8 @@ if config_env() == :prod do
       node_name:
         (System.get_env("DYNO") || System.get_env("USER")) |> IO.inspect(label: "Node name"),
       ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://"),
-      redis_pool_size: String.to_integer(System.get_env("REDIS_PUBSUB_POOL_SIZE", "5"))
+      redis_pool_size: String.to_integer(System.get_env("REDIS_PUBSUB_POOL_SIZE", "5")),
+      socket_opts: [verify: :verify_none]
   end
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch

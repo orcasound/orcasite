@@ -55,7 +55,8 @@ if System.get_env("REDIS_URL", "") != "" do
   config :orcasite, Orcasite.Cache,
     conn_opts: [
       url: System.get_env("REDIS_URL"),
-      ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
+      ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://"),
+      socket_opts: [verify: :verify_none]
     ],
     pool_size: System.get_env("REDIS_CACHE_POOL_SIZE", "5") |> String.to_integer()
 else
@@ -71,7 +72,8 @@ if System.get_env("REDIS_URL", "") != "" do
          expiry_ms: 60_000 * 60 * 2,
          redis_url: System.get_env("REDIS_URL"),
          redix_config: [
-           ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
+           ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://"),
+           socket_opts: [verify: :verify_none]
          ]
        ]}
 else
