@@ -67,14 +67,18 @@ if config_env() == :prod do
     redis_ssl = String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
     # If 'DYNO' doesn't exist, add:
     # Use https://devcenter.heroku.com/articles/dyno-metadata
-    config :orcasite, :pub_sub_redis,
-      enabled: true,
-      url: System.get_env("REDIS_URL"),
-      node_name:
-        (System.get_env("DYNO") || System.get_env("USER")) |> IO.inspect(label: "Node name"),
-      ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://"),
-      redis_pool_size: String.to_integer(System.get_env("REDIS_PUBSUB_POOL_SIZE", "5")),
-      socket_opts: Keyword.merge(Keyword.new(), if(redis_ssl, [verify: :verify_none], else: []))
+    config :orcasite,
+           :pub_sub_redis,
+           [
+             enabled: true,
+             url: System.get_env("REDIS_URL"),
+             node_name:
+               (System.get_env("DYNO") || System.get_env("USER"))
+               |> IO.inspect(label: "Node name"),
+             ssl: String.starts_with?(System.get_env("REDIS_URL"), "rediss://"),
+             redis_pool_size: String.to_integer(System.get_env("REDIS_PUBSUB_POOL_SIZE", "5"))
+           ]
+           |> Keyword.merge(if redis_ssl, do: [socket_opts: [verify: :verify_none]], else: [])
   end
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
