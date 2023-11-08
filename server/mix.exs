@@ -74,7 +74,7 @@ defmodule Orcasite.Mixfile do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:ash, "~> 2.6", override: true},
-      {:ash_admin, "~> 0.9.5"},
+      {:ash_admin, github: "skanderm/ash_admin", branch: "main"},
       {:ash_postgres, "~> 1.3"},
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
