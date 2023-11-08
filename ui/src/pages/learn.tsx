@@ -56,8 +56,8 @@ const LearnPage: NextPageWithLayout = () => {
             What do orcas sound like?
           </Typography>
           <Typography variant="body1" my={2}>
-            Here are some samples of calls, clicks, and whistles that are made
-            by southern resident killer whales:
+            Here are some samples of calls, echolocation clicks, and whistles
+            that are made by southern salmon-seeking killer whales:
           </Typography>
           <Box>
             {examples.map((example) => (
