@@ -16,6 +16,8 @@ defmodule Orcasite.Radio.Detection do
       index [:description]
       index [:inserted_at]
     end
+
+    migration_defaults id: "fragment(\"uuid_generate_v7()\")"
   end
 
   attributes do
@@ -36,6 +38,15 @@ defmodule Orcasite.Radio.Detection do
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
+  end
+
+  calculations do
+    calculate :uuid, :string, Orcasite.Radio.Calculations.DecodeUUID
+  end
+
+  relationships do
+    belongs_to :candidate, Candidate
+    belongs_to :feed, Feed
   end
 
   actions do
@@ -90,7 +101,15 @@ defmodule Orcasite.Radio.Detection do
     end
 
     create :submit_detection do
-      accept [:playlist_timestamp, :player_offset, :listener_count, :description, :category]
+      accept [
+        :playlist_timestamp,
+        :player_offset,
+        :listener_count,
+        :description,
+        :category,
+        :send_notifications
+      ]
+
       argument :feed_id, :string, allow_nil?: false
 
       argument :playlist_timestamp, :integer, allow_nil?: false
@@ -101,6 +120,8 @@ defmodule Orcasite.Radio.Detection do
       argument :category, :atom,
         allow_nil?: false,
         constraints: [one_of: [:whale, :vessel, :other]]
+
+      argument :send_notifications, :boolean, default: true
 
       change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
       change set_attribute(:player_offset, arg(:player_offset))
@@ -122,23 +143,6 @@ defmodule Orcasite.Radio.Detection do
             player_offset: player_offset
           })
         )
-        |> Ash.Changeset.after_action(fn changeset, detection ->
-          # Happens second
-          detection =
-            detection
-            |> Orcasite.Radio.load!(:feed)
-
-          Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-            Orcasite.Notifications.Notification.notify_new_detection(
-              detection.id,
-              detection.feed.slug,
-              detection.description,
-              detection.listener_count
-            )
-          end)
-
-          {:ok, detection}
-        end)
         |> Ash.Changeset.after_action(fn changeset, detection ->
           # Happens first
           # Find or create candidate, update detection with candidate
@@ -174,29 +178,27 @@ defmodule Orcasite.Radio.Detection do
           |> Ash.Changeset.for_update(:update, %{candidate: candidate})
           |> Orcasite.Radio.update()
         end)
+        |> Ash.Changeset.after_action(fn changeset, detection ->
+          # Happens second
+          detection =
+            detection
+            |> Orcasite.Radio.load!([:feed, :candidate])
+
+          if Ash.Changeset.get_argument(changeset, :send_notifications) do
+            Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+              Orcasite.Notifications.Notification.notify_new_detection(
+                detection.id,
+                detection.feed.slug,
+                detection.description,
+                detection.listener_count,
+                detection.candidate.id
+              )
+            end)
+          end
+
+          {:ok, detection}
+        end)
       end
-    end
-  end
-
-  calculations do
-    calculate :uuid, :string, Orcasite.Radio.Calculations.DecodeUUID
-  end
-
-  relationships do
-    belongs_to :candidate, Candidate
-    belongs_to :feed, Feed
-  end
-
-  graphql do
-    type :detection
-
-    queries do
-      get :detection, :read
-      list :detections, :index
-    end
-
-    mutations do
-      create :submit_detection, :submit_detection
     end
   end
 
@@ -211,6 +213,19 @@ defmodule Orcasite.Radio.Detection do
       :candidate_id,
       :inserted_at
     ]
+  end
+
+  graphql do
+    type :detection
+
+    queries do
+      get :detection, :read
+      list :detections, :index
+    end
+
+    mutations do
+      create :submit_detection, :submit_detection
+    end
   end
 
   defp datetime_min(time_1, time_2) do

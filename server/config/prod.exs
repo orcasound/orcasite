@@ -23,7 +23,10 @@ config :orcasite, OrcasiteWeb.Endpoint,
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
   ssl: true,
-  types: Orcasite.PostgresTypes
+  types: Orcasite.PostgresTypes,
+  ssl_opts: [
+    verify: :verify_none
+  ]
 
 # Do not print debug messages in production
 config :logger, level: :info, format: {Orcasite.Logger, :format}
@@ -46,13 +49,18 @@ config :orcasite, OrcasiteWeb.BasicAuth,
   username: System.get_env("ADMIN_USER"),
   password: System.get_env("ADMIN_PASSWORD")
 
-if System.get_env("REDIS_URL") do
+if System.get_env("REDIS_URL", "") != "" do
+  redis_ssl = String.starts_with?(System.get_env("REDIS_URL"), "rediss://")
   config :orcasite, :cache_adapter, NebulexRedisAdapter
 
   config :orcasite, Orcasite.Cache,
-    conn_opts: [
-      url: System.get_env("REDIS_URL")
-    ]
+    conn_opts:
+      [
+        url: System.get_env("REDIS_URL"),
+        ssl: redis_ssl
+      ]
+      |> Keyword.merge(if redis_ssl, do: [socket_opts: [verify: :verify_none]], else: []),
+    pool_size: System.get_env("REDIS_CACHE_POOL_SIZE", "5") |> String.to_integer()
 
   config :hammer,
     backend:
@@ -61,5 +69,15 @@ if System.get_env("REDIS_URL") do
          delete_buckets_timeout: 10_0000,
          expiry_ms: 60_000 * 60 * 2,
          redis_url: System.get_env("REDIS_URL"),
+         redix_config:
+           [
+             ssl: redis_ssl
+           ]
+           |> Keyword.merge(if redis_ssl, do: [socket_opts: [verify: :verify_none]], else: [])
        ]}
+else
+  config :orcasite, :cache_adapter, Nebulex.Adapters.Local
+
+  config :hammer,
+    backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 end

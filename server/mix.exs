@@ -24,7 +24,8 @@ defmodule Orcasite.Mixfile do
         :logger,
         :runtime_tools,
         :inets,
-        :phoenix_pubsub_redis
+        :phoenix_pubsub_redis,
+        :os_mon
       ]
     ]
   end
@@ -73,7 +74,7 @@ defmodule Orcasite.Mixfile do
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:ash, "~> 2.6", override: true},
-      {:ash_admin, github: "ash-project/ash_admin", branch: "main"},
+      {:ash_admin, "~> 0.9.5"},
       {:ash_postgres, "~> 1.3"},
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
@@ -84,7 +85,7 @@ defmodule Orcasite.Mixfile do
       {:mjml, "~> 1.5.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
       {:ash_uuid, "~> 0.4"},
-      {:ash_graphql, github: "ash-project/ash_graphql", branch: "main"},
+      {:ash_graphql, "~> 0.26.6"},
       {:ash_json_api, "~> 0.33.0"},
       {:open_api_spex, "~> 3.16"},
       {:redoc_ui_plug, "~> 0.2.1"},

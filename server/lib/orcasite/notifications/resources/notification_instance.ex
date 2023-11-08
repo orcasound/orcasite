@@ -6,43 +6,6 @@ defmodule Orcasite.Notifications.NotificationInstance do
   alias Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta
   alias Orcasite.Notifications.{Notification, Subscription}
 
-  resource do
-    description """
-    Sends a single notification to a subscription
-    """
-  end
-
-  code_interface do
-    define_for Orcasite.Notifications
-    define :update, action: :update, args: [:status, :meta, :processed_at]
-  end
-
-  actions do
-    defaults [:create, :read, :update, :destroy]
-
-    create :create_with_relationships do
-      accept [:subscription, :notification]
-
-      argument :subscription, :uuid
-      argument :notification, :uuid
-
-      change manage_relationship(:subscription, type: :append)
-      change manage_relationship(:notification, type: :append)
-
-      change {ExtractNotificationInstanceMeta, []}
-
-      change fn changeset, _context ->
-        changeset
-        |> Ash.Changeset.after_action(fn _, record ->
-          record
-          |> Orcasite.Notifications.Sending.queue()
-
-          {:ok, record}
-        end)
-      end
-    end
-  end
-
   attributes do
     uuid_primary_key :id
 
@@ -66,5 +29,47 @@ defmodule Orcasite.Notifications.NotificationInstance do
   relationships do
     belongs_to :subscription, Subscription
     belongs_to :notification, Notification
+  end
+
+  code_interface do
+    define_for Orcasite.Notifications
+    define :update, action: :update, args: [:status, :meta, :processed_at]
+  end
+
+  resource do
+    description """
+    Sends a single notification to a subscription
+    """
+  end
+
+  actions do
+    defaults [:create, :read, :update, :destroy]
+
+    create :create_with_relationships do
+      accept [:subscription, :notification]
+
+      argument :subscription, :uuid
+      argument :notification, :uuid
+
+      change manage_relationship(:subscription, type: :append)
+      change manage_relationship(:notification, type: :append)
+
+      change {ExtractNotificationInstanceMeta, []}
+
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.after_action(fn _, record ->
+          %{
+            notification_instance_id: record.id,
+            notification_id: record.notification_id,
+            subscription_id: record.subscription_id
+          }
+          |> Orcasite.Notifications.Workers.SendNotificationEmail.new()
+          |> Oban.insert()
+
+          {:ok, record}
+        end)
+      end
+    end
   end
 end

@@ -5,6 +5,7 @@ import Head from "next/head";
 import Link from "@/components/Link";
 import { getMapLayout } from "@/components/MapLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
+import { analytics } from "@/utils/analytics";
 
 const HomePage: NextPageWithLayout = () => {
   return (
@@ -22,23 +23,13 @@ const HomePage: NextPageWithLayout = () => {
             Learn what orcas sound like. Then listen live for them on underwater
             microphones (hydrophones).
           </Typography>
-          <Typography variant="body1" my={2}>
-            Let us know when you hear them, or any sound you think is
-            interesting! That will help researchers and stewards protect the
-            orcas and their environment.
-          </Typography>
-          <Typography variant="body1" my={2}>
-            You can also get notified when our listeners or algorithms detect
-            whales at any of our hydrophone locations.
-          </Typography>
-
           <Box
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
+              flexDirection: { xs: "column", md: "row" },
               alignItems: "center",
               justifyContent: "space-evenly",
-              mt: 6,
+              my: 6,
               gap: 4,
             }}
           >
@@ -50,6 +41,7 @@ const HomePage: NextPageWithLayout = () => {
                 startIcon={<PlayLessonOutlined />}
                 fullWidth
                 sx={{ py: 2 }}
+                onClick={() => analytics.about.learnTabClicked()}
               >
                 Learn the sounds
               </Button>
@@ -62,11 +54,22 @@ const HomePage: NextPageWithLayout = () => {
                 startIcon={<GraphicEq />}
                 fullWidth
                 sx={{ py: 2 }}
+                onClick={() => analytics.about.listenTabClicked()}
               >
                 Start listening
               </Button>
             </Link>
           </Box>
+
+          <Typography variant="body1" my={2}>
+            Let us know when you hear them, or any sound you think is
+            interesting! That will help researchers and stewards protect the
+            orcas and their environment.
+          </Typography>
+          <Typography variant="body1" my={2}>
+            You can also get notified when our listeners or algorithms detect
+            whales at any of our hydrophone locations.
+          </Typography>
         </Container>
       </main>
     </div>

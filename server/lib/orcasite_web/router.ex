@@ -1,6 +1,7 @@
 defmodule OrcasiteWeb.Router do
   use OrcasiteWeb, :router
   use AshAuthentication.Phoenix.Router
+  import Phoenix.LiveDashboard.Router
 
   import AshAdmin.Router
 
@@ -49,8 +50,8 @@ defmodule OrcasiteWeb.Router do
 
   pipeline :graphql do
     plug(:parsers)
-    plug :load_from_bearer
-    plug :set_current_user_as_actor
+    plug :fetch_session
+    plug :load_from_session
     plug AshGraphql.Plug
   end
 
@@ -95,6 +96,7 @@ defmodule OrcasiteWeb.Router do
 
   scope "/" do
     pipe_through [:browser, :require_admin]
+    live_dashboard "/admin/dashboard", metrics: OrcasiteWeb.Telemetry
     ash_admin "/admin"
   end
 
@@ -176,4 +178,5 @@ defmodule OrcasiteWeb.Router do
   end
 
   defp set_current_user_as_actor(conn, _opts), do: conn
+
 end

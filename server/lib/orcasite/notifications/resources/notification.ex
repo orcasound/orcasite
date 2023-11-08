@@ -1,17 +1,37 @@
 defmodule Orcasite.Notifications.Notification do
   use Ash.Resource,
     extensions: [AshAdmin.Resource],
-    data_layer: AshPostgres.DataLayer,
-    notifiers: [Orcasite.Notifications.Notifiers.NotifySubscriptions]
+    data_layer: AshPostgres.DataLayer
 
   alias Orcasite.Notifications.{Event, NotificationInstance, Subscription}
 
-  resource do
-    description """
-    Notification for a specific event type. Once created, all Subscriptions that match this Notification's
-    event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
-    channel settings (email, browser notification, webhooks).
-    """
+  postgres do
+    table "notifications"
+    repo Orcasite.Repo
+  end
+
+  attributes do
+    uuid_primary_key :id
+
+    attribute :meta, :map
+    attribute :active, :boolean, default: true
+
+    attribute :event_type, :atom do
+      constraints one_of: Event.types()
+    end
+
+    create_timestamp :inserted_at
+    update_timestamp :updated_at
+  end
+
+  relationships do
+    has_many :notification_instances, NotificationInstance
+
+    many_to_many :subscriptions, Subscription do
+      through NotificationInstance
+      source_attribute_on_join_resource :notification_id
+      destination_attribute_on_join_resource :subscription_id
+    end
   end
 
   code_interface do
@@ -19,11 +39,19 @@ defmodule Orcasite.Notifications.Notification do
 
     define :notify_new_detection,
       action: :notify_new_detection,
-      args: [:detection_id, :node, :description, :listener_count]
+      args: [:detection_id, :node, :description, :listener_count, :candidate_id]
 
     define :notify_confirmed_candidate,
       action: :notify_confirmed_candidate,
       args: [:candidate_id, :node]
+  end
+
+  resource do
+    description """
+    Notification for a specific event type. Once created, all Subscriptions that match this Notification's
+    event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
+    channel settings (email, browser notification, webhooks).
+    """
   end
 
   actions do
@@ -88,6 +116,7 @@ defmodule Orcasite.Notifications.Notification do
       argument :node, :string, allow_nil?: false
       argument :description, :string, allow_nil?: true
       argument :listener_count, :integer, allow_nil?: true
+      argument :candidate_id, :string, allow_nil?: true
 
       change set_attribute(:event_type, :new_detection)
 
@@ -98,39 +127,39 @@ defmodule Orcasite.Notifications.Notification do
           detection_id: Ash.Changeset.get_argument(changeset, :detection_id),
           node: Ash.Changeset.get_argument(changeset, :node),
           description: Ash.Changeset.get_argument(changeset, :description),
-          listener_count: Ash.Changeset.get_argument(changeset, :listener_count)
+          listener_count: Ash.Changeset.get_argument(changeset, :listener_count),
+          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id)
         })
       end
     end
   end
 
-  postgres do
-    table "notifications"
-    repo Orcasite.Repo
-  end
+  changes do
+    change fn changeset, _context ->
+             changeset
+             |> Ash.Changeset.after_action(fn _, notification ->
+               Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+                 Orcasite.Notifications.Subscription
+                 |> Ash.Query.for_read(:available_for_notification, %{
+                   notification_id: notification.id,
+                   event_type: notification.event_type
+                 })
+                 |> Orcasite.Notifications.stream!()
+                 |> Stream.map(fn subscription ->
+                   Orcasite.Notifications.NotificationInstance
+                   |> Ash.Changeset.for_create(:create_with_relationships, %{
+                     notification: notification.id,
+                     subscription: subscription.id
+                   })
+                   |> Orcasite.Notifications.create!()
+                 end)
+                 |> Stream.run()
+               end)
 
-  attributes do
-    uuid_primary_key :id
-
-    attribute :meta, :map
-    attribute :active, :boolean, default: true
-
-    attribute :event_type, :atom do
-      constraints one_of: Event.types()
-    end
-
-    create_timestamp :inserted_at
-    update_timestamp :updated_at
-  end
-
-  relationships do
-    has_many :notification_instances, NotificationInstance
-
-    many_to_many :subscriptions, Subscription do
-      through NotificationInstance
-      source_attribute_on_join_resource :notification_id
-      destination_attribute_on_join_resource :subscription_id
-    end
+               {:ok, notification}
+             end)
+           end,
+           on: :create
   end
 
   admin do

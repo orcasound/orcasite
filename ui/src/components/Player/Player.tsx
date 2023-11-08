@@ -7,6 +7,7 @@ import Marquee from "react-fast-marquee";
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
+import fin512 from "@/public/photos/fin-512x512.png";
 import {
   displayDesktopOnly,
   displayMobileOnly,
@@ -32,7 +33,7 @@ export default function Player({
 }: {
   currentFeed?: Pick<
     Feed,
-    "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl"
+    "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl" | "thumbUrl"
   >;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
@@ -93,10 +94,27 @@ export default function Player({
     [hlsURI, currentFeed?.nodeName, currentFeed?.imageUrl],
   );
 
+  const updateMediaSession = useCallback(
+    (player: VideoJSPlayer) => {
+      if (currentFeed?.nodeName) {
+        setMediaSessionAPI(currentFeed, player);
+      }
+    },
+    [currentFeed],
+  );
+
+  useEffect(() => {
+    if (playerRef.current) {
+      updateMediaSession(playerRef.current);
+    }
+  }, [playerRef, updateMediaSession]);
+
   const handleReady = useCallback((player: VideoJSPlayer) => {
     playerRef.current = player;
 
-    player.on("playing", () => setPlayerStatus("playing"));
+    player.on("playing", () => {
+      setPlayerStatus("playing");
+    });
     player.on("pause", () => setPlayerStatus("paused"));
     player.on("waiting", () => setPlayerStatus("loading"));
     player.on("error", () => setPlayerStatus("error"));
@@ -241,6 +259,33 @@ export default function Player({
     </Box>
   );
 }
+
+const setMediaSessionAPI = (
+  feed: Pick<Feed, "name" | "imageUrl" | "thumbUrl">,
+  player: VideoJSPlayer,
+) => {
+  if ("mediaSession" in navigator && feed) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: feed.name,
+      artist: "Orcasound",
+      artwork: [
+        {
+          src: feed.thumbUrl || fin512.src,
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+    });
+
+    navigator.mediaSession.setActionHandler("play", () => {
+      player.play();
+    });
+
+    navigator.mediaSession.setActionHandler("pause", () => {
+      player.pause();
+    });
+  }
+};
 
 // Utility component to help with spacing
 // Just a box that's the same height as the player

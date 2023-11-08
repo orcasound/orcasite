@@ -38,7 +38,7 @@ export default function DetectionsTable({
         startOffset={startOffset}
         endOffset={endOffset}
       />
-      <Table>
+      <Table sx={{ marginTop: 6 }}>
         <TableHead>
           <TableRow>
             <TableCell>#</TableCell>

@@ -11,9 +11,12 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Typography,
 } from "@mui/material";
 import Head from "next/head";
-import { useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 import DetectionsTable from "@/components/DetectionsTable";
 import Header from "@/components/Header";
@@ -40,8 +43,13 @@ const getCategoryCounts = (candidate: CandidateQueryResult) => {
 };
 
 const DetectionsPage: NextPageWithLayout = () => {
+  const router = useRouter();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
+
+  const searchParams = useSearchParams();
+
+  const candidateIdParam = searchParams.get("candidateId");
 
   const [detectionModalOpen, setDetectionModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] =
@@ -53,7 +61,21 @@ const DetectionsPage: NextPageWithLayout = () => {
     offset: page * rowsPerPage,
     sort: [{ field: "MIN_TIME", order: "DESC" }],
   });
-  const candidates = candidatesQuery?.data?.candidates?.results ?? [];
+
+  const candidates = useMemo(
+    () => candidatesQuery?.data?.candidates?.results ?? [],
+    [candidatesQuery?.data?.candidates?.results],
+  );
+
+  useEffect(() => {
+    if (candidateIdParam) {
+      const candidate = candidates.find((c) => c.id === candidateIdParam);
+      if (candidate) {
+        setSelectedCandidate(candidate);
+        setDetectionModalOpen(true);
+      }
+    }
+  }, [candidates, candidateIdParam]);
 
   return (
     <div>
@@ -83,13 +105,19 @@ const DetectionsPage: NextPageWithLayout = () => {
               <Paper elevation={1}>
                 <Modal
                   open={detectionModalOpen}
-                  onClose={() => setDetectionModalOpen(false)}
+                  onClose={() => {
+                    setDetectionModalOpen(false);
+                    router.back();
+                  }}
                   className="p-4"
                 >
                   <Box p={4}>
                     <Paper>
                       <Box p={5}>
-                        <h2>Detections</h2>
+                        <Typography variant="h4">Detections</Typography>
+                        <Typography variant="body2">
+                          Candidate {selectedCandidate?.id}
+                        </Typography>
                         {selectedCandidate && (
                           <DetectionsTable
                             detections={selectedCandidate.detections}
@@ -147,14 +175,22 @@ const DetectionsPage: NextPageWithLayout = () => {
                             .join(", ")}
                         </TableCell>
                         <TableCell align="center">
-                          <Button
+                          {/* <Button
                             onClick={() => {
                               setDetectionModalOpen(true);
                               setSelectedCandidate(candidate);
                             }}
                           >
                             View
-                          </Button>
+                          </Button> */}
+                          <Link
+                            href={`/reports/?candidateId=${candidate.id}`}
+                            as={`/reports/${candidate.id}`}
+                            scroll={false}
+                            shallow={true}
+                          >
+                            <Button>View</Button>
+                          </Link>
                         </TableCell>
                       </TableRow>
                     ))}

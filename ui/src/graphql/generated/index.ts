@@ -550,6 +550,38 @@ export type SubmitDetectionMutation = {
   } | null;
 };
 
+export type CandidateQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type CandidateQuery = {
+  __typename?: "RootQueryType";
+  candidate?: {
+    __typename?: "Candidate";
+    id: string;
+    minTime: Date;
+    maxTime: Date;
+    detectionCount?: number | null;
+    feed: {
+      __typename?: "Feed";
+      id: string;
+      slug: string;
+      name: string;
+      nodeName: string;
+    };
+    detections: Array<{
+      __typename?: "Detection";
+      id: string;
+      category?: DetectionCategory | null;
+      description?: string | null;
+      listenerCount?: number | null;
+      playlistTimestamp: number;
+      playerOffset: number;
+      timestamp: Date;
+    }>;
+  } | null;
+};
+
 export type FeedQueryVariables = Exact<{
   slug: Scalars["String"]["input"];
 }>;
@@ -672,6 +704,54 @@ useSubmitDetectionMutation.fetcher = (
 ) =>
   fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
     SubmitDetectionDocument,
+    variables,
+  );
+export const CandidateDocument = `
+    query candidate($id: ID!) {
+  candidate(id: $id) {
+    id
+    minTime
+    maxTime
+    detectionCount
+    feed {
+      id
+      slug
+      name
+      nodeName
+    }
+    detections {
+      id
+      category
+      description
+      listenerCount
+      playlistTimestamp
+      playerOffset
+      timestamp
+    }
+  }
+}
+    `;
+export const useCandidateQuery = <TData = CandidateQuery, TError = unknown>(
+  variables: CandidateQueryVariables,
+  options?: UseQueryOptions<CandidateQuery, TError, TData>,
+) =>
+  useQuery<CandidateQuery, TError, TData>(
+    ["candidate", variables],
+    fetcher<CandidateQuery, CandidateQueryVariables>(
+      CandidateDocument,
+      variables,
+    ),
+    options,
+  );
+useCandidateQuery.document = CandidateDocument;
+
+useCandidateQuery.getKey = (variables: CandidateQueryVariables) => [
+  "candidate",
+  variables,
+];
+useCandidateQuery.fetcher = (variables: CandidateQueryVariables) =>
+  fetcher<CandidateQuery, CandidateQueryVariables>(
+    CandidateDocument,
     variables,
   );
 export const FeedDocument = `

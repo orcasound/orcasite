@@ -1,0 +1,23 @@
+query candidate($id: ID!) {
+  candidate(id: $id) {
+    id
+    minTime
+    maxTime
+    detectionCount
+    feed {
+      id
+      slug
+      name
+      nodeName
+    }
+    detections {
+      id
+      category
+      description
+      listenerCount
+      playlistTimestamp
+      playerOffset
+      timestamp
+    }
+  }
+}
