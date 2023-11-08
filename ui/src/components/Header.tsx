@@ -139,6 +139,7 @@ function Mobile(props: { window?: () => Window }) {
                 <ListItem key={item.label} disablePadding>
                   <ListItemButton
                     href={item.url}
+                    target="_blank"
                     onClick={() => item.onClick && item.onClick()}
                   >
                     <ListItemIcon
@@ -198,6 +199,7 @@ function Desktop() {
             <Button
               onClick={() => page.onClick && page.onClick()}
               href={page.url}
+              target="_blank"
               key={page.label}
               sx={{
                 my: 2,
