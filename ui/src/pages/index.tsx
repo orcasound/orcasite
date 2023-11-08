@@ -64,11 +64,11 @@ const HomePage: NextPageWithLayout = () => {
           <Typography variant="body1" my={2}>
             Let us know when you hear them, or any sound you think is
             interesting! That will help researchers and stewards protect the
-            orcas and their environment.
+            orcas and study their acoustic environment.
           </Typography>
           <Typography variant="body1" my={2}>
-            You can also get notified when our listeners or algorithms detect
-            whales at any of our hydrophone locations.
+            You can also get notified when our listeners or AI detect whales at
+            any of our hydrophone locations.
           </Typography>
         </Container>
       </main>
