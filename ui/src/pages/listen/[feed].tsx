@@ -56,19 +56,6 @@ const FeedPage: NextPageWithLayout = () => {
             {feed.introHtml && (
               <div dangerouslySetInnerHTML={{ __html: feed.introHtml }} />
             )}
-            {feed.mapUrl && (
-              <div
-                style={{ position: "relative", width: "100%", height: "15em" }}
-              >
-                <Image
-                  src={feed.mapUrl}
-                  layout="fill"
-                  alt=""
-                  objectFit="contain"
-                  objectPosition="left"
-                />
-              </div>
-            )}
           </Box>
         </Container>
       </main>
