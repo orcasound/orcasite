@@ -277,6 +277,7 @@ export type Feed = {
   nodeName: Scalars["String"]["output"];
   slug: Scalars["String"]["output"];
   thumbUrl?: Maybe<Scalars["String"]["output"]>;
+  visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type FeedFilterId = {
@@ -305,6 +306,7 @@ export type FeedFilterInput = {
   not?: InputMaybe<Array<FeedFilterInput>>;
   or?: InputMaybe<Array<FeedFilterInput>>;
   slug?: InputMaybe<FeedFilterSlug>;
+  visible?: InputMaybe<FeedFilterVisible>;
 };
 
 export type FeedFilterIntroHtml = {
@@ -355,6 +357,17 @@ export type FeedFilterSlug = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type FeedFilterVisible = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type FeedSortField =
   | "ID"
   | "IMAGE_URL"
@@ -362,7 +375,8 @@ export type FeedSortField =
   | "LOCATION_POINT"
   | "NAME"
   | "NODE_NAME"
-  | "SLUG";
+  | "SLUG"
+  | "VISIBLE";
 
 export type FeedSortInput = {
   field: FeedSortField;
@@ -513,6 +527,7 @@ export type SubmitDetectionInput = {
   listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
   playerOffset: Scalars["Decimal"]["input"];
   playlistTimestamp: Scalars["Int"]["input"];
+  sendNotifications?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 /** The result of the :submit_detection mutation */
@@ -531,6 +546,35 @@ export type User = {
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type SignInWithPasswordMutationVariables = Exact<{
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+}>;
+
+export type SignInWithPasswordMutation = {
+  __typename?: "RootMutationType";
+  signInWithPassword?: {
+    __typename?: "SignInWithPasswordResult";
+    token?: string | null;
+    user?: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      admin?: boolean | null;
+      firstName?: string | null;
+      lastName?: string | null;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      message?: string | null;
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
 };
 
 export type SubmitDetectionMutationVariables = Exact<{
@@ -661,6 +705,61 @@ export type FeedsQuery = {
   }>;
 };
 
+export const SignInWithPasswordDocument = `
+    mutation signInWithPassword($email: String!, $password: String!) {
+  signInWithPassword(input: {email: $email, password: $password}) {
+    token
+    user {
+      id
+      email
+      admin
+      firstName
+      lastName
+    }
+    errors {
+      message
+      code
+      fields
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useSignInWithPasswordMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    SignInWithPasswordMutation,
+    TError,
+    SignInWithPasswordMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    SignInWithPasswordMutation,
+    TError,
+    SignInWithPasswordMutationVariables,
+    TContext
+  >(
+    ["signInWithPassword"],
+    (variables?: SignInWithPasswordMutationVariables) =>
+      fetcher<SignInWithPasswordMutation, SignInWithPasswordMutationVariables>(
+        SignInWithPasswordDocument,
+        variables,
+      )(),
+    options,
+  );
+useSignInWithPasswordMutation.getKey = () => ["signInWithPassword"];
+
+useSignInWithPasswordMutation.fetcher = (
+  variables: SignInWithPasswordMutationVariables,
+) =>
+  fetcher<SignInWithPasswordMutation, SignInWithPasswordMutationVariables>(
+    SignInWithPasswordDocument,
+    variables,
+  );
 export const SubmitDetectionDocument = `
     mutation submitDetection($feedId: String!, $playlistTimestamp: Int!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int, $category: DetectionCategory!) {
   submitDetection(

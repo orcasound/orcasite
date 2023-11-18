@@ -58,16 +58,24 @@ const theme = createTheme({
       },
     }),
     accent1: {
-      main: "#008bdf",
+      main: "#002f49",
+      dark: "#002a42",
+      light: "#50c1ff",
     },
     accent2: {
-      main: "#7c7cfe",
+      main: "#9b9b9b",
+      dark: "#8b8b8b",
+      light: "#d7d7d7",
     },
     accent3: {
-      main: "#4760fe",
+      main: "#a4d3d1",
+      dark: "#8bc7c4",
+      light: "#dbeded",
     },
     accent4: {
-      main: "#f79234",
+      main: "#258dad",
+      dark: "#217f9c",
+      light: "#9cd8ea",
     },
     error: {
       main: "#e9222f",
