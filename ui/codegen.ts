@@ -14,7 +14,7 @@ const config: CodegenConfig = {
         {
           add: {
             content:
-              "import { endpointUrl, fetchParams } from '@/graphql/client';",
+              "import { fetcher } from '@/graphql/client';",
           },
         },
         "typescript",
@@ -22,10 +22,7 @@ const config: CodegenConfig = {
         "typescript-react-query",
       ],
       config: {
-        fetcher: {
-          endpoint: "endpointUrl",
-          fetchParams: "fetchParams",
-        },
+        fetcher: "@/graphql/client#fetcher",
         exposeDocument: true,
         exposeFetcher: true,
         exposeQueryKeys: true,

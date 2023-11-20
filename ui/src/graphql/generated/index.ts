@@ -1,4 +1,4 @@
-import { endpointUrl, fetchParams } from "@/graphql/client";
+import { fetcher } from "@/graphql/client";
 import {
   useMutation,
   useQuery,
@@ -25,26 +25,6 @@ export type Incremental<T> =
   | {
       [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
     };
-
-function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
-  return async (): Promise<TData> => {
-    const res = await fetch(endpointUrl as string, {
-      method: "POST",
-      ...fetchParams,
-      body: JSON.stringify({ query, variables }),
-    });
-
-    const json = await res.json();
-
-    if (json.errors) {
-      const { message } = json.errors[0];
-
-      throw new Error(message);
-    }
-
-    return json.data;
-  };
-}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string };
@@ -755,10 +735,12 @@ useSignInWithPasswordMutation.getKey = () => ["signInWithPassword"];
 
 useSignInWithPasswordMutation.fetcher = (
   variables: SignInWithPasswordMutationVariables,
+  options?: RequestInit["headers"],
 ) =>
   fetcher<SignInWithPasswordMutation, SignInWithPasswordMutationVariables>(
     SignInWithPasswordDocument,
     variables,
+    options,
   );
 export const SubmitDetectionDocument = `
     mutation submitDetection($feedId: String!, $playlistTimestamp: Int!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int, $category: DetectionCategory!) {
@@ -800,10 +782,12 @@ useSubmitDetectionMutation.getKey = () => ["submitDetection"];
 
 useSubmitDetectionMutation.fetcher = (
   variables: SubmitDetectionMutationVariables,
+  options?: RequestInit["headers"],
 ) =>
   fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
     SubmitDetectionDocument,
     variables,
+    options,
   );
 export const CandidateDocument = `
     query candidate($id: ID!) {
@@ -848,10 +832,14 @@ useCandidateQuery.getKey = (variables: CandidateQueryVariables) => [
   "candidate",
   variables,
 ];
-useCandidateQuery.fetcher = (variables: CandidateQueryVariables) =>
+useCandidateQuery.fetcher = (
+  variables: CandidateQueryVariables,
+  options?: RequestInit["headers"],
+) =>
   fetcher<CandidateQuery, CandidateQueryVariables>(
     CandidateDocument,
     variables,
+    options,
   );
 export const FeedDocument = `
     query feed($slug: String!) {
@@ -883,8 +871,10 @@ export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
 useFeedQuery.document = FeedDocument;
 
 useFeedQuery.getKey = (variables: FeedQueryVariables) => ["feed", variables];
-useFeedQuery.fetcher = (variables: FeedQueryVariables) =>
-  fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables);
+useFeedQuery.fetcher = (
+  variables: FeedQueryVariables,
+  options?: RequestInit["headers"],
+) => fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables, options);
 export const CandidatesDocument = `
     query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {
   candidates(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
@@ -930,10 +920,14 @@ useCandidatesQuery.document = CandidatesDocument;
 
 useCandidatesQuery.getKey = (variables?: CandidatesQueryVariables) =>
   variables === undefined ? ["candidates"] : ["candidates", variables];
-useCandidatesQuery.fetcher = (variables?: CandidatesQueryVariables) =>
+useCandidatesQuery.fetcher = (
+  variables?: CandidatesQueryVariables,
+  options?: RequestInit["headers"],
+) =>
   fetcher<CandidatesQuery, CandidatesQueryVariables>(
     CandidatesDocument,
     variables,
+    options,
   );
 export const FeedsDocument = `
     query feeds {
@@ -965,5 +959,8 @@ useFeedsQuery.document = FeedsDocument;
 
 useFeedsQuery.getKey = (variables?: FeedsQueryVariables) =>
   variables === undefined ? ["feeds"] : ["feeds", variables];
-useFeedsQuery.fetcher = (variables?: FeedsQueryVariables) =>
-  fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables);
+useFeedsQuery.fetcher = (
+  variables?: FeedsQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables, options);

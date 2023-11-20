@@ -49,8 +49,7 @@ defmodule OrcasiteWeb.Router do
 
   pipeline :graphql do
     plug(:parsers)
-    plug :fetch_session
-    plug :load_from_session
+    plug :load_from_bearer
     plug AshGraphql.Plug
   end
 
