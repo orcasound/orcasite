@@ -91,20 +91,10 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           "&:hover": { backgroundColor: (theme) => theme.palette.accent4.dark },
         }}
       >
-        Sign In
+        Request password reset
       </Button>
     </form>
   );
-};
-
-const errorCodeToMessage = (error: string) => {
-  if (error === "invalid_credentials") {
-    return "Your email and password didn't match our records. Please try again.";
-  } else if (error) {
-    return `An error occurred: ${error}. Please try again and let us know if this keeps happening.`;
-  } else {
-    return `An unknown error occurred. Please try again and let us know if this keeps happening.`;
-  }
 };
 
 export default ForgotPasswordForm;
