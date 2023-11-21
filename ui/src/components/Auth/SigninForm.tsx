@@ -1,21 +1,19 @@
-import { Alert, Button, TextField } from "@mui/material";
+import { Alert, Box, Button, Link, TextField } from "@mui/material";
+import NextLink from "next/link";
 import React, { useState } from "react";
 
-import { MutationError } from "@/graphql/generated";
-
-interface LoginFormProps {
+interface SignInFormProps {
   onSubmit: (email: string, password: string) => void;
-  errors: MutationError[];
+  errors?: string[];
 }
 
-const SigninForm: React.FC<LoginFormProps> = ({ onSubmit, errors }) => {
+const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const result = onSubmit(email, password);
-    console.log("Signin result", result);
+    onSubmit(email, password);
   };
 
   return (
@@ -77,11 +75,41 @@ const SigninForm: React.FC<LoginFormProps> = ({ onSubmit, errors }) => {
         }}
       />
       {errors &&
-        errors.map((error, index) => (
-          <Alert severity="error" key={index} sx={{ marginTop: 2, marginBottom: 2 }}>
+        errors.map((error) => (
+          <Alert
+            severity="error"
+            key={error}
+            sx={{ marginTop: 2, marginBottom: 2 }}
+          >
             {errorCodeToMessage(error)}
           </Alert>
         ))}
+
+      <Box display="flex" justifyContent="space-between">
+        <Link
+          component={NextLink}
+          variant="body2"
+          sx={{
+            textDecoration: "none",
+            color: (theme) => theme.palette.accent4.main,
+          }}
+          href="/"
+        >
+          Forgot your password?
+        </Link>
+        <Link
+          component={NextLink}
+          variant="body2"
+          sx={{
+            textDecoration: "none",
+            color: (theme) => theme.palette.accent4.main,
+          }}
+          href="/register"
+          textAlign="right"
+        >
+          Need an account?
+        </Link>
+      </Box>
 
       <Button
         type="submit"
@@ -101,12 +129,14 @@ const SigninForm: React.FC<LoginFormProps> = ({ onSubmit, errors }) => {
   );
 };
 
-const errorCodeToMessage = (error: Pick<MutationError, "code">) => {
-  if (error.code === "invalid_credentials") {
-    return "Your email or password didn't match our records. Please try again.";
+const errorCodeToMessage = (error: string) => {
+  if (error === "invalid_credentials") {
+    return "Your email and password didn't match our records. Please try again.";
+  } else if (error) {
+    return `An error occurred: ${error}. Please try again and let us know if this keeps happening.`;
   } else {
-    return "An unknown error occurred. Please try again and let us know if this keeps happening.";
+    return `An unknown error occurred. Please try again and let us know if this keeps happening.`;
   }
 };
 
-export default SigninForm;
+export default SignInForm;

@@ -4,35 +4,34 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import SignInForm from "@/components/Auth/SignInForm";
+import RegisterForm from "@/components/Auth/RegisterForm";
 import Header from "@/components/Header";
-import { useSignInWithPasswordMutation } from "@/graphql/generated";
+import {
+  MutationError,
+  User,
+  useRegisterWithPasswordMutation,
+} from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import logo from "@/public/wordmark/wordmark-teal.svg";
 import { setAuthToken, setCurrentUser } from "@/utils/auth";
 
-const SignInPage: NextPageWithLayout = () => {
+const RegisterPage: NextPageWithLayout = () => {
   const router = useRouter();
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<MutationError[]>([]);
 
-  const submitSignIn = useSignInWithPasswordMutation({
+  const submitRegister = useRegisterWithPasswordMutation({
     onMutate: () => {
       setErrors([]);
     },
-    onSuccess: ({ signInWithPassword }) => {
-      if (signInWithPassword) {
-        const { token, user, errors } = signInWithPassword;
+    onSuccess: ({ registerWithPassword }) => {
+      if (registerWithPassword) {
+        const { metadata, result: user, errors } = registerWithPassword;
+        const token = metadata?.token;
 
-        if (errors && errors?.length > 0) {
+        if (errors) {
           setErrors(
-            errors.flatMap((error) => {
-              const message = error?.message || error?.code;
-              if (typeof message === "string") {
-                return [message];
-              }
-              return [];
-            }),
+            errors.filter((error): error is MutationError => error !== null),
           );
         }
 
@@ -41,20 +40,20 @@ const SignInPage: NextPageWithLayout = () => {
         }
 
         if (user) {
-          setCurrentUser(user);
+          setCurrentUser(user as User);
           router.push("/");
         }
       }
     },
-    onError: (error: Error) => {
-      setErrors([error.message]);
+    onError: (error) => {
+      console.log("Register error", error);
     },
   });
 
   return (
     <div>
       <Head>
-        <title>Sign in | Orcasound</title>
+        <title>Register | Orcasound</title>
       </Head>
 
       <main>
@@ -78,7 +77,7 @@ const SignInPage: NextPageWithLayout = () => {
             alignItems="center"
             sx={{ flexGrow: 1 }}
           >
-            <Paper sx={{ p: 4, maxWidth: 500, m: 4 }}>
+            <Paper sx={{ p: 4, maxWidth: { xs: "100%", sm: 500 }, m: 4 }}>
               <Box
                 display="flex"
                 justifyContent="center"
@@ -96,9 +95,21 @@ const SignInPage: NextPageWithLayout = () => {
               >
                 <Image src={logo} alt="Orcasound" fill />
               </Box>
-              <SignInForm
-                onSubmit={(email, password) =>
-                  submitSignIn.mutate({ email, password })
+              <RegisterForm
+                onSubmit={(
+                  firstName,
+                  lastName,
+                  email,
+                  password,
+                  passwordConfirmation,
+                ) =>
+                  submitRegister.mutate({
+                    firstName,
+                    lastName,
+                    email,
+                    password,
+                    passwordConfirmation,
+                  })
                 }
                 errors={errors}
               />
@@ -110,4 +121,4 @@ const SignInPage: NextPageWithLayout = () => {
   );
 };
 
-export default SignInPage;
+export default RegisterPage;

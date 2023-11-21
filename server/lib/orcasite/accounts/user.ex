@@ -3,6 +3,15 @@ defmodule Orcasite.Accounts.User do
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource]
 
+  postgres do
+    table "users"
+    repo Orcasite.Repo
+  end
+
+  identities do
+    identity :unique_email, [:email]
+  end
+
   attributes do
     uuid_primary_key :id
     attribute :email, :ci_string, allow_nil?: false
@@ -23,6 +32,8 @@ defmodule Orcasite.Accounts.User do
         identity_field :email
         sign_in_tokens_enabled? true
 
+        register_action_accept [:first_name, :last_name]
+
         resettable do
           sender fn user, token, opts ->
             Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
@@ -39,15 +50,21 @@ defmodule Orcasite.Accounts.User do
       token_resource Orcasite.Accounts.Token
       signing_secret Orcasite.Accounts.Secrets
     end
+
+    select_for_senders [:id, :email, :first_name, :last_name]
   end
 
-  postgres do
-    table "users"
-    repo Orcasite.Repo
-  end
+  actions do
+    defaults [:read, :create, :update, :destroy]
 
-  identities do
-    identity :unique_email, [:email]
+    read :by_email do
+      get_by :email
+    end
+
+    read :current_user do
+      get? true
+      manual Orcasite.Accounts.Actions.CurrentUserRead
+    end
   end
 
   code_interface do
@@ -58,14 +75,6 @@ defmodule Orcasite.Accounts.User do
     define :by_email, args: [:email]
   end
 
-  actions do
-    defaults [:read, :create, :update, :destroy]
-
-    read :by_email do
-      get_by :email
-    end
-  end
-
   admin do
     table_columns [:id, :email, :first_name, :last_name, :admin, :inserted_at]
   end
@@ -73,5 +82,19 @@ defmodule Orcasite.Accounts.User do
   graphql do
     type :user
     hide_fields [:hashed_password]
+
+    queries do
+      read_one :current_user, :current_user
+    end
+
+    mutations do
+      create :register_with_password, :register_with_password
+    end
   end
+
+  # policies do
+  #   bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+  #     authorize_if always()
+  #   end
+  # end
 end

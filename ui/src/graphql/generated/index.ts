@@ -408,26 +408,41 @@ export type PageOfDetection = {
 
 export type RegisterWithPasswordInput = {
   email: Scalars["String"]["input"];
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  /** The proposed password for the user, in plain text. */
   password: Scalars["String"]["input"];
+  /** The proposed password for the user (again), in plain text. */
   passwordConfirmation: Scalars["String"]["input"];
 };
 
+export type RegisterWithPasswordMetadata = {
+  __typename?: "RegisterWithPasswordMetadata";
+  /** A JWT which the user can use to authenticate to the API. */
+  token: Scalars["String"]["output"];
+};
+
+/** The result of the :register_with_password mutation */
 export type RegisterWithPasswordResult = {
   __typename?: "RegisterWithPasswordResult";
+  /** Any errors generated, if the mutation failed */
   errors?: Maybe<Array<Maybe<MutationError>>>;
-  token?: Maybe<Scalars["String"]["output"]>;
-  user?: Maybe<User>;
+  /** Metadata produced by the mutation */
+  metadata?: Maybe<RegisterWithPasswordMetadata>;
+  /** The successful result of the mutation */
+  result?: Maybe<User>;
 };
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  /** Register a new user with a username and password. */
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   submitDetection?: Maybe<SubmitDetectionResult>;
 };
 
 export type RootMutationTypeRegisterWithPasswordArgs = {
-  input: RegisterWithPasswordInput;
+  input?: InputMaybe<RegisterWithPasswordInput>;
 };
 
 export type RootMutationTypeSignInWithPasswordArgs = {
@@ -442,6 +457,7 @@ export type RootQueryType = {
   __typename?: "RootQueryType";
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
+  currentUser?: Maybe<User>;
   detection?: Maybe<Detection>;
   detections?: Maybe<PageOfDetection>;
   feed: Feed;
@@ -457,6 +473,10 @@ export type RootQueryTypeCandidatesArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<CandidateSortInput>>>;
+};
+
+export type RootQueryTypeCurrentUserArgs = {
+  filter?: InputMaybe<UserFilterInput>;
 };
 
 export type RootQueryTypeDetectionArgs = {
@@ -526,6 +546,107 @@ export type User = {
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type UserFilterAdmin = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type UserFilterEmail = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterFirstName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type UserFilterInput = {
+  admin?: InputMaybe<UserFilterAdmin>;
+  and?: InputMaybe<Array<UserFilterInput>>;
+  email?: InputMaybe<UserFilterEmail>;
+  firstName?: InputMaybe<UserFilterFirstName>;
+  id?: InputMaybe<UserFilterId>;
+  lastName?: InputMaybe<UserFilterLastName>;
+  not?: InputMaybe<Array<UserFilterInput>>;
+  or?: InputMaybe<Array<UserFilterInput>>;
+};
+
+export type UserFilterLastName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type RegisterWithPasswordMutationVariables = Exact<{
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+  passwordConfirmation: Scalars["String"]["input"];
+}>;
+
+export type RegisterWithPasswordMutation = {
+  __typename?: "RootMutationType";
+  registerWithPassword?: {
+    __typename?: "RegisterWithPasswordResult";
+    metadata?: {
+      __typename?: "RegisterWithPasswordMetadata";
+      token: string;
+    } | null;
+    result?: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      admin?: boolean | null;
+      firstName?: string | null;
+      lastName?: string | null;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      message?: string | null;
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
 };
 
 export type SignInWithPasswordMutationVariables = Exact<{
@@ -685,6 +806,67 @@ export type FeedsQuery = {
   }>;
 };
 
+export const RegisterWithPasswordDocument = `
+    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $password: String!, $passwordConfirmation: String!) {
+  registerWithPassword(
+    input: {email: $email, password: $password, passwordConfirmation: $passwordConfirmation, firstName: $firstName, lastName: $lastName}
+  ) {
+    metadata {
+      token
+    }
+    result {
+      id
+      email
+      admin
+      firstName
+      lastName
+    }
+    errors {
+      message
+      code
+      fields
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useRegisterWithPasswordMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    RegisterWithPasswordMutation,
+    TError,
+    RegisterWithPasswordMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    RegisterWithPasswordMutation,
+    TError,
+    RegisterWithPasswordMutationVariables,
+    TContext
+  >(
+    ["registerWithPassword"],
+    (variables?: RegisterWithPasswordMutationVariables) =>
+      fetcher<
+        RegisterWithPasswordMutation,
+        RegisterWithPasswordMutationVariables
+      >(RegisterWithPasswordDocument, variables)(),
+    options,
+  );
+useRegisterWithPasswordMutation.getKey = () => ["registerWithPassword"];
+
+useRegisterWithPasswordMutation.fetcher = (
+  variables: RegisterWithPasswordMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<RegisterWithPasswordMutation, RegisterWithPasswordMutationVariables>(
+    RegisterWithPasswordDocument,
+    variables,
+    options,
+  );
 export const SignInWithPasswordDocument = `
     mutation signInWithPassword($email: String!, $password: String!) {
   signInWithPassword(input: {email: $email, password: $password}) {
