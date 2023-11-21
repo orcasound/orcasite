@@ -91,10 +91,26 @@ const form = {
     sendEvent({ category: "Form", action: "Feedback button clicked" }),
 };
 
+const reports = {
+  reportOpened: (candidateId: string) =>
+    sendEvent({
+      category: "Reports",
+      action: "Report opened",
+      label: candidateId,
+    }),
+  reportAudioPlayed: (candidateId: string) =>
+    sendEvent({
+      category: "Reports",
+      action: "Report audio played",
+      label: candidateId,
+    }),
+};
+
 export const analytics = {
   about,
   detection,
   stream,
   nav,
   form,
+  reports,
 };

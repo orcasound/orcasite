@@ -22,12 +22,14 @@ export function DetectionsPlayer({
   timestamp,
   startOffset,
   endOffset,
+  onAudioPlay
 }: {
   feed: Pick<Feed, "nodeName">;
   marks: { label: string; value: number }[];
   timestamp: number;
   startOffset: number;
   endOffset: number;
+  onAudioPlay?: () => void;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
@@ -113,6 +115,7 @@ export function DetectionsPlayer({
         player.pause();
       } else {
         player.play();
+        onAudioPlay?.();
       }
     } catch (e) {
       console.error(e);

@@ -13,6 +13,7 @@ import DetectionsTable from "@/components/DetectionsTable";
 import Header from "@/components/Header";
 import { useCandidateQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
+import { analytics } from "@/utils/analytics";
 
 const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -22,6 +23,10 @@ const CandidatePage: NextPageWithLayout = () => {
     id: (candidateId || "") as string,
   });
   const candidate = candidatesQuery.data?.candidate;
+
+  if (candidateId && typeof candidateId === "string") {
+    analytics.reports.reportOpened(candidateId);
+  }
 
   return (
     <div>
@@ -62,6 +67,7 @@ const CandidatePage: NextPageWithLayout = () => {
                     <DetectionsTable
                       detections={candidate.detections}
                       feed={candidate.feed}
+                      candidate={candidate}
                     />
                   )}
                 </Box>

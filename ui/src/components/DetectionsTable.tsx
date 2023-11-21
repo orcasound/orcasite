@@ -7,7 +7,8 @@ import {
   TableRow,
 } from "@mui/material";
 
-import { Detection, Feed } from "@/graphql/generated";
+import { Candidate, Detection, Feed } from "@/graphql/generated";
+import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
 
 import { DetectionsPlayer } from "./Player/DetectionsPlayer";
@@ -15,15 +16,18 @@ import { DetectionsPlayer } from "./Player/DetectionsPlayer";
 export default function DetectionsTable({
   detections,
   feed,
+  candidate
 }: {
   detections: Detection[];
   feed: Pick<Feed, "slug" | "nodeName">;
+  candidate: Pick<Candidate, "id">;
 }) {
   const offsetPadding = 15;
   const minOffset = Math.min(...detections.map((d) => +d.playerOffset));
   const maxOffset = Math.max(...detections.map((d) => +d.playerOffset));
   const startOffset = Math.max(0, minOffset - offsetPadding);
   const endOffset = maxOffset + offsetPadding;
+
   return (
     <Box>
       <DetectionsPlayer
@@ -37,6 +41,11 @@ export default function DetectionsTable({
         timestamp={Math.min(...detections.map((d) => d.playlistTimestamp))}
         startOffset={startOffset}
         endOffset={endOffset}
+        onAudioPlay={() => {
+          if (candidate.id) {
+            analytics.reports.reportAudioPlayed(candidate.id);
+          }
+        }}
       />
       <Table sx={{ marginTop: 6 }}>
         <TableHead>
