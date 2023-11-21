@@ -37,6 +37,7 @@ defmodule Orcasite.Accounts.User do
         resettable do
           sender fn user, token, opts ->
             Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+              IO.inspect("Sending password reset email to #{user.email}")
               Orcasite.Accounts.Email.reset_password(user, token, opts)
               |> Orcasite.Mailer.deliver()
             end)
@@ -73,6 +74,7 @@ defmodule Orcasite.Accounts.User do
     define :register_with_password
     define :sign_in_with_password
     define :by_email, args: [:email]
+    define :request_password_reset_with_password
   end
 
   admin do

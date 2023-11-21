@@ -217,8 +217,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, errors }) => {
           sx={{
             textDecoration: "none",
             color: (theme) => theme.palette.accent4.main,
+            marginRight: 2,
           }}
-          href="/"
+          href="/password-reset"
         >
           Forgot your password?
         </Link>

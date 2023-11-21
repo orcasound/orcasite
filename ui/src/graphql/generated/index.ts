@@ -1,10 +1,10 @@
-import { fetcher } from "@/graphql/client";
 import {
   useMutation,
   useQuery,
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
+import { fetcher } from "@/graphql/client";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -433,16 +433,25 @@ export type RegisterWithPasswordResult = {
   result?: Maybe<User>;
 };
 
+export type RequestPasswordResetInput = {
+  email: Scalars["String"]["input"];
+};
+
 export type RootMutationType = {
   __typename?: "RootMutationType";
   /** Register a new user with a username and password. */
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
+  requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   submitDetection?: Maybe<SubmitDetectionResult>;
 };
 
 export type RootMutationTypeRegisterWithPasswordArgs = {
   input?: InputMaybe<RegisterWithPasswordInput>;
+};
+
+export type RootMutationTypeRequestPasswordResetArgs = {
+  input: RequestPasswordResetInput;
 };
 
 export type RootMutationTypeSignInWithPasswordArgs = {
@@ -647,6 +656,15 @@ export type RegisterWithPasswordMutation = {
       vars?: { [key: string]: any } | null;
     } | null> | null;
   } | null;
+};
+
+export type RequestPasswordResetMutationVariables = Exact<{
+  email: Scalars["String"]["input"];
+}>;
+
+export type RequestPasswordResetMutation = {
+  __typename?: "RootMutationType";
+  requestPasswordReset?: boolean | null;
 };
 
 export type SignInWithPasswordMutationVariables = Exact<{
@@ -864,6 +882,47 @@ useRegisterWithPasswordMutation.fetcher = (
 ) =>
   fetcher<RegisterWithPasswordMutation, RegisterWithPasswordMutationVariables>(
     RegisterWithPasswordDocument,
+    variables,
+    options,
+  );
+export const RequestPasswordResetDocument = `
+    mutation requestPasswordReset($email: String!) {
+  requestPasswordReset(input: {email: $email})
+}
+    `;
+export const useRequestPasswordResetMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    RequestPasswordResetMutation,
+    TError,
+    RequestPasswordResetMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    RequestPasswordResetMutation,
+    TError,
+    RequestPasswordResetMutationVariables,
+    TContext
+  >(
+    ["requestPasswordReset"],
+    (variables?: RequestPasswordResetMutationVariables) =>
+      fetcher<
+        RequestPasswordResetMutation,
+        RequestPasswordResetMutationVariables
+      >(RequestPasswordResetDocument, variables)(),
+    options,
+  );
+useRequestPasswordResetMutation.getKey = () => ["requestPasswordReset"];
+
+useRequestPasswordResetMutation.fetcher = (
+  variables: RequestPasswordResetMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<RequestPasswordResetMutation, RequestPasswordResetMutationVariables>(
+    RequestPasswordResetDocument,
     variables,
     options,
   );

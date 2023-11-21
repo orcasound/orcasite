@@ -11,12 +11,6 @@ const config: CodegenConfig = {
   generates: {
     "./src/graphql/generated/index.ts": {
       plugins: [
-        {
-          add: {
-            content:
-              "import { fetcher } from '@/graphql/client';",
-          },
-        },
         "typescript",
         "typescript-operations",
         "typescript-react-query",

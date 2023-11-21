@@ -1,7 +1,5 @@
 defimpl AshGraphql.Error, for: AshAuthentication.Errors.AuthenticationFailed do
   def to_error(error) do
-    IO.inspect(error, label: "auth error")
-
     %{
       message: error.caused_by.message,
       short_message: "invalid_credentials",

@@ -2,18 +2,20 @@ import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import NextLink from "next/link";
 import React, { useState } from "react";
 
-interface SignInFormProps {
-  onSubmit: (email: string, password: string) => void;
-  errors?: string[];
+interface ForgotPasswordFormProps {
+  onSubmit: (email: string) => void;
+  message?: string;
 }
 
-const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
+const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
+  onSubmit,
+  message,
+}) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(email, password);
+    onSubmit(email);
   };
 
   return (
@@ -46,44 +48,9 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
           },
         }}
       />
-      <TextField
-        label="Password"
-        variant="outlined"
-        margin="normal"
-        fullWidth
-        type="password"
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        sx={{
-          "& .MuiFormLabel-root": {
-            color: (theme) => theme.palette.secondary.light,
-          },
-          "& .MuiFormLabel-root.Mui-focused": {
-            color: (theme) => theme.palette.secondary.dark,
-          },
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: (theme) => theme.palette.accent2.main,
-            },
-            "&:hover fieldset": {
-              borderColor: (theme) => theme.palette.accent2.dark,
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: (theme) => theme.palette.accent2.dark,
-            },
-          },
-        }}
-      />
-      {errors &&
-        errors.map((error) => (
-          <Alert
-            severity="error"
-            key={error}
-            sx={{ marginTop: 2, marginBottom: 2 }}
-          >
-            {errorCodeToMessage(error)}
-          </Alert>
-        ))}
+      {message && (
+        <Alert sx={{ marginTop: 2, marginBottom: 2 }}>{message}</Alert>
+      )}
 
       <Box display="flex" justifyContent="space-between">
         <Link
@@ -94,9 +61,9 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
             color: (theme) => theme.palette.accent4.main,
             marginRight: 2,
           }}
-          href="/password-reset"
+          href="/sign-in"
         >
-          Forgot your password?
+          Already have an account?
         </Link>
         <Link
           component={NextLink}
@@ -140,4 +107,4 @@ const errorCodeToMessage = (error: string) => {
   }
 };
 
-export default SignInForm;
+export default ForgotPasswordForm;
