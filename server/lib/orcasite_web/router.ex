@@ -93,13 +93,7 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
-    pipe_through [:browser, :require_admin]
-    live_dashboard "/admin/dashboard", metrics: OrcasiteWeb.Telemetry
-
-    sign_in_route(
-      path: "/admin/sign-in",
-      overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
-    )
+    pipe_through :browser
 
     reset_route path: "/admin/password-reset",
                 overrides: [
@@ -108,6 +102,16 @@ defmodule OrcasiteWeb.Router do
                 ]
 
     auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController, path: "/admin"
+  end
+
+  scope "/" do
+    pipe_through [:browser, :require_admin]
+    live_dashboard "/admin/dashboard", metrics: OrcasiteWeb.Telemetry
+
+    sign_in_route(
+      path: "/admin/sign-in",
+      overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
 
     sign_out_route OrcasiteWeb.AuthController, "/admin/sign-out"
     ash_admin "/admin"
