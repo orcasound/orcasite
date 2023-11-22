@@ -101,6 +101,14 @@ defmodule OrcasiteWeb.Router do
       overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
     )
 
+    reset_route path: "/admin/password-reset",
+                overrides: [
+                  OrcasiteWeb.AuthOverrides,
+                  AshAuthentication.Phoenix.Overrides.Default
+                ]
+
+    auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController, path: "/admin"
+
     sign_out_route OrcasiteWeb.AuthController, "/admin/sign-out"
     ash_admin "/admin"
   end
@@ -115,17 +123,6 @@ defmodule OrcasiteWeb.Router do
       to: OrcasiteWeb.SubscriptionAuthController
 
     sign_out_route OrcasiteWeb.SubscriptionAuthController
-  end
-
-  scope "/" do
-    pipe_through :browser
-
-    reset_route overrides: [
-                  OrcasiteWeb.AuthOverrides,
-                  AshAuthentication.Phoenix.Overrides.Default
-                ]
-
-    auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController
   end
 
   scope "/" do
