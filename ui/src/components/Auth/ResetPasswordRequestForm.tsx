@@ -16,6 +16,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(email);
+    setEmail("");
   };
 
   return (

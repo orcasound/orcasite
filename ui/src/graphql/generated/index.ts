@@ -406,6 +406,19 @@ export type PageOfDetection = {
   results?: Maybe<Array<Detection>>;
 };
 
+export type PasswordResetInput = {
+  password: Scalars["String"]["input"];
+  passwordConfirmation: Scalars["String"]["input"];
+  resetToken: Scalars["String"]["input"];
+};
+
+export type PasswordResetResult = {
+  __typename?: "PasswordResetResult";
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  token?: Maybe<Scalars["String"]["output"]>;
+  user?: Maybe<User>;
+};
+
 export type RegisterWithPasswordInput = {
   email: Scalars["String"]["input"];
   firstName?: InputMaybe<Scalars["String"]["input"]>;
@@ -442,6 +455,7 @@ export type RootMutationType = {
   /** Register a new user with a username and password. */
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
+  resetPassword?: Maybe<PasswordResetResult>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   submitDetection?: Maybe<SubmitDetectionResult>;
 };
@@ -452,6 +466,10 @@ export type RootMutationTypeRegisterWithPasswordArgs = {
 
 export type RootMutationTypeRequestPasswordResetArgs = {
   input: RequestPasswordResetInput;
+};
+
+export type RootMutationTypeResetPasswordArgs = {
+  input: PasswordResetInput;
 };
 
 export type RootMutationTypeSignInWithPasswordArgs = {
@@ -665,6 +683,36 @@ export type RequestPasswordResetMutationVariables = Exact<{
 export type RequestPasswordResetMutation = {
   __typename?: "RootMutationType";
   requestPasswordReset?: boolean | null;
+};
+
+export type ResetPasswordMutationVariables = Exact<{
+  password: Scalars["String"]["input"];
+  passwordConfirmation: Scalars["String"]["input"];
+  resetToken: Scalars["String"]["input"];
+}>;
+
+export type ResetPasswordMutation = {
+  __typename?: "RootMutationType";
+  resetPassword?: {
+    __typename?: "PasswordResetResult";
+    token?: string | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+    user?: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      firstName?: string | null;
+      lastName?: string | null;
+      admin?: boolean | null;
+    } | null;
+  } | null;
 };
 
 export type SignInWithPasswordMutationVariables = Exact<{
@@ -923,6 +971,62 @@ useRequestPasswordResetMutation.fetcher = (
 ) =>
   fetcher<RequestPasswordResetMutation, RequestPasswordResetMutationVariables>(
     RequestPasswordResetDocument,
+    variables,
+    options,
+  );
+export const ResetPasswordDocument = `
+    mutation resetPassword($password: String!, $passwordConfirmation: String!, $resetToken: String!) {
+  resetPassword(
+    input: {password: $password, passwordConfirmation: $passwordConfirmation, resetToken: $resetToken}
+  ) {
+    token
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+    user {
+      id
+      email
+      firstName
+      lastName
+      admin
+    }
+  }
+}
+    `;
+export const useResetPasswordMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    ResetPasswordMutation,
+    TError,
+    ResetPasswordMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    ResetPasswordMutation,
+    TError,
+    ResetPasswordMutationVariables,
+    TContext
+  >(
+    ["resetPassword"],
+    (variables?: ResetPasswordMutationVariables) =>
+      fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
+        ResetPasswordDocument,
+        variables,
+      )(),
+    options,
+  );
+useResetPasswordMutation.getKey = () => ["resetPassword"];
+
+useResetPasswordMutation.fetcher = (
+  variables: ResetPasswordMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
+    ResetPasswordDocument,
     variables,
     options,
   );

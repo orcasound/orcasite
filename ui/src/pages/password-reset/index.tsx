@@ -10,7 +10,7 @@ import { useRequestPasswordResetMutation } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import logo from "@/public/wordmark/wordmark-teal.svg";
 
-const RegisterPage: NextPageWithLayout = () => {
+const PasswordResetRequestPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const [message, setMessage] = useState<string>();
@@ -32,7 +32,7 @@ const RegisterPage: NextPageWithLayout = () => {
   return (
     <div>
       <Head>
-        <title>Register | Orcasound</title>
+        <title>Request password reset | Orcasound</title>
       </Head>
 
       <main>
@@ -97,4 +97,4 @@ const RegisterPage: NextPageWithLayout = () => {
   );
 };
 
-export default RegisterPage;
+export default PasswordResetRequestPage;
