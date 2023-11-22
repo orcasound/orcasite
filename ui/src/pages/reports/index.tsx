@@ -22,6 +22,7 @@ import DetectionsTable from "@/components/DetectionsTable";
 import Header from "@/components/Header";
 import { CandidatesQuery, useCandidatesQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
+import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
 
 type CandidateQueryCandidates = NonNullable<CandidatesQuery["candidates"]>;
@@ -73,6 +74,7 @@ const DetectionsPage: NextPageWithLayout = () => {
       if (candidate) {
         setSelectedCandidate(candidate);
         setDetectionModalOpen(true);
+        analytics.reports.reportOpened(candidateIdParam);
       }
     }
   }, [candidates, candidateIdParam]);
@@ -122,6 +124,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                           <DetectionsTable
                             detections={selectedCandidate.detections}
                             feed={selectedCandidate.feed}
+                            candidate={selectedCandidate}
                           />
                         )}
                       </Box>
