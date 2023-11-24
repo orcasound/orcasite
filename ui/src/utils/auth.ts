@@ -1,5 +1,13 @@
 import { User } from "@/graphql/generated";
 
+export const clearCurrentUser = () => {
+  localStorage.removeItem("orcasound:user");
+};
+
+export const clearAuthToken = () => {
+  localStorage.removeItem("orcasound:auth_token");
+};
+
 export const setCurrentUser = (user: User) => {
   localStorage.setItem("orcasound:user", JSON.stringify(user));
   return user;
