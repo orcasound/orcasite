@@ -1,7 +1,8 @@
 defmodule Orcasite.Accounts.User do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource]
+    extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource],
+    authorizers: [Ash.Policy.Authorizer]
 
   postgres do
     table "users"
@@ -49,9 +50,24 @@ defmodule Orcasite.Accounts.User do
       enabled? true
       token_resource Orcasite.Accounts.Token
       signing_secret Orcasite.Accounts.Secrets
+      # token_lifetime 1
     end
 
     select_for_senders [:id, :email, :first_name, :last_name]
+  end
+
+  policies do
+    bypass actor_attribute_equals(:admin, true) do
+      authorize_if always()
+    end
+
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+
+    policy action(:current_user) do
+      authorize_if always()
+    end
   end
 
   actions do
@@ -93,10 +109,4 @@ defmodule Orcasite.Accounts.User do
       create :register_with_password, :register_with_password
     end
   end
-
-  # policies do
-  #   bypass AshAuthentication.Checks.AshAuthenticationInteraction do
-  #     authorize_if always()
-  #   end
-  # end
 end

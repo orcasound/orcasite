@@ -50,6 +50,7 @@ defmodule OrcasiteWeb.Router do
   pipeline :graphql do
     plug(:parsers)
     plug :load_from_bearer
+    plug :set_current_user_as_actor
     plug AshGraphql.Plug
   end
 
