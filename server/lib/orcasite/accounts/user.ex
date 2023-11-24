@@ -50,7 +50,6 @@ defmodule Orcasite.Accounts.User do
       enabled? true
       token_resource Orcasite.Accounts.Token
       signing_secret Orcasite.Accounts.Secrets
-      # token_lifetime 1
     end
 
     select_for_senders [:id, :email, :first_name, :last_name]
