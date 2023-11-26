@@ -5,8 +5,11 @@ import Head from "next/head";
 import Image from "next/legacy/image";
 import { useRouter } from "next/router";
 
+import {
+  getMapLayout,
+  getMapStaticProps,
+} from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
-import { getMapLayout, getMapStaticProps } from "@/components/MapLayout";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 

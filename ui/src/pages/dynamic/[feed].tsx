@@ -3,8 +3,8 @@ import { Box, Breadcrumbs, Container, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
+import { getMapLayout } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
-import { getMapLayout } from "@/components/MapLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const FeedPage: NextPageWithLayout = () => {
