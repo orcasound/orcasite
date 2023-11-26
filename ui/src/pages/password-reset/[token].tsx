@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-import ResetPasswordForm from "@/components/Auth/ResetPasswordForm";
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import { getAuthLayout } from "@/components/layouts/AuthLayout";
 import { MutationError, useResetPasswordMutation } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";

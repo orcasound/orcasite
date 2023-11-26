@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import SignInForm from "@/components/Auth/SignInForm";
+import SignInForm from "@/components/auth/SignInForm";
 import { getAuthLayout } from "@/components/layouts/AuthLayout";
 import { useSignInWithPasswordMutation } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";

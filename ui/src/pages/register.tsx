@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import RegisterForm from "@/components/Auth/RegisterForm";
+import RegisterForm from "@/components/auth/RegisterForm";
 import { getAuthLayout } from "@/components/layouts/AuthLayout";
 import {
   MutationError,
