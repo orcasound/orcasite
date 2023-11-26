@@ -22,11 +22,11 @@ export function fetcher<TData, TVariables>(
   variables?: TVariables,
   options?: RequestInit["headers"],
 ) {
-  return async (): Promise<TData> => {
-    const res = await fetch(endpointUrl as string, {
+  return async () => {
+    const res = await fetch(endpointUrl, {
       method: "POST",
       ...fetchParams(),
-      ...(options || {}),
+      ...options,
       body: JSON.stringify({ query, variables }),
     });
 
@@ -34,10 +34,9 @@ export function fetcher<TData, TVariables>(
 
     if (json.errors) {
       const { message } = json.errors[0];
-
       throw new Error(message);
     }
 
-    return json.data;
+    return json.data as TData;
   };
 }
