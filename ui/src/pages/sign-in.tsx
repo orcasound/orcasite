@@ -55,12 +55,7 @@ const SignInPage: NextPageWithLayout = () => {
       </Head>
 
       <main>
-        <SignInForm
-          onSubmit={(email, password) =>
-            submitSignIn.mutate({ email, password })
-          }
-          errors={errors}
-        />
+        <SignInForm onSubmit={submitSignIn.mutate} errors={errors} />
       </main>
     </div>
   );

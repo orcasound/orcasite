@@ -1,19 +1,21 @@
-import { Alert, Box, Button, Link, TextField } from "@mui/material";
-import NextLink from "next/link";
-import React, { useState } from "react";
+import { Alert, Box, Button, TextField } from "@mui/material";
+import { FormEvent, useState } from "react";
 
-interface SignInFormProps {
-  onSubmit: (email: string, password: string) => void;
+import Link from "@/components/Link";
+import { SignInWithPasswordMutationVariables } from "@/graphql/generated";
+
+type SignInFormProps = {
+  onSubmit: (args: SignInWithPasswordMutationVariables) => void;
   errors?: string[];
-}
+};
 
-const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
+export default function SignInForm({ onSubmit, errors }: SignInFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(email, password);
+    onSubmit({ email, password });
   };
 
   return (
@@ -87,7 +89,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
 
       <Box display="flex" justifyContent="space-between">
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -99,7 +100,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
           Forgot your password?
         </Link>
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -128,7 +128,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, errors }) => {
       </Button>
     </form>
   );
-};
+}
 
 const errorCodeToMessage = (error: string) => {
   if (error === "invalid_credentials") {
@@ -139,5 +139,3 @@ const errorCodeToMessage = (error: string) => {
     return `An unknown error occurred. Please try again and let us know if this keeps happening.`;
   }
 };
-
-export default SignInForm;
