@@ -115,7 +115,6 @@ export default function SignInForm({ onSubmit, errors }: SignInFormProps) {
       <Button
         type="submit"
         variant="contained"
-        color="primary"
         size="large"
         fullWidth
         sx={{
