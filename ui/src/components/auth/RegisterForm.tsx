@@ -4,7 +4,7 @@ import { FC, FormEvent, useState } from "react";
 
 import { MutationError } from "@/graphql/generated";
 
-interface RegisterFormProps {
+type RegisterFormProps = {
   onSubmit: (
     firstName: string,
     lastName: string,

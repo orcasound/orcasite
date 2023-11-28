@@ -2,7 +2,7 @@ import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import NextLink from "next/link";
 import { FC, FormEvent, useState } from "react";
 
-interface ForgotPasswordFormProps {
+type ForgotPasswordFormProps = {
   onSubmit: (email: string) => void;
   message?: string;
 }
