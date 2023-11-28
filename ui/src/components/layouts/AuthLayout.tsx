@@ -1,4 +1,4 @@
-import { Box, Paper } from "@mui/material";
+import { Box, Container, Paper } from "@mui/material";
 import Image from "next/image";
 import { ReactElement } from "react";
 
@@ -27,33 +27,33 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
         alignItems="center"
         sx={{ flexGrow: 1 }}
       >
-        <Paper
-          sx={{
-            p: 4,
-            maxWidth: { xs: "100%", sm: 500 },
-            minWidth: { sm: 500 },
-            m: 4,
-          }}
-        >
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
+        <Container maxWidth="sm">
+          <Paper
             sx={{
-              marginBottom: 4,
-              overflow: "hidden",
-              marginLeft: "auto",
-              marginRight: "auto",
+              p: 4,
+              m: 4,
             }}
-            position="relative"
-            top={0}
-            minHeight={100}
-            maxWidth={{ xs: "100%", sm: 350 }}
           >
-            <Image src={logo} alt="Orcasound" fill />
-          </Box>
-          {children}
-        </Paper>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{
+                marginBottom: 4,
+                overflow: "hidden",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+              position="relative"
+              top={0}
+              minHeight={100}
+              maxWidth={{ xs: "100%", sm: 350 }}
+            >
+              <Image src={logo} alt="Orcasound" fill />
+            </Box>
+            {children}
+          </Paper>
+        </Container>
       </Box>
     </Box>
   );
