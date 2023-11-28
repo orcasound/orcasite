@@ -1,7 +1,7 @@
-import { Alert, Box, Button, Link, TextField } from "@mui/material";
-import NextLink from "next/link";
+import { Alert, Box, Button, TextField } from "@mui/material";
 import { FormEvent, useState } from "react";
 
+import Link from "@/components/Link";
 import { RequestPasswordResetMutationVariables } from "@/graphql/generated";
 
 type ForgotPasswordFormProps = {
@@ -57,7 +57,6 @@ export default function ForgotPasswordForm({
 
       <Box display="flex" justifyContent="space-between">
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -69,7 +68,6 @@ export default function ForgotPasswordForm({
           Already have an account?
         </Link>
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",

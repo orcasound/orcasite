@@ -1,7 +1,7 @@
-import { Alert, Box, Button, Link, TextField } from "@mui/material";
-import NextLink from "next/link";
+import { Alert, Box, Button, TextField } from "@mui/material";
 import { FormEvent, useState } from "react";
 
+import Link from "@/components/Link";
 import {
   MutationError,
   RegisterWithPasswordMutationVariables,
@@ -209,7 +209,6 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
         sx={{ marginTop: 2, marginBottom: 1 }}
       >
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -221,7 +220,6 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
           Forgot your password?
         </Link>
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
