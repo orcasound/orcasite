@@ -57,26 +57,30 @@ const theme = createTheme({
         contrastText: "#ffffff",
       },
     }),
-    accent1: {
-      main: "#002f49",
-      dark: "#002a42",
-      light: "#50c1ff",
-    },
-    accent2: {
-      main: "#9b9b9b",
-      dark: "#8b8b8b",
-      light: "#d7d7d7",
-    },
-    accent3: {
-      main: "#a4d3d1",
-      dark: "#8bc7c4",
-      light: "#dbeded",
-    },
-    accent4: {
-      main: "#258dad",
-      dark: "#217f9c",
-      light: "#9cd8ea",
-    },
+    accent1: helperTheme.palette.augmentColor({
+      color: {
+        main: "#002f49",
+      },
+      name: "accent1",
+    }),
+    accent2: helperTheme.palette.augmentColor({
+      color: {
+        main: "#9b9b9b",
+      },
+      name: "accent2",
+    }),
+    accent3: helperTheme.palette.augmentColor({
+      color: {
+        main: "#a4d3d1",
+      },
+      name: "accent3",
+    }),
+    accent4: helperTheme.palette.augmentColor({
+      color: {
+        main: "#258dad",
+      },
+      name: "accent4",
+    }),
     error: {
       main: "#e9222f",
     },
