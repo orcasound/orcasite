@@ -43,11 +43,11 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
                 overflow: "hidden",
                 marginLeft: "auto",
                 marginRight: "auto",
+                position: "relative",
+                top: 0,
+                minHeight: 100,
+                maxWidth: { xs: "100%", sm: 350 },
               }}
-              position="relative"
-              top={0}
-              minHeight={100}
-              maxWidth={{ xs: "100%", sm: 350 }}
             >
               <Image src={logo} alt="Orcasound" fill />
             </Box>
