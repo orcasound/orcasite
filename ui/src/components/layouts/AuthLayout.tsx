@@ -9,12 +9,6 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box
       sx={{
-        // use `dvh` for dynamic viewport height to handle mobile browser weirdness
-        // but fallback to `vh` for browsers that don't support `dvh`
-        // `&` is a workaround because sx prop can't have identical keys
-        "&": {
-          height: "100dvh",
-        },
         height: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -40,7 +34,6 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
               alignItems="center"
               sx={{
                 marginBottom: 4,
-                overflow: "hidden",
                 marginLeft: "auto",
                 marginRight: "auto",
                 position: "relative",

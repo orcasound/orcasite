@@ -1,21 +1,21 @@
 import { Alert, Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { FC, FormEvent, useState } from "react";
 
 import { MutationError } from "@/graphql/generated";
 
-interface ResetPasswordFormProps {
+type ResetPasswordFormProps = {
   onSubmit: (password: string, passworConfirmation: string) => void;
   errors: MutationError[];
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
+const ResetPasswordForm: FC<ResetPasswordFormProps> = ({
   onSubmit,
   errors,
 }) => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(password, passwordConfirmation);
   };

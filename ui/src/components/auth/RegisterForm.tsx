@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import NextLink from "next/link";
-import React, { useState } from "react";
+import { FC, FormEvent, useState } from "react";
 
 import { MutationError } from "@/graphql/generated";
 
@@ -15,14 +15,14 @@ interface RegisterFormProps {
   errors: MutationError[];
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, errors }) => {
+const RegisterForm: FC<RegisterFormProps> = ({ onSubmit, errors }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(firstName, lastName, email, password, passwordConfirmation);
   };

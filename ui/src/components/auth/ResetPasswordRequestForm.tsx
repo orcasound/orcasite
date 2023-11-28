@@ -1,19 +1,19 @@
 import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import NextLink from "next/link";
-import React, { useState } from "react";
+import { FC, FormEvent, useState } from "react";
 
 interface ForgotPasswordFormProps {
   onSubmit: (email: string) => void;
   message?: string;
 }
 
-const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
+const ForgotPasswordForm: FC<ForgotPasswordFormProps> = ({
   onSubmit,
   message,
 }) => {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(email);
     setEmail("");

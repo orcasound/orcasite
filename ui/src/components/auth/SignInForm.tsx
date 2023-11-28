@@ -87,13 +87,18 @@ export default function SignInForm({ onSubmit, errors }: SignInFormProps) {
           </Alert>
         ))}
 
-      <Box display="flex" justifyContent="space-between">
+      <Box
+        display="flex"
+        sx={{ flexDirection: { xs: "column", sm: "row" } }}
+        justifyContent="space-between"
+      >
         <Link
           variant="body2"
           sx={{
             textDecoration: "none",
             color: (theme) => theme.palette.accent4.main,
             marginRight: 2,
+            textAlign: { xs: "center", sm: "left" },
           }}
           href="/password-reset"
         >
@@ -104,9 +109,9 @@ export default function SignInForm({ onSubmit, errors }: SignInFormProps) {
           sx={{
             textDecoration: "none",
             color: (theme) => theme.palette.accent4.main,
+            textAlign: { xs: "center", sm: "right" },
           }}
           href="/register"
-          textAlign="right"
         >
           Need an account?
         </Link>
