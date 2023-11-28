@@ -2,8 +2,10 @@ import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import NextLink from "next/link";
 import { FormEvent, useState } from "react";
 
+import { RequestPasswordResetMutationVariables } from "@/graphql/generated";
+
 type ForgotPasswordFormProps = {
-  onSubmit: (email: string) => void;
+  onSubmit: (args: RequestPasswordResetMutationVariables) => void;
   message?: string;
 };
 
@@ -15,7 +17,7 @@ export default function ForgotPasswordForm({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(email);
+    onSubmit({ email });
     setEmail("");
   };
 

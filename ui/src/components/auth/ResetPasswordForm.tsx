@@ -1,10 +1,18 @@
 import { Alert, Button, TextField } from "@mui/material";
 import { FormEvent, useState } from "react";
 
-import { MutationError } from "@/graphql/generated";
+import {
+  MutationError,
+  ResetPasswordMutationVariables,
+} from "@/graphql/generated";
 
 type ResetPasswordFormProps = {
-  onSubmit: (password: string, passworConfirmation: string) => void;
+  onSubmit: (
+    args: Pick<
+      ResetPasswordMutationVariables,
+      "password" | "passwordConfirmation"
+    >,
+  ) => void;
   errors: MutationError[];
 };
 
@@ -17,7 +25,7 @@ export default function ResetPasswordForm({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(password, passwordConfirmation);
+    onSubmit({ password, passwordConfirmation });
   };
 
   return (

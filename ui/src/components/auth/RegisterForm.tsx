@@ -2,18 +2,15 @@ import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import NextLink from "next/link";
 import { FormEvent, useState } from "react";
 
-import { MutationError } from "@/graphql/generated";
+import {
+  MutationError,
+  RegisterWithPasswordMutationVariables,
+} from "@/graphql/generated";
 
 type RegisterFormProps = {
-  onSubmit: (
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    passwordConfirmation: string,
-  ) => void;
+  onSubmit: (args: RegisterWithPasswordMutationVariables) => void;
   errors: MutationError[];
-}
+};
 
 export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
   const [firstName, setFirstName] = useState("");
@@ -24,7 +21,7 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(firstName, lastName, email, password, passwordConfirmation);
+    onSubmit({ firstName, lastName, email, password, passwordConfirmation });
   };
 
   return (
@@ -253,7 +250,7 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
       </Button>
     </form>
   );
-};
+}
 
 const errorCodeToMessage = (_error: Pick<MutationError, "code">) => {
   return "An unknown error occurred. Please try again and let us know if this keeps happening.";
