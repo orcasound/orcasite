@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import NextLink from "next/link";
-import { FC, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 
 import { MutationError } from "@/graphql/generated";
 
@@ -15,7 +15,7 @@ type RegisterFormProps = {
   errors: MutationError[];
 }
 
-const RegisterForm: FC<RegisterFormProps> = ({ onSubmit, errors }) => {
+export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -258,5 +258,3 @@ const RegisterForm: FC<RegisterFormProps> = ({ onSubmit, errors }) => {
 const errorCodeToMessage = (_error: Pick<MutationError, "code">) => {
   return "An unknown error occurred. Please try again and let us know if this keeps happening.";
 };
-
-export default RegisterForm;
