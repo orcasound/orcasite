@@ -171,8 +171,6 @@ defmodule OrcasiteWeb.Router do
 
   def absinthe_before_send(conn, %Absinthe.Blueprint{} = blueprint) do
     if user = blueprint.execution.context[:current_user] do
-      IO.inspect(user, label: "Setting current user")
-
       conn
       |> assign(:current_user, user)
       |> AshAuthentication.Plug.Helpers.store_in_session(user)
@@ -186,7 +184,7 @@ defmodule OrcasiteWeb.Router do
     conn
   end
 
-  defp set_current_user_as_actor(%{assigns: %{current_user: actor}} = conn, _opts) do
+  defp set_current_user_as_actor(%{assigns: %{current_user: _actor}} = conn, _opts) do
     conn
     |> AshAuthentication.Plug.Helpers.set_actor(:user)
   end
