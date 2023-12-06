@@ -137,13 +137,17 @@ defmodule OrcasiteWeb.Router do
 
   scope "/" do
     pipe_through(:nextjs)
-    ui_port = System.get_env("UI_PORT") || "3000"
 
-    # TODO: Figure out websocket proxying (ws:// protocl) for /_next/webpack-hmr
-    forward("/", ReverseProxyPlug,
-      upstream: "//localhost:#{ui_port}",
-      error_callback: &__MODULE__.log_reverse_proxy_error/1
-    )
+    if Mix.env() == :dev do
+      get("/*page", OrcasiteWeb.PageController, :index)
+    else
+      ui_port = System.get_env("UI_PORT") || "3000"
+
+      forward("/", ReverseProxyPlug,
+        upstream: "http://localhost:#{ui_port}",
+        error_callback: &__MODULE__.log_reverse_proxy_error/1
+      )
+    end
   end
 
   def log_reverse_proxy_error(error) do
@@ -171,6 +175,8 @@ defmodule OrcasiteWeb.Router do
 
   def absinthe_before_send(conn, %Absinthe.Blueprint{} = blueprint) do
     if user = blueprint.execution.context[:current_user] do
+      IO.inspect(user, label: "Setting current user")
+
       conn
       |> assign(:current_user, user)
       |> AshAuthentication.Plug.Helpers.store_in_session(user)
