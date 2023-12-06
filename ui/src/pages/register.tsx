@@ -10,7 +10,7 @@ import {
   useRegisterWithPasswordMutation,
 } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { setAuthToken, setCurrentUser } from "@/utils/auth";
+import { setCurrentUser } from "@/utils/auth";
 
 const RegisterPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -23,17 +23,12 @@ const RegisterPage: NextPageWithLayout = () => {
     },
     onSuccess: ({ registerWithPassword }) => {
       if (registerWithPassword) {
-        const { metadata, result: user, errors } = registerWithPassword;
-        const token = metadata?.token;
+        const { result: user, errors } = registerWithPassword;
 
         if (errors) {
           setErrors(
             errors.filter((error): error is MutationError => error !== null),
           );
-        }
-
-        if (token) {
-          setAuthToken(token);
         }
 
         if (user) {

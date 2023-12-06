@@ -6,7 +6,6 @@ import SignInForm from "@/components/auth/SignInForm";
 import { getAuthLayout } from "@/components/layouts/AuthLayout";
 import { useSignInWithPasswordMutation } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { setAuthToken, setCurrentUser } from "@/utils/auth";
 
 const SignInPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -19,7 +18,7 @@ const SignInPage: NextPageWithLayout = () => {
     },
     onSuccess: ({ signInWithPassword }) => {
       if (signInWithPassword) {
-        const { token, user, errors } = signInWithPassword;
+        const { user, errors } = signInWithPassword;
 
         if (errors && errors?.length > 0) {
           setErrors(
@@ -33,14 +32,10 @@ const SignInPage: NextPageWithLayout = () => {
           );
         }
 
-        if (token) {
-          setAuthToken(token);
-        }
-
-        if (user) {
-          setCurrentUser(user);
-          router.push("/");
-        }
+        // if (user) {
+        //   setCurrentUser(user);
+        //   router.push("/");
+        // }
       }
     },
     onError: (error: Error) => {

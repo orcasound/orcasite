@@ -415,7 +415,6 @@ export type PasswordResetInput = {
 export type PasswordResetResult = {
   __typename?: "PasswordResetResult";
   errors?: Maybe<Array<Maybe<MutationError>>>;
-  token?: Maybe<Scalars["String"]["output"]>;
   user?: Maybe<User>;
 };
 
@@ -535,7 +534,6 @@ export type SignInWithPasswordInput = {
 export type SignInWithPasswordResult = {
   __typename?: "SignInWithPasswordResult";
   errors?: Maybe<Array<Maybe<MutationError>>>;
-  token?: Maybe<Scalars["String"]["output"]>;
   user?: Maybe<User>;
 };
 
@@ -653,10 +651,6 @@ export type RegisterWithPasswordMutation = {
   __typename?: "RootMutationType";
   registerWithPassword?: {
     __typename?: "RegisterWithPasswordResult";
-    metadata?: {
-      __typename?: "RegisterWithPasswordMetadata";
-      token: string;
-    } | null;
     result?: {
       __typename?: "User";
       id: string;
@@ -695,7 +689,6 @@ export type ResetPasswordMutation = {
   __typename?: "RootMutationType";
   resetPassword?: {
     __typename?: "PasswordResetResult";
-    token?: string | null;
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
@@ -724,7 +717,6 @@ export type SignInWithPasswordMutation = {
   __typename?: "RootMutationType";
   signInWithPassword?: {
     __typename?: "SignInWithPasswordResult";
-    token?: string | null;
     user?: {
       __typename?: "User";
       id: string;
@@ -877,9 +869,6 @@ export const RegisterWithPasswordDocument = `
   registerWithPassword(
     input: {email: $email, password: $password, passwordConfirmation: $passwordConfirmation, firstName: $firstName, lastName: $lastName}
   ) {
-    metadata {
-      token
-    }
     result {
       id
       email
@@ -979,7 +968,6 @@ export const ResetPasswordDocument = `
   resetPassword(
     input: {password: $password, passwordConfirmation: $passwordConfirmation, resetToken: $resetToken}
   ) {
-    token
     errors {
       code
       fields
@@ -1033,7 +1021,6 @@ useResetPasswordMutation.fetcher = (
 export const SignInWithPasswordDocument = `
     mutation signInWithPassword($email: String!, $password: String!) {
   signInWithPassword(input: {email: $email, password: $password}) {
-    token
     user {
       id
       email

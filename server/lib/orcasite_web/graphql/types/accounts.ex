@@ -9,7 +9,6 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
   end
 
   object :sign_in_with_password_result do
-    field :token, :string
     field :user, :user
     field :errors, list_of(:mutation_error)
   end
@@ -25,7 +24,6 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
   end
 
   object :password_reset_result do
-    field :token, :string
     field :user, :user
     field :errors, list_of(:mutation_error)
   end
@@ -36,12 +34,14 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
 
       resolve(fn _, %{input: args}, _ ->
         with {:ok, user} <- User.sign_in_with_password(args) do
-          {:ok, %{user: user, token: user.__metadata__.token}}
+          {:ok, %{user: user}}
         else
           {:error, _} ->
             {:ok, %{errors: [%{code: "invalid_credentials"}]}}
         end
       end)
+
+      middleware(&set_current_user/2)
     end
 
     field :request_password_reset, type: :boolean do
@@ -78,11 +78,21 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
                  },
                  []
                ) do
-          {:ok, %{user: user, token: user.__metadata__.token}}
+          {:ok, %{user: user}}
         else
           {:error, err} ->
             {:ok, %{errors: Enum.map(err.errors, &AshGraphql.Error.to_error/1)}}
         end
+      end)
+
+      middleware(&set_current_user/2)
+    end
+  end
+
+  defp set_current_user(resolution, _) do
+    with %{value: %{user: user}} <- resolution do
+      Map.update!(resolution, :context, fn ctx ->
+        Map.put(ctx, :current_user, user)
       end)
     end
   end

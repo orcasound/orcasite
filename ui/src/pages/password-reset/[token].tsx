@@ -6,7 +6,7 @@ import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 import { getAuthLayout } from "@/components/layouts/AuthLayout";
 import { MutationError, useResetPasswordMutation } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { setAuthToken, setCurrentUser } from "@/utils/auth";
+import { setCurrentUser } from "@/utils/auth";
 
 const PasswordResetPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -26,10 +26,6 @@ const PasswordResetPage: NextPageWithLayout = () => {
           setErrors(
             errors.filter((error): error is MutationError => error !== null),
           );
-        }
-
-        if (token) {
-          setAuthToken(token);
         }
 
         if (user) {
