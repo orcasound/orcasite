@@ -67,6 +67,22 @@ defmodule Orcasite.Accounts.User do
     policy action(:current_user) do
       authorize_if always()
     end
+
+    bypass action(:register_with_password) do
+      authorize_if always()
+    end
+
+    bypass action(:sign_in_with_password) do
+      authorize_if always()
+    end
+
+    bypass action(:request_password_reset_with_password) do
+      authorize_if always()
+    end
+
+    bypass action(:password_reset_with_password) do
+      authorize_if always()
+    end
   end
 
   actions do
