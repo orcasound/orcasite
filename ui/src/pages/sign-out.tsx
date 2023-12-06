@@ -5,18 +5,21 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import Header from "@/components/Header";
+import { useSignOutMutation } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import logo from "@/public/wordmark/wordmark-teal.svg";
-import { clearAuthToken, clearCurrentUser } from "@/utils/auth";
 
 const SignInPage: NextPageWithLayout = () => {
   const router = useRouter();
+  const signOut = useSignOutMutation({
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
 
   useEffect(() => {
-    clearCurrentUser();
-    clearAuthToken();
-    router.push("/");
-  }, [router]);
+    signOut.mutate({});
+  }, []);
 
   return (
     <div>
