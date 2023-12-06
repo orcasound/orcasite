@@ -1,21 +1,23 @@
-import { Alert, Box, Button, Link, TextField } from "@mui/material";
-import NextLink from "next/link";
-import React, { useState } from "react";
+import { Alert, Box, Button, TextField } from "@mui/material";
+import { FormEvent, useState } from "react";
 
-interface ForgotPasswordFormProps {
-  onSubmit: (email: string) => void;
+import Link from "@/components/Link";
+import { RequestPasswordResetMutationVariables } from "@/graphql/generated";
+
+type ForgotPasswordFormProps = {
+  onSubmit: (args: RequestPasswordResetMutationVariables) => void;
   message?: string;
-}
+};
 
-const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
+export default function ForgotPasswordForm({
   onSubmit,
   message,
-}) => {
+}: ForgotPasswordFormProps) {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(email);
+    onSubmit({ email });
     setEmail("");
   };
 
@@ -55,7 +57,6 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
       <Box display="flex" justifyContent="space-between">
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -67,7 +68,6 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           Already have an account?
         </Link>
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -96,6 +96,4 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
       </Button>
     </form>
   );
-};
-
-export default ForgotPasswordForm;
+}

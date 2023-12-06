@@ -1,23 +1,31 @@
 import { Alert, Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { FormEvent, useState } from "react";
 
-import { MutationError } from "@/graphql/generated";
+import {
+  MutationError,
+  ResetPasswordMutationVariables,
+} from "@/graphql/generated";
 
-interface ResetPasswordFormProps {
-  onSubmit: (password: string, passworConfirmation: string) => void;
+type ResetPasswordFormProps = {
+  onSubmit: (
+    args: Pick<
+      ResetPasswordMutationVariables,
+      "password" | "passwordConfirmation"
+    >,
+  ) => void;
   errors: MutationError[];
-}
+};
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
+export default function ResetPasswordForm({
   onSubmit,
   errors,
-}) => {
+}: ResetPasswordFormProps) {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(password, passwordConfirmation);
+    onSubmit({ password, passwordConfirmation });
   };
 
   return (
@@ -123,7 +131,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
       </Button>
     </form>
   );
-};
+}
 
 const errorToString = (
   error?: Pick<MutationError, "code" | "message" | "vars" | "shortMessage">,
@@ -157,5 +165,3 @@ const errorToString = (
     return `An unknown error occurred. Please try again and let us know if this keeps happening.`;
   }
 };
-
-export default ResetPasswordForm;

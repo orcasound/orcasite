@@ -1,30 +1,27 @@
-import { Alert, Box, Button, Link, TextField } from "@mui/material";
-import NextLink from "next/link";
-import React, { useState } from "react";
+import { Alert, Box, Button, TextField } from "@mui/material";
+import { FormEvent, useState } from "react";
 
-import { MutationError } from "@/graphql/generated";
+import Link from "@/components/Link";
+import {
+  MutationError,
+  RegisterWithPasswordMutationVariables,
+} from "@/graphql/generated";
 
-interface RegisterFormProps {
-  onSubmit: (
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    passwordConfirmation: string,
-  ) => void;
+type RegisterFormProps = {
+  onSubmit: (args: RegisterWithPasswordMutationVariables) => void;
   errors: MutationError[];
-}
+};
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, errors }) => {
+export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(firstName, lastName, email, password, passwordConfirmation);
+    onSubmit({ firstName, lastName, email, password, passwordConfirmation });
   };
 
   return (
@@ -212,7 +209,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, errors }) => {
         sx={{ marginTop: 2, marginBottom: 1 }}
       >
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -224,7 +220,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, errors }) => {
           Forgot your password?
         </Link>
         <Link
-          component={NextLink}
           variant="body2"
           sx={{
             textDecoration: "none",
@@ -253,10 +248,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, errors }) => {
       </Button>
     </form>
   );
-};
+}
 
 const errorCodeToMessage = (_error: Pick<MutationError, "code">) => {
   return "An unknown error occurred. Please try again and let us know if this keeps happening.";
 };
-
-export default RegisterForm;

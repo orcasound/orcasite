@@ -49,8 +49,8 @@ defmodule OrcasiteWeb.Router do
 
   pipeline :graphql do
     plug(:parsers)
-    plug :load_from_bearer
-    plug :set_current_user_as_actor
+    plug :fetch_session
+    plug :load_from_session
     plug AshGraphql.Plug
   end
 
@@ -73,7 +73,11 @@ defmodule OrcasiteWeb.Router do
   scope "/graphql" do
     pipe_through(:graphql)
 
-    forward("/", Absinthe.Plug, schema: OrcasiteWeb.Schema, json_codec: Jason)
+    forward("/", Absinthe.Plug,
+      schema: OrcasiteWeb.Schema,
+      json_codec: Jason,
+      before_send: {__MODULE__, :absinthe_before_send}
+    )
   end
 
   # For the GraphiQL interactive interface, a must-have for happy frontend devs.
@@ -168,11 +172,20 @@ defmodule OrcasiteWeb.Router do
     end
   end
 
-  defp set_current_user_as_actor(%{assigns: %{current_user: actor}} = conn, _opts) do
-    conn
-    |> update_in([Access.key!(:assigns)], &Map.drop(&1, [:current_user]))
-    |> Ash.PlugHelpers.set_actor(actor)
+  def absinthe_before_send(conn, %Absinthe.Blueprint{} = blueprint) do
+    if user = blueprint.execution.context[:current_user] do
+      IO.inspect(user, label: "Setting current user")
+
+      conn
+      |> assign(:current_user, user)
+      |> AshAuthentication.Plug.Helpers.store_in_session(user)
+      |> AshAuthentication.Plug.Helpers.set_actor(:user)
+    else
+      conn
+    end
   end
 
-  defp set_current_user_as_actor(conn, _opts), do: conn
+  def absinthe_before_send(conn, _) do
+    conn
+  end
 end

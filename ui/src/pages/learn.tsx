@@ -8,8 +8,8 @@ import {
 } from "@mui/material";
 import Head from "next/head";
 
+import { getMapLayout } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
-import { getMapLayout } from "@/components/MapLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const examples = [
