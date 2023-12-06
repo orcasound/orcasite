@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import ResetPasswordRequestForm from "@/components/auth/ResetPasswordRequestForm";
@@ -8,8 +7,6 @@ import { useRequestPasswordResetMutation } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const PasswordResetRequestPage: NextPageWithLayout = () => {
-  const router = useRouter();
-
   const [message, setMessage] = useState<string>();
 
   const submitPasswordResetRequest = useRequestPasswordResetMutation({
@@ -35,9 +32,7 @@ const PasswordResetRequestPage: NextPageWithLayout = () => {
       <main>
         <ResetPasswordRequestForm
           onSubmit={(email) =>
-            submitPasswordResetRequest.mutate({
-              email,
-            })
+            submitPasswordResetRequest.mutate(email)
           }
           message={message}
         />

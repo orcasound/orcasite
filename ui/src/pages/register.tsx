@@ -6,11 +6,9 @@ import RegisterForm from "@/components/auth/RegisterForm";
 import { getAuthLayout } from "@/components/layouts/AuthLayout";
 import {
   MutationError,
-  User,
   useRegisterWithPasswordMutation,
 } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { setCurrentUser } from "@/utils/auth";
 
 const RegisterPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -32,7 +30,6 @@ const RegisterPage: NextPageWithLayout = () => {
         }
 
         if (user) {
-          setCurrentUser(user as User);
           router.push("/");
         }
       }
@@ -50,13 +47,13 @@ const RegisterPage: NextPageWithLayout = () => {
 
       <main>
         <RegisterForm
-          onSubmit={(
+          onSubmit={({
             firstName,
             lastName,
             email,
             password,
             passwordConfirmation,
-          ) =>
+          }) =>
             submitRegister.mutate({
               firstName,
               lastName,

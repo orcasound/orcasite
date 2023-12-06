@@ -51,6 +51,7 @@ defmodule OrcasiteWeb.Router do
     plug(:parsers)
     plug :fetch_session
     plug :load_from_session
+    plug :set_current_user_as_actor
     plug AshGraphql.Plug
   end
 
@@ -135,18 +136,14 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
-    if Mix.env() == :dev do
-      pipe_through(:nextjs)
-      get("/*page", OrcasiteWeb.PageController, :index)
-    else
-      pipe_through(:nextjs)
-      ui_port = System.get_env("UI_PORT") || "3000"
+    pipe_through(:nextjs)
+    ui_port = System.get_env("UI_PORT") || "3000"
 
-      forward("/", ReverseProxyPlug,
-        upstream: "http://localhost:#{ui_port}",
-        error_callback: &__MODULE__.log_reverse_proxy_error/1
-      )
-    end
+    # TODO: Figure out websocket proxying (ws:// protocl) for /_next/webpack-hmr
+    forward("/", ReverseProxyPlug,
+      upstream: "//localhost:#{ui_port}",
+      error_callback: &__MODULE__.log_reverse_proxy_error/1
+    )
   end
 
   def log_reverse_proxy_error(error) do
@@ -188,4 +185,11 @@ defmodule OrcasiteWeb.Router do
   def absinthe_before_send(conn, _) do
     conn
   end
+
+  defp set_current_user_as_actor(%{assigns: %{current_user: actor}} = conn, _opts) do
+    conn
+    |> AshAuthentication.Plug.Helpers.set_actor(:user)
+  end
+
+  defp set_current_user_as_actor(conn, _opts), do: conn
 end

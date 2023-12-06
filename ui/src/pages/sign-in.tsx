@@ -32,10 +32,9 @@ const SignInPage: NextPageWithLayout = () => {
           );
         }
 
-        // if (user) {
-        //   setCurrentUser(user);
-        //   router.push("/");
-        // }
+        if (user) {
+          router.push("/");
+        }
       }
     },
     onError: (error: Error) => {
