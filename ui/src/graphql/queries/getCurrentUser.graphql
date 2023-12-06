@@ -1,0 +1,9 @@
+query getCurrentUser {
+  currentUser {
+    id
+    firstName
+    lastName
+    email
+    admin
+  }
+}

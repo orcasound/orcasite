@@ -1,7 +1,8 @@
 defmodule Orcasite.Radio.Candidate do
   use Ash.Resource,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    authorizers: [Ash.Policy.Authorizer]
 
   alias Orcasite.Radio.{Detection, Feed}
 
@@ -27,6 +28,30 @@ defmodule Orcasite.Radio.Candidate do
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
+  end
+
+  calculations do
+    calculate :uuid, :string, {Orcasite.Radio.Calculations.DecodeUUID, []}
+  end
+
+  relationships do
+    has_many :detections, Detection
+
+    belongs_to :feed, Feed, allow_nil?: false
+  end
+
+  policies do
+    bypass actor_attribute_equals(:admin, true) do
+      authorize_if always()
+    end
+
+    policy action_type(:read) do
+      authorize_if always()
+    end
+
+    policy action_type(:create) do
+      authorize_if always()
+    end
   end
 
   actions do
@@ -90,16 +115,6 @@ defmodule Orcasite.Radio.Candidate do
         )
       end
     end
-  end
-
-  calculations do
-    calculate :uuid, :string, {Orcasite.Radio.Calculations.DecodeUUID, []}
-  end
-
-  relationships do
-    has_many :detections, Detection
-
-    belongs_to :feed, Feed, allow_nil?: false
   end
 
   admin do

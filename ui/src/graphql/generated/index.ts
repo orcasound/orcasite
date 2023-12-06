@@ -785,6 +785,20 @@ export type CandidateQuery = {
   } | null;
 };
 
+export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetCurrentUserQuery = {
+  __typename?: "RootQueryType";
+  currentUser?: {
+    __typename?: "User";
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    email: string;
+    admin?: boolean | null;
+  } | null;
+};
+
 export type FeedQueryVariables = Exact<{
   slug: Scalars["String"]["input"];
 }>;
@@ -1170,6 +1184,47 @@ useCandidateQuery.fetcher = (
 ) =>
   fetcher<CandidateQuery, CandidateQueryVariables>(
     CandidateDocument,
+    variables,
+    options,
+  );
+export const GetCurrentUserDocument = `
+    query getCurrentUser {
+  currentUser {
+    id
+    firstName
+    lastName
+    email
+    admin
+  }
+}
+    `;
+export const useGetCurrentUserQuery = <
+  TData = GetCurrentUserQuery,
+  TError = unknown,
+>(
+  variables?: GetCurrentUserQueryVariables,
+  options?: UseQueryOptions<GetCurrentUserQuery, TError, TData>,
+) =>
+  useQuery<GetCurrentUserQuery, TError, TData>(
+    variables === undefined
+      ? ["getCurrentUser"]
+      : ["getCurrentUser", variables],
+    fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(
+      GetCurrentUserDocument,
+      variables,
+    ),
+    options,
+  );
+useGetCurrentUserQuery.document = GetCurrentUserDocument;
+
+useGetCurrentUserQuery.getKey = (variables?: GetCurrentUserQueryVariables) =>
+  variables === undefined ? ["getCurrentUser"] : ["getCurrentUser", variables];
+useGetCurrentUserQuery.fetcher = (
+  variables?: GetCurrentUserQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(
+    GetCurrentUserDocument,
     variables,
     options,
   );
