@@ -1,5 +1,3 @@
-import { getAuthToken } from "@/utils/auth";
-
 /* eslint-disable import/no-unused-modules */
 if (!process.env.NEXT_PUBLIC_GQL_ENDPOINT) {
   throw new Error("NEXT_PUBLIC_GQL_ENDPOINT is not set");
@@ -8,11 +6,9 @@ if (!process.env.NEXT_PUBLIC_GQL_ENDPOINT) {
 export const endpointUrl = process.env.NEXT_PUBLIC_GQL_ENDPOINT;
 
 export const fetchParams = () => {
-  const authToken = getAuthToken();
   return {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      ...(authToken && { Authorization: `Bearer ${authToken}` }),
     },
   };
 };
@@ -22,11 +18,11 @@ export function fetcher<TData, TVariables>(
   variables?: TVariables,
   options?: RequestInit["headers"],
 ) {
-  return async (): Promise<TData> => {
-    const res = await fetch(endpointUrl as string, {
+  return async () => {
+    const res = await fetch(endpointUrl, {
       method: "POST",
       ...fetchParams(),
-      ...(options || {}),
+      ...options,
       body: JSON.stringify({ query, variables }),
     });
 
@@ -34,10 +30,9 @@ export function fetcher<TData, TVariables>(
 
     if (json.errors) {
       const { message } = json.errors[0];
-
       throw new Error(message);
     }
 
-    return json.data;
+    return json.data as TData;
   };
 }

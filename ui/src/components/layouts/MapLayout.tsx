@@ -8,12 +8,15 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
-import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import {
+  useFeedQuery,
+  useFeedsQuery,
+} from "@/graphql/generated";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
-import Player, { PlayerSpacer } from "./Player";
+import Player, { PlayerSpacer } from "../Player";
 
-const MapWithNoSSR = dynamic(() => import("./Map"), {
+const MapWithNoSSR = dynamic(() => import("../Map"), {
   ssr: false,
 });
 

@@ -28,13 +28,14 @@ defmodule Orcasite.Notifications.Subscription do
         # 14 days (in minutes)
         token_lifetime 1_209_600
 
-        sender fn subscription, token, _opts ->
-          IO.inspect({subscription, token},
-            label:
-              "{subscription, token} (server/lib/orcasite/notifications/resources/subscription.ex:#{__ENV__.line})"
-          )
+        sender fn _subscription, _token, _opts ->
+          # IO.inspect({subscription, token},
+          #   label:
+          #     "{subscription, token} (server/lib/orcasite/notifications/resources/subscription.ex:#{__ENV__.line})"
+          # )
 
           # Orcasite.Emails.deliver_magic_link(user, token)
+          :ok
         end
       end
     end

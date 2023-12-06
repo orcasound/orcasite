@@ -10,7 +10,6 @@ defmodule Orcasite.Radio do
   end
 
   graphql do
-    authorize? false
   end
 
   json_api do
