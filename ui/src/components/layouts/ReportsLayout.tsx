@@ -20,7 +20,7 @@ function ReportsLayout({ children }: { children: React.ReactNode }) {
     >
       <Header />
       <Box sx={{ flexGrow: 1, display: "flex" }}>
-        <Container>{children}</Container>
+        <Container maxWidth="xl">{children}</Container>
       </Box>
     </Box>
   );

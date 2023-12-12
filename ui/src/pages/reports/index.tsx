@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   Modal,
   Paper,
   Table,
@@ -19,7 +20,11 @@ import { useEffect, useMemo, useState } from "react";
 
 import DetectionsTable from "@/components/DetectionsTable";
 import { getReportsLayout } from "@/components/layouts/ReportsLayout";
-import { CandidatesQuery, useCandidatesQuery } from "@/graphql/generated";
+import {
+  CandidatesQuery,
+  useCandidatesQuery,
+  useGetCurrentUserQuery,
+} from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
@@ -50,6 +55,8 @@ const DetectionsPage: NextPageWithLayout = () => {
   const searchParams = useSearchParams();
 
   const candidateIdParam = searchParams.get("candidateId");
+
+  const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
   const [detectionModalOpen, setDetectionModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] =
@@ -99,10 +106,24 @@ const DetectionsPage: NextPageWithLayout = () => {
             <Box p={4}>
               <Paper>
                 <Box p={5}>
-                  <Typography variant="h4">Detections</Typography>
-                  <Typography variant="body2">
-                    Candidate {selectedCandidate?.id}
-                  </Typography>
+                  <Box display="flex" justifyContent="space-between">
+                    <Box>
+                      <Typography variant="h4">Detections</Typography>
+                      <Typography variant="body2">
+                        Candidate {selectedCandidate?.id}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      {currentUser?.moderator && selectedCandidate && (
+                        <Chip
+                          variant="outlined"
+                          label={
+                            selectedCandidate?.visible ? "Visible" : "Hidden"
+                          }
+                        />
+                      )}
+                    </Box>
+                  </Box>
                   {selectedCandidate && (
                     <DetectionsTable
                       detections={selectedCandidate.detections}
@@ -126,12 +147,18 @@ const DetectionsPage: NextPageWithLayout = () => {
                 <TableCell align="right">Timestamp</TableCell>
                 <TableCell>Categories</TableCell>
                 <TableCell>Descriptions</TableCell>
+
+                {currentUser?.moderator && <TableCell>Status</TableCell>}
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {candidates.map((candidate) => (
-                <TableRow key={candidate.id} hover={true}>
+                <TableRow
+                  key={candidate.id}
+                  hover={true}
+                  sx={{ ...(!candidate.visible && { opacity: 0.5 }) }}
+                >
                   <TableCell>{candidate.id}</TableCell>
                   <TableCell sx={{ whiteSpace: "nowrap" }}>
                     {candidate.feed.slug}
@@ -161,6 +188,14 @@ const DetectionsPage: NextPageWithLayout = () => {
                       .slice(0, 3)
                       .join(", ")}
                   </TableCell>
+                  {currentUser?.moderator && (
+                    <TableCell>
+                      <Chip
+                        label={candidate.visible ? "Visible" : "Hidden"}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                  )}
                   <TableCell align="center">
                     <Link
                       href={`/reports/?candidateId=${candidate.id}`}

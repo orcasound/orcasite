@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 import DetectionsTable from "@/components/DetectionsTable";
 import { getReportsLayout } from "@/components/layouts/ReportsLayout";
-import { useCandidateQuery } from "@/graphql/generated";
+import { useCandidateQuery, useGetCurrentUserQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
 
@@ -16,6 +16,7 @@ const CandidatePage: NextPageWithLayout = () => {
     id: (candidateId || "") as string,
   });
   const candidate = candidatesQuery.data?.candidate;
+  const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
   if (candidateId && typeof candidateId === "string") {
     analytics.reports.reportOpened(candidateId);
@@ -43,10 +44,12 @@ const CandidatePage: NextPageWithLayout = () => {
                 </Typography>
               </Box>
               <Box>
-                <Chip
-                  variant="outlined"
-                  label={candidate?.visible ? "Visible" : "Hidden"}
-                />
+                {currentUser?.moderator && (
+                  <Chip
+                    variant="outlined"
+                    label={candidate?.visible ? "Visible" : "Hidden"}
+                  />
+                )}
               </Box>
             </Box>
             {candidate && (
