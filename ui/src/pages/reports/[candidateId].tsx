@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, Link, Paper, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Chip, Link, Paper, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -35,15 +35,28 @@ const CandidatePage: NextPageWithLayout = () => {
 
         <Paper sx={{ marginTop: 4 }}>
           <Box p={5}>
-            <Typography variant="h4">Detections</Typography>
-            <Typography sx={{ marginBottom: 5 }} variant="body2">
-              {candidate?.id}
-            </Typography>
+            <Box display="flex" justifyContent="space-between">
+              <Box>
+                <Typography variant="h4">Detections</Typography>
+                <Typography sx={{ marginBottom: 5 }} variant="body2">
+                  {candidate?.id}
+                </Typography>
+              </Box>
+              <Box>
+                <Chip
+                  variant="outlined"
+                  label={candidate?.visible ? "Visible" : "Hidden"}
+                />
+              </Box>
+            </Box>
             {candidate && (
               <DetectionsTable
                 detections={candidate.detections}
                 feed={candidate.feed}
                 candidate={candidate}
+                onDetectionUpdate={() => {
+                  candidatesQuery.refetch();
+                }}
               />
             )}
           </Box>

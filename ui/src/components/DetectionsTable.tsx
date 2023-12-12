@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   Table,
   TableBody,
   TableCell,
@@ -13,6 +14,7 @@ import {
   Detection,
   Feed,
   useGetCurrentUserQuery,
+  useSetDetectionVisibleMutation,
 } from "@/graphql/generated";
 import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
@@ -23,10 +25,12 @@ export default function DetectionsTable({
   detections,
   feed,
   candidate,
+  onDetectionUpdate,
 }: {
   detections: Detection[];
   feed: Pick<Feed, "slug" | "nodeName">;
-  candidate: Pick<Candidate, "id">;
+  candidate: Pick<Candidate, "id" | "visible">;
+  onDetectionUpdate: () => void;
 }) {
   const offsetPadding = 15;
   const minOffset = Math.min(...detections.map((d) => +d.playerOffset));
@@ -35,7 +39,10 @@ export default function DetectionsTable({
   const endOffset = maxOffset + offsetPadding;
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
-  console.log("user", currentUser);
+
+  const setDetectionVisible = useSetDetectionVisibleMutation({
+    onSuccess: onDetectionUpdate,
+  });
 
   return (
     <Box>
@@ -66,7 +73,12 @@ export default function DetectionsTable({
             <TableCell>Category</TableCell>
             <TableCell>Description</TableCell>
             <TableCell align="right">Timestamp</TableCell>
-            {currentUser?.moderator && <TableCell>Actions</TableCell>}
+            {currentUser?.moderator && (
+              <>
+                <TableCell>Status</TableCell>
+                <TableCell>Actions</TableCell>
+              </>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -74,7 +86,11 @@ export default function DetectionsTable({
             .slice()
             .sort((a, b) => a.id.localeCompare(b.id))
             .map((detection, index) => (
-              <TableRow key={detection.id} hover={true}>
+              <TableRow
+                key={detection.id}
+                hover={true}
+                sx={{ ...(!detection.visible && { opacity: 0.5 }) }}
+              >
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{detection.id}</TableCell>
                 <TableCell>{feed.slug}</TableCell>
@@ -85,15 +101,26 @@ export default function DetectionsTable({
                   {formatTimestamp(detection.timestamp)}
                 </TableCell>
                 {currentUser?.moderator && (
-                  <TableCell>
-                    <Button
-                      onClick={() => {
-                        console.log("hide", detection.id);
-                      }}
-                    >
-                      Hide
-                    </Button>
-                  </TableCell>
+                  <>
+                    <TableCell>
+                      <Chip
+                        label={detection.visible ? "Visible" : "Hidden"}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() => {
+                          setDetectionVisible.mutate({
+                            id: detection.id,
+                            visible: !detection.visible,
+                          });
+                        }}
+                      >
+                        {detection.visible ? "Hide" : "Show"}
+                      </Button>
+                    </TableCell>
+                  </>
                 )}
               </TableRow>
             ))}

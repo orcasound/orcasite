@@ -120,6 +120,25 @@ defmodule Orcasite.Radio.Detection do
       argument :visible, :boolean, default: true
 
       change set_attribute(:visible, arg(:visible))
+
+      change fn changeset, _ ->
+        changeset
+        |> Ash.Changeset.after_action(fn changeset, detection ->
+          candidate =
+            detection
+            |> Orcasite.Radio.load!(candidate: [:detections])
+            |> Map.get(:candidate)
+
+          # If all detections are hidden, make the candidate hidden
+          candidate
+          |> Ash.Changeset.for_update(:update, %{
+            visible: !Enum.all?(candidate.detections, &(!&1.visible))
+          })
+          |> Orcasite.Radio.update!()
+
+          {:ok, detection}
+        end)
+      end
     end
 
     create :create do

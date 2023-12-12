@@ -886,6 +886,7 @@ export type CandidateQuery = {
     minTime: Date;
     maxTime: Date;
     detectionCount?: number | null;
+    visible?: boolean | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -1392,6 +1393,7 @@ export const CandidateDocument = `
     minTime
     maxTime
     detectionCount
+    visible
     feed {
       id
       slug
