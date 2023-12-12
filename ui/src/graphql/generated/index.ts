@@ -486,6 +486,7 @@ export type RootMutationType = {
   setCandidateVisible?: Maybe<SetCandidateVisibleResult>;
   setDetectionVisible?: Maybe<SetDetectionVisibleResult>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
+  signOut?: Maybe<Scalars["Boolean"]["output"]>;
   submitDetection?: Maybe<SubmitDetectionResult>;
 };
 
@@ -847,6 +848,13 @@ export type SignInWithPasswordMutation = {
       vars?: { [key: string]: any } | null;
     } | null> | null;
   } | null;
+};
+
+export type SignOutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type SignOutMutation = {
+  __typename?: "RootMutationType";
+  signOut?: boolean | null;
 };
 
 export type SubmitDetectionMutationVariables = Exact<{
@@ -1294,6 +1302,39 @@ useSignInWithPasswordMutation.fetcher = (
 ) =>
   fetcher<SignInWithPasswordMutation, SignInWithPasswordMutationVariables>(
     SignInWithPasswordDocument,
+    variables,
+    options,
+  );
+export const SignOutDocument = `
+    mutation signOut {
+  signOut
+}
+    `;
+export const useSignOutMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    SignOutMutation,
+    TError,
+    SignOutMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<SignOutMutation, TError, SignOutMutationVariables, TContext>(
+    ["signOut"],
+    (variables?: SignOutMutationVariables) =>
+      fetcher<SignOutMutation, SignOutMutationVariables>(
+        SignOutDocument,
+        variables,
+      )(),
+    options,
+  );
+useSignOutMutation.getKey = () => ["signOut"];
+
+useSignOutMutation.fetcher = (
+  variables?: SignOutMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SignOutMutation, SignOutMutationVariables>(
+    SignOutDocument,
     variables,
     options,
   );

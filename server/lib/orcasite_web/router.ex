@@ -88,7 +88,8 @@ defmodule OrcasiteWeb.Router do
     forward("/", Absinthe.Plug.GraphiQL,
       schema: OrcasiteWeb.Schema,
       interface: :playground,
-      json_codec: Jason
+      json_codec: Jason,
+      before_send: {__MODULE__, :absinthe_before_send}
     )
   end
 
@@ -174,15 +175,22 @@ defmodule OrcasiteWeb.Router do
   end
 
   def absinthe_before_send(conn, %Absinthe.Blueprint{} = blueprint) do
-    if user = blueprint.execution.context[:current_user] do
-      IO.inspect(user, label: "Setting current user")
+    blueprint.execution.context
+    |> case do
+      %{current_user: user} when not is_nil(user) ->
+        conn
+        |> assign(:current_user, user)
+        |> AshAuthentication.Plug.Helpers.store_in_session(user)
+        |> AshAuthentication.Plug.Helpers.set_actor(:user)
 
-      conn
-      |> assign(:current_user, user)
-      |> AshAuthentication.Plug.Helpers.store_in_session(user)
-      |> AshAuthentication.Plug.Helpers.set_actor(:user)
-    else
-      conn
+      %{clear_session: true} ->
+        conn
+        |> assign(:current_user, nil)
+        |> AshAuthentication.Plug.Helpers.set_actor(:user)
+        |> clear_session()
+
+      _ ->
+        conn
     end
   end
 
