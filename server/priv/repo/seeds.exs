@@ -79,6 +79,7 @@ Orcasite.Accounts.User
   password_confirmation: "password"
 })
 |> Ash.Changeset.force_change_attribute(:admin, true)
+|> Ash.Changeset.force_change_attribute(:moderator, true)
 |> Orcasite.Accounts.create()
 
 [

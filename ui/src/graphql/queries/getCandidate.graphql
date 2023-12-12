@@ -18,6 +18,7 @@ query candidate($id: ID!) {
       playlistTimestamp
       playerOffset
       timestamp
+      visible
     }
   }
 }

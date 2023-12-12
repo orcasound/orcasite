@@ -1,0 +1,8 @@
+mutation setCandidateVisible($id: ID!, $visible: Boolean!) {
+  setCandidateVisible(id: $id, input: { visible: $visible }) {
+    result {
+      id
+      visible
+    }
+  }
+}

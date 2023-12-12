@@ -30,6 +30,7 @@ defmodule Orcasite.Radio.Detection do
     attribute :listener_count, :integer
     attribute :timestamp, :utc_datetime_usec, allow_nil?: false
     attribute :description, :string
+    attribute :visible, :boolean, default: true
 
     attribute :category, :atom do
       # TODO: Make non-null after we migrate
@@ -61,6 +62,14 @@ defmodule Orcasite.Radio.Detection do
 
     policy action_type(:create) do
       authorize_if always()
+    end
+
+    policy changing_attributes([:visible]) do
+      authorize_if actor_attribute_equals(:moderator, true)
+    end
+
+    policy expr(is_nil(visible) or not visible) do
+      authorize_if actor_attribute_equals(:moderator, true)
     end
   end
 
@@ -104,6 +113,13 @@ defmodule Orcasite.Radio.Detection do
       argument :candidate, :map
 
       change manage_relationship(:candidate, type: :append)
+    end
+
+    update :set_visible do
+      accept [:visible]
+      argument :visible, :boolean, default: true
+
+      change set_attribute(:visible, arg(:visible))
     end
 
     create :create do
@@ -240,6 +256,7 @@ defmodule Orcasite.Radio.Detection do
 
     mutations do
       create :submit_detection, :submit_detection
+      update :set_detection_visible, :set_visible
     end
   end
 

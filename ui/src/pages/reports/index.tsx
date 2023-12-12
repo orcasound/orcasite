@@ -159,14 +159,6 @@ const DetectionsPage: NextPageWithLayout = () => {
                       .join(", ")}
                   </TableCell>
                   <TableCell align="center">
-                    {/* <Button
-                          onClick={() => {
-                            setDetectionModalOpen(true);
-                            setSelectedCandidate(candidate);
-                          }}
-                        >
-                          View
-                        </Button> */}
                     <Link
                       href={`/reports/?candidateId=${candidate.id}`}
                       as={`/reports/${candidate.id}`}

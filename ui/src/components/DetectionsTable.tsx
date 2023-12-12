@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -7,7 +8,12 @@ import {
   TableRow,
 } from "@mui/material";
 
-import { Candidate, Detection, Feed } from "@/graphql/generated";
+import {
+  Candidate,
+  Detection,
+  Feed,
+  useGetCurrentUserQuery,
+} from "@/graphql/generated";
 import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
 
@@ -16,7 +22,7 @@ import { DetectionsPlayer } from "./Player/DetectionsPlayer";
 export default function DetectionsTable({
   detections,
   feed,
-  candidate
+  candidate,
 }: {
   detections: Detection[];
   feed: Pick<Feed, "slug" | "nodeName">;
@@ -27,6 +33,9 @@ export default function DetectionsTable({
   const maxOffset = Math.max(...detections.map((d) => +d.playerOffset));
   const startOffset = Math.max(0, minOffset - offsetPadding);
   const endOffset = maxOffset + offsetPadding;
+
+  const { currentUser } = useGetCurrentUserQuery().data ?? {};
+  console.log("user", currentUser);
 
   return (
     <Box>
@@ -57,6 +66,7 @@ export default function DetectionsTable({
             <TableCell>Category</TableCell>
             <TableCell>Description</TableCell>
             <TableCell align="right">Timestamp</TableCell>
+            {currentUser?.moderator && <TableCell>Actions</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -74,6 +84,17 @@ export default function DetectionsTable({
                 <TableCell align="right" title={detection.timestamp.toString()}>
                   {formatTimestamp(detection.timestamp)}
                 </TableCell>
+                {currentUser?.moderator && (
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        console.log("hide", detection.id);
+                      }}
+                    >
+                      Hide
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
         </TableBody>

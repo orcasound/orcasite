@@ -25,6 +25,7 @@ defmodule Orcasite.Radio.Candidate do
     attribute :detection_count, :integer
     attribute :min_time, :utc_datetime_usec, allow_nil?: false
     attribute :max_time, :utc_datetime_usec, allow_nil?: false
+    attribute :visible, :boolean, default: true
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -51,6 +52,14 @@ defmodule Orcasite.Radio.Candidate do
 
     policy action_type(:create) do
       authorize_if always()
+    end
+
+    policy changing_attributes([:visible]) do
+      authorize_if actor_attribute_equals(:moderator, true)
+    end
+
+    policy expr(is_nil(visible) or not visible) do
+      authorize_if actor_attribute_equals(:moderator, true)
     end
   end
 
@@ -115,6 +124,13 @@ defmodule Orcasite.Radio.Candidate do
         )
       end
     end
+
+    update :set_visible do
+      accept [:visible]
+      argument :visible, :boolean, default: true
+
+      change set_attribute(:visible, arg(:visible))
+    end
   end
 
   admin do
@@ -127,6 +143,10 @@ defmodule Orcasite.Radio.Candidate do
     queries do
       get :candidate, :read
       list :candidates, :index
+    end
+
+    mutations do
+      update :set_candidate_visible, :set_visible
     end
   end
 end

@@ -138,16 +138,16 @@ defmodule OrcasiteWeb.Router do
   scope "/" do
     pipe_through(:nextjs)
 
-    if Mix.env() == :dev do
-      get("/*page", OrcasiteWeb.PageController, :index)
-    else
+    # if Mix.env() == :dev do
+    #   get("/*page", OrcasiteWeb.PageController, :index)
+    # else
       ui_port = System.get_env("UI_PORT") || "3000"
 
       forward("/", ReverseProxyPlug,
         upstream: "http://localhost:#{ui_port}",
         error_callback: &__MODULE__.log_reverse_proxy_error/1
       )
-    end
+    # end
   end
 
   def log_reverse_proxy_error(error) do
