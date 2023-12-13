@@ -483,7 +483,6 @@ export type RootMutationType = {
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   resetPassword?: Maybe<PasswordResetResult>;
-  setCandidateVisible?: Maybe<SetCandidateVisibleResult>;
   setDetectionVisible?: Maybe<SetDetectionVisibleResult>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
@@ -500,11 +499,6 @@ export type RootMutationTypeRequestPasswordResetArgs = {
 
 export type RootMutationTypeResetPasswordArgs = {
   input: PasswordResetInput;
-};
-
-export type RootMutationTypeSetCandidateVisibleArgs = {
-  id?: InputMaybe<Scalars["ID"]["input"]>;
-  input?: InputMaybe<SetCandidateVisibleInput>;
 };
 
 export type RootMutationTypeSetDetectionVisibleArgs = {
@@ -565,19 +559,6 @@ export type RootQueryTypeFeedArgs = {
 export type RootQueryTypeFeedsArgs = {
   filter?: InputMaybe<FeedFilterInput>;
   sort?: InputMaybe<Array<InputMaybe<FeedSortInput>>>;
-};
-
-export type SetCandidateVisibleInput = {
-  visible?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** The result of the :set_candidate_visible mutation */
-export type SetCandidateVisibleResult = {
-  __typename?: "SetCandidateVisibleResult";
-  /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
-  /** The successful result of the mutation */
-  result?: Maybe<Candidate>;
 };
 
 export type SetDetectionVisibleInput = {
@@ -784,23 +765,6 @@ export type ResetPasswordMutation = {
       firstName?: string | null;
       lastName?: string | null;
       admin?: boolean | null;
-    } | null;
-  } | null;
-};
-
-export type SetCandidateVisibleMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  visible: Scalars["Boolean"]["input"];
-}>;
-
-export type SetCandidateVisibleMutation = {
-  __typename?: "RootMutationType";
-  setCandidateVisible?: {
-    __typename?: "SetCandidateVisibleResult";
-    result?: {
-      __typename?: "Candidate";
-      id: string;
-      visible?: boolean | null;
     } | null;
   } | null;
 };
@@ -1155,52 +1119,6 @@ useResetPasswordMutation.fetcher = (
 ) =>
   fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
     ResetPasswordDocument,
-    variables,
-    options,
-  );
-export const SetCandidateVisibleDocument = `
-    mutation setCandidateVisible($id: ID!, $visible: Boolean!) {
-  setCandidateVisible(id: $id, input: {visible: $visible}) {
-    result {
-      id
-      visible
-    }
-  }
-}
-    `;
-export const useSetCandidateVisibleMutation = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: UseMutationOptions<
-    SetCandidateVisibleMutation,
-    TError,
-    SetCandidateVisibleMutationVariables,
-    TContext
-  >,
-) =>
-  useMutation<
-    SetCandidateVisibleMutation,
-    TError,
-    SetCandidateVisibleMutationVariables,
-    TContext
-  >(
-    ["setCandidateVisible"],
-    (variables?: SetCandidateVisibleMutationVariables) =>
-      fetcher<
-        SetCandidateVisibleMutation,
-        SetCandidateVisibleMutationVariables
-      >(SetCandidateVisibleDocument, variables)(),
-    options,
-  );
-useSetCandidateVisibleMutation.getKey = () => ["setCandidateVisible"];
-
-useSetCandidateVisibleMutation.fetcher = (
-  variables: SetCandidateVisibleMutationVariables,
-  options?: RequestInit["headers"],
-) =>
-  fetcher<SetCandidateVisibleMutation, SetCandidateVisibleMutationVariables>(
-    SetCandidateVisibleDocument,
     variables,
     options,
   );

@@ -124,13 +124,6 @@ defmodule Orcasite.Radio.Candidate do
         )
       end
     end
-
-    update :set_visible do
-      accept [:visible]
-      argument :visible, :boolean, default: true
-
-      change set_attribute(:visible, arg(:visible))
-    end
   end
 
   admin do
@@ -143,10 +136,6 @@ defmodule Orcasite.Radio.Candidate do
     queries do
       get :candidate, :read
       list :candidates, :index
-    end
-
-    mutations do
-      update :set_candidate_visible, :set_visible
     end
   end
 end
