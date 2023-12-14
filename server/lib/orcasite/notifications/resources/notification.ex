@@ -59,6 +59,24 @@ defmodule Orcasite.Notifications.Notification do
       manual Orcasite.Notifications.ManualReadNotificationsSince
     end
 
+    read :for_candidate do
+      pagination do
+        keyset? true
+      end
+
+      argument :candidate_id, :string, allow_nil?: false
+
+      argument :event_type, :atom do
+        constraints one_of: Event.types()
+        default :confirmed_candidate
+      end
+
+      filter expr(
+               fragment("(?->'candidate_id' = ?)", meta, ^arg(:candidate_id)) and
+                 event_type == ^arg(:event_type)
+             )
+    end
+
     update :cancel_notification do
       accept []
       change set_attribute(:active, false)
@@ -199,7 +217,6 @@ defmodule Orcasite.Notifications.Notification do
 
     mutations do
       create :notify_confirmed_candidate, :notify_confirmed_candidate
-      update :cancel_notification, :cancel_notification
     end
   end
 end
