@@ -203,35 +203,6 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
             </Alert>
           ))}
 
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        sx={{ marginTop: 2, marginBottom: 1 }}
-      >
-        <Link
-          variant="body2"
-          sx={{
-            textDecoration: "none",
-            color: (theme) => theme.palette.accent4.main,
-            marginRight: 2,
-          }}
-          href="/password-reset"
-        >
-          Forgot your password?
-        </Link>
-        <Link
-          variant="body2"
-          sx={{
-            textDecoration: "none",
-            color: (theme) => theme.palette.accent4.main,
-          }}
-          href="/sign-in"
-          textAlign="right"
-        >
-          Already have an account?
-        </Link>
-      </Box>
-
       <Button
         type="submit"
         variant="contained"
@@ -246,6 +217,40 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
       >
         Register
       </Button>
+
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          mt: 2,
+          justifyContent: "space-between",
+          flexDirection: { xs: "column", sm: "row" },
+        }}
+      >
+        <Link
+          variant="body2"
+          sx={{
+            textDecoration: "none",
+            color: (theme) => theme.palette.accent4.main,
+            marginRight: 2,
+            textAlign: { xs: "center", sm: "left" },
+          }}
+          href="/password-reset"
+        >
+          Forgot your password?
+        </Link>
+        <Link
+          variant="body2"
+          sx={{
+            textDecoration: "none",
+            color: (theme) => theme.palette.accent4.main,
+            textAlign: { xs: "center", sm: "right" },
+          }}
+          href="/sign-in"
+        >
+          Already have an account?
+        </Link>
+      </Box>
     </form>
   );
 }

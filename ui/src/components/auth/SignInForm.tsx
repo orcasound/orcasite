@@ -87,10 +87,28 @@ export default function SignInForm({ onSubmit, errors }: SignInFormProps) {
           </Alert>
         ))}
 
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        fullWidth
+        sx={{
+          marginTop: 2,
+          backgroundColor: (theme) => theme.palette.accent4.main,
+          "&:hover": { backgroundColor: (theme) => theme.palette.accent4.dark },
+        }}
+      >
+        Sign In
+      </Button>
+
       <Box
-        display="flex"
-        sx={{ flexDirection: { xs: "column", sm: "row" } }}
-        justifyContent="space-between"
+        sx={{
+          display: "flex",
+          gap: 1,
+          mt: 2,
+          justifyContent: "space-between",
+          flexDirection: { xs: "column", sm: "row" },
+        }}
       >
         <Link
           variant="body2"
@@ -116,20 +134,6 @@ export default function SignInForm({ onSubmit, errors }: SignInFormProps) {
           Need an account?
         </Link>
       </Box>
-
-      <Button
-        type="submit"
-        variant="contained"
-        size="large"
-        fullWidth
-        sx={{
-          marginTop: 2,
-          backgroundColor: (theme) => theme.palette.accent4.main,
-          "&:hover": { backgroundColor: (theme) => theme.palette.accent4.dark },
-        }}
-      >
-        Sign In
-      </Button>
     </form>
   );
 }
