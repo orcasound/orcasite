@@ -1,7 +1,8 @@
 defmodule Orcasite.Notifications.Notification do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource],
-    data_layer: AshPostgres.DataLayer
+    extensions: [AshAdmin.Resource, AshGraphql.Resource],
+    data_layer: AshPostgres.DataLayer,
+    authorizers: [Ash.Policy.Authorizer]
 
   alias Orcasite.Notifications.{Event, NotificationInstance, Subscription}
 
@@ -34,24 +35,18 @@ defmodule Orcasite.Notifications.Notification do
     end
   end
 
-  code_interface do
-    define_for Orcasite.Notifications
+  policies do
+    bypass actor_attribute_equals(:admin, true) do
+      authorize_if always()
+    end
 
-    define :notify_new_detection,
-      action: :notify_new_detection,
-      args: [:detection_id, :node, :description, :listener_count, :candidate_id]
+    policy action(:notify_confirmed_candidate) do
+      authorize_if actor_attribute_equals(:moderator, true)
+    end
 
-    define :notify_confirmed_candidate,
-      action: :notify_confirmed_candidate,
-      args: [:candidate_id, :node]
-  end
-
-  resource do
-    description """
-    Notification for a specific event type. Once created, all Subscriptions that match this Notification's
-    event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
-    channel settings (email, browser notification, webhooks).
-    """
+    policy action(:cancel_notification) do
+      authorize_if actor_attribute_equals(:moderator, true)
+    end
   end
 
   actions do
@@ -65,6 +60,7 @@ defmodule Orcasite.Notifications.Notification do
     end
 
     update :cancel_notification do
+      accept []
       change set_attribute(:active, false)
 
       change fn changeset, _context ->
@@ -84,9 +80,8 @@ defmodule Orcasite.Notifications.Notification do
 
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
-      accept [:candidate_id]
-      argument :candidate_id, :integer
-      argument :node, :string, allow_nil?: false
+      accept [:candidate_id, :message]
+      argument :candidate_id, :integer, allow_nil?: false
 
       argument :message, :string do
         description """
@@ -100,10 +95,17 @@ defmodule Orcasite.Notifications.Notification do
       change set_attribute(:event_type, :confirmed_candidate)
 
       change fn changeset, _context ->
+        candidate_id = Ash.Changeset.get_argument(changeset, :candidate_id)
+
+        candidate =
+          Orcasite.Radio.Candidate
+          |> Orcasite.Radio.get(candidate_id)
+          |> Orcasite.Radio.load!(:feed)
+
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
-          candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id),
-          node: Ash.Changeset.get_argument(changeset, :node),
+          candidate_id: candidate_id,
+          node: candidate.feed.slug,
           message: Ash.Changeset.get_argument(changeset, :message)
         })
       end
@@ -131,6 +133,36 @@ defmodule Orcasite.Notifications.Notification do
           candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id)
         })
       end
+    end
+  end
+
+  code_interface do
+    define_for Orcasite.Notifications
+
+    define :notify_new_detection,
+      action: :notify_new_detection,
+      args: [:detection_id, :node, :description, :listener_count, :candidate_id]
+
+    define :notify_confirmed_candidate,
+      action: :notify_confirmed_candidate,
+      args: [:candidate_id]
+  end
+
+  resource do
+    description """
+    Notification for a specific event type. Once created, all Subscriptions that match this Notification's
+    event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
+    channel settings (email, browser notification, webhooks).
+    """
+  end
+
+  admin do
+    table_columns [:id, :meta, :event_type, :inserted_at]
+
+    format_fields meta: {Jason, :encode!, []}
+
+    form do
+      field :event_type, type: :default
     end
   end
 
@@ -162,13 +194,12 @@ defmodule Orcasite.Notifications.Notification do
            on: :create
   end
 
-  admin do
-    table_columns [:id, :meta, :event_type, :inserted_at]
+  graphql do
+    type :notification
 
-    format_fields meta: {Jason, :encode!, []}
-
-    form do
-      field :event_type, type: :default
+    mutations do
+      create :notify_confirmed_candidate, :notify_confirmed_candidate
+      update :cancel_notification, :cancel_notification
     end
   end
 end
