@@ -9,15 +9,15 @@ import type { NextPageWithLayout } from "@/pages/_app";
 
 const SignOutPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const signOut = useSignOutMutation({
+  const { mutate: signOutMutate } = useSignOutMutation({
     onSuccess: () => {
       router.push("/");
     },
   });
 
   useEffect(() => {
-    signOut.mutate({});
-  }, []);
+    signOutMutate({});
+  }, [signOutMutate]);
 
   return (
     <div>
