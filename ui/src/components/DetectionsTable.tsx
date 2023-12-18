@@ -8,11 +8,13 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 
 import {
   Candidate,
   Detection,
   Feed,
+  useCandidateQuery,
   useGetCurrentUserQuery,
   useSetDetectionVisibleMutation,
 } from "@/graphql/generated";
@@ -25,12 +27,10 @@ export default function DetectionsTable({
   detections,
   feed,
   candidate,
-  onDetectionUpdate,
 }: {
   detections: Detection[];
   feed: Pick<Feed, "slug" | "nodeName">;
   candidate: Pick<Candidate, "id" | "visible">;
-  onDetectionUpdate: () => void;
 }) {
   const offsetPadding = 15;
   const minOffset = Math.min(...detections.map((d) => +d.playerOffset));
@@ -40,8 +40,14 @@ export default function DetectionsTable({
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
+  const queryClient = useQueryClient();
+
   const setDetectionVisible = useSetDetectionVisibleMutation({
-    onSuccess: onDetectionUpdate,
+    onSuccess: () => {
+      queryClient.invalidateQueries(
+        useCandidateQuery.getKey({ id: candidate.id }),
+      );
+    },
   });
 
   return (

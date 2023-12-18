@@ -57,9 +57,6 @@ const CandidatePage: NextPageWithLayout = () => {
                 detections={candidate.detections}
                 feed={candidate.feed}
                 candidate={candidate}
-                onDetectionUpdate={() => {
-                  candidatesQuery.refetch();
-                }}
               />
             )}
           </Box>
