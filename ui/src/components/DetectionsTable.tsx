@@ -14,6 +14,7 @@ import {
   Detection,
   Feed,
   useGetCurrentUserQuery,
+  useNotifyConfirmedCandidateMutation,
   useSetDetectionVisibleMutation,
 } from "@/graphql/generated";
 import { analytics } from "@/utils/analytics";
@@ -43,6 +44,8 @@ export default function DetectionsTable({
   const setDetectionVisible = useSetDetectionVisibleMutation({
     onSuccess: onDetectionUpdate,
   });
+
+  const notifyConfirmedCandidate = useNotifyConfirmedCandidateMutation();
 
   return (
     <Box>

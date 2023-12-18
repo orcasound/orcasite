@@ -9,12 +9,16 @@ defmodule Orcasite.Notifications.Notification do
   postgres do
     table "notifications"
     repo Orcasite.Repo
+
+    custom_indexes do
+      index [:meta], using: "gin"
+    end
   end
 
   attributes do
     uuid_primary_key :id
 
-    attribute :meta, :map
+    attribute :meta, :map, default: %{}
     attribute :active, :boolean, default: true
 
     attribute :event_type, :atom do
@@ -40,12 +44,10 @@ defmodule Orcasite.Notifications.Notification do
       authorize_if always()
     end
 
-    policy action(:notify_confirmed_candidate) do
-      authorize_if actor_attribute_equals(:moderator, true)
-    end
-
-    policy action(:cancel_notification) do
-      authorize_if actor_attribute_equals(:moderator, true)
+    bypass actor_attribute_equals(:moderator, true) do
+      authorize_if action(:notify_confirmed_candidate)
+      authorize_if action(:cancel_notification)
+      authorize_if action(:for_candidate)
     end
   end
 
@@ -60,20 +62,24 @@ defmodule Orcasite.Notifications.Notification do
     end
 
     read :for_candidate do
-      pagination do
-        keyset? true
-      end
-
       argument :candidate_id, :string, allow_nil?: false
 
       argument :event_type, :atom do
         constraints one_of: Event.types()
-        default :confirmed_candidate
       end
 
+      argument :active, :boolean
+
       filter expr(
-               fragment("(?->'candidate_id' = ?)", meta, ^arg(:candidate_id)) and
-                 event_type == ^arg(:event_type)
+               fragment("(? @> ?)", meta, expr(%{candidate_id: ^arg(:candidate_id)})) and
+                 if(not is_nil(^arg(:event_type)),
+                   do: event_type == ^arg(:event_type),
+                   else: true
+                 ) and
+                 if(not is_nil(^arg(:active)),
+                   do: active == ^arg(:active),
+                   else: true
+                 )
              )
     end
 
@@ -99,7 +105,7 @@ defmodule Orcasite.Notifications.Notification do
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       accept [:candidate_id, :message]
-      argument :candidate_id, :integer, allow_nil?: false
+      argument :candidate_id, :uuid, allow_nil?: false
 
       argument :message, :string do
         description """
@@ -214,6 +220,10 @@ defmodule Orcasite.Notifications.Notification do
 
   graphql do
     type :notification
+
+    queries do
+      list :notifications_for_candidate, :for_candidate
+    end
 
     mutations do
       create :notify_confirmed_candidate, :notify_confirmed_candidate

@@ -140,15 +140,15 @@ defmodule Orcasite.Radio.Candidate do
           Orcasite.Notifications.Notification
           |> Ash.Query.for_read(:for_candidate, %{
             candidate_id: record.id,
-            event_type: Ash.Changeset.get_argument(changeset, :event_type)
+            event_type: Ash.Changeset.get_argument(changeset, :event_type),
+            active: true
           })
-          |> Orcasite.Notifications.stream!()
-          |> Stream.map(fn notification ->
+          |> Orcasite.Notifications.read!()
+          |> Enum.map(fn notification ->
             notification
             |> Ash.Changeset.for_update(:cancel_notification, %{})
             |> Orcasite.Notifications.update!()
           end)
-          |> Stream.run()
 
           {:ok, record}
         end)

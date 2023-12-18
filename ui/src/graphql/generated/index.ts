@@ -37,6 +37,19 @@ export type Scalars = {
   Json: { input: { [key: string]: any }; output: { [key: string]: any } };
 };
 
+export type CancelCandidateNotificationsInput = {
+  eventType?: InputMaybe<CandidateEventType>;
+};
+
+/** The result of the :cancel_candidate_notifications mutation */
+export type CancelCandidateNotificationsResult = {
+  __typename?: "CancelCandidateNotificationsResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Candidate>;
+};
+
 export type Candidate = {
   __typename?: "Candidate";
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
@@ -55,6 +68,8 @@ export type CandidateDetectionsArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
 };
+
+export type CandidateEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
 
 export type CandidateFilterDetectionCount = {
   eq?: InputMaybe<Scalars["Int"]["input"]>;
@@ -412,6 +427,39 @@ export type MutationError = {
   vars?: Maybe<Scalars["Json"]["output"]>;
 };
 
+/**
+ * Notification for a specific event type. Once created, all Subscriptions that match this Notification's
+ * event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
+ * channel settings (email, browser notification, webhooks).
+ */
+export type Notification = {
+  __typename?: "Notification";
+  active?: Maybe<Scalars["Boolean"]["output"]>;
+  eventType?: Maybe<NotificationEventType>;
+  id: Scalars["ID"]["output"];
+  meta?: Maybe<Scalars["Json"]["output"]>;
+};
+
+export type NotificationEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
+
+export type NotifyConfirmedCandidateInput = {
+  candidateId: Scalars["ID"]["input"];
+  /**
+   * What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
+   * and clicks can be heard at Orcasound Lab!')
+   */
+  message: Scalars["String"]["input"];
+};
+
+/** The result of the :notify_confirmed_candidate mutation */
+export type NotifyConfirmedCandidateResult = {
+  __typename?: "NotifyConfirmedCandidateResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Notification>;
+};
+
 /** A page of :candidate */
 export type PageOfCandidate = {
   __typename?: "PageOfCandidate";
@@ -479,6 +527,9 @@ export type RequestPasswordResetInput = {
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  cancelCandidateNotifications?: Maybe<CancelCandidateNotificationsResult>;
+  /** Create a notification for confirmed candidate (i.e. detection group) */
+  notifyConfirmedCandidate?: Maybe<NotifyConfirmedCandidateResult>;
   /** Register a new user with a username and password. */
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
@@ -487,6 +538,15 @@ export type RootMutationType = {
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
   submitDetection?: Maybe<SubmitDetectionResult>;
+};
+
+export type RootMutationTypeCancelCandidateNotificationsArgs = {
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+  input?: InputMaybe<CancelCandidateNotificationsInput>;
+};
+
+export type RootMutationTypeNotifyConfirmedCandidateArgs = {
+  input?: InputMaybe<NotifyConfirmedCandidateInput>;
 };
 
 export type RootMutationTypeRegisterWithPasswordArgs = {
@@ -700,6 +760,53 @@ export type UserFilterModerator = {
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+export type CancelCandidateNotificationsMutationVariables = Exact<{
+  candidateId: Scalars["ID"]["input"];
+}>;
+
+export type CancelCandidateNotificationsMutation = {
+  __typename?: "RootMutationType";
+  cancelCandidateNotifications?: {
+    __typename?: "CancelCandidateNotificationsResult";
+    result?: { __typename?: "Candidate"; id: string } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
+};
+
+export type NotifyConfirmedCandidateMutationVariables = Exact<{
+  candidateId: Scalars["ID"]["input"];
+  message: Scalars["String"]["input"];
+}>;
+
+export type NotifyConfirmedCandidateMutation = {
+  __typename?: "RootMutationType";
+  notifyConfirmedCandidate?: {
+    __typename?: "NotifyConfirmedCandidateResult";
+    result?: {
+      __typename?: "Notification";
+      id: string;
+      eventType?: NotificationEventType | null;
+      meta?: { [key: string]: any } | null;
+      active?: boolean | null;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
+};
+
 export type RegisterWithPasswordMutationVariables = Exact<{
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
@@ -783,6 +890,14 @@ export type SetDetectionVisibleMutation = {
       id: string;
       visible?: boolean | null;
     } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
   } | null;
 };
 
@@ -968,6 +1083,113 @@ export type FeedsQuery = {
   }>;
 };
 
+export const CancelCandidateNotificationsDocument = `
+    mutation cancelCandidateNotifications($candidateId: ID!) {
+  cancelCandidateNotifications(id: $candidateId) {
+    result {
+      id
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useCancelCandidateNotificationsMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    CancelCandidateNotificationsMutation,
+    TError,
+    CancelCandidateNotificationsMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    CancelCandidateNotificationsMutation,
+    TError,
+    CancelCandidateNotificationsMutationVariables,
+    TContext
+  >(
+    ["cancelCandidateNotifications"],
+    (variables?: CancelCandidateNotificationsMutationVariables) =>
+      fetcher<
+        CancelCandidateNotificationsMutation,
+        CancelCandidateNotificationsMutationVariables
+      >(CancelCandidateNotificationsDocument, variables)(),
+    options,
+  );
+useCancelCandidateNotificationsMutation.getKey = () => [
+  "cancelCandidateNotifications",
+];
+
+useCancelCandidateNotificationsMutation.fetcher = (
+  variables: CancelCandidateNotificationsMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    CancelCandidateNotificationsMutation,
+    CancelCandidateNotificationsMutationVariables
+  >(CancelCandidateNotificationsDocument, variables, options);
+export const NotifyConfirmedCandidateDocument = `
+    mutation notifyConfirmedCandidate($candidateId: ID!, $message: String!) {
+  notifyConfirmedCandidate(input: {candidateId: $candidateId, message: $message}) {
+    result {
+      id
+      eventType
+      meta
+      active
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useNotifyConfirmedCandidateMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    NotifyConfirmedCandidateMutation,
+    TError,
+    NotifyConfirmedCandidateMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    NotifyConfirmedCandidateMutation,
+    TError,
+    NotifyConfirmedCandidateMutationVariables,
+    TContext
+  >(
+    ["notifyConfirmedCandidate"],
+    (variables?: NotifyConfirmedCandidateMutationVariables) =>
+      fetcher<
+        NotifyConfirmedCandidateMutation,
+        NotifyConfirmedCandidateMutationVariables
+      >(NotifyConfirmedCandidateDocument, variables)(),
+    options,
+  );
+useNotifyConfirmedCandidateMutation.getKey = () => ["notifyConfirmedCandidate"];
+
+useNotifyConfirmedCandidateMutation.fetcher = (
+  variables: NotifyConfirmedCandidateMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    NotifyConfirmedCandidateMutation,
+    NotifyConfirmedCandidateMutationVariables
+  >(NotifyConfirmedCandidateDocument, variables, options);
 export const RegisterWithPasswordDocument = `
     mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $password: String!, $passwordConfirmation: String!) {
   registerWithPassword(
@@ -1128,6 +1350,13 @@ export const SetDetectionVisibleDocument = `
     result {
       id
       visible
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
     }
   }
 }

@@ -4,5 +4,12 @@ mutation setDetectionVisible($id: ID!, $visible: Boolean!) {
       id
       visible
     }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
   }
 }

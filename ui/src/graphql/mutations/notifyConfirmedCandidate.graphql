@@ -1,0 +1,19 @@
+mutation notifyConfirmedCandidate($candidateId: ID!, $message: String!) {
+  notifyConfirmedCandidate(
+    input: { candidateId: $candidateId, message: $message }
+  ) {
+    result {
+      id
+      eventType
+      meta
+      active
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}

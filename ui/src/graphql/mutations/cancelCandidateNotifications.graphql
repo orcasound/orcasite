@@ -1,0 +1,14 @@
+mutation cancelCandidateNotifications($candidateId: ID!) {
+  cancelCandidateNotifications(id: $candidateId) {
+    result {
+      id
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
