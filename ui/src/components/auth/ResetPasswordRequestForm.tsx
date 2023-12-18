@@ -55,31 +55,6 @@ export default function ForgotPasswordForm({
         <Alert sx={{ marginTop: 2, marginBottom: 2 }}>{message}</Alert>
       )}
 
-      <Box display="flex" justifyContent="space-between">
-        <Link
-          variant="body2"
-          sx={{
-            textDecoration: "none",
-            color: (theme) => theme.palette.accent4.main,
-            marginRight: 2,
-          }}
-          href="/sign-in"
-        >
-          Already have an account?
-        </Link>
-        <Link
-          variant="body2"
-          sx={{
-            textDecoration: "none",
-            color: (theme) => theme.palette.accent4.main,
-          }}
-          href="/register"
-          textAlign="right"
-        >
-          Need an account?
-        </Link>
-      </Box>
-
       <Button
         type="submit"
         variant="contained"
@@ -94,6 +69,40 @@ export default function ForgotPasswordForm({
       >
         Request password reset
       </Button>
+
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          mt: 2,
+          justifyContent: "space-between",
+          flexDirection: { xs: "column", sm: "row" },
+        }}
+      >
+        <Link
+          variant="body2"
+          sx={{
+            textDecoration: "none",
+            color: (theme) => theme.palette.accent4.main,
+            marginRight: 2,
+            textAlign: { xs: "center", sm: "left" },
+          }}
+          href="/sign-in"
+        >
+          Already have an account?
+        </Link>
+        <Link
+          variant="body2"
+          sx={{
+            textDecoration: "none",
+            color: (theme) => theme.palette.accent4.main,
+            textAlign: { xs: "center", sm: "right" },
+          }}
+          href="/register"
+        >
+          Need an account?
+        </Link>
+      </Box>
     </form>
   );
 }
