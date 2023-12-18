@@ -1,7 +1,17 @@
 defmodule Orcasite.Accounts.User do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource]
+    extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource],
+    authorizers: [Ash.Policy.Authorizer]
+
+  postgres do
+    table "users"
+    repo Orcasite.Repo
+  end
+
+  identities do
+    identity :unique_email, [:email]
+  end
 
   attributes do
     uuid_primary_key :id
@@ -23,6 +33,8 @@ defmodule Orcasite.Accounts.User do
         identity_field :email
         sign_in_tokens_enabled? true
 
+        register_action_accept [:first_name, :last_name]
+
         resettable do
           sender fn user, token, opts ->
             Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
@@ -39,23 +51,38 @@ defmodule Orcasite.Accounts.User do
       token_resource Orcasite.Accounts.Token
       signing_secret Orcasite.Accounts.Secrets
     end
+
+    select_for_senders [:id, :email, :first_name, :last_name]
   end
 
-  postgres do
-    table "users"
-    repo Orcasite.Repo
-  end
+  policies do
+    bypass actor_attribute_equals(:admin, true) do
+      authorize_if always()
+    end
 
-  identities do
-    identity :unique_email, [:email]
-  end
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
 
-  code_interface do
-    define_for Orcasite.Accounts
+    policy action(:current_user) do
+      authorize_if always()
+    end
 
-    define :register_with_password
-    define :sign_in_with_password
-    define :by_email, args: [:email]
+    bypass action(:register_with_password) do
+      authorize_if always()
+    end
+
+    bypass action(:sign_in_with_password) do
+      authorize_if always()
+    end
+
+    bypass action(:request_password_reset_with_password) do
+      authorize_if always()
+    end
+
+    bypass action(:password_reset_with_password) do
+      authorize_if always()
+    end
   end
 
   actions do
@@ -64,6 +91,21 @@ defmodule Orcasite.Accounts.User do
     read :by_email do
       get_by :email
     end
+
+    read :current_user do
+      get? true
+      manual Orcasite.Accounts.Actions.CurrentUserRead
+    end
+  end
+
+  code_interface do
+    define_for Orcasite.Accounts
+
+    define :register_with_password
+    define :sign_in_with_password
+    define :by_email, args: [:email]
+    define :request_password_reset_with_password
+    define :password_reset_with_password
   end
 
   admin do
@@ -73,5 +115,13 @@ defmodule Orcasite.Accounts.User do
   graphql do
     type :user
     hide_fields [:hashed_password]
+
+    queries do
+      read_one :current_user, :current_user
+    end
+
+    mutations do
+      create :register_with_password, :register_with_password
+    end
   end
 end

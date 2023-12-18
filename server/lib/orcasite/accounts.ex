@@ -1,5 +1,5 @@
 defmodule Orcasite.Accounts do
-  use Ash.Api, extensions: [AshAdmin.Api]
+  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api]
 
   resources do
     registry Orcasite.Accounts.Registry
@@ -7,5 +7,8 @@ defmodule Orcasite.Accounts do
 
   admin do
     show? true
+  end
+
+  graphql do
   end
 end

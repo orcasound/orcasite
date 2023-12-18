@@ -9,19 +9,21 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
   end
 
   object :sign_in_with_password_result do
-    field :token, :string
     field :user, :user
     field :errors, list_of(:mutation_error)
   end
 
-  input_object :register_with_password_input do
+  input_object :request_password_reset_input do
     field :email, non_null(:string)
+  end
+
+  input_object :password_reset_input do
+    field :reset_token, non_null(:string)
     field :password, non_null(:string)
     field :password_confirmation, non_null(:string)
   end
 
-  object :register_with_password_result do
-    field :token, :string
+  object :password_reset_result do
     field :user, :user
     field :errors, list_of(:mutation_error)
   end
@@ -32,26 +34,65 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
 
       resolve(fn _, %{input: args}, _ ->
         with {:ok, user} <- User.sign_in_with_password(args) do
-          {:ok, %{user: user, token: user.__metadata__.token}}
+          {:ok, %{user: user}}
         else
           {:error, _} ->
             {:ok, %{errors: [%{code: "invalid_credentials"}]}}
         end
       end)
+
+      middleware(&set_current_user/2)
     end
 
-    field :register_with_password, type: :register_with_password_result do
-      arg(:input, non_null(:register_with_password_input))
+    field :request_password_reset, type: :boolean do
+      arg(:input, non_null(:request_password_reset_input))
 
       resolve(fn _, %{input: args}, _ ->
-        with {:ok, user} <- User.register_with_password(args) do
-          {:ok, %{user: user, token: user.__metadata__.token}}
-        else
-          {:error, %{errors: errors}} ->
-            errors = Enum.map(errors, &AshGraphql.Error.to_error/1)
+        User.request_password_reset_with_password(args)
 
-            {:ok, %{errors: errors}}
+        {:ok, true}
+      end)
+    end
+
+    field :reset_password, type: :password_reset_result do
+      arg(:input, non_null(:password_reset_input))
+
+      resolve(fn _,
+                 %{
+                   input: %{
+                     password: password,
+                     password_confirmation: password_confirmation,
+                     reset_token: reset_token
+                   }
+                 },
+                 _ ->
+        strategy = AshAuthentication.Info.strategy!(Orcasite.Accounts.User, :password)
+
+        with {:ok, user} <-
+               AshAuthentication.Strategy.Password.Actions.reset(
+                 strategy,
+                 %{
+                   "password" => password,
+                   "password_confirmation" => password_confirmation,
+                   "reset_token" => reset_token
+                 },
+                 []
+               ) do
+          {:ok, %{user: user}}
+        else
+          {:error, err} ->
+            {:ok, %{errors: Enum.map(err.errors, &AshGraphql.Error.to_error/1)}}
         end
+      end)
+
+      middleware(&set_current_user/2)
+    end
+  end
+
+  defp set_current_user(resolution, _) do
+    with %{value: %{user: user}} <- resolution do
+      Map.update!(resolution, :context, fn ctx ->
+        Map.put(ctx, :current_user, user)
       end)
     end
   end

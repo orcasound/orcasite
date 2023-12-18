@@ -1,7 +1,8 @@
 defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    authorizers: [Ash.Policy.Authorizer]
 
   postgres do
     table "feeds"
@@ -53,6 +54,16 @@ defmodule Orcasite.Radio.Feed do
     calculate :map_url,
               :string,
               {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"}
+  end
+
+  policies do
+    bypass actor_attribute_equals(:admin, true) do
+      authorize_if always()
+    end
+
+    policy action_type(:read) do
+      authorize_if always()
+    end
   end
 
   actions do

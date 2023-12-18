@@ -2,8 +2,8 @@ import { GraphicEq, PlayLessonOutlined } from "@mui/icons-material";
 import { Box, Button, Container, Typography } from "@mui/material";
 import Head from "next/head";
 
+import { getMapLayout } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
-import { getMapLayout } from "@/components/MapLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
 

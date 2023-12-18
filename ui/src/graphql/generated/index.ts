@@ -1,10 +1,10 @@
-import { endpointUrl, fetchParams } from "@/graphql/client";
 import {
   useMutation,
   useQuery,
   UseMutationOptions,
   UseQueryOptions,
 } from "@tanstack/react-query";
+import { fetcher } from "@/graphql/client";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -25,26 +25,6 @@ export type Incremental<T> =
   | {
       [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
     };
-
-function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
-  return async (): Promise<TData> => {
-    const res = await fetch(endpointUrl as string, {
-      method: "POST",
-      ...fetchParams,
-      body: JSON.stringify({ query, variables }),
-    });
-
-    const json = await res.json();
-
-    if (json.errors) {
-      const { message } = json.errors[0];
-
-      throw new Error(message);
-    }
-
-    return json.data;
-  };
-}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string };
@@ -277,6 +257,7 @@ export type Feed = {
   nodeName: Scalars["String"]["output"];
   slug: Scalars["String"]["output"];
   thumbUrl?: Maybe<Scalars["String"]["output"]>;
+  visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type FeedFilterId = {
@@ -305,6 +286,7 @@ export type FeedFilterInput = {
   not?: InputMaybe<Array<FeedFilterInput>>;
   or?: InputMaybe<Array<FeedFilterInput>>;
   slug?: InputMaybe<FeedFilterSlug>;
+  visible?: InputMaybe<FeedFilterVisible>;
 };
 
 export type FeedFilterIntroHtml = {
@@ -355,6 +337,17 @@ export type FeedFilterSlug = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type FeedFilterVisible = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type FeedSortField =
   | "ID"
   | "IMAGE_URL"
@@ -362,7 +355,8 @@ export type FeedSortField =
   | "LOCATION_POINT"
   | "NAME"
   | "NODE_NAME"
-  | "SLUG";
+  | "SLUG"
+  | "VISIBLE";
 
 export type FeedSortInput = {
   field: FeedSortField;
@@ -412,28 +406,69 @@ export type PageOfDetection = {
   results?: Maybe<Array<Detection>>;
 };
 
+export type PasswordResetInput = {
+  password: Scalars["String"]["input"];
+  passwordConfirmation: Scalars["String"]["input"];
+  resetToken: Scalars["String"]["input"];
+};
+
+export type PasswordResetResult = {
+  __typename?: "PasswordResetResult";
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  user?: Maybe<User>;
+};
+
 export type RegisterWithPasswordInput = {
   email: Scalars["String"]["input"];
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  /** The proposed password for the user, in plain text. */
   password: Scalars["String"]["input"];
+  /** The proposed password for the user (again), in plain text. */
   passwordConfirmation: Scalars["String"]["input"];
 };
 
+export type RegisterWithPasswordMetadata = {
+  __typename?: "RegisterWithPasswordMetadata";
+  /** A JWT which the user can use to authenticate to the API. */
+  token: Scalars["String"]["output"];
+};
+
+/** The result of the :register_with_password mutation */
 export type RegisterWithPasswordResult = {
   __typename?: "RegisterWithPasswordResult";
+  /** Any errors generated, if the mutation failed */
   errors?: Maybe<Array<Maybe<MutationError>>>;
-  token?: Maybe<Scalars["String"]["output"]>;
-  user?: Maybe<User>;
+  /** Metadata produced by the mutation */
+  metadata?: Maybe<RegisterWithPasswordMetadata>;
+  /** The successful result of the mutation */
+  result?: Maybe<User>;
+};
+
+export type RequestPasswordResetInput = {
+  email: Scalars["String"]["input"];
 };
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  /** Register a new user with a username and password. */
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
+  requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
+  resetPassword?: Maybe<PasswordResetResult>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   submitDetection?: Maybe<SubmitDetectionResult>;
 };
 
 export type RootMutationTypeRegisterWithPasswordArgs = {
-  input: RegisterWithPasswordInput;
+  input?: InputMaybe<RegisterWithPasswordInput>;
+};
+
+export type RootMutationTypeRequestPasswordResetArgs = {
+  input: RequestPasswordResetInput;
+};
+
+export type RootMutationTypeResetPasswordArgs = {
+  input: PasswordResetInput;
 };
 
 export type RootMutationTypeSignInWithPasswordArgs = {
@@ -448,6 +483,7 @@ export type RootQueryType = {
   __typename?: "RootQueryType";
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
+  currentUser?: Maybe<User>;
   detection?: Maybe<Detection>;
   detections?: Maybe<PageOfDetection>;
   feed: Feed;
@@ -463,6 +499,10 @@ export type RootQueryTypeCandidatesArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<CandidateSortInput>>>;
+};
+
+export type RootQueryTypeCurrentUserArgs = {
+  filter?: InputMaybe<UserFilterInput>;
 };
 
 export type RootQueryTypeDetectionArgs = {
@@ -494,7 +534,6 @@ export type SignInWithPasswordInput = {
 export type SignInWithPasswordResult = {
   __typename?: "SignInWithPasswordResult";
   errors?: Maybe<Array<Maybe<MutationError>>>;
-  token?: Maybe<Scalars["String"]["output"]>;
   user?: Maybe<User>;
 };
 
@@ -513,6 +552,7 @@ export type SubmitDetectionInput = {
   listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
   playerOffset: Scalars["Decimal"]["input"];
   playlistTimestamp: Scalars["Int"]["input"];
+  sendNotifications?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 /** The result of the :submit_detection mutation */
@@ -531,6 +571,169 @@ export type User = {
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type UserFilterAdmin = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type UserFilterEmail = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterFirstName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type UserFilterInput = {
+  admin?: InputMaybe<UserFilterAdmin>;
+  and?: InputMaybe<Array<UserFilterInput>>;
+  email?: InputMaybe<UserFilterEmail>;
+  firstName?: InputMaybe<UserFilterFirstName>;
+  id?: InputMaybe<UserFilterId>;
+  lastName?: InputMaybe<UserFilterLastName>;
+  not?: InputMaybe<Array<UserFilterInput>>;
+  or?: InputMaybe<Array<UserFilterInput>>;
+};
+
+export type UserFilterLastName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type RegisterWithPasswordMutationVariables = Exact<{
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+  passwordConfirmation: Scalars["String"]["input"];
+}>;
+
+export type RegisterWithPasswordMutation = {
+  __typename?: "RootMutationType";
+  registerWithPassword?: {
+    __typename?: "RegisterWithPasswordResult";
+    result?: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      admin?: boolean | null;
+      firstName?: string | null;
+      lastName?: string | null;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      message?: string | null;
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
+};
+
+export type RequestPasswordResetMutationVariables = Exact<{
+  email: Scalars["String"]["input"];
+}>;
+
+export type RequestPasswordResetMutation = {
+  __typename?: "RootMutationType";
+  requestPasswordReset?: boolean | null;
+};
+
+export type ResetPasswordMutationVariables = Exact<{
+  password: Scalars["String"]["input"];
+  passwordConfirmation: Scalars["String"]["input"];
+  resetToken: Scalars["String"]["input"];
+}>;
+
+export type ResetPasswordMutation = {
+  __typename?: "RootMutationType";
+  resetPassword?: {
+    __typename?: "PasswordResetResult";
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+    user?: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      firstName?: string | null;
+      lastName?: string | null;
+      admin?: boolean | null;
+    } | null;
+  } | null;
+};
+
+export type SignInWithPasswordMutationVariables = Exact<{
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+}>;
+
+export type SignInWithPasswordMutation = {
+  __typename?: "RootMutationType";
+  signInWithPassword?: {
+    __typename?: "SignInWithPasswordResult";
+    user?: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      admin?: boolean | null;
+      firstName?: string | null;
+      lastName?: string | null;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      message?: string | null;
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
 };
 
 export type SubmitDetectionMutationVariables = Exact<{
@@ -579,6 +782,20 @@ export type CandidateQuery = {
       playerOffset: number;
       timestamp: Date;
     }>;
+  } | null;
+};
+
+export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetCurrentUserQuery = {
+  __typename?: "RootQueryType";
+  currentUser?: {
+    __typename?: "User";
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    email: string;
+    admin?: boolean | null;
   } | null;
 };
 
@@ -661,6 +878,216 @@ export type FeedsQuery = {
   }>;
 };
 
+export const RegisterWithPasswordDocument = `
+    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $password: String!, $passwordConfirmation: String!) {
+  registerWithPassword(
+    input: {email: $email, password: $password, passwordConfirmation: $passwordConfirmation, firstName: $firstName, lastName: $lastName}
+  ) {
+    result {
+      id
+      email
+      admin
+      firstName
+      lastName
+    }
+    errors {
+      message
+      code
+      fields
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useRegisterWithPasswordMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    RegisterWithPasswordMutation,
+    TError,
+    RegisterWithPasswordMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    RegisterWithPasswordMutation,
+    TError,
+    RegisterWithPasswordMutationVariables,
+    TContext
+  >(
+    ["registerWithPassword"],
+    (variables?: RegisterWithPasswordMutationVariables) =>
+      fetcher<
+        RegisterWithPasswordMutation,
+        RegisterWithPasswordMutationVariables
+      >(RegisterWithPasswordDocument, variables)(),
+    options,
+  );
+useRegisterWithPasswordMutation.getKey = () => ["registerWithPassword"];
+
+useRegisterWithPasswordMutation.fetcher = (
+  variables: RegisterWithPasswordMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<RegisterWithPasswordMutation, RegisterWithPasswordMutationVariables>(
+    RegisterWithPasswordDocument,
+    variables,
+    options,
+  );
+export const RequestPasswordResetDocument = `
+    mutation requestPasswordReset($email: String!) {
+  requestPasswordReset(input: {email: $email})
+}
+    `;
+export const useRequestPasswordResetMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    RequestPasswordResetMutation,
+    TError,
+    RequestPasswordResetMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    RequestPasswordResetMutation,
+    TError,
+    RequestPasswordResetMutationVariables,
+    TContext
+  >(
+    ["requestPasswordReset"],
+    (variables?: RequestPasswordResetMutationVariables) =>
+      fetcher<
+        RequestPasswordResetMutation,
+        RequestPasswordResetMutationVariables
+      >(RequestPasswordResetDocument, variables)(),
+    options,
+  );
+useRequestPasswordResetMutation.getKey = () => ["requestPasswordReset"];
+
+useRequestPasswordResetMutation.fetcher = (
+  variables: RequestPasswordResetMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<RequestPasswordResetMutation, RequestPasswordResetMutationVariables>(
+    RequestPasswordResetDocument,
+    variables,
+    options,
+  );
+export const ResetPasswordDocument = `
+    mutation resetPassword($password: String!, $passwordConfirmation: String!, $resetToken: String!) {
+  resetPassword(
+    input: {password: $password, passwordConfirmation: $passwordConfirmation, resetToken: $resetToken}
+  ) {
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+    user {
+      id
+      email
+      firstName
+      lastName
+      admin
+    }
+  }
+}
+    `;
+export const useResetPasswordMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    ResetPasswordMutation,
+    TError,
+    ResetPasswordMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    ResetPasswordMutation,
+    TError,
+    ResetPasswordMutationVariables,
+    TContext
+  >(
+    ["resetPassword"],
+    (variables?: ResetPasswordMutationVariables) =>
+      fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
+        ResetPasswordDocument,
+        variables,
+      )(),
+    options,
+  );
+useResetPasswordMutation.getKey = () => ["resetPassword"];
+
+useResetPasswordMutation.fetcher = (
+  variables: ResetPasswordMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
+    ResetPasswordDocument,
+    variables,
+    options,
+  );
+export const SignInWithPasswordDocument = `
+    mutation signInWithPassword($email: String!, $password: String!) {
+  signInWithPassword(input: {email: $email, password: $password}) {
+    user {
+      id
+      email
+      admin
+      firstName
+      lastName
+    }
+    errors {
+      message
+      code
+      fields
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useSignInWithPasswordMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    SignInWithPasswordMutation,
+    TError,
+    SignInWithPasswordMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    SignInWithPasswordMutation,
+    TError,
+    SignInWithPasswordMutationVariables,
+    TContext
+  >(
+    ["signInWithPassword"],
+    (variables?: SignInWithPasswordMutationVariables) =>
+      fetcher<SignInWithPasswordMutation, SignInWithPasswordMutationVariables>(
+        SignInWithPasswordDocument,
+        variables,
+      )(),
+    options,
+  );
+useSignInWithPasswordMutation.getKey = () => ["signInWithPassword"];
+
+useSignInWithPasswordMutation.fetcher = (
+  variables: SignInWithPasswordMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SignInWithPasswordMutation, SignInWithPasswordMutationVariables>(
+    SignInWithPasswordDocument,
+    variables,
+    options,
+  );
 export const SubmitDetectionDocument = `
     mutation submitDetection($feedId: String!, $playlistTimestamp: Int!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int, $category: DetectionCategory!) {
   submitDetection(
@@ -701,10 +1128,12 @@ useSubmitDetectionMutation.getKey = () => ["submitDetection"];
 
 useSubmitDetectionMutation.fetcher = (
   variables: SubmitDetectionMutationVariables,
+  options?: RequestInit["headers"],
 ) =>
   fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
     SubmitDetectionDocument,
     variables,
+    options,
   );
 export const CandidateDocument = `
     query candidate($id: ID!) {
@@ -749,10 +1178,55 @@ useCandidateQuery.getKey = (variables: CandidateQueryVariables) => [
   "candidate",
   variables,
 ];
-useCandidateQuery.fetcher = (variables: CandidateQueryVariables) =>
+useCandidateQuery.fetcher = (
+  variables: CandidateQueryVariables,
+  options?: RequestInit["headers"],
+) =>
   fetcher<CandidateQuery, CandidateQueryVariables>(
     CandidateDocument,
     variables,
+    options,
+  );
+export const GetCurrentUserDocument = `
+    query getCurrentUser {
+  currentUser {
+    id
+    firstName
+    lastName
+    email
+    admin
+  }
+}
+    `;
+export const useGetCurrentUserQuery = <
+  TData = GetCurrentUserQuery,
+  TError = unknown,
+>(
+  variables?: GetCurrentUserQueryVariables,
+  options?: UseQueryOptions<GetCurrentUserQuery, TError, TData>,
+) =>
+  useQuery<GetCurrentUserQuery, TError, TData>(
+    variables === undefined
+      ? ["getCurrentUser"]
+      : ["getCurrentUser", variables],
+    fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(
+      GetCurrentUserDocument,
+      variables,
+    ),
+    options,
+  );
+useGetCurrentUserQuery.document = GetCurrentUserDocument;
+
+useGetCurrentUserQuery.getKey = (variables?: GetCurrentUserQueryVariables) =>
+  variables === undefined ? ["getCurrentUser"] : ["getCurrentUser", variables];
+useGetCurrentUserQuery.fetcher = (
+  variables?: GetCurrentUserQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(
+    GetCurrentUserDocument,
+    variables,
+    options,
   );
 export const FeedDocument = `
     query feed($slug: String!) {
@@ -784,8 +1258,10 @@ export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
 useFeedQuery.document = FeedDocument;
 
 useFeedQuery.getKey = (variables: FeedQueryVariables) => ["feed", variables];
-useFeedQuery.fetcher = (variables: FeedQueryVariables) =>
-  fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables);
+useFeedQuery.fetcher = (
+  variables: FeedQueryVariables,
+  options?: RequestInit["headers"],
+) => fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables, options);
 export const CandidatesDocument = `
     query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {
   candidates(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
@@ -831,10 +1307,14 @@ useCandidatesQuery.document = CandidatesDocument;
 
 useCandidatesQuery.getKey = (variables?: CandidatesQueryVariables) =>
   variables === undefined ? ["candidates"] : ["candidates", variables];
-useCandidatesQuery.fetcher = (variables?: CandidatesQueryVariables) =>
+useCandidatesQuery.fetcher = (
+  variables?: CandidatesQueryVariables,
+  options?: RequestInit["headers"],
+) =>
   fetcher<CandidatesQuery, CandidatesQueryVariables>(
     CandidatesDocument,
     variables,
+    options,
   );
 export const FeedsDocument = `
     query feeds {
@@ -866,5 +1346,8 @@ useFeedsQuery.document = FeedsDocument;
 
 useFeedsQuery.getKey = (variables?: FeedsQueryVariables) =>
   variables === undefined ? ["feeds"] : ["feeds", variables];
-useFeedsQuery.fetcher = (variables?: FeedsQueryVariables) =>
-  fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables);
+useFeedsQuery.fetcher = (
+  variables?: FeedsQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables, options);

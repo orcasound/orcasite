@@ -33,7 +33,6 @@ defmodule OrcasiteWeb.Router do
   end
 
   pipeline :require_admin do
-    plug :check_authed
     plug :check_admin_path
   end
 
@@ -52,6 +51,7 @@ defmodule OrcasiteWeb.Router do
     plug(:parsers)
     plug :fetch_session
     plug :load_from_session
+    plug :set_current_user_as_actor
     plug AshGraphql.Plug
   end
 
@@ -74,7 +74,11 @@ defmodule OrcasiteWeb.Router do
   scope "/graphql" do
     pipe_through(:graphql)
 
-    forward("/", Absinthe.Plug, schema: OrcasiteWeb.Schema, json_codec: Jason)
+    forward("/", Absinthe.Plug,
+      schema: OrcasiteWeb.Schema,
+      json_codec: Jason,
+      before_send: {__MODULE__, :absinthe_before_send}
+    )
   end
 
   # For the GraphiQL interactive interface, a must-have for happy frontend devs.
@@ -95,8 +99,27 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
+    pipe_through :browser
+
+    reset_route path: "/admin/password-reset",
+                overrides: [
+                  OrcasiteWeb.AuthOverrides,
+                  AshAuthentication.Phoenix.Overrides.Default
+                ]
+
+    auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController, path: "/admin"
+  end
+
+  scope "/" do
     pipe_through [:browser, :require_admin]
     live_dashboard "/admin/dashboard", metrics: OrcasiteWeb.Telemetry
+
+    sign_in_route(
+      path: "/admin/sign-in",
+      overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+    )
+
+    sign_out_route OrcasiteWeb.AuthController, "/admin/sign-out"
     ash_admin "/admin"
   end
 
@@ -113,27 +136,11 @@ defmodule OrcasiteWeb.Router do
   end
 
   scope "/" do
-    pipe_through :browser
+    pipe_through(:nextjs)
 
-    sign_in_route(
-      overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
-    )
-
-    reset_route overrides: [
-                  OrcasiteWeb.AuthOverrides,
-                  AshAuthentication.Phoenix.Overrides.Default
-                ]
-
-    sign_out_route OrcasiteWeb.AuthController
-    auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController
-  end
-
-  scope "/" do
     if Mix.env() == :dev do
-      pipe_through(:nextjs)
       get("/*page", OrcasiteWeb.PageController, :index)
     else
-      pipe_through(:nextjs)
       ui_port = System.get_env("UI_PORT") || "3000"
 
       forward("/", ReverseProxyPlug,
@@ -144,15 +151,7 @@ defmodule OrcasiteWeb.Router do
   end
 
   def log_reverse_proxy_error(error) do
-    Logger.warn("ReverseProxyPlug network error: #{inspect(error)}")
-  end
-
-  defp check_authed(conn, _opts) do
-    conn
-    |> case do
-      %{assigns: %{current_user: user}} when not is_nil(user) -> conn
-      _ -> Phoenix.Controller.redirect(conn, to: "/sign-in")
-    end
+    Logger.warning("ReverseProxyPlug network error: #{inspect(error)}")
   end
 
   defp check_admin_path(conn, _opts) do
@@ -163,20 +162,38 @@ defmodule OrcasiteWeb.Router do
       %{assigns: %{current_user: %{admin: true}}, request_path: "/admin" <> _} ->
         conn
 
+      %{request_path: "/admin/sign-in"} ->
+        conn
+
       %{request_path: "/admin" <> _} ->
-        Phoenix.Controller.redirect(conn, to: "/sign-in")
+        Phoenix.Controller.redirect(conn, to: "/admin/sign-in")
 
       _ ->
         conn
     end
   end
 
-  defp set_current_user_as_actor(%{assigns: %{current_user: actor}} = conn, _opts) do
+  def absinthe_before_send(conn, %Absinthe.Blueprint{} = blueprint) do
+    if user = blueprint.execution.context[:current_user] do
+      IO.inspect(user, label: "Setting current user")
+
+      conn
+      |> assign(:current_user, user)
+      |> AshAuthentication.Plug.Helpers.store_in_session(user)
+      |> AshAuthentication.Plug.Helpers.set_actor(:user)
+    else
+      conn
+    end
+  end
+
+  def absinthe_before_send(conn, _) do
     conn
-    |> update_in([Access.key!(:assigns)], &Map.drop(&1, [:current_user]))
-    |> Ash.PlugHelpers.set_actor(actor)
+  end
+
+  defp set_current_user_as_actor(%{assigns: %{current_user: _actor}} = conn, _opts) do
+    conn
+    |> AshAuthentication.Plug.Helpers.set_actor(:user)
   end
 
   defp set_current_user_as_actor(conn, _opts), do: conn
-
 end

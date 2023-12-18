@@ -11,21 +11,12 @@ const config: CodegenConfig = {
   generates: {
     "./src/graphql/generated/index.ts": {
       plugins: [
-        {
-          add: {
-            content:
-              "import { endpointUrl, fetchParams } from '@/graphql/client';",
-          },
-        },
         "typescript",
         "typescript-operations",
         "typescript-react-query",
       ],
       config: {
-        fetcher: {
-          endpoint: "endpointUrl",
-          fetchParams: "fetchParams",
-        },
+        fetcher: "@/graphql/client#fetcher",
         exposeDocument: true,
         exposeFetcher: true,
         exposeQueryKeys: true,

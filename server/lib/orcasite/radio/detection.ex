@@ -1,7 +1,8 @@
 defmodule Orcasite.Radio.Detection do
   use Ash.Resource,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    authorizers: [Ash.Policy.Authorizer]
 
   alias Orcasite.Radio.{Feed, Candidate}
 
@@ -47,6 +48,20 @@ defmodule Orcasite.Radio.Detection do
   relationships do
     belongs_to :candidate, Candidate
     belongs_to :feed, Feed
+  end
+
+  policies do
+    bypass actor_attribute_equals(:admin, true) do
+      authorize_if always()
+    end
+
+    policy action_type(:read) do
+      authorize_if always()
+    end
+
+    policy action_type(:create) do
+      authorize_if always()
+    end
   end
 
   actions do

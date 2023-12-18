@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   Modal,
   Paper,
   Table,
@@ -19,7 +18,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import DetectionsTable from "@/components/DetectionsTable";
-import Header from "@/components/Header";
+import { getReportsLayout } from "@/components/layouts/ReportsLayout";
 import { CandidatesQuery, useCandidatesQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
@@ -86,144 +85,125 @@ const DetectionsPage: NextPageWithLayout = () => {
       </Head>
 
       <main>
-        <Box
-          sx={{
-            // use `dvh` for dynamic viewport height to handle mobile browser weirdness
-            // but fallback to `vh` for browsers that don't support `dvh`
-            // `&` is a workaround because sx prop can't have identical keys
-            "&": {
-              height: "100dvh",
-            },
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Header />
-          <Box sx={{ flexGrow: 1, display: "flex" }}>
-            <Container>
-              <h1>Reports</h1>
+        <h1>Reports</h1>
 
-              <Paper elevation={1}>
-                <Modal
-                  open={detectionModalOpen}
-                  onClose={() => {
-                    setDetectionModalOpen(false);
-                    router.back();
-                  }}
-                  className="p-4"
-                >
-                  <Box p={4}>
-                    <Paper>
-                      <Box p={5}>
-                        <Typography variant="h4">Detections</Typography>
-                        <Typography variant="body2">
-                          Candidate {selectedCandidate?.id}
-                        </Typography>
-                        {selectedCandidate && (
-                          <DetectionsTable
-                            detections={selectedCandidate.detections}
-                            feed={selectedCandidate.feed}
-                            candidate={selectedCandidate}
-                          />
-                        )}
-                      </Box>
-                    </Paper>
-                  </Box>
-                </Modal>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>ID</TableCell>
-                      <TableCell>Node</TableCell>
-                      <TableCell align="right">Detections</TableCell>
-                      <TableCell align="right">Timestamp</TableCell>
-                      <TableCell>Categories</TableCell>
-                      <TableCell>Descriptions</TableCell>
-                      <TableCell align="center">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {candidates.map((candidate) => (
-                      <TableRow key={candidate.id} hover={true}>
-                        <TableCell>{candidate.id}</TableCell>
-                        <TableCell sx={{ whiteSpace: "nowrap" }}>
-                          {candidate.feed.slug}
-                        </TableCell>
-                        <TableCell align="right">
-                          {candidate.detectionCount}
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          title={candidate.minTime.toString()}
-                          sx={{ whiteSpace: "nowrap" }}
-                        >
-                          {formatTimestamp(candidate.minTime)}
-                        </TableCell>
-                        <TableCell>
-                          {Object.entries(getCategoryCounts(candidate))
-                            .map(
-                              ([category, count]) =>
-                                `${category.toLowerCase()} [${count}]`,
-                            )
-                            .join(", ")}{" "}
-                        </TableCell>
-                        <TableCell title={candidate.minTime.toString()}>
-                          {candidate.detections
-                            .map((d) => d.description)
-                            .filter(
-                              (d) => typeof d !== "undefined" && d !== null,
-                            )
-                            .slice(0, 3)
-                            .join(", ")}
-                        </TableCell>
-                        <TableCell align="center">
-                          {/* <Button
-                            onClick={() => {
-                              setDetectionModalOpen(true);
-                              setSelectedCandidate(candidate);
-                            }}
-                          >
-                            View
-                          </Button> */}
-                          <Link
-                            href={`/reports/?candidateId=${candidate.id}`}
-                            as={`/reports/${candidate.id}`}
-                            scroll={false}
-                            shallow={true}
-                          >
-                            <Button>View</Button>
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                  {candidatesQuery.isSuccess && (
-                    <TableFooter>
-                      <TableRow>
-                        <TablePagination
-                          count={candidatesQuery.data?.candidates?.count || 0}
-                          page={page}
-                          rowsPerPage={rowsPerPage}
-                          onPageChange={(e, pg) => {
-                            setPage(pg);
-                          }}
-                          onRowsPerPageChange={(e) => {
-                            setRowsPerPage(Number(e.target.value));
-                          }}
-                          rowsPerPageOptions={[10, 50, 100, 1000]}
-                        />
-                      </TableRow>
-                    </TableFooter>
+        <Paper elevation={1}>
+          <Modal
+            open={detectionModalOpen}
+            onClose={() => {
+              setDetectionModalOpen(false);
+              router.back();
+            }}
+            className="p-4"
+          >
+            <Box p={4}>
+              <Paper>
+                <Box p={5}>
+                  <Typography variant="h4">Detections</Typography>
+                  <Typography variant="body2">
+                    Candidate {selectedCandidate?.id}
+                  </Typography>
+                  {selectedCandidate && (
+                    <DetectionsTable
+                      detections={selectedCandidate.detections}
+                      feed={selectedCandidate.feed}
+                      candidate={selectedCandidate}
+                    />
                   )}
-                </Table>
+                </Box>
               </Paper>
-            </Container>
-          </Box>
-        </Box>
+            </Box>
+          </Modal>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Node</TableCell>
+                <TableCell align="right">Detections</TableCell>
+                <TableCell align="right">Timestamp</TableCell>
+                <TableCell>Categories</TableCell>
+                <TableCell>Descriptions</TableCell>
+                <TableCell align="center">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {candidates.map((candidate) => (
+                <TableRow key={candidate.id} hover={true}>
+                  <TableCell>{candidate.id}</TableCell>
+                  <TableCell sx={{ whiteSpace: "nowrap" }}>
+                    {candidate.feed.slug}
+                  </TableCell>
+                  <TableCell align="right">
+                    {candidate.detectionCount}
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    title={candidate.minTime.toString()}
+                    sx={{ whiteSpace: "nowrap" }}
+                  >
+                    {formatTimestamp(candidate.minTime)}
+                  </TableCell>
+                  <TableCell>
+                    {Object.entries(getCategoryCounts(candidate))
+                      .map(
+                        ([category, count]) =>
+                          `${category.toLowerCase()} [${count}]`,
+                      )
+                      .join(", ")}{" "}
+                  </TableCell>
+                  <TableCell title={candidate.minTime.toString()}>
+                    {candidate.detections
+                      .map((d) => d.description)
+                      .filter((d) => typeof d !== "undefined" && d !== null)
+                      .slice(0, 3)
+                      .join(", ")}
+                  </TableCell>
+                  <TableCell align="center">
+                    {/* <Button
+                          onClick={() => {
+                            setDetectionModalOpen(true);
+                            setSelectedCandidate(candidate);
+                          }}
+                        >
+                          View
+                        </Button> */}
+                    <Link
+                      href={`/reports/?candidateId=${candidate.id}`}
+                      as={`/reports/${candidate.id}`}
+                      scroll={false}
+                      shallow={true}
+                    >
+                      <Button>View</Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            {candidatesQuery.isSuccess && (
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    count={candidatesQuery.data?.candidates?.count || 0}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={(e, pg) => {
+                      setPage(pg);
+                    }}
+                    onRowsPerPageChange={(e) => {
+                      setRowsPerPage(Number(e.target.value));
+                    }}
+                    rowsPerPageOptions={[10, 50, 100, 1000]}
+                  />
+                </TableRow>
+              </TableFooter>
+            )}
+          </Table>
+        </Paper>
       </main>
     </div>
   );
 };
+
+DetectionsPage.getLayout = getReportsLayout;
 
 export default DetectionsPage;

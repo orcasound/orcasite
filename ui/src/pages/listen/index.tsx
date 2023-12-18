@@ -3,7 +3,7 @@ import { dehydrate, QueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 
 import FeedCard from "@/components/FeedCard";
-import { getMapLayout } from "@/components/MapLayout";
+import { getMapLayout } from "@/components/layouts/MapLayout";
 import { useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 

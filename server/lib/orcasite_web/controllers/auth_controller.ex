@@ -11,7 +11,14 @@ defmodule OrcasiteWeb.AuthController do
   end
 
   def success(conn, _activity, user, _token) do
-    return_to = get_session(conn, :return_to) || ~p"/"
+    return_to =
+      case user do
+        %{admin: true} ->
+          ~p"/admin"
+
+        _ ->
+          get_session(conn, :return_to) || ~p"/"
+      end
 
     conn
     |> delete_session(:return_to)

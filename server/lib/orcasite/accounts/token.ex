@@ -1,7 +1,8 @@
 defmodule Orcasite.Accounts.Token do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshAuthentication.TokenResource]
+    extensions: [AshAuthentication.TokenResource],
+    authorizers: [Ash.Policy.Authorizer]
 
   token do
     api Orcasite.Accounts
@@ -12,10 +13,9 @@ defmodule Orcasite.Accounts.Token do
     repo Orcasite.Repo
   end
 
-  # If using policies, add the following bypass:
-  # policies do
-  #   bypass AshAuthentication.Checks.AshAuthenticationInteraction do
-  #     authorize_if always()
-  #   end
-  # end
+  policies do
+    bypass AshAuthentication.Checks.AshAuthenticationInteraction do
+      authorize_if always()
+    end
+  end
 end
