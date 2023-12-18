@@ -1,4 +1,4 @@
-mutation notifyConfirmedCandidate($candidateId: ID!, $message: String!) {
+mutation notifyConfirmedCandidate($candidateId: String!, $message: String!) {
   notifyConfirmedCandidate(
     input: { candidateId: $candidateId, message: $message }
   ) {

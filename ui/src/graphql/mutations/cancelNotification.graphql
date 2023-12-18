@@ -1,0 +1,17 @@
+mutation cancelNotification($id: ID!) {
+  cancelNotification(id: $id) {
+    result {
+      id
+      meta
+      active
+      insertedAt
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}

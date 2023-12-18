@@ -1,0 +1,12 @@
+query notificationsForCandidate(
+  $candidateId: String!
+  $eventType: NotificationEventType
+) {
+  notificationsForCandidate(candidateId: $candidateId, eventType: $eventType) {
+    id
+    eventType
+    meta
+    active
+    insertedAt
+  }
+}

@@ -25,7 +25,7 @@ defmodule Orcasite.Notifications.Notification do
       constraints one_of: Event.types()
     end
 
-    create_timestamp :inserted_at
+    create_timestamp :inserted_at, private?: false, writable?: false
     update_timestamp :updated_at
   end
 
@@ -62,6 +62,7 @@ defmodule Orcasite.Notifications.Notification do
     end
 
     read :for_candidate do
+      prepare build(sort: [inserted_at: :desc])
       argument :candidate_id, :string, allow_nil?: false
 
       argument :event_type, :atom do
@@ -105,7 +106,7 @@ defmodule Orcasite.Notifications.Notification do
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       accept [:candidate_id, :message]
-      argument :candidate_id, :uuid, allow_nil?: false
+      argument :candidate_id, :string, allow_nil?: false
 
       argument :message, :string do
         description """
@@ -119,7 +120,9 @@ defmodule Orcasite.Notifications.Notification do
       change set_attribute(:event_type, :confirmed_candidate)
 
       change fn changeset, _context ->
-        candidate_id = Ash.Changeset.get_argument(changeset, :candidate_id)
+        candidate_id =
+          Ash.Changeset.get_argument(changeset, :candidate_id)
+          |> IO.inspect(label: "candidate id")
 
         candidate =
           Orcasite.Radio.Candidate
@@ -227,6 +230,7 @@ defmodule Orcasite.Notifications.Notification do
 
     mutations do
       create :notify_confirmed_candidate, :notify_confirmed_candidate
+      update :cancel_notification, :cancel_notification
     end
   end
 end
