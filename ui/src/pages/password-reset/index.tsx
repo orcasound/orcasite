@@ -31,9 +31,7 @@ const PasswordResetRequestPage: NextPageWithLayout = () => {
 
       <main>
         <ResetPasswordRequestForm
-          onSubmit={(email) =>
-            submitPasswordResetRequest.mutate(email)
-          }
+          onSubmit={({ email }) => submitPasswordResetRequest.mutate({ email })}
           message={message}
         />
       </main>
