@@ -5,5 +5,6 @@ query getCurrentUser {
     lastName
     email
     admin
+    moderator
   }
 }

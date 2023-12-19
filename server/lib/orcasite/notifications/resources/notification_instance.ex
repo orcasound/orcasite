@@ -9,7 +9,7 @@ defmodule Orcasite.Notifications.NotificationInstance do
   attributes do
     uuid_primary_key :id
 
-    attribute :meta, :map
+    attribute :meta, :map, default: %{}
 
     attribute :channel, :atom do
       constraints one_of: [:email]

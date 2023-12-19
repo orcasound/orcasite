@@ -12,6 +12,7 @@ query candidates(
       minTime
       maxTime
       detectionCount
+      visible
       feed {
         id
         slug
@@ -26,6 +27,7 @@ query candidates(
         playlistTimestamp
         playerOffset
         timestamp
+        visible
       }
     }
   }

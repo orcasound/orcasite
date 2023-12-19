@@ -5,10 +5,13 @@ defmodule Orcasite.Notifications.Subscriber do
 
   alias Orcasite.Notifications.{Subscription}
 
-  resource do
-    description """
-    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
-    """
+  postgres do
+    table "subscribers"
+    repo Orcasite.Repo
+
+    custom_indexes do
+      index [:meta], using: "gin"
+    end
   end
 
   identities do
@@ -16,24 +19,54 @@ defmodule Orcasite.Notifications.Subscriber do
     identity :id, [:id]
   end
 
-  code_interface do
-    define_for Orcasite.Notifications
-    define :by_email, args: [:email]
+  attributes do
+    uuid_primary_key :id
+
+    attribute :name, :string
+
+    attribute :subscriber_type, :atom do
+      constraints one_of: [:individual, :organization]
+    end
+
+    attribute :meta, :map, default: %{}
+
+    create_timestamp :inserted_at
+    update_timestamp :updated_at
   end
 
-  validations do
-    validate fn changeset ->
-      # Check if email subscriber already exists
-      with email when is_binary(email) <- changeset |> Ash.Changeset.get_argument(:email),
-           %{action_type: :create} <- changeset,
-           {:get, {:error, _}} <- {:get, Orcasite.Notifications.Subscriber.by_email(email)} do
-        :ok
-      else
-        {:get, other} ->
-          {:error, [field: :email, message: "email already exists"]}
+  relationships do
+    has_many :subscriptions, Subscription
+  end
 
-        err ->
+  authentication do
+    api Orcasite.Notifications
+
+    strategies do
+      magic_link :manage_subscriptions do
+        identity_field :id
+
+        single_use_token? false
+        # 14 days (in minutes)
+        token_lifetime 1_209_600
+
+        sender fn _subscriber, _token, _opts ->
+          # IO.inspect({subscriber, token},
+          #   label:
+          #     "subscriber/token (server/lib/orcasite/notifications/resources/subscriber.ex:#{__ENV__.line})"
+          # )
+
+          # Orcasite.Emails.deliver_magic_link(user, token)
           :ok
+        end
+      end
+    end
+
+    tokens do
+      enabled? true
+      token_resource Orcasite.Notifications.Token
+
+      signing_secret fn _, _ ->
+        {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
   end
@@ -107,61 +140,15 @@ defmodule Orcasite.Notifications.Subscriber do
     end
   end
 
-  postgres do
-    table "subscribers"
-    repo Orcasite.Repo
+  code_interface do
+    define_for Orcasite.Notifications
+    define :by_email, args: [:email]
   end
 
-  authentication do
-    api Orcasite.Notifications
-
-    strategies do
-      magic_link :manage_subscriptions do
-        identity_field :id
-
-        single_use_token? false
-        # 14 days (in minutes)
-        token_lifetime 1_209_600
-
-        sender fn _subscriber, _token, _opts ->
-          # IO.inspect({subscriber, token},
-          #   label:
-          #     "subscriber/token (server/lib/orcasite/notifications/resources/subscriber.ex:#{__ENV__.line})"
-          # )
-
-          # Orcasite.Emails.deliver_magic_link(user, token)
-          :ok
-        end
-      end
-    end
-
-    tokens do
-      enabled? true
-      token_resource Orcasite.Notifications.Token
-
-      signing_secret fn _, _ ->
-        {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
-      end
-    end
-  end
-
-  attributes do
-    uuid_primary_key :id
-
-    attribute :name, :string
-
-    attribute :subscriber_type, :atom do
-      constraints one_of: [:individual, :organization]
-    end
-
-    attribute :meta, :map
-
-    create_timestamp :inserted_at
-    update_timestamp :updated_at
-  end
-
-  relationships do
-    has_many :subscriptions, Subscription
+  resource do
+    description """
+    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
+    """
   end
 
   admin do
@@ -171,6 +158,23 @@ defmodule Orcasite.Notifications.Subscriber do
 
     form do
       field :event_type, type: :default
+    end
+  end
+
+  validations do
+    validate fn changeset ->
+      # Check if email subscriber already exists
+      with email when is_binary(email) <- changeset |> Ash.Changeset.get_argument(:email),
+           %{action_type: :create} <- changeset,
+           {:get, {:error, _}} <- {:get, Orcasite.Notifications.Subscriber.by_email(email)} do
+        :ok
+      else
+        {:get, other} ->
+          {:error, [field: :email, message: "email already exists"]}
+
+        err ->
+          :ok
+      end
     end
   end
 
