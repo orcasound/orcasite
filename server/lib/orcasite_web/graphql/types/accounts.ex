@@ -87,6 +87,14 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
 
       middleware(&set_current_user/2)
     end
+
+    field :sign_out, type: :boolean do
+      resolve(fn _, _, _ ->
+        {:ok, true}
+      end)
+
+      middleware(&clear_session/2)
+    end
   end
 
   defp set_current_user(resolution, _) do
@@ -95,5 +103,13 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
         Map.put(ctx, :current_user, user)
       end)
     end
+  end
+
+  defp clear_session(resolution, _) do
+    Map.update!(resolution, :context, fn ctx ->
+      ctx
+      |> Map.put(:current_user, nil)
+      |> Map.put(:clear_session, true)
+    end)
   end
 end
