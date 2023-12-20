@@ -153,6 +153,7 @@ defmodule Orcasite.Notifications.Subscriber do
 
   admin do
     table_columns [:id, :name, :meta, :inserted_at]
+    read_actions [:read, :by_email]
 
     format_fields meta: {Jason, :encode!, []}
 

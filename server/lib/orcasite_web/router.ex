@@ -30,7 +30,6 @@ defmodule OrcasiteWeb.Router do
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug :load_from_session
-    # plug :set_current_user_as_actor
   end
 
   pipeline :require_admin do
@@ -160,7 +159,6 @@ defmodule OrcasiteWeb.Router do
     # Implemented with a conditional here because AshAdmin doesn't take into account the scope for
     # paths in the dashboard
     conn
-    |> IO.inspect(label: "check_admin_path")
     |> case do
       %{assigns: %{current_user: %{admin: true}}, request_path: "/admin" <> _} ->
         conn
