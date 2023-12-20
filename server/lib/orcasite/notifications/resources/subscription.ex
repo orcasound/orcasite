@@ -5,11 +5,9 @@ defmodule Orcasite.Notifications.Subscription do
 
   alias Orcasite.Notifications.{Event, Notification, NotificationInstance, Subscriber}
 
-  resource do
-    description """
-    A subscription - relates a subscriber to a notification type and a channel.
-    (i.e. subscribing to :new_detection via :email)
-    """
+  postgres do
+    table "subscriptions"
+    repo Orcasite.Repo
   end
 
   identities do
@@ -48,6 +46,56 @@ defmodule Orcasite.Notifications.Subscription do
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
+  end
+
+  attributes do
+    uuid_primary_key :id
+
+    attribute :name, :string
+    attribute :meta, :map
+
+    attribute :active, :boolean, default: true
+
+    attribute :event_type, :atom do
+      constraints one_of: Event.types()
+    end
+
+    attribute :last_notified_at, :utc_datetime_usec
+
+    create_timestamp :inserted_at
+    update_timestamp :updated_at
+  end
+
+  relationships do
+    belongs_to :subscriber, Subscriber
+    has_many :notification_instances, NotificationInstance
+
+    many_to_many :notifications, Notification do
+      through NotificationInstance
+      source_attribute_on_join_resource :subscription_id
+      destination_attribute_on_join_resource :notification_id
+    end
+
+    belongs_to :last_notification, Notification
+  end
+
+  code_interface do
+    define_for Orcasite.Notifications
+
+    define :update_last_notification,
+      action: :update_last_notification,
+      args: [:last_notification]
+
+    define :available_for_notification,
+      action: :available_for_notification,
+      args: [:notification_id, :event_type, {:optional, :minutes_ago}]
+  end
+
+  resource do
+    description """
+    A subscription - relates a subscriber to a notification type and a channel.
+    (i.e. subscribing to :new_detection via :email)
+    """
   end
 
   actions do
@@ -126,54 +174,6 @@ defmodule Orcasite.Notifications.Subscription do
     end
   end
 
-  code_interface do
-    define_for Orcasite.Notifications
-
-    define :update_last_notification,
-      action: :update_last_notification,
-      args: [:last_notification]
-
-    define :available_for_notification,
-      action: :available_for_notification,
-      args: [:notification_id, :event_type, {:optional, :minutes_ago}]
-  end
-
-  postgres do
-    table "subscriptions"
-    repo Orcasite.Repo
-  end
-
-  attributes do
-    uuid_primary_key :id
-
-    attribute :name, :string
-    attribute :meta, :map
-
-    attribute :active, :boolean, default: true
-
-    attribute :event_type, :atom do
-      constraints one_of: Event.types()
-    end
-
-    attribute :last_notified_at, :utc_datetime_usec
-
-    create_timestamp :inserted_at
-    update_timestamp :updated_at
-  end
-
-  relationships do
-    belongs_to :subscriber, Subscriber
-    has_many :notification_instances, NotificationInstance
-
-    many_to_many :notifications, Notification do
-      through NotificationInstance
-      source_attribute_on_join_resource :subscription_id
-      destination_attribute_on_join_resource :notification_id
-    end
-
-    belongs_to :last_notification, Notification
-  end
-
   def unsubscribe_token(subscription) do
     strategy = AshAuthentication.Info.strategy!(Orcasite.Notifications.Subscription, :unsubscribe)
     {:ok, token} = AshAuthentication.Strategy.MagicLink.request_token_for(strategy, subscription)
@@ -182,7 +182,7 @@ defmodule Orcasite.Notifications.Subscription do
 
   admin do
     table_columns [:id, :name, :meta, :active, :event_type, :subscriber_id, :inserted_at]
-
+    read_actions [:read, :available_for_notification]
     format_fields meta: {Jason, :encode!, []}
   end
 end
