@@ -4,7 +4,7 @@ defmodule Orcasite.RadioLegacyTest do
   alias Orcasite.RadioLegacy
 
   describe "feeds" do
-    it "works" do
+    test "works" do
       assert true
     end
   end
