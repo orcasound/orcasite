@@ -38,6 +38,11 @@ defmodule Orcasite.Notifications.Subscriber do
     has_many :subscriptions, Subscription
   end
 
+  code_interface do
+    define_for Orcasite.Notifications
+    define :by_email, args: [:email]
+  end
+
   authentication do
     api Orcasite.Notifications
 
@@ -69,6 +74,12 @@ defmodule Orcasite.Notifications.Subscriber do
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
+  end
+
+  resource do
+    description """
+    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
+    """
   end
 
   actions do
@@ -140,27 +151,6 @@ defmodule Orcasite.Notifications.Subscriber do
     end
   end
 
-  code_interface do
-    define_for Orcasite.Notifications
-    define :by_email, args: [:email]
-  end
-
-  resource do
-    description """
-    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
-    """
-  end
-
-  admin do
-    table_columns [:id, :name, :meta, :inserted_at]
-
-    format_fields meta: {Jason, :encode!, []}
-
-    form do
-      field :event_type, type: :default
-    end
-  end
-
   validations do
     validate fn changeset ->
       # Check if email subscriber already exists
@@ -175,6 +165,16 @@ defmodule Orcasite.Notifications.Subscriber do
         err ->
           :ok
       end
+    end
+  end
+
+  admin do
+    table_columns [:id, :name, :meta, :inserted_at]
+    read_actions [:read, :by_email]
+    format_fields meta: {Jason, :encode!, []}
+
+    form do
+      field :event_type, type: :default
     end
   end
 
