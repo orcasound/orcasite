@@ -110,6 +110,8 @@ defmodule Orcasite.Accounts.User do
 
   admin do
     table_columns [:id, :email, :first_name, :last_name, :admin, :inserted_at]
+    actor? true
+    read_actions [:read, :current_user]
   end
 
   graphql do
