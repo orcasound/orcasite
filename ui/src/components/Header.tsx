@@ -124,6 +124,16 @@ function Mobile(props: { window?: () => Window }) {
             flexDirection="column"
             alignItems="center"
           >
+            <IconButton
+                sx={{ 
+                  position : "absolute" ,
+                  marginRight : "45vh" ,
+                  color : "base.contrastText" 
+                }} 
+                onClick={handleMenuToggle}
+            >
+              <Close /> 
+            </IconButton>
             <Box sx={{ my: 2 }}>
               <Image
                 src={wordmark.src}
