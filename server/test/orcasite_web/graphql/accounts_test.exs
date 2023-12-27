@@ -12,17 +12,17 @@ defmodule OrcasiteWeb.AccountsTest do
   @register_mutation """
     mutation registerWithPassword(
       $email: String!,
-      $first_name: String,
-      $last_name: String,
+      $firstName: String,
+      $lastName: String,
       $password: String!,
-      $password_confirmation: String!
+      $passwordConfirmation: String!
     ) {
       registerWithPassword(input: {
         email: $email,
-        firstName: $first_name,
-        lastName: $last_name,
+        firstName: $firstName,
+        lastName: $lastName,
         password: $password,
-        passwordConfirmation: $password_confirmation
+        passwordConfirmation: $passwordConfirmation
       }) {
         errors {
           code
@@ -92,7 +92,7 @@ defmodule OrcasiteWeb.AccountsTest do
     assert %{"data" => _} = json_response(conn, 200)
   end
 
-  test "register new user", %{conn: conn} do
+  test "registers new user", %{conn: conn} do
     conn = register_user(conn, @user_params)
     user_email = @user_params[:email]
 
@@ -100,7 +100,7 @@ defmodule OrcasiteWeb.AccountsTest do
              json_response(conn, 200)
   end
 
-  test "sign in with user", %{conn: conn} do
+  test "signs in with user", %{conn: conn} do
     conn =
       register_user(conn, @user_params)
       |> sign_in_user(@user_params)
@@ -117,7 +117,7 @@ defmodule OrcasiteWeb.AccountsTest do
              json_response(conn, 200)
   end
 
-  test "sign out with user", %{conn: conn} do
+  test "signs out with user", %{conn: conn} do
     conn =
       register_user(conn, @user_params)
       |> sign_in_user(@user_params)
@@ -141,8 +141,11 @@ defmodule OrcasiteWeb.AccountsTest do
              }
            } = json_response(conn, 200)
 
-    conn = post(conn, "/graphql", %{"query" => @sign_out_mutation})
-    conn = post(conn, "/graphql", %{"query" => @current_user_query})
+    conn =
+      conn
+      |> post("/graphql", %{"query" => @sign_out_mutation})
+      |> post("/graphql", %{"query" => @current_user_query})
+
     assert %{"data" => %{"currentUser" => nil}} = json_response(conn, 200)
   end
 
@@ -157,9 +160,9 @@ defmodule OrcasiteWeb.AccountsTest do
       "variables" => %{
         "email" => email,
         "password" => password,
-        "password_confirmation" => password,
-        "first_name" => first_name,
-        "last_name" => last_name
+        "passwordConfirmation" => password,
+        "firstName" => first_name,
+        "lastName" => last_name
       }
     })
   end
