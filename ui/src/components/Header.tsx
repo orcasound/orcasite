@@ -124,17 +124,14 @@ function Mobile(props: { window?: () => Window }) {
             flexDirection="column"
             alignItems="center"
           >
-            <IconButton
-                sx={{ 
-                  position : "absolute" ,
-                  marginRight : "45vh" ,
-                  color : "base.contrastText" 
-                }} 
+            <Box sx={{ my: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <IconButton
+                sx={{ color: 'base.contrastText', position: 'absolute', left: '1%' }}
+                color="inherit"
                 onClick={handleMenuToggle}
-            >
-              <Close /> 
-            </IconButton>
-            <Box sx={{ my: 2 }}>
+              >
+                <Close />
+              </IconButton>
               <Image
                 src={wordmark.src}
                 alt="Orcasound"
