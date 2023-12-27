@@ -1,5 +1,10 @@
-defmodule OrcasiteWeb.AccountsTest do
+defmodule OrcasiteWeb.GraphqlTest.AccountsTest do
   use OrcasiteWeb.ConnCase, async: true
+
+  import OrcasiteWeb.TestSupport.GraphqlHelper,
+    only: [current_user_query: 0, sign_out_mutation: 0]
+
+  import OrcasiteWeb.TestSupport.AuthenticationHelper, only: [register_user: 2, sign_in_user: 2]
 
   @user_params %{
     email: "nonadmin@example.com",
@@ -8,72 +13,6 @@ defmodule OrcasiteWeb.AccountsTest do
     first_name: "Non",
     last_name: "Admin"
   }
-
-  @register_mutation """
-    mutation registerWithPassword(
-      $email: String!,
-      $firstName: String,
-      $lastName: String,
-      $password: String!,
-      $passwordConfirmation: String!
-    ) {
-      registerWithPassword(input: {
-        email: $email,
-        firstName: $firstName,
-        lastName: $lastName,
-        password: $password,
-        passwordConfirmation: $passwordConfirmation
-      }) {
-        errors {
-          code
-          message
-          fields
-        }
-        result {
-          id
-          email
-        }
-      }
-    }
-  """
-
-  @sign_in_mutation """
-    mutation signInWithPassword($email: String!, $password: String!) {
-    signInWithPassword(input: {
-      email: $email,
-      password: $password
-    }) {
-      errors {
-        code
-        message
-        fields
-      }
-      user {
-        id
-        email
-        admin
-        moderator
-      }
-    }
-    }
-  """
-
-  @current_user_query """
-    query getCurrentUser {
-      currentUser {
-        id
-        email
-        admin
-        moderator
-      }
-    }
-  """
-
-  @sign_out_mutation """
-    mutation signOut {
-      signOut
-    }
-  """
 
   test "graphql returns 200", %{conn: conn} do
     conn =
@@ -133,7 +72,7 @@ defmodule OrcasiteWeb.AccountsTest do
            } =
              json_response(conn, 200)
 
-    conn = post(conn, "/graphql", %{"query" => @current_user_query})
+    conn = post(conn, "/graphql", %{"query" => current_user_query()})
 
     assert %{
              "data" => %{
@@ -143,37 +82,9 @@ defmodule OrcasiteWeb.AccountsTest do
 
     conn =
       conn
-      |> post("/graphql", %{"query" => @sign_out_mutation})
-      |> post("/graphql", %{"query" => @current_user_query})
+      |> post("/graphql", %{"query" => sign_out_mutation()})
+      |> post("/graphql", %{"query" => current_user_query()})
 
     assert %{"data" => %{"currentUser" => nil}} = json_response(conn, 200)
-  end
-
-  def register_user(conn, %{
-        email: email,
-        password: password,
-        first_name: first_name,
-        last_name: last_name
-      }) do
-    post(conn, "/graphql", %{
-      "query" => @register_mutation,
-      "variables" => %{
-        "email" => email,
-        "password" => password,
-        "passwordConfirmation" => password,
-        "firstName" => first_name,
-        "lastName" => last_name
-      }
-    })
-  end
-
-  def sign_in_user(conn, %{email: email, password: password}) do
-    post(conn, "/graphql", %{
-      "query" => @sign_in_mutation,
-      "variables" => %{
-        "email" => email,
-        "password" => password
-      }
-    })
   end
 end
