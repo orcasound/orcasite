@@ -10,7 +10,10 @@ defmodule Orcasite.Mixfile do
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      preferred_cli_env: [
+        "test.watch": :test
+      ]
     ]
   end
 
@@ -93,7 +96,9 @@ defmodule Orcasite.Mixfile do
       {:nebulex, "~> 2.5"},
       {:nebulex_redis_adapter, "~> 2.3"},
       {:hammer_backend_redis, "~> 6.1"},
-      {:hammer, "~> 6.0"}
+      {:hammer, "~> 6.0"},
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:ex_unit_notifier, "~> 1.2", only: :test}
     ]
   end
 

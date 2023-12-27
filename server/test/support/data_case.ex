@@ -24,6 +24,7 @@ defmodule Orcasite.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Orcasite.DataCase
+      import Ash.Query
     end
   end
 
