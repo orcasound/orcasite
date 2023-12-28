@@ -11,7 +11,6 @@
 # and so on) as they will fail if something goes wrong.
 #
 require Ash.Query
-require Ash.Query
 
 feeds = [
   %{

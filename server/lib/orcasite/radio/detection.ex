@@ -252,6 +252,12 @@ defmodule Orcasite.Radio.Detection do
     end
   end
 
+  code_interface do
+    define_for Orcasite.Radio
+
+    define :submit_detection
+  end
+
   admin do
     table_columns [
       :id,
