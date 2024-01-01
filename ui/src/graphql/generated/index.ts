@@ -46,6 +46,7 @@ export type Candidate = {
   maxTime: Scalars["DateTime"]["output"];
   minTime: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
+  visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type CandidateDetectionsArgs = {
@@ -80,6 +81,7 @@ export type CandidateFilterInput = {
   minTime?: InputMaybe<CandidateFilterMinTime>;
   not?: InputMaybe<Array<CandidateFilterInput>>;
   or?: InputMaybe<Array<CandidateFilterInput>>;
+  visible?: InputMaybe<CandidateFilterVisible>;
 };
 
 export type CandidateFilterMaxTime = {
@@ -104,11 +106,23 @@ export type CandidateFilterMinTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type CandidateFilterVisible = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type CandidateSortField =
   | "DETECTION_COUNT"
   | "ID"
   | "MAX_TIME"
-  | "MIN_TIME";
+  | "MIN_TIME"
+  | "VISIBLE";
 
 export type CandidateSortInput = {
   field: CandidateSortField;
@@ -128,6 +142,7 @@ export type Detection = {
   sourceIp?: Maybe<Scalars["String"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
+  visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type DetectionCategory = "OTHER" | "VESSEL" | "WHALE";
@@ -172,6 +187,7 @@ export type DetectionFilterInput = {
   playlistTimestamp?: InputMaybe<DetectionFilterPlaylistTimestamp>;
   sourceIp?: InputMaybe<DetectionFilterSourceIp>;
   timestamp?: InputMaybe<DetectionFilterTimestamp>;
+  visible?: InputMaybe<DetectionFilterVisible>;
 };
 
 export type DetectionFilterListenerCount = {
@@ -229,6 +245,17 @@ export type DetectionFilterTimestamp = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type DetectionFilterVisible = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type DetectionSortField =
   | "CATEGORY"
   | "DESCRIPTION"
@@ -237,7 +264,8 @@ export type DetectionSortField =
   | "PLAYER_OFFSET"
   | "PLAYLIST_TIMESTAMP"
   | "SOURCE_IP"
-  | "TIMESTAMP";
+  | "TIMESTAMP"
+  | "VISIBLE";
 
 export type DetectionSortInput = {
   field: DetectionSortField;
@@ -455,6 +483,7 @@ export type RootMutationType = {
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   resetPassword?: Maybe<PasswordResetResult>;
+  setDetectionVisible?: Maybe<SetDetectionVisibleResult>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
   submitDetection?: Maybe<SubmitDetectionResult>;
@@ -470,6 +499,11 @@ export type RootMutationTypeRequestPasswordResetArgs = {
 
 export type RootMutationTypeResetPasswordArgs = {
   input: PasswordResetInput;
+};
+
+export type RootMutationTypeSetDetectionVisibleArgs = {
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+  input?: InputMaybe<SetDetectionVisibleInput>;
 };
 
 export type RootMutationTypeSignInWithPasswordArgs = {
@@ -527,6 +561,19 @@ export type RootQueryTypeFeedsArgs = {
   sort?: InputMaybe<Array<InputMaybe<FeedSortInput>>>;
 };
 
+export type SetDetectionVisibleInput = {
+  visible?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** The result of the :set_detection_visible mutation */
+export type SetDetectionVisibleResult = {
+  __typename?: "SetDetectionVisibleResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Detection>;
+};
+
 export type SignInWithPasswordInput = {
   email: Scalars["String"]["input"];
   password: Scalars["String"]["input"];
@@ -572,6 +619,7 @@ export type User = {
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
+  moderator?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type UserFilterAdmin = {
@@ -625,6 +673,7 @@ export type UserFilterInput = {
   firstName?: InputMaybe<UserFilterFirstName>;
   id?: InputMaybe<UserFilterId>;
   lastName?: InputMaybe<UserFilterLastName>;
+  moderator?: InputMaybe<UserFilterModerator>;
   not?: InputMaybe<Array<UserFilterInput>>;
   or?: InputMaybe<Array<UserFilterInput>>;
 };
@@ -638,6 +687,17 @@ export type UserFilterLastName = {
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterModerator = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type RegisterWithPasswordMutationVariables = Exact<{
@@ -709,6 +769,23 @@ export type ResetPasswordMutation = {
   } | null;
 };
 
+export type SetDetectionVisibleMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  visible: Scalars["Boolean"]["input"];
+}>;
+
+export type SetDetectionVisibleMutation = {
+  __typename?: "RootMutationType";
+  setDetectionVisible?: {
+    __typename?: "SetDetectionVisibleResult";
+    result?: {
+      __typename?: "Detection";
+      id: string;
+      visible?: boolean | null;
+    } | null;
+  } | null;
+};
+
 export type SignInWithPasswordMutationVariables = Exact<{
   email: Scalars["String"]["input"];
   password: Scalars["String"]["input"];
@@ -773,6 +850,7 @@ export type CandidateQuery = {
     minTime: Date;
     maxTime: Date;
     detectionCount?: number | null;
+    visible?: boolean | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -789,6 +867,7 @@ export type CandidateQuery = {
       playlistTimestamp: number;
       playerOffset: number;
       timestamp: Date;
+      visible?: boolean | null;
     }>;
   } | null;
 };
@@ -804,6 +883,7 @@ export type GetCurrentUserQuery = {
     lastName?: string | null;
     email: string;
     admin?: boolean | null;
+    moderator?: boolean | null;
   } | null;
 };
 
@@ -848,6 +928,7 @@ export type CandidatesQuery = {
       minTime: Date;
       maxTime: Date;
       detectionCount?: number | null;
+      visible?: boolean | null;
       feed: {
         __typename?: "Feed";
         id: string;
@@ -864,6 +945,7 @@ export type CandidatesQuery = {
         playlistTimestamp: number;
         playerOffset: number;
         timestamp: Date;
+        visible?: boolean | null;
       }>;
     }> | null;
   } | null;
@@ -1040,6 +1122,52 @@ useResetPasswordMutation.fetcher = (
     variables,
     options,
   );
+export const SetDetectionVisibleDocument = `
+    mutation setDetectionVisible($id: ID!, $visible: Boolean!) {
+  setDetectionVisible(id: $id, input: {visible: $visible}) {
+    result {
+      id
+      visible
+    }
+  }
+}
+    `;
+export const useSetDetectionVisibleMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    SetDetectionVisibleMutation,
+    TError,
+    SetDetectionVisibleMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    SetDetectionVisibleMutation,
+    TError,
+    SetDetectionVisibleMutationVariables,
+    TContext
+  >(
+    ["setDetectionVisible"],
+    (variables?: SetDetectionVisibleMutationVariables) =>
+      fetcher<
+        SetDetectionVisibleMutation,
+        SetDetectionVisibleMutationVariables
+      >(SetDetectionVisibleDocument, variables)(),
+    options,
+  );
+useSetDetectionVisibleMutation.getKey = () => ["setDetectionVisible"];
+
+useSetDetectionVisibleMutation.fetcher = (
+  variables: SetDetectionVisibleMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SetDetectionVisibleMutation, SetDetectionVisibleMutationVariables>(
+    SetDetectionVisibleDocument,
+    variables,
+    options,
+  );
 export const SignInWithPasswordDocument = `
     mutation signInWithPassword($email: String!, $password: String!) {
   signInWithPassword(input: {email: $email, password: $password}) {
@@ -1183,6 +1311,7 @@ export const CandidateDocument = `
     minTime
     maxTime
     detectionCount
+    visible
     feed {
       id
       slug
@@ -1197,6 +1326,7 @@ export const CandidateDocument = `
       playlistTimestamp
       playerOffset
       timestamp
+      visible
     }
   }
 }
@@ -1236,6 +1366,7 @@ export const GetCurrentUserDocument = `
     lastName
     email
     admin
+    moderator
   }
 }
     `;
@@ -1313,6 +1444,7 @@ export const CandidatesDocument = `
       minTime
       maxTime
       detectionCount
+      visible
       feed {
         id
         slug
@@ -1327,6 +1459,7 @@ export const CandidatesDocument = `
         playlistTimestamp
         playerOffset
         timestamp
+        visible
       }
     }
   }

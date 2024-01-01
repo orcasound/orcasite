@@ -1,0 +1,8 @@
+mutation setDetectionVisible($id: ID!, $visible: Boolean!) {
+  setDetectionVisible(id: $id, input: { visible: $visible }) {
+    result {
+      id
+      visible
+    }
+  }
+}
