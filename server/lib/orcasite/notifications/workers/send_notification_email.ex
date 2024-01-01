@@ -6,24 +6,29 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
   @impl Oban.Worker
   def perform(%Oban.Job{
-        args: %{"notification_instance_id" => notification_instance_id} = _args
+        args:
+          %{
+            "notification_id" => notification_id,
+            "subscription_id" => subscription_id,
+            "meta" => meta,
+            "notification_instance_id" => notification_instance_id
+          } = _args
       }) do
-    notif_instance =
-      NotificationInstance
-      |> Notifications.get!(notification_instance_id)
-      |> Notifications.load!([:notification, subscription: [:subscriber]])
+    notification = Notification |> Notifications.get!(notification_id)
+
+    subscription =
+      Subscription |> Notifications.get!(subscription_id) |> Notifications.load!(:subscriber)
 
     params =
-      notif_instance.meta
-      |> Map.merge(notif_instance.subscription.meta)
-      |> Map.merge(notif_instance.notification.meta)
-      |> stringify_map()
+      [meta, subscription.meta, notification.meta]
+      |> Enum.map(&stringify_map/1)
+      |> Enum.reduce(&Map.merge/2)
 
     unsubscribe_token =
-      Orcasite.Notifications.Subscription.unsubscribe_token(notif_instance.subscription)
+      Orcasite.Notifications.Subscription.unsubscribe_token(subscription)
 
     notifications_since =
-      notif_instance.subscription.last_notification_id
+      subscription.last_notification_id
       |> case do
         nil ->
           []
@@ -33,7 +38,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
           |> Ash.Query.for_read(:since_notification, %{notification_id: notif_id})
           |> Orcasite.Notifications.read!()
       end
-      |> Enum.filter(&(&1.id != notif_instance.notification_id))
+      |> Enum.filter(&(&1.id != notification_id))
 
     :ok = continue?()
 
@@ -49,13 +54,21 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     |> email_for_notif(stringify(params["event_type"]))
     |> Orcasite.Mailer.deliver()
 
-    notif_instance.subscription
-    |> Subscription.update_last_notification(notif_instance.notification_id)
+    subscription
+    |> Subscription.update_last_notification(notification_id)
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-      notif_instance
-      |> Ash.Changeset.for_destroy(:destroy)
-      |> Notifications.destroy!()
+      NotificationInstance
+      |> Notifications.get!(notification_instance_id)
+      |> case do
+        nil ->
+          nil
+
+        notif_instance ->
+          notif_instance
+          |> Ash.Changeset.for_destroy(:destroy)
+          |> Notifications.destroy!()
+      end
     end)
 
     :ok
@@ -83,7 +96,9 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
   def continue?() do
     case Hammer.check_rate("ses_email", 1_000, 14) do
-      {:allow, _count} -> :ok
+      {:allow, _count} ->
+        :ok
+
       {:deny, _limit} ->
         Process.sleep(250)
         continue?()
