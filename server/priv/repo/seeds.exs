@@ -80,7 +80,7 @@ Orcasite.Accounts.User
 })
 |> Ash.Changeset.force_change_attribute(:admin, true)
 |> Ash.Changeset.force_change_attribute(:moderator, true)
-|> Orcasite.Accounts.create(authorize?: false)
+|> Orcasite.Accounts.create()
 
 [
   %{

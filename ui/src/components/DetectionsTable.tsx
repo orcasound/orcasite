@@ -24,7 +24,6 @@ import {
   Detection,
   Feed,
   useCancelNotificationMutation,
-  useCandidateQuery,
   useGetCurrentUserQuery,
   useNotificationsForCandidateQuery,
   useNotifyConfirmedCandidateMutation,
@@ -39,10 +38,12 @@ export default function DetectionsTable({
   detections,
   feed,
   candidate,
+  onDetectionUpdate,
 }: {
   detections: Detection[];
   feed: Pick<Feed, "slug" | "nodeName">;
   candidate: Pick<Candidate, "id" | "visible">;
+  onDetectionUpdate: () => void;
 }) {
   const offsetPadding = 15;
   const minOffset = Math.min(...detections.map((d) => +d.playerOffset));
@@ -55,11 +56,7 @@ export default function DetectionsTable({
   const queryClient = useQueryClient();
 
   const setDetectionVisible = useSetDetectionVisibleMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries(
-        useCandidateQuery.getKey({ id: candidate.id }),
-      );
-    },
+    onSuccess: onDetectionUpdate,
   });
 
   const { notificationsForCandidate: notifications } =
