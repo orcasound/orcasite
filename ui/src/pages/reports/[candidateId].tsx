@@ -12,10 +12,14 @@ const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
   const { candidateId } = router.query;
 
-  const candidatesQuery = useCandidateQuery({
+  const candidateQuery = useCandidateQuery({
     id: (candidateId || "") as string,
   });
+<<<<<<< HEAD
   const candidate = candidatesQuery.data?.candidate;
+=======
+  const candidate = candidateQuery.data?.candidate;
+>>>>>>> main
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
   if (candidateId && typeof candidateId === "string") {
@@ -57,6 +61,9 @@ const CandidatePage: NextPageWithLayout = () => {
                 detections={candidate.detections}
                 feed={candidate.feed}
                 candidate={candidate}
+                onDetectionUpdate={() => {
+                  candidateQuery.refetch();
+                }}
               />
             )}
           </Box>

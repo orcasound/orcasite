@@ -16,7 +16,6 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import {
@@ -24,7 +23,6 @@ import {
   Detection,
   Feed,
   useCancelNotificationMutation,
-  useCandidateQuery,
   useGetCurrentUserQuery,
   useNotificationsForCandidateQuery,
   useNotifyConfirmedCandidateMutation,
@@ -39,10 +37,12 @@ export default function DetectionsTable({
   detections,
   feed,
   candidate,
+  onDetectionUpdate,
 }: {
   detections: Detection[];
   feed: Pick<Feed, "slug" | "nodeName">;
   candidate: Pick<Candidate, "id" | "visible">;
+  onDetectionUpdate: () => void;
 }) {
   const offsetPadding = 15;
   const minOffset = Math.min(...detections.map((d) => +d.playerOffset));
@@ -52,24 +52,19 @@ export default function DetectionsTable({
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
-  const queryClient = useQueryClient();
-
   const setDetectionVisible = useSetDetectionVisibleMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries(
-        useCandidateQuery.getKey({ id: candidate.id }),
-      );
-    },
+    onSuccess: onDetectionUpdate,
   });
 
+  const notificationsQuery = useNotificationsForCandidateQuery({
+    candidateId: candidate.id,
+  });
   const { notificationsForCandidate: notifications } =
-    useNotificationsForCandidateQuery({ candidateId: candidate.id }).data ?? {};
+    notificationsQuery.data ?? {};
 
   const cancelNotification = useCancelNotificationMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries(
-        useNotificationsForCandidateQuery.getKey({ candidateId: candidate.id }),
-      );
+      notificationsQuery.refetch();
     },
   });
 
@@ -167,13 +162,7 @@ export default function DetectionsTable({
             <Box>
               <NotificationModal
                 candidateId={candidate.id}
-                onNotification={() =>
-                  queryClient.invalidateQueries(
-                    useNotificationsForCandidateQuery.getKey({
-                      candidateId: candidate.id,
-                    }),
-                  )
-                }
+                onNotification={() => notificationsQuery.refetch()}
               />
             </Box>
           </Box>

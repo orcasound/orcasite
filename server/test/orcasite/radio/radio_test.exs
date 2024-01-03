@@ -1,4 +1,4 @@
-defmodule Orcasite.RadioLegacyTest do
+defmodule Orcasite.RadioTest do
   use Orcasite.DataCase
 
   describe "feeds" do
