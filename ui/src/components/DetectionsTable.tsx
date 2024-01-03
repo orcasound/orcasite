@@ -16,7 +16,6 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import {
@@ -53,20 +52,19 @@ export default function DetectionsTable({
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
-  const queryClient = useQueryClient();
-
   const setDetectionVisible = useSetDetectionVisibleMutation({
     onSuccess: onDetectionUpdate,
   });
 
+  const notificationsQuery = useNotificationsForCandidateQuery({
+    candidateId: candidate.id,
+  });
   const { notificationsForCandidate: notifications } =
-    useNotificationsForCandidateQuery({ candidateId: candidate.id }).data ?? {};
+    notificationsQuery.data ?? {};
 
   const cancelNotification = useCancelNotificationMutation({
     onSuccess: () => {
-      queryClient.invalidateQueries(
-        useNotificationsForCandidateQuery.getKey({ candidateId: candidate.id }),
-      );
+      notificationsQuery.refetch();
     },
   });
 
@@ -164,13 +162,7 @@ export default function DetectionsTable({
             <Box>
               <NotificationModal
                 candidateId={candidate.id}
-                onNotification={() =>
-                  queryClient.invalidateQueries(
-                    useNotificationsForCandidateQuery.getKey({
-                      candidateId: candidate.id,
-                    }),
-                  )
-                }
+                onNotification={() => notificationsQuery.refetch()}
               />
             </Box>
           </Box>
