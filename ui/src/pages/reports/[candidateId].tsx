@@ -15,11 +15,7 @@ const CandidatePage: NextPageWithLayout = () => {
   const candidateQuery = useCandidateQuery({
     id: (candidateId || "") as string,
   });
-<<<<<<< HEAD
-  const candidate = candidatesQuery.data?.candidate;
-=======
   const candidate = candidateQuery.data?.candidate;
->>>>>>> main
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
   if (candidateId && typeof candidateId === "string") {
