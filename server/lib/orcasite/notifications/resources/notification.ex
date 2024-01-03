@@ -85,7 +85,7 @@ defmodule Orcasite.Notifications.Notification do
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       accept [:candidate_id]
-      argument :candidate_id, :integer
+      argument :candidate_id, :string
       argument :node, :string, allow_nil?: false
 
       argument :message, :string do
