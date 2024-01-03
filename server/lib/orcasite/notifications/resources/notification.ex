@@ -122,10 +122,6 @@ defmodule Orcasite.Notifications.Notification do
       change fn changeset, _context ->
         candidate_id =
           Ash.Changeset.get_argument(changeset, :candidate_id)
-<<<<<<< HEAD
-=======
-          |> IO.inspect(label: "candidate id")
->>>>>>> main
 
         candidate =
           Orcasite.Radio.Candidate
