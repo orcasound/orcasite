@@ -94,7 +94,7 @@ const DetectionsPage: NextPageWithLayout = () => {
       <main>
         <h1>Reports</h1>
 
-        <Paper elevation={1}>
+        <Paper elevation={1} sx={{ overflow: "auto" }}>
           <Modal
             open={detectionModalOpen}
             onClose={() => {
@@ -104,7 +104,7 @@ const DetectionsPage: NextPageWithLayout = () => {
             className="p-4"
           >
             <Box p={4}>
-              <Paper>
+              <Paper sx={{ overflow: "auto" }}>
                 <Box p={5}>
                   <Box display="flex" justifyContent="space-between">
                     <Box>

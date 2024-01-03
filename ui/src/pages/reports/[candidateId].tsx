@@ -34,7 +34,7 @@ const CandidatePage: NextPageWithLayout = () => {
           <Typography>{candidate?.id}</Typography>
         </Breadcrumbs>
 
-        <Paper sx={{ marginTop: 4 }}>
+        <Paper sx={{ marginTop: 4, overflow: "auto" }}>
           <Box p={5}>
             <Box display="flex" justifyContent="space-between">
               <Box>

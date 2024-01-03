@@ -5,6 +5,7 @@ defmodule Orcasite.Radio.Candidate do
     authorizers: [Ash.Policy.Authorizer]
 
   alias Orcasite.Radio.{Detection, Feed}
+  alias Orcasite.Notifications.Event
 
   postgres do
     table "candidates"
@@ -124,6 +125,35 @@ defmodule Orcasite.Radio.Candidate do
         )
       end
     end
+
+    update :cancel_notifications do
+      accept []
+
+      argument :event_type, :atom do
+        constraints one_of: Event.types()
+        default :confirmed_candidate
+      end
+
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.after_action(fn _, record ->
+          Orcasite.Notifications.Notification
+          |> Ash.Query.for_read(:for_candidate, %{
+            candidate_id: record.id,
+            event_type: Ash.Changeset.get_argument(changeset, :event_type),
+            active: true
+          })
+          |> Orcasite.Notifications.read!()
+          |> Enum.map(fn notification ->
+            notification
+            |> Ash.Changeset.for_update(:cancel_notification, %{})
+            |> Orcasite.Notifications.update!()
+          end)
+
+          {:ok, record}
+        end)
+      end
+    end
   end
 
   admin do
@@ -136,6 +166,10 @@ defmodule Orcasite.Radio.Candidate do
     queries do
       get :candidate, :read
       list :candidates, :index
+    end
+
+    mutations do
+      update :cancel_candidate_notifications, :cancel_notifications
     end
   end
 end
