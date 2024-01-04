@@ -68,6 +68,7 @@ defmodule OrcasiteWeb.ModeratorTest do
           """
         })
 
+      assert false
       assert %{
                "data" => %{
                  "notifyConfirmedCandidate" => %{"result" => %{"id" => _}}
