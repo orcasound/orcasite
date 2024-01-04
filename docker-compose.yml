@@ -9,7 +9,7 @@ services:
       - REDIS_HOST=cache
       - REDIS_PORT=6379
     ports:
-      - "3000:3000"
+      # - "3000:3000"
       - "4000:4000"
     depends_on:
       db:

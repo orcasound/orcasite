@@ -43,9 +43,10 @@ ENV APP_HOME /app
 RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
+ARG MIX_ENV=dev
 EXPOSE 3000
 EXPOSE 4000
-ENV PORT=4000 UI_PORT=3000 MIX_ENV=dev
+ENV PORT=4000 UI_PORT=3000 MIX_ENV=${MIX_ENV}
 
 # Create a new stage so that local dev setup can stop here
 # Local dev mounts into the container so there's no point in adding/compiling
