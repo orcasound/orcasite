@@ -19,4 +19,4 @@ jobs:
         run: docker-compose up -d db cache
 
       - name: Run tests
-        run: docker compose run web bash -c 'cd server && mix test'
+        run: docker-compose run web bash -c 'cd server && mix test'
