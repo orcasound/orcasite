@@ -5,7 +5,7 @@ import Config
 config :orcasite, OrcasiteWeb.Endpoint,
   http: [port: 4001],
   server: false,
-  secret_key_base: "99+mOEo5AOlhlQi4sJJd5MWnAdFFzm64",
+  secret_key_base: "W6Mk5RQWbSDaeBuP6qeNZa+e/dA+Qu6te63CstikXctm1m7QrV4XwOM7oUdo/1z7",
   check_origin: false
 
 # Print only warnings and errors during test
@@ -28,4 +28,14 @@ config :orcasite, Oban, testing: :inline
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
+config :orcasite, :cache_adapter, Nebulex.Adapters.Local
+
+config :hammer,
+  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"
+config :ash_graphql, :policies, show_policy_breakdowns?: true
+config :orcasite, Orcasite.Radio, graphql: [show_raised_errors?: true]
+config :orcasite, Orcasite.Accounts, graphql: [show_raised_errors?: true]
+
+config :ash, :disable_async?, true
+config :ash, :missed_notifications, :ignore

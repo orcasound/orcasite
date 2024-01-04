@@ -37,6 +37,28 @@ export type Scalars = {
   Json: { input: { [key: string]: any }; output: { [key: string]: any } };
 };
 
+export type CancelCandidateNotificationsInput = {
+  eventType?: InputMaybe<CandidateEventType>;
+};
+
+/** The result of the :cancel_candidate_notifications mutation */
+export type CancelCandidateNotificationsResult = {
+  __typename?: "CancelCandidateNotificationsResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Candidate>;
+};
+
+/** The result of the :cancel_notification mutation */
+export type CancelNotificationResult = {
+  __typename?: "CancelNotificationResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Notification>;
+};
+
 export type Candidate = {
   __typename?: "Candidate";
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
@@ -46,6 +68,7 @@ export type Candidate = {
   maxTime: Scalars["DateTime"]["output"];
   minTime: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
+  visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type CandidateDetectionsArgs = {
@@ -54,6 +77,8 @@ export type CandidateDetectionsArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
 };
+
+export type CandidateEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
 
 export type CandidateFilterDetectionCount = {
   eq?: InputMaybe<Scalars["Int"]["input"]>;
@@ -80,6 +105,7 @@ export type CandidateFilterInput = {
   minTime?: InputMaybe<CandidateFilterMinTime>;
   not?: InputMaybe<Array<CandidateFilterInput>>;
   or?: InputMaybe<Array<CandidateFilterInput>>;
+  visible?: InputMaybe<CandidateFilterVisible>;
 };
 
 export type CandidateFilterMaxTime = {
@@ -104,11 +130,23 @@ export type CandidateFilterMinTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type CandidateFilterVisible = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type CandidateSortField =
   | "DETECTION_COUNT"
   | "ID"
   | "MAX_TIME"
-  | "MIN_TIME";
+  | "MIN_TIME"
+  | "VISIBLE";
 
 export type CandidateSortInput = {
   field: CandidateSortField;
@@ -128,6 +166,7 @@ export type Detection = {
   sourceIp?: Maybe<Scalars["String"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
   uuid?: Maybe<Scalars["String"]["output"]>;
+  visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type DetectionCategory = "OTHER" | "VESSEL" | "WHALE";
@@ -172,6 +211,7 @@ export type DetectionFilterInput = {
   playlistTimestamp?: InputMaybe<DetectionFilterPlaylistTimestamp>;
   sourceIp?: InputMaybe<DetectionFilterSourceIp>;
   timestamp?: InputMaybe<DetectionFilterTimestamp>;
+  visible?: InputMaybe<DetectionFilterVisible>;
 };
 
 export type DetectionFilterListenerCount = {
@@ -229,6 +269,17 @@ export type DetectionFilterTimestamp = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type DetectionFilterVisible = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type DetectionSortField =
   | "CATEGORY"
   | "DESCRIPTION"
@@ -237,7 +288,8 @@ export type DetectionSortField =
   | "PLAYER_OFFSET"
   | "PLAYLIST_TIMESTAMP"
   | "SOURCE_IP"
-  | "TIMESTAMP";
+  | "TIMESTAMP"
+  | "VISIBLE";
 
 export type DetectionSortInput = {
   field: DetectionSortField;
@@ -384,6 +436,118 @@ export type MutationError = {
   vars?: Maybe<Scalars["Json"]["output"]>;
 };
 
+/**
+ * Notification for a specific event type. Once created, all Subscriptions that match this Notification's
+ * event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
+ * channel settings (email, browser notification, webhooks).
+ */
+export type Notification = {
+  __typename?: "Notification";
+  active?: Maybe<Scalars["Boolean"]["output"]>;
+  eventType?: Maybe<NotificationEventType>;
+  id: Scalars["ID"]["output"];
+  insertedAt: Scalars["DateTime"]["output"];
+  meta?: Maybe<Scalars["Json"]["output"]>;
+};
+
+export type NotificationEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
+
+export type NotificationFilterActive = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type NotificationFilterEventType = {
+  eq?: InputMaybe<NotificationEventType>;
+  greaterThan?: InputMaybe<NotificationEventType>;
+  greaterThanOrEqual?: InputMaybe<NotificationEventType>;
+  in?: InputMaybe<Array<InputMaybe<NotificationEventType>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<NotificationEventType>;
+  lessThanOrEqual?: InputMaybe<NotificationEventType>;
+  notEq?: InputMaybe<NotificationEventType>;
+};
+
+export type NotificationFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type NotificationFilterInput = {
+  active?: InputMaybe<NotificationFilterActive>;
+  and?: InputMaybe<Array<NotificationFilterInput>>;
+  eventType?: InputMaybe<NotificationFilterEventType>;
+  id?: InputMaybe<NotificationFilterId>;
+  insertedAt?: InputMaybe<NotificationFilterInsertedAt>;
+  meta?: InputMaybe<NotificationFilterMeta>;
+  not?: InputMaybe<Array<NotificationFilterInput>>;
+  or?: InputMaybe<Array<NotificationFilterInput>>;
+};
+
+export type NotificationFilterInsertedAt = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type NotificationFilterMeta = {
+  eq?: InputMaybe<Scalars["Json"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Json"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Json"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Json"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Json"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Json"]["input"]>;
+  notEq?: InputMaybe<Scalars["Json"]["input"]>;
+};
+
+export type NotificationSortField =
+  | "ACTIVE"
+  | "EVENT_TYPE"
+  | "ID"
+  | "INSERTED_AT"
+  | "META";
+
+export type NotificationSortInput = {
+  field: NotificationSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
+export type NotifyConfirmedCandidateInput = {
+  candidateId: Scalars["String"]["input"];
+  /**
+   * What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
+   * and clicks can be heard at Orcasound Lab!')
+   */
+  message: Scalars["String"]["input"];
+};
+
+/** The result of the :notify_confirmed_candidate mutation */
+export type NotifyConfirmedCandidateResult = {
+  __typename?: "NotifyConfirmedCandidateResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Notification>;
+};
+
 /** A page of :candidate */
 export type PageOfCandidate = {
   __typename?: "PageOfCandidate";
@@ -451,13 +615,31 @@ export type RequestPasswordResetInput = {
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
+  cancelCandidateNotifications?: Maybe<CancelCandidateNotificationsResult>;
+  cancelNotification?: Maybe<CancelNotificationResult>;
+  /** Create a notification for confirmed candidate (i.e. detection group) */
+  notifyConfirmedCandidate?: Maybe<NotifyConfirmedCandidateResult>;
   /** Register a new user with a username and password. */
   registerWithPassword?: Maybe<RegisterWithPasswordResult>;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   resetPassword?: Maybe<PasswordResetResult>;
+  setDetectionVisible?: Maybe<SetDetectionVisibleResult>;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
   submitDetection?: Maybe<SubmitDetectionResult>;
+};
+
+export type RootMutationTypeCancelCandidateNotificationsArgs = {
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+  input?: InputMaybe<CancelCandidateNotificationsInput>;
+};
+
+export type RootMutationTypeCancelNotificationArgs = {
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type RootMutationTypeNotifyConfirmedCandidateArgs = {
+  input?: InputMaybe<NotifyConfirmedCandidateInput>;
 };
 
 export type RootMutationTypeRegisterWithPasswordArgs = {
@@ -470,6 +652,11 @@ export type RootMutationTypeRequestPasswordResetArgs = {
 
 export type RootMutationTypeResetPasswordArgs = {
   input: PasswordResetInput;
+};
+
+export type RootMutationTypeSetDetectionVisibleArgs = {
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+  input?: InputMaybe<SetDetectionVisibleInput>;
 };
 
 export type RootMutationTypeSignInWithPasswordArgs = {
@@ -489,6 +676,7 @@ export type RootQueryType = {
   detections?: Maybe<PageOfDetection>;
   feed: Feed;
   feeds: Array<Feed>;
+  notificationsForCandidate: Array<Notification>;
 };
 
 export type RootQueryTypeCandidateArgs = {
@@ -525,6 +713,27 @@ export type RootQueryTypeFeedArgs = {
 export type RootQueryTypeFeedsArgs = {
   filter?: InputMaybe<FeedFilterInput>;
   sort?: InputMaybe<Array<InputMaybe<FeedSortInput>>>;
+};
+
+export type RootQueryTypeNotificationsForCandidateArgs = {
+  active?: InputMaybe<Scalars["Boolean"]["input"]>;
+  candidateId: Scalars["String"]["input"];
+  eventType?: InputMaybe<NotificationEventType>;
+  filter?: InputMaybe<NotificationFilterInput>;
+  sort?: InputMaybe<Array<InputMaybe<NotificationSortInput>>>;
+};
+
+export type SetDetectionVisibleInput = {
+  visible?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** The result of the :set_detection_visible mutation */
+export type SetDetectionVisibleResult = {
+  __typename?: "SetDetectionVisibleResult";
+  /** Any errors generated, if the mutation failed */
+  errors?: Maybe<Array<Maybe<MutationError>>>;
+  /** The successful result of the mutation */
+  result?: Maybe<Detection>;
 };
 
 export type SignInWithPasswordInput = {
@@ -572,6 +781,7 @@ export type User = {
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
+  moderator?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type UserFilterAdmin = {
@@ -625,6 +835,7 @@ export type UserFilterInput = {
   firstName?: InputMaybe<UserFilterFirstName>;
   id?: InputMaybe<UserFilterId>;
   lastName?: InputMaybe<UserFilterLastName>;
+  moderator?: InputMaybe<UserFilterModerator>;
   not?: InputMaybe<Array<UserFilterInput>>;
   or?: InputMaybe<Array<UserFilterInput>>;
 };
@@ -638,6 +849,90 @@ export type UserFilterLastName = {
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterModerator = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type CancelCandidateNotificationsMutationVariables = Exact<{
+  candidateId: Scalars["ID"]["input"];
+}>;
+
+export type CancelCandidateNotificationsMutation = {
+  __typename?: "RootMutationType";
+  cancelCandidateNotifications?: {
+    __typename?: "CancelCandidateNotificationsResult";
+    result?: { __typename?: "Candidate"; id: string } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
+};
+
+export type CancelNotificationMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type CancelNotificationMutation = {
+  __typename?: "RootMutationType";
+  cancelNotification?: {
+    __typename?: "CancelNotificationResult";
+    result?: {
+      __typename?: "Notification";
+      id: string;
+      meta?: { [key: string]: any } | null;
+      active?: boolean | null;
+      insertedAt: Date;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
+};
+
+export type NotifyConfirmedCandidateMutationVariables = Exact<{
+  candidateId: Scalars["String"]["input"];
+  message: Scalars["String"]["input"];
+}>;
+
+export type NotifyConfirmedCandidateMutation = {
+  __typename?: "RootMutationType";
+  notifyConfirmedCandidate?: {
+    __typename?: "NotifyConfirmedCandidateResult";
+    result?: {
+      __typename?: "Notification";
+      id: string;
+      eventType?: NotificationEventType | null;
+      meta?: { [key: string]: any } | null;
+      active?: boolean | null;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
 };
 
 export type RegisterWithPasswordMutationVariables = Exact<{
@@ -709,6 +1004,31 @@ export type ResetPasswordMutation = {
   } | null;
 };
 
+export type SetDetectionVisibleMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  visible: Scalars["Boolean"]["input"];
+}>;
+
+export type SetDetectionVisibleMutation = {
+  __typename?: "RootMutationType";
+  setDetectionVisible?: {
+    __typename?: "SetDetectionVisibleResult";
+    result?: {
+      __typename?: "Detection";
+      id: string;
+      visible?: boolean | null;
+    } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
+  } | null;
+};
+
 export type SignInWithPasswordMutationVariables = Exact<{
   email: Scalars["String"]["input"];
   password: Scalars["String"]["input"];
@@ -773,6 +1093,7 @@ export type CandidateQuery = {
     minTime: Date;
     maxTime: Date;
     detectionCount?: number | null;
+    visible?: boolean | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -789,6 +1110,7 @@ export type CandidateQuery = {
       playlistTimestamp: number;
       playerOffset: number;
       timestamp: Date;
+      visible?: boolean | null;
     }>;
   } | null;
 };
@@ -804,6 +1126,7 @@ export type GetCurrentUserQuery = {
     lastName?: string | null;
     email: string;
     admin?: boolean | null;
+    moderator?: boolean | null;
   } | null;
 };
 
@@ -827,6 +1150,23 @@ export type FeedQuery = {
   };
 };
 
+export type NotificationsForCandidateQueryVariables = Exact<{
+  candidateId: Scalars["String"]["input"];
+  eventType?: InputMaybe<NotificationEventType>;
+}>;
+
+export type NotificationsForCandidateQuery = {
+  __typename?: "RootQueryType";
+  notificationsForCandidate: Array<{
+    __typename?: "Notification";
+    id: string;
+    eventType?: NotificationEventType | null;
+    meta?: { [key: string]: any } | null;
+    active?: boolean | null;
+    insertedAt: Date;
+  }>;
+};
+
 export type CandidatesQueryVariables = Exact<{
   filter?: InputMaybe<CandidateFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -848,6 +1188,7 @@ export type CandidatesQuery = {
       minTime: Date;
       maxTime: Date;
       detectionCount?: number | null;
+      visible?: boolean | null;
       feed: {
         __typename?: "Feed";
         id: string;
@@ -864,6 +1205,7 @@ export type CandidatesQuery = {
         playlistTimestamp: number;
         playerOffset: number;
         timestamp: Date;
+        visible?: boolean | null;
       }>;
     }> | null;
   } | null;
@@ -886,6 +1228,168 @@ export type FeedsQuery = {
   }>;
 };
 
+export const CancelCandidateNotificationsDocument = `
+    mutation cancelCandidateNotifications($candidateId: ID!) {
+  cancelCandidateNotifications(id: $candidateId) {
+    result {
+      id
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useCancelCandidateNotificationsMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    CancelCandidateNotificationsMutation,
+    TError,
+    CancelCandidateNotificationsMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    CancelCandidateNotificationsMutation,
+    TError,
+    CancelCandidateNotificationsMutationVariables,
+    TContext
+  >(
+    ["cancelCandidateNotifications"],
+    (variables?: CancelCandidateNotificationsMutationVariables) =>
+      fetcher<
+        CancelCandidateNotificationsMutation,
+        CancelCandidateNotificationsMutationVariables
+      >(CancelCandidateNotificationsDocument, variables)(),
+    options,
+  );
+useCancelCandidateNotificationsMutation.getKey = () => [
+  "cancelCandidateNotifications",
+];
+
+useCancelCandidateNotificationsMutation.fetcher = (
+  variables: CancelCandidateNotificationsMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    CancelCandidateNotificationsMutation,
+    CancelCandidateNotificationsMutationVariables
+  >(CancelCandidateNotificationsDocument, variables, options);
+export const CancelNotificationDocument = `
+    mutation cancelNotification($id: ID!) {
+  cancelNotification(id: $id) {
+    result {
+      id
+      meta
+      active
+      insertedAt
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useCancelNotificationMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    CancelNotificationMutation,
+    TError,
+    CancelNotificationMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    CancelNotificationMutation,
+    TError,
+    CancelNotificationMutationVariables,
+    TContext
+  >(
+    ["cancelNotification"],
+    (variables?: CancelNotificationMutationVariables) =>
+      fetcher<CancelNotificationMutation, CancelNotificationMutationVariables>(
+        CancelNotificationDocument,
+        variables,
+      )(),
+    options,
+  );
+useCancelNotificationMutation.getKey = () => ["cancelNotification"];
+
+useCancelNotificationMutation.fetcher = (
+  variables: CancelNotificationMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<CancelNotificationMutation, CancelNotificationMutationVariables>(
+    CancelNotificationDocument,
+    variables,
+    options,
+  );
+export const NotifyConfirmedCandidateDocument = `
+    mutation notifyConfirmedCandidate($candidateId: String!, $message: String!) {
+  notifyConfirmedCandidate(input: {candidateId: $candidateId, message: $message}) {
+    result {
+      id
+      eventType
+      meta
+      active
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useNotifyConfirmedCandidateMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    NotifyConfirmedCandidateMutation,
+    TError,
+    NotifyConfirmedCandidateMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    NotifyConfirmedCandidateMutation,
+    TError,
+    NotifyConfirmedCandidateMutationVariables,
+    TContext
+  >(
+    ["notifyConfirmedCandidate"],
+    (variables?: NotifyConfirmedCandidateMutationVariables) =>
+      fetcher<
+        NotifyConfirmedCandidateMutation,
+        NotifyConfirmedCandidateMutationVariables
+      >(NotifyConfirmedCandidateDocument, variables)(),
+    options,
+  );
+useNotifyConfirmedCandidateMutation.getKey = () => ["notifyConfirmedCandidate"];
+
+useNotifyConfirmedCandidateMutation.fetcher = (
+  variables: NotifyConfirmedCandidateMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    NotifyConfirmedCandidateMutation,
+    NotifyConfirmedCandidateMutationVariables
+  >(NotifyConfirmedCandidateDocument, variables, options);
 export const RegisterWithPasswordDocument = `
     mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $password: String!, $passwordConfirmation: String!) {
   registerWithPassword(
@@ -1040,6 +1544,59 @@ useResetPasswordMutation.fetcher = (
     variables,
     options,
   );
+export const SetDetectionVisibleDocument = `
+    mutation setDetectionVisible($id: ID!, $visible: Boolean!) {
+  setDetectionVisible(id: $id, input: {visible: $visible}) {
+    result {
+      id
+      visible
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+export const useSetDetectionVisibleMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    SetDetectionVisibleMutation,
+    TError,
+    SetDetectionVisibleMutationVariables,
+    TContext
+  >,
+) =>
+  useMutation<
+    SetDetectionVisibleMutation,
+    TError,
+    SetDetectionVisibleMutationVariables,
+    TContext
+  >(
+    ["setDetectionVisible"],
+    (variables?: SetDetectionVisibleMutationVariables) =>
+      fetcher<
+        SetDetectionVisibleMutation,
+        SetDetectionVisibleMutationVariables
+      >(SetDetectionVisibleDocument, variables)(),
+    options,
+  );
+useSetDetectionVisibleMutation.getKey = () => ["setDetectionVisible"];
+
+useSetDetectionVisibleMutation.fetcher = (
+  variables: SetDetectionVisibleMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SetDetectionVisibleMutation, SetDetectionVisibleMutationVariables>(
+    SetDetectionVisibleDocument,
+    variables,
+    options,
+  );
 export const SignInWithPasswordDocument = `
     mutation signInWithPassword($email: String!, $password: String!) {
   signInWithPassword(input: {email: $email, password: $password}) {
@@ -1183,6 +1740,7 @@ export const CandidateDocument = `
     minTime
     maxTime
     detectionCount
+    visible
     feed {
       id
       slug
@@ -1197,6 +1755,7 @@ export const CandidateDocument = `
       playlistTimestamp
       playerOffset
       timestamp
+      visible
     }
   }
 }
@@ -1236,6 +1795,7 @@ export const GetCurrentUserDocument = `
     lastName
     email
     admin
+    moderator
   }
 }
     `;
@@ -1303,6 +1863,45 @@ useFeedQuery.fetcher = (
   variables: FeedQueryVariables,
   options?: RequestInit["headers"],
 ) => fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables, options);
+export const NotificationsForCandidateDocument = `
+    query notificationsForCandidate($candidateId: String!, $eventType: NotificationEventType) {
+  notificationsForCandidate(candidateId: $candidateId, eventType: $eventType) {
+    id
+    eventType
+    meta
+    active
+    insertedAt
+  }
+}
+    `;
+export const useNotificationsForCandidateQuery = <
+  TData = NotificationsForCandidateQuery,
+  TError = unknown,
+>(
+  variables: NotificationsForCandidateQueryVariables,
+  options?: UseQueryOptions<NotificationsForCandidateQuery, TError, TData>,
+) =>
+  useQuery<NotificationsForCandidateQuery, TError, TData>(
+    ["notificationsForCandidate", variables],
+    fetcher<
+      NotificationsForCandidateQuery,
+      NotificationsForCandidateQueryVariables
+    >(NotificationsForCandidateDocument, variables),
+    options,
+  );
+useNotificationsForCandidateQuery.document = NotificationsForCandidateDocument;
+
+useNotificationsForCandidateQuery.getKey = (
+  variables: NotificationsForCandidateQueryVariables,
+) => ["notificationsForCandidate", variables];
+useNotificationsForCandidateQuery.fetcher = (
+  variables: NotificationsForCandidateQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    NotificationsForCandidateQuery,
+    NotificationsForCandidateQueryVariables
+  >(NotificationsForCandidateDocument, variables, options);
 export const CandidatesDocument = `
     query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {
   candidates(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
@@ -1313,6 +1912,7 @@ export const CandidatesDocument = `
       minTime
       maxTime
       detectionCount
+      visible
       feed {
         id
         slug
@@ -1327,6 +1927,7 @@ export const CandidatesDocument = `
         playlistTimestamp
         playerOffset
         timestamp
+        visible
       }
     }
   }

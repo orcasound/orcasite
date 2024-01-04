@@ -20,6 +20,7 @@ defmodule Orcasite.Accounts.User do
     attribute :first_name, :string
     attribute :last_name, :string
     attribute :admin, :boolean
+    attribute :moderator, :boolean
 
     create_timestamp :inserted_at
     update_timestamp :updated_at

@@ -9,7 +9,7 @@ defmodule Orcasite.Notifications.NotificationInstance do
   attributes do
     uuid_primary_key :id
 
-    attribute :meta, :map
+    attribute :meta, :map, default: %{}
 
     attribute :channel, :atom do
       constraints one_of: [:email]
@@ -62,7 +62,8 @@ defmodule Orcasite.Notifications.NotificationInstance do
           %{
             notification_instance_id: record.id,
             notification_id: record.notification_id,
-            subscription_id: record.subscription_id
+            subscription_id: record.subscription_id,
+            meta: record.meta
           }
           |> Orcasite.Notifications.Workers.SendNotificationEmail.new()
           |> Oban.insert()

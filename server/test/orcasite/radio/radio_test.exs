@@ -1,10 +1,8 @@
-defmodule Orcasite.RadioLegacyTest do
+defmodule Orcasite.RadioTest do
   use Orcasite.DataCase
 
-  alias Orcasite.RadioLegacy
-
   describe "feeds" do
-    it "works" do
+    test "works" do
       assert true
     end
   end

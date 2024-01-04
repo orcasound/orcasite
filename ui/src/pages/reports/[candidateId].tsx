@@ -1,10 +1,10 @@
-import { Box, Breadcrumbs, Link, Paper, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Chip, Link, Paper, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
 import DetectionsTable from "@/components/DetectionsTable";
 import { getReportsLayout } from "@/components/layouts/ReportsLayout";
-import { useCandidateQuery } from "@/graphql/generated";
+import { useCandidateQuery, useGetCurrentUserQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
 
@@ -12,10 +12,11 @@ const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
   const { candidateId } = router.query;
 
-  const candidatesQuery = useCandidateQuery({
+  const candidateQuery = useCandidateQuery({
     id: (candidateId || "") as string,
   });
-  const candidate = candidatesQuery.data?.candidate;
+  const candidate = candidateQuery.data?.candidate;
+  const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
   if (candidateId && typeof candidateId === "string") {
     analytics.reports.reportOpened(candidateId);
@@ -33,17 +34,32 @@ const CandidatePage: NextPageWithLayout = () => {
           <Typography>{candidate?.id}</Typography>
         </Breadcrumbs>
 
-        <Paper sx={{ marginTop: 4 }}>
+        <Paper sx={{ marginTop: 4, overflow: "auto" }}>
           <Box p={5}>
-            <Typography variant="h4">Detections</Typography>
-            <Typography sx={{ marginBottom: 5 }} variant="body2">
-              {candidate?.id}
-            </Typography>
+            <Box display="flex" justifyContent="space-between">
+              <Box>
+                <Typography variant="h4">Detections</Typography>
+                <Typography sx={{ marginBottom: 5 }} variant="body2">
+                  {candidate?.id}
+                </Typography>
+              </Box>
+              <Box>
+                {currentUser?.moderator && (
+                  <Chip
+                    variant="outlined"
+                    label={candidate?.visible ? "Visible" : "Hidden"}
+                  />
+                )}
+              </Box>
+            </Box>
             {candidate && (
               <DetectionsTable
                 detections={candidate.detections}
                 feed={candidate.feed}
                 candidate={candidate}
+                onDetectionUpdate={() => {
+                  candidateQuery.refetch();
+                }}
               />
             )}
           </Box>

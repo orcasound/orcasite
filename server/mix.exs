@@ -10,7 +10,10 @@ defmodule Orcasite.Mixfile do
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      preferred_cli_env: [
+        "test.watch": :test
+      ]
     ]
   end
 
@@ -79,21 +82,23 @@ defmodule Orcasite.Mixfile do
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
       {:gen_smtp, "~> 1.0"},
-      {:ash_authentication, "~> 3.11.6"},
-      {:ash_authentication_phoenix, "~> 1.8.3"},
+      {:ash_authentication, "~> 3.12.0"},
+      {:ash_authentication_phoenix, "~> 1.9.0"},
       {:syn, "~> 3.3"},
       {:mjml, "~> 1.5.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
       {:ash_uuid, "~> 0.4"},
       {:ash_graphql, "~> 0.26.6"},
-      {:ash_json_api, "~> 0.33.0"},
+      {:ash_json_api, "~> 0.34.0"},
       {:open_api_spex, "~> 3.16"},
       {:redoc_ui_plug, "~> 0.2.1"},
       {:phoenix_pubsub_redis, "~> 3.0.1"},
       {:nebulex, "~> 2.5"},
       {:nebulex_redis_adapter, "~> 2.3"},
       {:hammer_backend_redis, "~> 6.1"},
-      {:hammer, "~> 6.0"}
+      {:hammer, "~> 6.0"},
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:ex_unit_notifier, "~> 1.2", only: :test}
     ]
   end
 

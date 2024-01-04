@@ -8,6 +8,10 @@ defmodule Orcasite.Notifications.Subscriber do
   postgres do
     table "subscribers"
     repo Orcasite.Repo
+
+    custom_indexes do
+      index [:meta], using: "gin"
+    end
   end
 
   identities do
@@ -24,7 +28,7 @@ defmodule Orcasite.Notifications.Subscriber do
       constraints one_of: [:individual, :organization]
     end
 
-    attribute :meta, :map
+    attribute :meta, :map, default: %{}
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -37,12 +41,6 @@ defmodule Orcasite.Notifications.Subscriber do
   code_interface do
     define_for Orcasite.Notifications
     define :by_email, args: [:email]
-  end
-
-  resource do
-    description """
-    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
-    """
   end
 
   authentication do
@@ -76,6 +74,12 @@ defmodule Orcasite.Notifications.Subscriber do
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
+  end
+
+  resource do
+    description """
+    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
+    """
   end
 
   actions do
