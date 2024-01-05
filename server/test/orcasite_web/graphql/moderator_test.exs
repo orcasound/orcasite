@@ -39,7 +39,8 @@ defmodule OrcasiteWeb.ModeratorTest do
         playlist_timestamp: DateTime.to_unix(DateTime.utc_now()),
         player_offset: 5.54,
         description: "Test detection",
-        listener_count: 1
+        listener_count: 1,
+        send_notifications: false
       })
       |> Orcasite.Radio.load!(:candidate)
 
@@ -90,9 +91,7 @@ defmodule OrcasiteWeb.ModeratorTest do
 
       assert %{
                "data" => %{
-                 "notificationsForCandidate" => [
-                   %{"id" => _} | _
-                 ]
+                 "notificationsForCandidate" => []
                }
              } =
                json_response(conn, 200)

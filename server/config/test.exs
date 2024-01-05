@@ -14,10 +14,12 @@ config :logger, level: :warning
 # Configure your database
 config :orcasite, Orcasite.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "orcasite_test#{System.get_env("MIX_TEST_PARTITION")}",
-  hostname: "localhost",
+  username: System.get_env("POSTGRES_USER") || "postgres",
+  password: System.get_env("POSTGRES_PASSWORD") || "postgres",
+  database:
+    System.get_env("POSTGRES_DATABASE") || "orcasite_test#{System.get_env("MIX_TEST_PARTITION")}",
+  port: System.get_env("POSTGRES_PORT") || 5432,
+  hostname: System.get_env("POSTGRES_HOST") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox,
   types: Orcasite.PostgresTypes,
   pool_size: 10
@@ -32,6 +34,7 @@ config :orcasite, :cache_adapter, Nebulex.Adapters.Local
 
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
+
 config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"
 config :ash_graphql, :policies, show_policy_breakdowns?: true
 config :orcasite, Orcasite.Radio, graphql: [show_raised_errors?: true]
