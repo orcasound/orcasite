@@ -19,8 +19,8 @@ defmodule Orcasite.Accounts.User do
     attribute :hashed_password, :string, allow_nil?: false, sensitive?: true
     attribute :first_name, :string
     attribute :last_name, :string
-    attribute :admin, :boolean
-    attribute :moderator, :boolean
+    attribute :admin, :boolean, default: false, allow_nil?: false
+    attribute :moderator, :boolean, default: false, allow_nil?: false
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
