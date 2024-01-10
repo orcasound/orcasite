@@ -110,7 +110,7 @@ defmodule Orcasite.Accounts.User do
   end
 
   admin do
-    table_columns [:id, :email, :first_name, :last_name, :admin, :inserted_at]
+    table_columns [:id, :email, :first_name, :last_name, :admin, :moderator, :inserted_at]
     actor? true
     read_actions [:read, :current_user]
   end
