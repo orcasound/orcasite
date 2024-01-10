@@ -776,19 +776,19 @@ export type SubmitDetectionResult = {
 
 export type User = {
   __typename?: "User";
-  admin?: Maybe<Scalars["Boolean"]["output"]>;
+  admin: Scalars["Boolean"]["output"];
   email: Scalars["String"]["output"];
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
-  moderator?: Maybe<Scalars["Boolean"]["output"]>;
+  moderator: Scalars["Boolean"]["output"];
 };
 
 export type UserFilterAdmin = {
   eq?: InputMaybe<Scalars["Boolean"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
@@ -855,7 +855,7 @@ export type UserFilterModerator = {
   eq?: InputMaybe<Scalars["Boolean"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
@@ -951,7 +951,7 @@ export type RegisterWithPasswordMutation = {
       __typename?: "User";
       id: string;
       email: string;
-      admin?: boolean | null;
+      admin: boolean;
       firstName?: string | null;
       lastName?: string | null;
     } | null;
@@ -999,7 +999,7 @@ export type ResetPasswordMutation = {
       email: string;
       firstName?: string | null;
       lastName?: string | null;
-      admin?: boolean | null;
+      admin: boolean;
     } | null;
   } | null;
 };
@@ -1042,7 +1042,7 @@ export type SignInWithPasswordMutation = {
       __typename?: "User";
       id: string;
       email: string;
-      admin?: boolean | null;
+      admin: boolean;
       firstName?: string | null;
       lastName?: string | null;
     } | null;
@@ -1125,8 +1125,8 @@ export type GetCurrentUserQuery = {
     firstName?: string | null;
     lastName?: string | null;
     email: string;
-    admin?: boolean | null;
-    moderator?: boolean | null;
+    admin: boolean;
+    moderator: boolean;
   } | null;
 };
 
