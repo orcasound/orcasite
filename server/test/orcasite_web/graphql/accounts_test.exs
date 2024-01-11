@@ -49,7 +49,7 @@ defmodule OrcasiteWeb.GraphqlTest.AccountsTest do
     assert %{
              "data" => %{
                "signInWithPassword" => %{
-                 "user" => %{"email" => ^user_email, "admin" => nil, "moderator" => nil}
+                 "user" => %{"email" => ^user_email, "admin" => false, "moderator" => false}
                }
              }
            } =
@@ -66,7 +66,7 @@ defmodule OrcasiteWeb.GraphqlTest.AccountsTest do
     assert %{
              "data" => %{
                "signInWithPassword" => %{
-                 "user" => %{"email" => ^user_email, "admin" => nil, "moderator" => nil}
+                 "user" => %{"email" => ^user_email, "admin" => false, "moderator" => false}
                }
              }
            } =
@@ -76,7 +76,7 @@ defmodule OrcasiteWeb.GraphqlTest.AccountsTest do
 
     assert %{
              "data" => %{
-               "currentUser" => %{"email" => ^user_email, "admin" => nil, "moderator" => nil}
+               "currentUser" => %{"email" => ^user_email, "admin" => false, "moderator" => false}
              }
            } = json_response(conn, 200)
 
