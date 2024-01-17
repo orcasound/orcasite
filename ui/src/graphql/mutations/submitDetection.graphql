@@ -19,5 +19,12 @@ mutation submitDetection(
     result {
       id
     }
+    errors {
+      message
+      code
+      fields
+      shortMessage
+      vars
+    }
   }
 }
