@@ -61,7 +61,7 @@ defmodule Orcasite.Radio.Feed do
       authorize_if always()
     end
 
-    policy action_type(:read) do
+    bypass action_type(:read) do
       authorize_if always()
     end
   end

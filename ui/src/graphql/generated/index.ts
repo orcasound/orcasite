@@ -1078,6 +1078,14 @@ export type SubmitDetectionMutation = {
   submitDetection?: {
     __typename?: "SubmitDetectionResult";
     result?: { __typename?: "Detection"; id: string } | null;
+    errors?: Array<{
+      __typename?: "MutationError";
+      message?: string | null;
+      code?: string | null;
+      fields?: Array<string | null> | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    } | null> | null;
   } | null;
 };
 
@@ -1693,6 +1701,13 @@ export const SubmitDetectionDocument = `
   ) {
     result {
       id
+    }
+    errors {
+      message
+      code
+      fields
+      shortMessage
+      vars
     }
   }
 }

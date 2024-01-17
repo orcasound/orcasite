@@ -56,11 +56,11 @@ defmodule Orcasite.Radio.Detection do
       authorize_if always()
     end
 
-    policy action_type(:read) do
+    bypass action_type(:read) do
       authorize_if always()
     end
 
-    policy action_type(:create) do
+    bypass action_type(:create) do
       authorize_if always()
     end
 
