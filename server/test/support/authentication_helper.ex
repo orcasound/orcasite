@@ -33,6 +33,7 @@ defmodule OrcasiteWeb.TestSupport.AuthenticationHelper do
   end
 
   def register_user(conn, %{
+        username: username,
         email: email,
         password: password,
         first_name: first_name,
@@ -42,6 +43,7 @@ defmodule OrcasiteWeb.TestSupport.AuthenticationHelper do
       "query" => register_mutation(),
       "variables" => %{
         "email" => email,
+        "username" => username,
         "password" => password,
         "passwordConfirmation" => password,
         "firstName" => first_name,
