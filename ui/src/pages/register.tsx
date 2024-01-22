@@ -51,6 +51,7 @@ const RegisterPage: NextPageWithLayout = () => {
             firstName,
             lastName,
             email,
+            username,
             password,
             passwordConfirmation,
           }) =>
@@ -58,6 +59,7 @@ const RegisterPage: NextPageWithLayout = () => {
               firstName,
               lastName,
               email,
+              username,
               password,
               passwordConfirmation,
             })

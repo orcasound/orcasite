@@ -590,6 +590,7 @@ export type RegisterWithPasswordInput = {
   password: Scalars["String"]["input"];
   /** The proposed password for the user (again), in plain text. */
   passwordConfirmation: Scalars["String"]["input"];
+  username: Scalars["String"]["input"];
 };
 
 export type RegisterWithPasswordMetadata = {
@@ -782,6 +783,7 @@ export type User = {
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
   moderator: Scalars["Boolean"]["output"];
+  username: Scalars["String"]["output"];
 };
 
 export type UserFilterAdmin = {
@@ -838,6 +840,7 @@ export type UserFilterInput = {
   moderator?: InputMaybe<UserFilterModerator>;
   not?: InputMaybe<Array<UserFilterInput>>;
   or?: InputMaybe<Array<UserFilterInput>>;
+  username?: InputMaybe<UserFilterUsername>;
 };
 
 export type UserFilterLastName = {
@@ -860,6 +863,17 @@ export type UserFilterModerator = {
   lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type UserFilterUsername = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type CancelCandidateNotificationsMutationVariables = Exact<{
@@ -939,6 +953,7 @@ export type RegisterWithPasswordMutationVariables = Exact<{
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   email: Scalars["String"]["input"];
+  username: Scalars["String"]["input"];
   password: Scalars["String"]["input"];
   passwordConfirmation: Scalars["String"]["input"];
 }>;
@@ -951,6 +966,7 @@ export type RegisterWithPasswordMutation = {
       __typename?: "User";
       id: string;
       email: string;
+      username: string;
       admin: boolean;
       firstName?: string | null;
       lastName?: string | null;
@@ -1399,13 +1415,14 @@ useNotifyConfirmedCandidateMutation.fetcher = (
     NotifyConfirmedCandidateMutationVariables
   >(NotifyConfirmedCandidateDocument, variables, options);
 export const RegisterWithPasswordDocument = `
-    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $password: String!, $passwordConfirmation: String!) {
+    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $username: String!, $password: String!, $passwordConfirmation: String!) {
   registerWithPassword(
-    input: {email: $email, password: $password, passwordConfirmation: $passwordConfirmation, firstName: $firstName, lastName: $lastName}
+    input: {email: $email, username: $username, password: $password, passwordConfirmation: $passwordConfirmation, firstName: $firstName, lastName: $lastName}
   ) {
     result {
       id
       email
+      username
       admin
       firstName
       lastName
