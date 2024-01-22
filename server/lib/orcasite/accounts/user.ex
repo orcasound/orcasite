@@ -22,7 +22,11 @@ defmodule Orcasite.Accounts.User do
     attribute :last_name, :string
     attribute :admin, :boolean, default: false, allow_nil?: false
     attribute :moderator, :boolean, default: false, allow_nil?: false
-    attribute :username, :string, allow_nil?: false
+
+    attribute :username, :string do
+      allow_nil? false
+      constraints allow_empty?: false
+    end
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -112,7 +116,17 @@ defmodule Orcasite.Accounts.User do
   end
 
   admin do
-    table_columns [:id, :email, :first_name, :last_name, :admin, :moderator, :inserted_at]
+    table_columns [
+      :id,
+      :username,
+      :email,
+      :first_name,
+      :last_name,
+      :admin,
+      :moderator,
+      :inserted_at
+    ]
+
     actor? true
     read_actions [:read, :current_user]
   end
