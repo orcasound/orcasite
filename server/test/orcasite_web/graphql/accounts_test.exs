@@ -8,6 +8,7 @@ defmodule OrcasiteWeb.GraphqlTest.AccountsTest do
 
   @user_params %{
     email: "nonadmin@example.com",
+    username: "nonadmin",
     password: "password",
     password_confirmation: "password",
     first_name: "Non",

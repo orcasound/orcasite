@@ -16,12 +16,20 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit({ firstName, lastName, email, password, passwordConfirmation });
+    onSubmit({
+      firstName,
+      lastName,
+      email,
+      username,
+      password,
+      passwordConfirmation,
+    });
   };
 
   return (
@@ -99,6 +107,38 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
         error={!!errors.find((error) => error?.fields?.includes("email"))}
         helperText={
           errors.find((error) => error?.fields?.includes("email"))?.message
+        }
+        sx={{
+          "& .MuiFormLabel-root": {
+            color: (theme) => theme.palette.secondary.light,
+          },
+          "& .MuiFormLabel-root.Mui-focused": {
+            color: (theme) => theme.palette.secondary.dark,
+          },
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: (theme) => theme.palette.accent2.main,
+            },
+            "&:hover fieldset": {
+              borderColor: (theme) => theme.palette.accent2.dark,
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: (theme) => theme.palette.accent2.dark,
+            },
+          },
+        }}
+      />
+      <TextField
+        label="Username"
+        variant="outlined"
+        margin="normal"
+        type="string"
+        fullWidth
+        value={username}
+        onChange={(event) => setUsername(event.target.value)}
+        error={!!errors.find((error) => error?.fields?.includes("username"))}
+        helperText={
+          errors.find((error) => error?.fields?.includes("username"))?.message
         }
         sx={{
           "& .MuiFormLabel-root": {

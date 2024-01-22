@@ -3,6 +3,7 @@ defmodule OrcasiteWeb.TestSupport.GraphqlHelper do
     """
       mutation registerWithPassword(
         $email: String!,
+        $username: String!,
         $firstName: String,
         $lastName: String,
         $password: String!,
@@ -10,6 +11,7 @@ defmodule OrcasiteWeb.TestSupport.GraphqlHelper do
       ) {
         registerWithPassword(input: {
           email: $email,
+          username: $username,
           firstName: $firstName,
           lastName: $lastName,
           password: $password,

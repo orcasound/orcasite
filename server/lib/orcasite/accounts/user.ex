@@ -11,6 +11,7 @@ defmodule Orcasite.Accounts.User do
 
   identities do
     identity :unique_email, [:email]
+    identity :unique_username, [:username]
   end
 
   attributes do
@@ -21,6 +22,11 @@ defmodule Orcasite.Accounts.User do
     attribute :last_name, :string
     attribute :admin, :boolean, default: false, allow_nil?: false
     attribute :moderator, :boolean, default: false, allow_nil?: false
+
+    attribute :username, :string do
+      allow_nil? false
+      constraints allow_empty?: false
+    end
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -34,7 +40,7 @@ defmodule Orcasite.Accounts.User do
         identity_field :email
         sign_in_tokens_enabled? true
 
-        register_action_accept [:first_name, :last_name]
+        register_action_accept [:first_name, :last_name, :username]
 
         resettable do
           sender fn user, token, opts ->
@@ -110,7 +116,17 @@ defmodule Orcasite.Accounts.User do
   end
 
   admin do
-    table_columns [:id, :email, :first_name, :last_name, :admin, :moderator, :inserted_at]
+    table_columns [
+      :id,
+      :username,
+      :email,
+      :first_name,
+      :last_name,
+      :admin,
+      :moderator,
+      :inserted_at
+    ]
+
     actor? true
     read_actions [:read, :current_user]
   end

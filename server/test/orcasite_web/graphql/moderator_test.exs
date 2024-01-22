@@ -5,12 +5,14 @@ defmodule OrcasiteWeb.ModeratorTest do
 
   @moderator_params %{
     email: "moderator@example.com",
+    username: "moderator",
     password: "password",
     password_confirmation: "password"
   }
 
   @user_params %{
     email: "user@example.com",
+    username: "user",
     password: "password",
     password_confirmation: "password"
   }
