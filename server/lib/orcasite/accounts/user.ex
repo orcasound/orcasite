@@ -25,7 +25,7 @@ defmodule Orcasite.Accounts.User do
 
     attribute :username, :string do
       allow_nil? false
-      constraints allow_empty?: false
+      constraints allow_empty?: false, trim?: true
     end
 
     create_timestamp :inserted_at
