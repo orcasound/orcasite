@@ -13,7 +13,7 @@
     "format": "prettier . --write",
     "codegen": "graphql-codegen",
     "analyze": "ANALYZE=true next build",
-    "prepare": "cd .. && husky install ui/.husky"
+    "prepare": "cd .. && husky ui/.husky"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
