@@ -1,1 +1,1 @@
-npx lint-staged ui/
+npx lint-staged --concurrent false ui/
