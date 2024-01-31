@@ -1,3 +1,5 @@
+// These are helpers/utility so it's okay if not used
+/* eslint-disable import/no-unused-modules */
 import { Theme } from "@mui/material";
 
 export const displayMobileOnly = { display: { xs: "block", sm: "none" } };
