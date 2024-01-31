@@ -12,7 +12,8 @@
     "lint:fix": "next lint --fix",
     "format": "prettier . --write",
     "codegen": "graphql-codegen",
-    "analyze": "ANALYZE=true next build"
+    "analyze": "ANALYZE=true next build",
+    "prepare": "cd .. && husky ui/.husky"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
@@ -59,6 +60,8 @@
     "eslint-config-prettier": "8.9.0",
     "eslint-plugin-simple-import-sort": "10.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "husky": "^9.0.7",
+    "lint-staged": "^15.2.0",
     "prettier": "3.0.0",
     "typescript": "5.1.6"
   }
