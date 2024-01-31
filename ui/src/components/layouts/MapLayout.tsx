@@ -8,10 +8,7 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
-import {
-  useFeedQuery,
-  useFeedsQuery,
-} from "@/graphql/generated";
+import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 import Player, { PlayerSpacer } from "../Player";

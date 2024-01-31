@@ -22,7 +22,7 @@ export function DetectionsPlayer({
   timestamp,
   startOffset,
   endOffset,
-  onAudioPlay
+  onAudioPlay,
 }: {
   feed: Pick<Feed, "nodeName">;
   marks: { label: string; value: number }[];
