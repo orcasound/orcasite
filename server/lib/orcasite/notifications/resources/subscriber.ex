@@ -17,12 +17,14 @@ defmodule Orcasite.Notifications.Subscriber do
   identities do
     # Needed by magic_token. Primary key doesn't show up as an identity otherwise
     identity :id, [:id]
+    identity :unique_email, [:email]
   end
 
   attributes do
     uuid_primary_key :id
 
     attribute :name, :string
+    attribute :email, :ci_string
 
     attribute :subscriber_type, :atom do
       constraints one_of: [:individual, :organization]
@@ -36,11 +38,6 @@ defmodule Orcasite.Notifications.Subscriber do
 
   relationships do
     has_many :subscriptions, Subscription
-  end
-
-  code_interface do
-    define_for Orcasite.Notifications
-    define :by_email, args: [:email]
   end
 
   authentication do
@@ -76,19 +73,13 @@ defmodule Orcasite.Notifications.Subscriber do
     end
   end
 
-  resource do
-    description """
-    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
-    """
-  end
-
   actions do
     defaults [:create, :read, :update, :destroy]
 
     read :by_email do
       get? true
       argument :email, :string
-      filter expr(fragment("lower(meta->>'email') = lower(?)", ^arg(:email)))
+      get_by :email
     end
 
     create :individual_subscriber do
@@ -112,60 +103,22 @@ defmodule Orcasite.Notifications.Subscriber do
 
     create :confirmed_candidate_subscribe do
       argument :name, :string
-      argument :email, :string
+      argument :email, :string, allow_nil?: false
       argument :response_data, :map
 
-      # TODO: Remove this argument once we deploy to production.
-      argument :active_subscription, :boolean, default: true
-
-      change set_attribute(:name, arg(:name))
-      change set_attribute(:subscriber_type, :individual)
-
-      change fn changeset, _context ->
-        meta =
-          case Orcasite.Accounts.User.by_email(Ash.Changeset.get_argument(changeset, :email)) do
-            {:ok, %{id: user_id}} -> %{user_id: user_id}
-            _ -> %{}
-          end
-          |> Map.put(:email, Ash.Changeset.get_argument(changeset, :email))
-          |> Map.put(:response_data, Ash.Changeset.get_argument(changeset, :response_data))
-
-        changeset
-        |> Ash.Changeset.change_attribute(:meta, meta)
-        |> Ash.Changeset.manage_relationship(
-          :subscriptions,
-          %{
-            name: Ash.Changeset.get_argument(changeset, :name),
-            event_type: "confirmed_candidate",
-            meta: %{
-              email: Ash.Changeset.get_argument(changeset, :email),
-              name: Ash.Changeset.get_argument(changeset, :name),
-              channel: :email
-            },
-            # TODO: Remove this active field once we deploy to production.
-            active: Ash.Changeset.get_argument(changeset, :active_subscription)
-          },
-          type: :create
-        )
-      end
+      manual Orcasite.Notifications.Changes.SubscriberCreate
     end
   end
 
-  validations do
-    validate fn changeset ->
-      # Check if email subscriber already exists
-      with email when is_binary(email) <- changeset |> Ash.Changeset.get_argument(:email),
-           %{action_type: :create} <- changeset,
-           {:get, {:error, _}} <- {:get, Orcasite.Notifications.Subscriber.by_email(email)} do
-        :ok
-      else
-        {:get, other} ->
-          {:error, [field: :email, message: "email already exists"]}
+  code_interface do
+    define_for Orcasite.Notifications
+    define :by_email, args: [:email]
+  end
 
-        err ->
-          :ok
-      end
-    end
+  resource do
+    description """
+    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
+    """
   end
 
   admin do

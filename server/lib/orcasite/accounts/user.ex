@@ -24,7 +24,6 @@ defmodule Orcasite.Accounts.User do
     attribute :moderator, :boolean, default: false, allow_nil?: false
 
     attribute :username, :string do
-      allow_nil? false
       constraints allow_empty?: false, trim?: true
     end
 

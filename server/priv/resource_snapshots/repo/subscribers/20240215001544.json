@@ -1,0 +1,121 @@
+{
+  "attributes": [
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "id",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": true
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "name",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "citext",
+      "source": "email",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "subscriber_type",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "%{}",
+      "size": null,
+      "type": "map",
+      "source": "meta",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "fragment(\"now()\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
+      "default": "fragment(\"now()\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "generated?": false,
+      "primary_key?": false
+    }
+  ],
+  "table": "subscribers",
+  "hash": "DBBC33699C4B816B43EB484AB355F4B7681D16542548CC10D5AC13840C9F1DEF",
+  "repo": "Elixir.Orcasite.Repo",
+  "identities": [
+    {
+      "name": "id",
+      "keys": [
+        "id"
+      ],
+      "index_name": "subscribers_id_index",
+      "base_filter": null
+    },
+    {
+      "name": "unique_email",
+      "keys": [
+        "email"
+      ],
+      "index_name": "subscribers_unique_email_index",
+      "base_filter": null
+    }
+  ],
+  "schema": null,
+  "multitenancy": {
+    "global": null,
+    "attribute": null,
+    "strategy": null
+  },
+  "custom_indexes": [
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "where": null,
+      "fields": [
+        "meta"
+      ],
+      "unique": false,
+      "concurrently": false,
+      "using": "gin"
+    }
+  ],
+  "base_filter": null,
+  "check_constraints": [],
+  "custom_statements": [],
+  "has_create_action": true
+}
