@@ -590,7 +590,7 @@ export type RegisterWithPasswordInput = {
   password: Scalars["String"]["input"];
   /** The proposed password for the user (again), in plain text. */
   passwordConfirmation: Scalars["String"]["input"];
-  username: Scalars["String"]["input"];
+  username?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type RegisterWithPasswordMetadata = {
@@ -783,7 +783,7 @@ export type User = {
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
   moderator: Scalars["Boolean"]["output"];
-  username: Scalars["String"]["output"];
+  username?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type UserFilterAdmin = {
@@ -869,7 +869,7 @@ export type UserFilterUsername = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
@@ -966,7 +966,7 @@ export type RegisterWithPasswordMutation = {
       __typename?: "User";
       id: string;
       email: string;
-      username: string;
+      username?: string | null;
       admin: boolean;
       firstName?: string | null;
       lastName?: string | null;
