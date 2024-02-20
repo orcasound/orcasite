@@ -56,7 +56,7 @@ const HomePage: NextPageWithLayout = () => {
                 sx={{ py: 2 }}
                 onClick={() => analytics.about.listenTabClicked()}
               >
-                Start listening
+                Select listening location
               </Button>
             </Link>
           </Box>
