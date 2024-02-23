@@ -1,0 +1,26 @@
+# Automatically opens PRs for dependency updates.
+# Can be turned on and off for org or repository via "Code security and analysis" tab .
+# See https://docs.github.com/en/code-security/dependabot/dependabot-alerts/configuring-dependabot-alerts
+version: 2
+updates:
+  # Updates Elixir dependencies
+  - package-ecosystem: mix
+    directory: server/
+    # Checks every Monday morning at 5am Pacific.
+    schedule: &weekly_schedule
+      interval: weekly
+      day: monday
+      time: 05:00
+      timezone: America/Los_Angeles
+    # Will only open a maximum of 3 PRs
+    open-pull-requests-limit: 3
+  # Updates GHA dependencies
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: *weekly_schedule
+    open-pull-requests-limit: 3
+  # Updates JavaScript dependencies
+  - package-ecosystem: npm
+    directory: /ui
+    schedule: *weekly_schedule
+    open-pull-requests-limit: 3
