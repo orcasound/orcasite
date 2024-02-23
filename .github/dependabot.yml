@@ -9,7 +9,7 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: 05:00
+      time: "05:00"
       timezone: America/Los_Angeles
     # Will only open a maximum of 3 PRs
     open-pull-requests-limit: 3
@@ -19,7 +19,7 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: 05:00
+      time: "05:00"
       timezone: America/Los_Angeles
     open-pull-requests-limit: 3
   # Updates JavaScript dependencies
@@ -28,6 +28,6 @@ updates:
     schedule:
       interval: weekly
       day: monday
-      time: 05:00
+      time: "05:00"
       timezone: America/Los_Angeles
     open-pull-requests-limit: 3
