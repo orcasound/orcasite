@@ -85,7 +85,7 @@ defmodule Orcasite.Mixfile do
       {:ash_authentication, "~> 3.12.0"},
       {:ash_authentication_phoenix, "~> 1.9.0"},
       {:syn, "~> 3.3"},
-      {:mjml, "~> 1.5.0"},
+      {:mjml, "~> 3.0.1"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
       {:ash_uuid, "~> 0.4"},
       {:ash_graphql, "~> 0.26.6"},
