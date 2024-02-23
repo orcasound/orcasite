@@ -72,7 +72,7 @@ defmodule Orcasite.Mixfile do
       {:jason, "~> 1.2"},
       # Reverse proxy for proxying to nextjs app
       {:reverse_proxy_plug, "~> 2.1"},
-      {:httpoison, "~> 1.8"},
+      {:httpoison, "~> 2.2"},
       {:corsica, "~> 1.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
