@@ -6,8 +6,7 @@ updates:
   # Updates Elixir dependencies
   - package-ecosystem: mix
     directory: server/
-    # Checks every Monday morning at 5am Pacific.
-    schedule: &weekly_schedule
+    schedule:
       interval: weekly
       day: monday
       time: 05:00
@@ -17,10 +16,18 @@ updates:
   # Updates GHA dependencies
   - package-ecosystem: github-actions
     directory: /
-    schedule: *weekly_schedule
+    schedule:
+      interval: weekly
+      day: monday
+      time: 05:00
+      timezone: America/Los_Angeles
     open-pull-requests-limit: 3
   # Updates JavaScript dependencies
   - package-ecosystem: npm
     directory: /ui
-    schedule: *weekly_schedule
+    schedule:
+      interval: weekly
+      day: monday
+      time: 05:00
+      timezone: America/Los_Angeles
     open-pull-requests-limit: 3
