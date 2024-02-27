@@ -49,6 +49,10 @@ defmodule Orcasite.Radio.Detection do
   relationships do
     belongs_to :candidate, Candidate
     belongs_to :feed, Feed
+
+    belongs_to :user, Orcasite.Accounts.User do
+      api Orcasite.Accounts
+    end
   end
 
   policies do
@@ -181,6 +185,17 @@ defmodule Orcasite.Radio.Detection do
 
       change manage_relationship(:feed_id, :feed, type: :append)
 
+      change fn changeset, %{actor: actor} ->
+        case actor do
+          %Orcasite.Accounts.User{} ->
+            changeset
+            |> Ash.Changeset.manage_relationship(:user, actor, type: :append)
+
+          _ ->
+            changeset
+        end
+      end
+
       change fn changeset, _context ->
         playlist_timestamp = changeset |> Ash.Changeset.get_argument(:playlist_timestamp)
         player_offset = changeset |> Ash.Changeset.get_argument(:player_offset)
@@ -273,6 +288,9 @@ defmodule Orcasite.Radio.Detection do
 
   graphql do
     type :detection
+    # Remove user until we want to make use of this behind
+    # an authenticated/authorized call
+    hide_fields [:user]
 
     queries do
       get :detection, :read
