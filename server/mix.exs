@@ -66,7 +66,7 @@ defmodule Orcasite.Mixfile do
       # Algorithm used by Comeonin to hash password
       {:bcrypt_elixir, "~> 3.0"},
       # JSON parser, works with Absinthe out of the box
-      {:poison, "~> 4.0"},
+      {:poison, "~> 5.0"},
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 3.0"},
       {:jason, "~> 1.2"},
