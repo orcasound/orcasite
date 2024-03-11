@@ -61,7 +61,6 @@ defmodule Orcasite.Notifications.Job do
 
       argument :event_type, :atom do
         constraints one_of: Orcasite.Notifications.Event.types()
-        default :confirmed_candidate
       end
 
       filter expr(
@@ -121,9 +120,5 @@ defmodule Orcasite.Notifications.Job do
     args
     |> Map.get("meta")
     |> Jason.encode!()
-  end
-
-  def format_date(date) do
-    Calendar.strftime(date, "%m/%d %H:%M:%S %Z")
   end
 end
