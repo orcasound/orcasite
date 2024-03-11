@@ -24,6 +24,7 @@ defmodule Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta do
            {:get_notif, Notifications.get(Notification, changeset.arguments.notification)} do
       changeset
       |> Ash.Changeset.change_attribute(:meta, %{
+        email: Map.get(subscription.meta, "email"),
         subscriber_name: Map.get(subscription.meta, "name"),
         channel: Map.get(subscription.meta, "channel"),
         event_type: notification.event_type,

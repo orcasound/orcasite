@@ -10,5 +10,6 @@ defmodule Orcasite.Notifications.Registry do
     entry Orcasite.Notifications.Subscription
     entry Orcasite.Notifications.NotificationInstance
     entry Orcasite.Notifications.Token
+    entry Orcasite.Notifications.Job
   end
 end
