@@ -76,7 +76,11 @@ function MapLayout({ children }: { children: ReactNode }) {
         flexDirection: "column",
       }}
     >
-      <Header />
+      <Header
+        onBrandClick={() => {
+          setDrawerOpen(true);
+        }}
+      />
       <Box sx={{ flexGrow: 1, display: "flex" }}>
         <Drawer
           setOpen={setDrawerOpen}

@@ -28,7 +28,11 @@ import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 
-export default function Header() {
+export default function Header({
+  onBrandClick,
+}: {
+  onBrandClick?: () => void;
+}) {
   return (
     <AppBar
       position="static"
@@ -38,14 +42,14 @@ export default function Header() {
       }}
     >
       <Toolbar>
-        <Mobile />
+        <Mobile onBrandClick={onBrandClick} />
         <Desktop />
       </Toolbar>
     </AppBar>
   );
 }
 
-function Mobile(props: { window?: () => Window }) {
+function Mobile(props: { window?: () => Window; onBrandClick?: () => void }) {
   const { window } = props;
   const drawerWidth = "100%";
   const [menuIsOpen, setMenuOpen] = useState(false);
@@ -96,7 +100,7 @@ function Mobile(props: { window?: () => Window }) {
         >
           {menuIsOpen ? <Close /> : <Menu />}
         </IconButton>
-        <Brand />
+        <Brand onClick={props.onBrandClick} />
       </Box>
       <nav>
         <Drawer
@@ -252,7 +256,7 @@ function Desktop() {
   );
 }
 
-function Brand() {
+function Brand({ onClick }: { onClick?: () => void }) {
   return (
     <Typography variant="h6" noWrap overflow="visible">
       <Link
@@ -265,7 +269,10 @@ function Brand() {
           alignItems: "center",
           justifyContent: "center",
         }}
-        onClick={() => analytics.nav.logoClicked()}
+        onClick={() => {
+          if (onClick) onClick();
+          analytics.nav.logoClicked();
+        }}
       >
         <Image
           src={wordmark.src}
