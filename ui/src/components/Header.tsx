@@ -49,8 +49,13 @@ export default function Header({
   );
 }
 
-function Mobile(props: { window?: () => Window; onBrandClick?: () => void }) {
-  const { window } = props;
+function Mobile({
+  window,
+  onBrandClick,
+}: {
+  window?: () => Window;
+  onBrandClick?: () => void;
+}) {
   const drawerWidth = "100%";
   const [menuIsOpen, setMenuOpen] = useState(false);
 
@@ -100,7 +105,7 @@ function Mobile(props: { window?: () => Window; onBrandClick?: () => void }) {
         >
           {menuIsOpen ? <Close /> : <Menu />}
         </IconButton>
-        <Brand onClick={props.onBrandClick} />
+        <Brand onClick={onBrandClick} />
       </Box>
       <nav>
         <Drawer
