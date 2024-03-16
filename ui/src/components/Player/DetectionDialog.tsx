@@ -126,9 +126,25 @@ export default function DetectionDialog({
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">
-          {!submitted ? "Report what you heard" : "Thanks for submitting!"}
-        </DialogTitle>
+        {!submitted ? (
+          <DialogTitle id="form-dialog-title">
+            Report what you heard
+          </DialogTitle>
+        ) : (
+          <DialogTitle
+            id="form-dialog-title"
+            variant="h3"
+            mt={4}
+            align="center"
+            sx={{
+              color: (theme) => theme.palette.accent5.main,
+              fontWeight: 600,
+            }}
+          >
+            Thank you for reporting
+          </DialogTitle>
+        )}
+
         {!submitted && (
           <DialogContent>
             <ToggleButtonGroup
