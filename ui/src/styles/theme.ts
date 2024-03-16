@@ -13,6 +13,7 @@ declare module "@mui/material/styles" {
     accent2: Palette["primary"];
     accent3: Palette["primary"];
     accent4: Palette["primary"];
+    accent5: Palette["primary"];
   }
   interface PaletteOptions {
     base: PaletteOptions["primary"];
@@ -20,6 +21,7 @@ declare module "@mui/material/styles" {
     accent2: PaletteOptions["primary"];
     accent3: PaletteOptions["primary"];
     accent4: PaletteOptions["primary"];
+    accent5: PaletteOptions["primary"];
   }
 }
 
@@ -80,6 +82,12 @@ const theme = createTheme({
         main: "#258dad",
       },
       name: "accent4",
+    }),
+    accent5: helperTheme.palette.augmentColor({
+      color: {
+        main: "#458AA8",
+      },
+      name: "accent5",
     }),
     error: {
       main: "#e9222f",
