@@ -102,6 +102,7 @@ const DetectionsPage: NextPageWithLayout = () => {
               router.back();
             }}
             className="p-4"
+            sx={{ overflow: "scroll" }}
           >
             <Box p={4}>
               <Paper sx={{ overflow: "auto" }}>
