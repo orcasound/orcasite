@@ -182,6 +182,7 @@ defmodule Orcasite.Radio.Detection do
       change set_attribute(:listener_count, arg(:listener_count))
       change set_attribute(:description, arg(:description))
       change set_attribute(:category, arg(:category))
+      change set_attribute(:source_ip, context(:actor_ip))
 
       change manage_relationship(:feed_id, :feed, type: :append)
 

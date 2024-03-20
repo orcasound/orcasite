@@ -11,25 +11,25 @@ defmodule OrcasiteWeb.Router do
   # them for the :nextjs pipeline, only :browser and :graphql
   # See https://github.com/tallarium/reverse_proxy_plug#usage-in-phoenix
   pipeline :parsers do
-    plug(Plug.Parsers,
+    plug Plug.Parsers,
       parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
       pass: ["*/*"],
       json_decoder: Phoenix.json_library()
-    )
 
-    plug(Plug.MethodOverride)
-    plug(Plug.Head)
+    plug Plug.MethodOverride
+    plug Plug.Head
   end
 
   pipeline :browser do
-    plug(:parsers)
-    plug(:accepts, ["html"])
-    plug(:fetch_session)
-    plug(:fetch_live_flash)
-    plug(:put_root_layout, {OrcasiteWeb.Layouts, :root})
-    plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+    plug :parsers
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, {OrcasiteWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
     plug :load_from_session
+    plug :set_actor_ip
   end
 
   pipeline :require_admin do
@@ -37,21 +37,23 @@ defmodule OrcasiteWeb.Router do
   end
 
   pipeline :nextjs do
-    plug(:accepts, ["html"])
-    plug(:put_secure_browser_headers)
+    plug :accepts, ["html"]
+    plug :put_secure_browser_headers
   end
 
   pipeline :api do
-    plug(:parsers)
-    plug(:accepts, ["json"])
+    plug :parsers
+    plug :accepts, ["json"]
     plug :load_from_bearer
+    plug :set_actor_ip
   end
 
   pipeline :graphql do
-    plug(:parsers)
+    plug :parsers
     plug :fetch_session
     plug :load_from_session
     plug :set_current_user_as_actor
+    plug :set_actor_ip
     plug AshGraphql.Plug
   end
 
@@ -138,17 +140,12 @@ defmodule OrcasiteWeb.Router do
 
   scope "/" do
     pipe_through(:nextjs)
+    ui_port = System.get_env("UI_PORT") || "3000"
 
-    # if Mix.env() == :dev do
-    #   get("/*page", OrcasiteWeb.PageController, :index)
-    # else
-      ui_port = System.get_env("UI_PORT") || "3000"
-
-      forward("/", ReverseProxyPlug,
-        upstream: "http://localhost:#{ui_port}",
-        error_callback: &__MODULE__.log_reverse_proxy_error/1
-      )
-    # end
+    forward("/", ReverseProxyPlug,
+      upstream: "http://localhost:#{ui_port}",
+      error_callback: &__MODULE__.log_reverse_proxy_error/1
+    )
   end
 
   def log_reverse_proxy_error(error) do
@@ -204,4 +201,22 @@ defmodule OrcasiteWeb.Router do
   end
 
   defp set_current_user_as_actor(conn, _opts), do: conn
+
+  def set_actor_ip(conn, _opts) do
+    actor_ip =
+      Plug.Conn.get_req_header(conn, "x-forwarded-for")
+      |> case do
+        [ip] ->
+          ip
+
+        _ ->
+          conn.remote_ip
+          |> Tuple.to_list()
+          |> Enum.join(".")
+      end
+
+    Ash.PlugHelpers.set_context(conn, %{actor_ip: actor_ip})
+  end
+
+  defp inspect_conn(conn, _opts), do: conn |> dbg
 end

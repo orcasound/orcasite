@@ -45,7 +45,7 @@ export type CancelCandidateNotificationsInput = {
 export type CancelCandidateNotificationsResult = {
   __typename?: "CancelCandidateNotificationsResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Candidate>;
 };
@@ -54,7 +54,7 @@ export type CancelCandidateNotificationsResult = {
 export type CancelNotificationResult = {
   __typename?: "CancelNotificationResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Notification>;
 };
@@ -186,10 +186,12 @@ export type DetectionFilterDescription = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -251,10 +253,12 @@ export type DetectionFilterSourceIp = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -320,10 +324,12 @@ export type FeedFilterImageUrl = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -345,10 +351,12 @@ export type FeedFilterIntroHtml = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -360,10 +368,12 @@ export type FeedFilterName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -371,10 +381,12 @@ export type FeedFilterNodeName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -382,10 +394,12 @@ export type FeedFilterSlug = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -427,7 +441,7 @@ export type MutationError = {
   /** An error code for the given error */
   code?: Maybe<Scalars["String"]["output"]>;
   /** The field or fields that produced the error */
-  fields?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  fields?: Maybe<Array<Scalars["String"]["output"]>>;
   /** The human readable error message */
   message?: Maybe<Scalars["String"]["output"]>;
   /** A shorter error message, with vars not replaced */
@@ -543,7 +557,7 @@ export type NotifyConfirmedCandidateInput = {
 export type NotifyConfirmedCandidateResult = {
   __typename?: "NotifyConfirmedCandidateResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Notification>;
 };
@@ -603,7 +617,7 @@ export type RegisterWithPasswordMetadata = {
 export type RegisterWithPasswordResult = {
   __typename?: "RegisterWithPasswordResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** Metadata produced by the mutation */
   metadata?: Maybe<RegisterWithPasswordMetadata>;
   /** The successful result of the mutation */
@@ -616,18 +630,18 @@ export type RequestPasswordResetInput = {
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
-  cancelCandidateNotifications?: Maybe<CancelCandidateNotificationsResult>;
-  cancelNotification?: Maybe<CancelNotificationResult>;
+  cancelCandidateNotifications: CancelCandidateNotificationsResult;
+  cancelNotification: CancelNotificationResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
-  notifyConfirmedCandidate?: Maybe<NotifyConfirmedCandidateResult>;
+  notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
   /** Register a new user with a username and password. */
-  registerWithPassword?: Maybe<RegisterWithPasswordResult>;
+  registerWithPassword: RegisterWithPasswordResult;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   resetPassword?: Maybe<PasswordResetResult>;
-  setDetectionVisible?: Maybe<SetDetectionVisibleResult>;
+  setDetectionVisible: SetDetectionVisibleResult;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
-  submitDetection?: Maybe<SubmitDetectionResult>;
+  submitDetection: SubmitDetectionResult;
 };
 
 export type RootMutationTypeCancelCandidateNotificationsArgs = {
@@ -732,7 +746,7 @@ export type SetDetectionVisibleInput = {
 export type SetDetectionVisibleResult = {
   __typename?: "SetDetectionVisibleResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
 };
@@ -770,7 +784,7 @@ export type SubmitDetectionInput = {
 export type SubmitDetectionResult = {
   __typename?: "SubmitDetectionResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
 };
@@ -812,10 +826,12 @@ export type UserFilterFirstName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -847,10 +863,12 @@ export type UserFilterLastName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -869,10 +887,12 @@ export type UserFilterUsername = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -882,18 +902,18 @@ export type CancelCandidateNotificationsMutationVariables = Exact<{
 
 export type CancelCandidateNotificationsMutation = {
   __typename?: "RootMutationType";
-  cancelCandidateNotifications?: {
+  cancelCandidateNotifications: {
     __typename?: "CancelCandidateNotificationsResult";
     result?: { __typename?: "Candidate"; id: string } | null;
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type CancelNotificationMutationVariables = Exact<{
@@ -902,7 +922,7 @@ export type CancelNotificationMutationVariables = Exact<{
 
 export type CancelNotificationMutation = {
   __typename?: "RootMutationType";
-  cancelNotification?: {
+  cancelNotification: {
     __typename?: "CancelNotificationResult";
     result?: {
       __typename?: "Notification";
@@ -914,12 +934,12 @@ export type CancelNotificationMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type NotifyConfirmedCandidateMutationVariables = Exact<{
@@ -929,7 +949,7 @@ export type NotifyConfirmedCandidateMutationVariables = Exact<{
 
 export type NotifyConfirmedCandidateMutation = {
   __typename?: "RootMutationType";
-  notifyConfirmedCandidate?: {
+  notifyConfirmedCandidate: {
     __typename?: "NotifyConfirmedCandidateResult";
     result?: {
       __typename?: "Notification";
@@ -941,12 +961,12 @@ export type NotifyConfirmedCandidateMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type RegisterWithPasswordMutationVariables = Exact<{
@@ -960,7 +980,7 @@ export type RegisterWithPasswordMutationVariables = Exact<{
 
 export type RegisterWithPasswordMutation = {
   __typename?: "RootMutationType";
-  registerWithPassword?: {
+  registerWithPassword: {
     __typename?: "RegisterWithPasswordResult";
     result?: {
       __typename?: "User";
@@ -975,11 +995,11 @@ export type RegisterWithPasswordMutation = {
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type RequestPasswordResetMutationVariables = Exact<{
@@ -1004,7 +1024,7 @@ export type ResetPasswordMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
@@ -1027,7 +1047,7 @@ export type SetDetectionVisibleMutationVariables = Exact<{
 
 export type SetDetectionVisibleMutation = {
   __typename?: "RootMutationType";
-  setDetectionVisible?: {
+  setDetectionVisible: {
     __typename?: "SetDetectionVisibleResult";
     result?: {
       __typename?: "Detection";
@@ -1037,12 +1057,12 @@ export type SetDetectionVisibleMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type SignInWithPasswordMutationVariables = Exact<{
@@ -1066,7 +1086,7 @@ export type SignInWithPasswordMutation = {
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
     } | null> | null;
@@ -1091,18 +1111,18 @@ export type SubmitDetectionMutationVariables = Exact<{
 
 export type SubmitDetectionMutation = {
   __typename?: "RootMutationType";
-  submitDetection?: {
+  submitDetection: {
     __typename?: "SubmitDetectionResult";
     result?: { __typename?: "Detection"; id: string } | null;
     errors?: Array<{
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type CandidateQueryVariables = Exact<{
@@ -1230,6 +1250,7 @@ export type CandidatesQuery = {
         playerOffset: number;
         timestamp: Date;
         visible?: boolean | null;
+        sourceIp?: string | null;
       }>;
     }> | null;
   } | null;
@@ -1960,6 +1981,7 @@ export const CandidatesDocument = `
         playerOffset
         timestamp
         visible
+        sourceIp
       }
     }
   }
