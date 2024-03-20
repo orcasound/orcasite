@@ -217,6 +217,4 @@ defmodule OrcasiteWeb.Router do
 
     Ash.PlugHelpers.set_context(conn, %{actor_ip: actor_ip})
   end
-
-  defp inspect_conn(conn, _opts), do: conn |> dbg
 end
