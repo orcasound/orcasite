@@ -137,7 +137,7 @@ export default function DetectionDialog({
             mt={4}
             align="center"
             sx={{
-              color: (theme) => theme.palette.accent5.main,
+              color: (theme) => theme.palette.primary.main,
               fontWeight: 600,
             }}
           >
