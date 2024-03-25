@@ -43,7 +43,7 @@ export function useTimestampFetcher(
 
   useEffect(() => {
     let currentXhr: XMLHttpRequest | undefined;
-    let intervalId: NodeJS.Timer | undefined;
+    let intervalId: NodeJS.Timeout | undefined;
 
     const fetchTimestamp = (feed: string) => {
       const timestampURI = `${S3_BUCKET_BASE}/${feed}/latest.txt`;
