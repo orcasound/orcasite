@@ -24,6 +24,7 @@
     "@fontsource/mukta": "^5.0.19",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
+    "@mui/material-nextjs": "^5.15.11",
     "@tanstack/react-query": "^4.32.0",
     "clsx": "^2.0.0",
     "dotenv-cli": "^7.2.1",
