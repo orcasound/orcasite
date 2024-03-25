@@ -16,6 +16,7 @@ const config: CodegenConfig = {
         "typescript-react-query",
       ],
       config: {
+        reactQueryVersion: 5,
         fetcher: "@/graphql/client#fetcher",
         exposeDocument: true,
         exposeFetcher: true,

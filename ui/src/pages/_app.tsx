@@ -2,7 +2,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import {
-  Hydrate,
+  HydrationBoundary,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -39,7 +39,7 @@ export default function MyApp(props: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
 
   // Configure react-query using the hydration setup
-  // https://react-query.tanstack.com/guides/ssr#using-hydration
+  // https://tanstack.com/query/latest/docs/framework/react/guides/ssr
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -53,7 +53,7 @@ export default function MyApp(props: AppPropsWithLayout) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Hydrate state={pageProps.dehydratedState}>
+      <HydrationBoundary state={pageProps.dehydratedState}>
         <AppCacheProvider {...props}>
           <Head>
             <title>Orcasound</title>
@@ -67,7 +67,7 @@ export default function MyApp(props: AppPropsWithLayout) {
             {getLayout(<Component {...pageProps} />)}
           </ThemeProvider>
         </AppCacheProvider>
-      </Hydrate>
+      </HydrationBoundary>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
