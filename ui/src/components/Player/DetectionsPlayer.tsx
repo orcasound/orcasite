@@ -73,7 +73,7 @@ export function DetectionsPlayer({
 
       player.on("playing", () => {
         setPlayerStatus("playing");
-        const currentTime = player.currentTime();
+        const currentTime = player.currentTime() ?? 0;
         if (currentTime < startOffset || currentTime > endOffset) {
           player.currentTime(startOffset);
           setPlayerTime(endOffset);
@@ -85,7 +85,7 @@ export function DetectionsPlayer({
       player.currentTime(startOffset);
 
       player.on("timeupdate", () => {
-        const currentTime = player.currentTime();
+        const currentTime = player.currentTime() ?? 0;
         if (currentTime > endOffset) {
           player.currentTime(startOffset);
           setPlayerTime(startOffset);
