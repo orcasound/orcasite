@@ -77,6 +77,17 @@ defmodule Orcasite.Radio.Detection do
     end
   end
 
+  field_policies do
+    field_policy [:source_ip] do
+      authorize_if actor_attribute_equals(:admin, true)
+      authorize_if actor_attribute_equals(:moderator, true)
+    end
+
+    field_policy :* do
+      authorize_if always()
+    end
+  end
+
   actions do
     defaults [:destroy]
 
