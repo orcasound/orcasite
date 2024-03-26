@@ -73,10 +73,10 @@ export async function getStaticPaths() {
 
   let response;
   try {
-    response = await queryClient.fetchQuery(
-      useFeedsQuery.getKey(),
-      useFeedsQuery.fetcher(),
-    );
+    response = await queryClient.fetchQuery({
+      queryKey: useFeedsQuery.getKey(),
+      queryFn: useFeedsQuery.fetcher(),
+    });
   } catch (error) {
     console.error(error);
   }
@@ -91,10 +91,10 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }: { params: { feed: string } }) {
   const queryClient = new QueryClient();
   await getMapStaticProps(queryClient);
-  await queryClient.prefetchQuery(
-    useFeedQuery.getKey({ slug: params.feed }),
-    useFeedQuery.fetcher({ slug: params.feed }),
-  );
+  await queryClient.prefetchQuery({
+    queryKey: useFeedQuery.getKey({ slug: params.feed }),
+    queryFn: useFeedQuery.fetcher({ slug: params.feed }),
+  });
 
   return {
     props: {
