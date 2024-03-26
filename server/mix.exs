@@ -98,7 +98,8 @@ defmodule Orcasite.Mixfile do
       {:hammer_backend_redis, "~> 6.1"},
       {:hammer, "~> 6.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ex_unit_notifier, "~> 1.2", only: :test}
+      {:ex_unit_notifier, "~> 1.2", only: :test},
+      {:remote_ip, "~> 1.1"}
     ]
   end
 

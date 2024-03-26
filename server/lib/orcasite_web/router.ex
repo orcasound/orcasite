@@ -18,6 +18,7 @@ defmodule OrcasiteWeb.Router do
 
     plug Plug.MethodOverride
     plug Plug.Head
+    plug RemoteIp
   end
 
   pipeline :browser do
@@ -204,16 +205,9 @@ defmodule OrcasiteWeb.Router do
 
   def set_actor_ip(conn, _opts) do
     actor_ip =
-      Plug.Conn.get_req_header(conn, "x-forwarded-for")
-      |> case do
-        [ip] ->
-          ip
-
-        _ ->
-          conn.remote_ip
-          |> Tuple.to_list()
-          |> Enum.join(".")
-      end
+      conn.remote_ip
+      |> Tuple.to_list()
+      |> Enum.join(".")
 
     Ash.PlugHelpers.set_context(conn, %{actor_ip: actor_ip})
   end
