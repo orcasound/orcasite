@@ -42,10 +42,10 @@ FeedsPage.getLayout = getMapLayout;
 export async function getStaticProps() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(
-    useFeedsQuery.getKey(),
-    useFeedsQuery.fetcher(),
-  );
+  await queryClient.prefetchQuery({
+    queryKey: useFeedsQuery.getKey(),
+    queryFn: useFeedsQuery.fetcher(),
+  });
 
   return {
     props: {
