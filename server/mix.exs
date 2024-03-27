@@ -53,7 +53,7 @@ defmodule Orcasite.Mixfile do
       {:phoenix_live_dashboard, "~> 0.8.0"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
-      {:swoosh, "~> 1.3"},
+      {:swoosh, "~> 1.16"},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.20"},
@@ -76,8 +76,8 @@ defmodule Orcasite.Mixfile do
       {:corsica, "~> 2.1"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
-      {:ash, "~> 2.6", override: true},
-      {:ash_admin, github: "ash-project/ash_admin", branch: "main"},
+      {:ash, "~> 2.21.2"},
+      {:ash_admin, "~> 0.10.8"},
       {:ash_postgres, "~> 1.3"},
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
@@ -98,7 +98,8 @@ defmodule Orcasite.Mixfile do
       {:hammer_backend_redis, "~> 6.1"},
       {:hammer, "~> 6.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ex_unit_notifier, "~> 1.2", only: :test}
+      {:ex_unit_notifier, "~> 1.2", only: :test},
+      {:remote_ip, "~> 1.1"}
     ]
   end
 

@@ -28,7 +28,7 @@ export function fetcher<TData, TVariables>(
 
     const json = await res.json();
 
-    if (json.errors) {
+    if (json.errors && (!json.data || Object.keys(json.data).length === 0)) {
       const { message } = json.errors[0];
       throw new Error(message);
     }
