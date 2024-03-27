@@ -71,13 +71,13 @@ export default function ResetPasswordForm({
         type="password"
         value={passwordConfirmation}
         error={
-          !!errors.find(
-            (error) => error?.fields?.includes("password_confirmation"),
+          !!errors.find((error) =>
+            error?.fields?.includes("password_confirmation"),
           )
         }
         helperText={errorToString(
-          errors.find(
-            (error) => error?.fields?.includes("password_confirmation"),
+          errors.find((error) =>
+            error?.fields?.includes("password_confirmation"),
           ),
           true,
         )}

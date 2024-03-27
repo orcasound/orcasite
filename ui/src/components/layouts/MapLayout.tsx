@@ -190,8 +190,8 @@ export function getMapLayout(page: ReactElement) {
 }
 
 export async function getMapStaticProps(queryClient: QueryClient) {
-  await queryClient.prefetchQuery(
-    useFeedsQuery.getKey(),
-    useFeedsQuery.fetcher(),
-  );
+  await queryClient.prefetchQuery({
+    queryKey: useFeedsQuery.getKey(),
+    queryFn: useFeedsQuery.fetcher(),
+  });
 }
