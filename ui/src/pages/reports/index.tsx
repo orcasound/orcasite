@@ -1,8 +1,6 @@
 import {
-  Box,
   Button,
   Chip,
-  Modal,
   Paper,
   Table,
   TableBody,
@@ -11,14 +9,11 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
 } from "@mui/material";
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import DetectionsTable from "@/components/DetectionsTable";
 import { getReportsLayout } from "@/components/layouts/ReportsLayout";
 import {
   CandidatesQuery,
@@ -26,7 +21,6 @@ import {
   useGetCurrentUserQuery,
 } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
 
 type CandidateQueryCandidates = NonNullable<CandidatesQuery["candidates"]>;
@@ -48,19 +42,10 @@ const getCategoryCounts = (candidate: CandidateQueryResult) => {
 };
 
 const DetectionsPage: NextPageWithLayout = () => {
-  const router = useRouter();
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
 
-  const searchParams = useSearchParams();
-
-  const candidateIdParam = searchParams.get("candidateId");
-
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
-
-  const [detectionModalOpen, setDetectionModalOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] =
-    useState<CandidateQueryResult>();
 
   // TODO: Filter by feed
   const candidatesQuery = useCandidatesQuery({
@@ -73,18 +58,6 @@ const DetectionsPage: NextPageWithLayout = () => {
     () => candidatesQuery?.data?.candidates?.results ?? [],
     [candidatesQuery?.data?.candidates?.results],
   );
-
-  useEffect(() => {
-    if (candidateIdParam) {
-      const candidate = candidates.find((c) => c.id === candidateIdParam);
-      if (candidate) {
-        setSelectedCandidate(candidate);
-        setDetectionModalOpen(true);
-        analytics.reports.reportOpened(candidateIdParam);
-      }
-    }
-  }, [candidates, candidateIdParam]);
-
   return (
     <div>
       <Head>
@@ -95,49 +68,6 @@ const DetectionsPage: NextPageWithLayout = () => {
         <h1>Reports</h1>
 
         <Paper elevation={1} sx={{ overflow: "auto" }}>
-          <Modal
-            open={detectionModalOpen}
-            onClose={() => {
-              setDetectionModalOpen(false);
-              router.back();
-            }}
-            className="p-4"
-          >
-            <Box p={4}>
-              <Paper sx={{ overflow: "auto" }}>
-                <Box p={5}>
-                  <Box display="flex" justifyContent="space-between">
-                    <Box>
-                      <Typography variant="h4">Detections</Typography>
-                      <Typography variant="body2">
-                        Candidate {selectedCandidate?.id}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      {currentUser?.moderator && selectedCandidate && (
-                        <Chip
-                          variant="outlined"
-                          label={
-                            selectedCandidate?.visible ? "Visible" : "Hidden"
-                          }
-                        />
-                      )}
-                    </Box>
-                  </Box>
-                  {selectedCandidate && (
-                    <DetectionsTable
-                      detections={selectedCandidate.detections}
-                      feed={selectedCandidate.feed}
-                      candidate={selectedCandidate}
-                      onDetectionUpdate={() => {
-                        candidatesQuery.refetch();
-                      }}
-                    />
-                  )}
-                </Box>
-              </Paper>
-            </Box>
-          </Modal>
           <Table>
             <TableHead>
               <TableRow>
@@ -198,8 +128,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                   )}
                   <TableCell align="center">
                     <Link
-                      href={`/reports/?candidateId=${candidate.id}`}
-                      as={`/reports/${candidate.id}`}
+                      href={`/reports/${candidate.id}`}
                       scroll={false}
                       shallow={true}
                     >

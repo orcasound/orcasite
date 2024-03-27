@@ -45,7 +45,7 @@ export type CancelCandidateNotificationsInput = {
 export type CancelCandidateNotificationsResult = {
   __typename?: "CancelCandidateNotificationsResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Candidate>;
 };
@@ -54,7 +54,7 @@ export type CancelCandidateNotificationsResult = {
 export type CancelNotificationResult = {
   __typename?: "CancelNotificationResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Notification>;
 };
@@ -186,10 +186,12 @@ export type DetectionFilterDescription = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -251,10 +253,12 @@ export type DetectionFilterSourceIp = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -320,10 +324,12 @@ export type FeedFilterImageUrl = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -345,10 +351,12 @@ export type FeedFilterIntroHtml = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -360,10 +368,12 @@ export type FeedFilterName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -371,10 +381,12 @@ export type FeedFilterNodeName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -382,10 +394,12 @@ export type FeedFilterSlug = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -427,7 +441,7 @@ export type MutationError = {
   /** An error code for the given error */
   code?: Maybe<Scalars["String"]["output"]>;
   /** The field or fields that produced the error */
-  fields?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  fields?: Maybe<Array<Scalars["String"]["output"]>>;
   /** The human readable error message */
   message?: Maybe<Scalars["String"]["output"]>;
   /** A shorter error message, with vars not replaced */
@@ -543,7 +557,7 @@ export type NotifyConfirmedCandidateInput = {
 export type NotifyConfirmedCandidateResult = {
   __typename?: "NotifyConfirmedCandidateResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Notification>;
 };
@@ -603,7 +617,7 @@ export type RegisterWithPasswordMetadata = {
 export type RegisterWithPasswordResult = {
   __typename?: "RegisterWithPasswordResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** Metadata produced by the mutation */
   metadata?: Maybe<RegisterWithPasswordMetadata>;
   /** The successful result of the mutation */
@@ -616,18 +630,18 @@ export type RequestPasswordResetInput = {
 
 export type RootMutationType = {
   __typename?: "RootMutationType";
-  cancelCandidateNotifications?: Maybe<CancelCandidateNotificationsResult>;
-  cancelNotification?: Maybe<CancelNotificationResult>;
+  cancelCandidateNotifications: CancelCandidateNotificationsResult;
+  cancelNotification: CancelNotificationResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
-  notifyConfirmedCandidate?: Maybe<NotifyConfirmedCandidateResult>;
+  notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
   /** Register a new user with a username and password. */
-  registerWithPassword?: Maybe<RegisterWithPasswordResult>;
+  registerWithPassword: RegisterWithPasswordResult;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   resetPassword?: Maybe<PasswordResetResult>;
-  setDetectionVisible?: Maybe<SetDetectionVisibleResult>;
+  setDetectionVisible: SetDetectionVisibleResult;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
-  submitDetection?: Maybe<SubmitDetectionResult>;
+  submitDetection: SubmitDetectionResult;
 };
 
 export type RootMutationTypeCancelCandidateNotificationsArgs = {
@@ -732,7 +746,7 @@ export type SetDetectionVisibleInput = {
 export type SetDetectionVisibleResult = {
   __typename?: "SetDetectionVisibleResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
 };
@@ -770,7 +784,7 @@ export type SubmitDetectionInput = {
 export type SubmitDetectionResult = {
   __typename?: "SubmitDetectionResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors?: Maybe<Array<MutationError>>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
 };
@@ -812,10 +826,12 @@ export type UserFilterFirstName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -847,10 +863,12 @@ export type UserFilterLastName = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -869,10 +887,12 @@ export type UserFilterUsername = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
   in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -882,18 +902,18 @@ export type CancelCandidateNotificationsMutationVariables = Exact<{
 
 export type CancelCandidateNotificationsMutation = {
   __typename?: "RootMutationType";
-  cancelCandidateNotifications?: {
+  cancelCandidateNotifications: {
     __typename?: "CancelCandidateNotificationsResult";
     result?: { __typename?: "Candidate"; id: string } | null;
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type CancelNotificationMutationVariables = Exact<{
@@ -902,7 +922,7 @@ export type CancelNotificationMutationVariables = Exact<{
 
 export type CancelNotificationMutation = {
   __typename?: "RootMutationType";
-  cancelNotification?: {
+  cancelNotification: {
     __typename?: "CancelNotificationResult";
     result?: {
       __typename?: "Notification";
@@ -914,12 +934,12 @@ export type CancelNotificationMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type NotifyConfirmedCandidateMutationVariables = Exact<{
@@ -929,7 +949,7 @@ export type NotifyConfirmedCandidateMutationVariables = Exact<{
 
 export type NotifyConfirmedCandidateMutation = {
   __typename?: "RootMutationType";
-  notifyConfirmedCandidate?: {
+  notifyConfirmedCandidate: {
     __typename?: "NotifyConfirmedCandidateResult";
     result?: {
       __typename?: "Notification";
@@ -941,12 +961,12 @@ export type NotifyConfirmedCandidateMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type RegisterWithPasswordMutationVariables = Exact<{
@@ -960,7 +980,7 @@ export type RegisterWithPasswordMutationVariables = Exact<{
 
 export type RegisterWithPasswordMutation = {
   __typename?: "RootMutationType";
-  registerWithPassword?: {
+  registerWithPassword: {
     __typename?: "RegisterWithPasswordResult";
     result?: {
       __typename?: "User";
@@ -975,11 +995,11 @@ export type RegisterWithPasswordMutation = {
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type RequestPasswordResetMutationVariables = Exact<{
@@ -1004,7 +1024,7 @@ export type ResetPasswordMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
@@ -1027,7 +1047,7 @@ export type SetDetectionVisibleMutationVariables = Exact<{
 
 export type SetDetectionVisibleMutation = {
   __typename?: "RootMutationType";
-  setDetectionVisible?: {
+  setDetectionVisible: {
     __typename?: "SetDetectionVisibleResult";
     result?: {
       __typename?: "Detection";
@@ -1037,12 +1057,12 @@ export type SetDetectionVisibleMutation = {
     errors?: Array<{
       __typename?: "MutationError";
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type SignInWithPasswordMutationVariables = Exact<{
@@ -1066,7 +1086,7 @@ export type SignInWithPasswordMutation = {
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
     } | null> | null;
@@ -1091,18 +1111,18 @@ export type SubmitDetectionMutationVariables = Exact<{
 
 export type SubmitDetectionMutation = {
   __typename?: "RootMutationType";
-  submitDetection?: {
+  submitDetection: {
     __typename?: "SubmitDetectionResult";
     result?: { __typename?: "Detection"; id: string } | null;
     errors?: Array<{
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
-      fields?: Array<string | null> | null;
+      fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
-  } | null;
+    }> | null;
+  };
 };
 
 export type CandidateQueryVariables = Exact<{
@@ -1268,6 +1288,7 @@ export const CancelCandidateNotificationsDocument = `
   }
 }
     `;
+
 export const useCancelCandidateNotificationsMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1278,21 +1299,23 @@ export const useCancelCandidateNotificationsMutation = <
     CancelCandidateNotificationsMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     CancelCandidateNotificationsMutation,
     TError,
     CancelCandidateNotificationsMutationVariables,
     TContext
-  >(
-    ["cancelCandidateNotifications"],
-    (variables?: CancelCandidateNotificationsMutationVariables) =>
+  >({
+    mutationKey: ["cancelCandidateNotifications"],
+    mutationFn: (variables?: CancelCandidateNotificationsMutationVariables) =>
       fetcher<
         CancelCandidateNotificationsMutation,
         CancelCandidateNotificationsMutationVariables
       >(CancelCandidateNotificationsDocument, variables)(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useCancelCandidateNotificationsMutation.getKey = () => [
   "cancelCandidateNotifications",
 ];
@@ -1305,6 +1328,7 @@ useCancelCandidateNotificationsMutation.fetcher = (
     CancelCandidateNotificationsMutation,
     CancelCandidateNotificationsMutationVariables
   >(CancelCandidateNotificationsDocument, variables, options);
+
 export const CancelNotificationDocument = `
     mutation cancelNotification($id: ID!) {
   cancelNotification(id: $id) {
@@ -1324,6 +1348,7 @@ export const CancelNotificationDocument = `
   }
 }
     `;
+
 export const useCancelNotificationMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1334,21 +1359,23 @@ export const useCancelNotificationMutation = <
     CancelNotificationMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     CancelNotificationMutation,
     TError,
     CancelNotificationMutationVariables,
     TContext
-  >(
-    ["cancelNotification"],
-    (variables?: CancelNotificationMutationVariables) =>
+  >({
+    mutationKey: ["cancelNotification"],
+    mutationFn: (variables?: CancelNotificationMutationVariables) =>
       fetcher<CancelNotificationMutation, CancelNotificationMutationVariables>(
         CancelNotificationDocument,
         variables,
       )(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useCancelNotificationMutation.getKey = () => ["cancelNotification"];
 
 useCancelNotificationMutation.fetcher = (
@@ -1360,6 +1387,7 @@ useCancelNotificationMutation.fetcher = (
     variables,
     options,
   );
+
 export const NotifyConfirmedCandidateDocument = `
     mutation notifyConfirmedCandidate($candidateId: String!, $message: String!) {
   notifyConfirmedCandidate(input: {candidateId: $candidateId, message: $message}) {
@@ -1379,6 +1407,7 @@ export const NotifyConfirmedCandidateDocument = `
   }
 }
     `;
+
 export const useNotifyConfirmedCandidateMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1389,21 +1418,23 @@ export const useNotifyConfirmedCandidateMutation = <
     NotifyConfirmedCandidateMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     NotifyConfirmedCandidateMutation,
     TError,
     NotifyConfirmedCandidateMutationVariables,
     TContext
-  >(
-    ["notifyConfirmedCandidate"],
-    (variables?: NotifyConfirmedCandidateMutationVariables) =>
+  >({
+    mutationKey: ["notifyConfirmedCandidate"],
+    mutationFn: (variables?: NotifyConfirmedCandidateMutationVariables) =>
       fetcher<
         NotifyConfirmedCandidateMutation,
         NotifyConfirmedCandidateMutationVariables
       >(NotifyConfirmedCandidateDocument, variables)(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useNotifyConfirmedCandidateMutation.getKey = () => ["notifyConfirmedCandidate"];
 
 useNotifyConfirmedCandidateMutation.fetcher = (
@@ -1414,6 +1445,7 @@ useNotifyConfirmedCandidateMutation.fetcher = (
     NotifyConfirmedCandidateMutation,
     NotifyConfirmedCandidateMutationVariables
   >(NotifyConfirmedCandidateDocument, variables, options);
+
 export const RegisterWithPasswordDocument = `
     mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $username: String!, $password: String!, $passwordConfirmation: String!) {
   registerWithPassword(
@@ -1437,6 +1469,7 @@ export const RegisterWithPasswordDocument = `
   }
 }
     `;
+
 export const useRegisterWithPasswordMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1447,21 +1480,23 @@ export const useRegisterWithPasswordMutation = <
     RegisterWithPasswordMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     RegisterWithPasswordMutation,
     TError,
     RegisterWithPasswordMutationVariables,
     TContext
-  >(
-    ["registerWithPassword"],
-    (variables?: RegisterWithPasswordMutationVariables) =>
+  >({
+    mutationKey: ["registerWithPassword"],
+    mutationFn: (variables?: RegisterWithPasswordMutationVariables) =>
       fetcher<
         RegisterWithPasswordMutation,
         RegisterWithPasswordMutationVariables
       >(RegisterWithPasswordDocument, variables)(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useRegisterWithPasswordMutation.getKey = () => ["registerWithPassword"];
 
 useRegisterWithPasswordMutation.fetcher = (
@@ -1473,11 +1508,13 @@ useRegisterWithPasswordMutation.fetcher = (
     variables,
     options,
   );
+
 export const RequestPasswordResetDocument = `
     mutation requestPasswordReset($email: String!) {
   requestPasswordReset(input: {email: $email})
 }
     `;
+
 export const useRequestPasswordResetMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1488,21 +1525,23 @@ export const useRequestPasswordResetMutation = <
     RequestPasswordResetMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     RequestPasswordResetMutation,
     TError,
     RequestPasswordResetMutationVariables,
     TContext
-  >(
-    ["requestPasswordReset"],
-    (variables?: RequestPasswordResetMutationVariables) =>
+  >({
+    mutationKey: ["requestPasswordReset"],
+    mutationFn: (variables?: RequestPasswordResetMutationVariables) =>
       fetcher<
         RequestPasswordResetMutation,
         RequestPasswordResetMutationVariables
       >(RequestPasswordResetDocument, variables)(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useRequestPasswordResetMutation.getKey = () => ["requestPasswordReset"];
 
 useRequestPasswordResetMutation.fetcher = (
@@ -1514,6 +1553,7 @@ useRequestPasswordResetMutation.fetcher = (
     variables,
     options,
   );
+
 export const ResetPasswordDocument = `
     mutation resetPassword($password: String!, $passwordConfirmation: String!, $resetToken: String!) {
   resetPassword(
@@ -1536,6 +1576,7 @@ export const ResetPasswordDocument = `
   }
 }
     `;
+
 export const useResetPasswordMutation = <TError = unknown, TContext = unknown>(
   options?: UseMutationOptions<
     ResetPasswordMutation,
@@ -1543,21 +1584,23 @@ export const useResetPasswordMutation = <TError = unknown, TContext = unknown>(
     ResetPasswordMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     ResetPasswordMutation,
     TError,
     ResetPasswordMutationVariables,
     TContext
-  >(
-    ["resetPassword"],
-    (variables?: ResetPasswordMutationVariables) =>
+  >({
+    mutationKey: ["resetPassword"],
+    mutationFn: (variables?: ResetPasswordMutationVariables) =>
       fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
         ResetPasswordDocument,
         variables,
       )(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useResetPasswordMutation.getKey = () => ["resetPassword"];
 
 useResetPasswordMutation.fetcher = (
@@ -1569,6 +1612,7 @@ useResetPasswordMutation.fetcher = (
     variables,
     options,
   );
+
 export const SetDetectionVisibleDocument = `
     mutation setDetectionVisible($id: ID!, $visible: Boolean!) {
   setDetectionVisible(id: $id, input: {visible: $visible}) {
@@ -1586,6 +1630,7 @@ export const SetDetectionVisibleDocument = `
   }
 }
     `;
+
 export const useSetDetectionVisibleMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1596,21 +1641,23 @@ export const useSetDetectionVisibleMutation = <
     SetDetectionVisibleMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     SetDetectionVisibleMutation,
     TError,
     SetDetectionVisibleMutationVariables,
     TContext
-  >(
-    ["setDetectionVisible"],
-    (variables?: SetDetectionVisibleMutationVariables) =>
+  >({
+    mutationKey: ["setDetectionVisible"],
+    mutationFn: (variables?: SetDetectionVisibleMutationVariables) =>
       fetcher<
         SetDetectionVisibleMutation,
         SetDetectionVisibleMutationVariables
       >(SetDetectionVisibleDocument, variables)(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useSetDetectionVisibleMutation.getKey = () => ["setDetectionVisible"];
 
 useSetDetectionVisibleMutation.fetcher = (
@@ -1622,6 +1669,7 @@ useSetDetectionVisibleMutation.fetcher = (
     variables,
     options,
   );
+
 export const SignInWithPasswordDocument = `
     mutation signInWithPassword($email: String!, $password: String!) {
   signInWithPassword(input: {email: $email, password: $password}) {
@@ -1642,6 +1690,7 @@ export const SignInWithPasswordDocument = `
   }
 }
     `;
+
 export const useSignInWithPasswordMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1652,21 +1701,23 @@ export const useSignInWithPasswordMutation = <
     SignInWithPasswordMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     SignInWithPasswordMutation,
     TError,
     SignInWithPasswordMutationVariables,
     TContext
-  >(
-    ["signInWithPassword"],
-    (variables?: SignInWithPasswordMutationVariables) =>
+  >({
+    mutationKey: ["signInWithPassword"],
+    mutationFn: (variables?: SignInWithPasswordMutationVariables) =>
       fetcher<SignInWithPasswordMutation, SignInWithPasswordMutationVariables>(
         SignInWithPasswordDocument,
         variables,
       )(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useSignInWithPasswordMutation.getKey = () => ["signInWithPassword"];
 
 useSignInWithPasswordMutation.fetcher = (
@@ -1678,11 +1729,13 @@ useSignInWithPasswordMutation.fetcher = (
     variables,
     options,
   );
+
 export const SignOutDocument = `
     mutation signOut {
   signOut
 }
     `;
+
 export const useSignOutMutation = <TError = unknown, TContext = unknown>(
   options?: UseMutationOptions<
     SignOutMutation,
@@ -1690,16 +1743,23 @@ export const useSignOutMutation = <TError = unknown, TContext = unknown>(
     SignOutMutationVariables,
     TContext
   >,
-) =>
-  useMutation<SignOutMutation, TError, SignOutMutationVariables, TContext>(
-    ["signOut"],
-    (variables?: SignOutMutationVariables) =>
+) => {
+  return useMutation<
+    SignOutMutation,
+    TError,
+    SignOutMutationVariables,
+    TContext
+  >({
+    mutationKey: ["signOut"],
+    mutationFn: (variables?: SignOutMutationVariables) =>
       fetcher<SignOutMutation, SignOutMutationVariables>(
         SignOutDocument,
         variables,
       )(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useSignOutMutation.getKey = () => ["signOut"];
 
 useSignOutMutation.fetcher = (
@@ -1711,6 +1771,7 @@ useSignOutMutation.fetcher = (
     variables,
     options,
   );
+
 export const SubmitDetectionDocument = `
     mutation submitDetection($feedId: String!, $playlistTimestamp: Int!, $playerOffset: Decimal!, $description: String!, $listenerCount: Int, $category: DetectionCategory!) {
   submitDetection(
@@ -1729,6 +1790,7 @@ export const SubmitDetectionDocument = `
   }
 }
     `;
+
 export const useSubmitDetectionMutation = <
   TError = unknown,
   TContext = unknown,
@@ -1739,21 +1801,23 @@ export const useSubmitDetectionMutation = <
     SubmitDetectionMutationVariables,
     TContext
   >,
-) =>
-  useMutation<
+) => {
+  return useMutation<
     SubmitDetectionMutation,
     TError,
     SubmitDetectionMutationVariables,
     TContext
-  >(
-    ["submitDetection"],
-    (variables?: SubmitDetectionMutationVariables) =>
+  >({
+    mutationKey: ["submitDetection"],
+    mutationFn: (variables?: SubmitDetectionMutationVariables) =>
       fetcher<SubmitDetectionMutation, SubmitDetectionMutationVariables>(
         SubmitDetectionDocument,
         variables,
       )(),
-    options,
-  );
+    ...options,
+  });
+};
+
 useSubmitDetectionMutation.getKey = () => ["submitDetection"];
 
 useSubmitDetectionMutation.fetcher = (
@@ -1765,6 +1829,7 @@ useSubmitDetectionMutation.fetcher = (
     variables,
     options,
   );
+
 export const CandidateDocument = `
     query candidate($id: ID!) {
   candidate(id: $id) {
@@ -1792,24 +1857,30 @@ export const CandidateDocument = `
   }
 }
     `;
+
 export const useCandidateQuery = <TData = CandidateQuery, TError = unknown>(
   variables: CandidateQueryVariables,
-  options?: UseQueryOptions<CandidateQuery, TError, TData>,
-) =>
-  useQuery<CandidateQuery, TError, TData>(
-    ["candidate", variables],
-    fetcher<CandidateQuery, CandidateQueryVariables>(
+  options?: Omit<UseQueryOptions<CandidateQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<CandidateQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<CandidateQuery, TError, TData>({
+    queryKey: ["candidate", variables],
+    queryFn: fetcher<CandidateQuery, CandidateQueryVariables>(
       CandidateDocument,
       variables,
     ),
-    options,
-  );
+    ...options,
+  });
+};
+
 useCandidateQuery.document = CandidateDocument;
 
 useCandidateQuery.getKey = (variables: CandidateQueryVariables) => [
   "candidate",
   variables,
 ];
+
 useCandidateQuery.fetcher = (
   variables: CandidateQueryVariables,
   options?: RequestInit["headers"],
@@ -1819,6 +1890,7 @@ useCandidateQuery.fetcher = (
     variables,
     options,
   );
+
 export const GetCurrentUserDocument = `
     query getCurrentUser {
   currentUser {
@@ -1831,27 +1903,37 @@ export const GetCurrentUserDocument = `
   }
 }
     `;
+
 export const useGetCurrentUserQuery = <
   TData = GetCurrentUserQuery,
   TError = unknown,
 >(
   variables?: GetCurrentUserQueryVariables,
-  options?: UseQueryOptions<GetCurrentUserQuery, TError, TData>,
-) =>
-  useQuery<GetCurrentUserQuery, TError, TData>(
-    variables === undefined
-      ? ["getCurrentUser"]
-      : ["getCurrentUser", variables],
-    fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(
+  options?: Omit<
+    UseQueryOptions<GetCurrentUserQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<GetCurrentUserQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<GetCurrentUserQuery, TError, TData>({
+    queryKey:
+      variables === undefined
+        ? ["getCurrentUser"]
+        : ["getCurrentUser", variables],
+    queryFn: fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(
       GetCurrentUserDocument,
       variables,
     ),
-    options,
-  );
+    ...options,
+  });
+};
+
 useGetCurrentUserQuery.document = GetCurrentUserDocument;
 
 useGetCurrentUserQuery.getKey = (variables?: GetCurrentUserQueryVariables) =>
   variables === undefined ? ["getCurrentUser"] : ["getCurrentUser", variables];
+
 useGetCurrentUserQuery.fetcher = (
   variables?: GetCurrentUserQueryVariables,
   options?: RequestInit["headers"],
@@ -1861,6 +1943,7 @@ useGetCurrentUserQuery.fetcher = (
     variables,
     options,
   );
+
 export const FeedDocument = `
     query feed($slug: String!) {
   feed(slug: $slug) {
@@ -1879,22 +1962,29 @@ export const FeedDocument = `
   }
 }
     `;
+
 export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
   variables: FeedQueryVariables,
-  options?: UseQueryOptions<FeedQuery, TError, TData>,
-) =>
-  useQuery<FeedQuery, TError, TData>(
-    ["feed", variables],
-    fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables),
-    options,
-  );
+  options?: Omit<UseQueryOptions<FeedQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<FeedQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<FeedQuery, TError, TData>({
+    queryKey: ["feed", variables],
+    queryFn: fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables),
+    ...options,
+  });
+};
+
 useFeedQuery.document = FeedDocument;
 
 useFeedQuery.getKey = (variables: FeedQueryVariables) => ["feed", variables];
+
 useFeedQuery.fetcher = (
   variables: FeedQueryVariables,
   options?: RequestInit["headers"],
 ) => fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables, options);
+
 export const NotificationsForCandidateDocument = `
     query notificationsForCandidate($candidateId: String!, $eventType: NotificationEventType) {
   notificationsForCandidate(candidateId: $candidateId, eventType: $eventType) {
@@ -1906,26 +1996,39 @@ export const NotificationsForCandidateDocument = `
   }
 }
     `;
+
 export const useNotificationsForCandidateQuery = <
   TData = NotificationsForCandidateQuery,
   TError = unknown,
 >(
   variables: NotificationsForCandidateQueryVariables,
-  options?: UseQueryOptions<NotificationsForCandidateQuery, TError, TData>,
-) =>
-  useQuery<NotificationsForCandidateQuery, TError, TData>(
-    ["notificationsForCandidate", variables],
-    fetcher<
+  options?: Omit<
+    UseQueryOptions<NotificationsForCandidateQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<
+      NotificationsForCandidateQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useQuery<NotificationsForCandidateQuery, TError, TData>({
+    queryKey: ["notificationsForCandidate", variables],
+    queryFn: fetcher<
       NotificationsForCandidateQuery,
       NotificationsForCandidateQueryVariables
     >(NotificationsForCandidateDocument, variables),
-    options,
-  );
+    ...options,
+  });
+};
+
 useNotificationsForCandidateQuery.document = NotificationsForCandidateDocument;
 
 useNotificationsForCandidateQuery.getKey = (
   variables: NotificationsForCandidateQueryVariables,
 ) => ["notificationsForCandidate", variables];
+
 useNotificationsForCandidateQuery.fetcher = (
   variables: NotificationsForCandidateQueryVariables,
   options?: RequestInit["headers"],
@@ -1934,6 +2037,7 @@ useNotificationsForCandidateQuery.fetcher = (
     NotificationsForCandidateQuery,
     NotificationsForCandidateQueryVariables
   >(NotificationsForCandidateDocument, variables, options);
+
 export const CandidatesDocument = `
     query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {
   candidates(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
@@ -1965,22 +2069,32 @@ export const CandidatesDocument = `
   }
 }
     `;
+
 export const useCandidatesQuery = <TData = CandidatesQuery, TError = unknown>(
   variables?: CandidatesQueryVariables,
-  options?: UseQueryOptions<CandidatesQuery, TError, TData>,
-) =>
-  useQuery<CandidatesQuery, TError, TData>(
-    variables === undefined ? ["candidates"] : ["candidates", variables],
-    fetcher<CandidatesQuery, CandidatesQueryVariables>(
+  options?: Omit<
+    UseQueryOptions<CandidatesQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<CandidatesQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<CandidatesQuery, TError, TData>({
+    queryKey:
+      variables === undefined ? ["candidates"] : ["candidates", variables],
+    queryFn: fetcher<CandidatesQuery, CandidatesQueryVariables>(
       CandidatesDocument,
       variables,
     ),
-    options,
-  );
+    ...options,
+  });
+};
+
 useCandidatesQuery.document = CandidatesDocument;
 
 useCandidatesQuery.getKey = (variables?: CandidatesQueryVariables) =>
   variables === undefined ? ["candidates"] : ["candidates", variables];
+
 useCandidatesQuery.fetcher = (
   variables?: CandidatesQueryVariables,
   options?: RequestInit["headers"],
@@ -1990,6 +2104,7 @@ useCandidatesQuery.fetcher = (
     variables,
     options,
   );
+
 export const FeedsDocument = `
     query feeds {
   feeds {
@@ -2007,19 +2122,25 @@ export const FeedsDocument = `
   }
 }
     `;
+
 export const useFeedsQuery = <TData = FeedsQuery, TError = unknown>(
   variables?: FeedsQueryVariables,
-  options?: UseQueryOptions<FeedsQuery, TError, TData>,
-) =>
-  useQuery<FeedsQuery, TError, TData>(
-    variables === undefined ? ["feeds"] : ["feeds", variables],
-    fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables),
-    options,
-  );
+  options?: Omit<UseQueryOptions<FeedsQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<FeedsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<FeedsQuery, TError, TData>({
+    queryKey: variables === undefined ? ["feeds"] : ["feeds", variables],
+    queryFn: fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables),
+    ...options,
+  });
+};
+
 useFeedsQuery.document = FeedsDocument;
 
 useFeedsQuery.getKey = (variables?: FeedsQueryVariables) =>
   variables === undefined ? ["feeds"] : ["feeds", variables];
+
 useFeedsQuery.fetcher = (
   variables?: FeedsQueryVariables,
   options?: RequestInit["headers"],

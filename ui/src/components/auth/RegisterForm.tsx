@@ -200,13 +200,13 @@ export default function RegisterForm({ onSubmit, errors }: RegisterFormProps) {
         type="password"
         value={passwordConfirmation}
         error={
-          !!errors.find(
-            (error) => error?.fields?.includes("password_confirmation"),
+          !!errors.find((error) =>
+            error?.fields?.includes("password_confirmation"),
           )
         }
         helperText={
-          errors.find(
-            (error) => error?.fields?.includes("password_confirmation"),
+          errors.find((error) =>
+            error?.fields?.includes("password_confirmation"),
           )?.message
         }
         onChange={(event) => setPasswordConfirmation(event.target.value)}
