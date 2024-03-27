@@ -77,6 +77,17 @@ defmodule Orcasite.Radio.Detection do
     end
   end
 
+  field_policies do
+    field_policy [:source_ip] do
+      authorize_if actor_attribute_equals(:admin, true)
+      authorize_if actor_attribute_equals(:moderator, true)
+    end
+
+    field_policy :* do
+      authorize_if always()
+    end
+  end
+
   actions do
     defaults [:destroy]
 
@@ -182,6 +193,7 @@ defmodule Orcasite.Radio.Detection do
       change set_attribute(:listener_count, arg(:listener_count))
       change set_attribute(:description, arg(:description))
       change set_attribute(:category, arg(:category))
+      change set_attribute(:source_ip, context(:actor_ip))
 
       change manage_relationship(:feed_id, :feed, type: :append)
 
