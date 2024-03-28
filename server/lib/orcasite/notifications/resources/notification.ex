@@ -25,8 +25,16 @@ defmodule Orcasite.Notifications.Notification do
       constraints one_of: Event.types()
     end
 
+    attribute :target_count, :integer
+    attribute :notified_count, :integer, default: 0
+
     create_timestamp :inserted_at, private?: false, writable?: false
     update_timestamp :updated_at
+  end
+
+  calculations do
+    calculate :progress, :float, expr(notified_count / target_count)
+    calculate :finished, :boolean, expr(notified_count == target_count)
   end
 
   relationships do
@@ -103,6 +111,10 @@ defmodule Orcasite.Notifications.Notification do
       end
     end
 
+    update :increment_notified_count do
+      change atomic_update(:notified_count, expr(notified_count + 1))
+    end
+
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       accept [:candidate_id, :message]
@@ -172,6 +184,8 @@ defmodule Orcasite.Notifications.Notification do
     define :notify_confirmed_candidate,
       action: :notify_confirmed_candidate,
       args: [:candidate_id]
+
+    define :increment_notified_count
   end
 
   resource do
@@ -197,27 +211,36 @@ defmodule Orcasite.Notifications.Notification do
              changeset
              |> Ash.Changeset.after_action(fn _, notification ->
                Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-                 Orcasite.Notifications.Subscription
-                 |> Ash.Query.for_read(:available_for_notification, %{
-                   notification_id: notification.id,
-                   event_type: notification.event_type
-                 })
-                 |> Orcasite.Notifications.stream!()
-                 |> Stream.map(fn subscription ->
-                   Orcasite.Notifications.NotificationInstance
-                   |> Ash.Changeset.for_create(:create_with_relationships, %{
-                     notification: notification.id,
-                     subscription: subscription.id
+                 target_count =
+                   Orcasite.Notifications.Subscription
+                   |> Ash.Query.for_read(:available_for_notification, %{
+                     notification_id: notification.id,
+                     event_type: notification.event_type
                    })
-                   |> Orcasite.Notifications.create!()
-                 end)
-                 |> Stream.run()
+                   |> Orcasite.Notifications.stream!()
+                   |> Stream.map(fn subscription ->
+                     Orcasite.Notifications.NotificationInstance
+                     |> Ash.Changeset.for_create(:create_with_relationships, %{
+                       notification: notification.id,
+                       subscription: subscription.id
+                     })
+                     |> Orcasite.Notifications.create!()
+                   end)
+                   |> Enum.reduce(0, fn _, sum -> sum + 1 end)
+
+                 notification
+                 |> Ash.Changeset.for_update(:update, %{target_count: target_count})
+                 |> Orcasite.Notifications.update()
                end)
 
                {:ok, notification}
              end)
            end,
            on: :create
+  end
+
+  preparations do
+    prepare build(load: [:progress, :finished])
   end
 
   graphql do

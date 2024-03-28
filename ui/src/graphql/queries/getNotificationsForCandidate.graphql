@@ -8,5 +8,9 @@ query notificationsForCandidate(
     meta
     active
     insertedAt
+    targetCount
+    notifiedCount
+    progress
+    finished
   }
 }
