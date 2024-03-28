@@ -11,6 +11,7 @@ mutation notifyConfirmedCandidate($candidateId: String!, $message: String!) {
       notifiedCount
       progress
       finished
+      notifiedCountUpdatedAt
     }
     errors {
       code

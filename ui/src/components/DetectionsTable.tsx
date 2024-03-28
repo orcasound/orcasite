@@ -178,6 +178,7 @@ export default function DetectionsTable({
                   <TableCell>Event</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell align="center">Progress</TableCell>
+                  <TableCell align="right">Last updated</TableCell>
                   <TableCell align="right">Created</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
@@ -195,21 +196,28 @@ export default function DetectionsTable({
                       />
                     </TableCell>
                     <TableCell>
-                      {typeof notification.progress === "number" && (
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                        >
-                          <Box sx={{ mr: 3 }}>
-                            {notification.notifiedCount} /{" "}
-                            {notification.targetCount}
-                          </Box>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <Box sx={{ mr: 3 }}>
+                          {notification.notifiedCount} /{" "}
+                          {notification.targetCount}
+                        </Box>
+                        {typeof notification.progress === "number" && (
                           <CircularProgressWithLabel
                             value={notification.progress * 100}
                           />
-                        </Box>
-                      )}
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                      title={notification.notifiedCountUpdatedAt?.toString()}
+                    >
+                      {notification.notifiedCountUpdatedAt &&
+                        formatTimestamp(notification.notifiedCountUpdatedAt)}
                     </TableCell>
                     <TableCell
                       align="right"

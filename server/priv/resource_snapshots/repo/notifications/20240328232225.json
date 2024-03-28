@@ -61,6 +61,16 @@
       "primary_key?": false
     },
     {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime",
+      "source": "notified_count_updated_at",
+      "references": null,
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
+    },
+    {
       "default": "fragment(\"now()\")",
       "size": null,
       "type": "utc_datetime_usec",
@@ -82,17 +92,15 @@
     }
   ],
   "table": "notifications",
-  "hash": "6996BE3F349EF21F353DAE013E0AF0A6490D505960E39B1F71BE9D087988EF79",
+  "hash": "4DDEA23AF74FABB1F511CBC23120CEA61649F82506BBA3C9F2D41CE6DA873C36",
   "repo": "Elixir.Orcasite.Repo",
   "identities": [],
   "schema": null,
   "multitenancy": {
     "global": null,
-    "attribute": null,
-    "strategy": null
+    "strategy": null,
+    "attribute": null
   },
-  "base_filter": null,
-  "check_constraints": [],
   "custom_indexes": [
     {
       "message": null,
@@ -108,15 +116,17 @@
         }
       ],
       "unique": false,
-      "using": "gin",
-      "concurrently": false,
-      "nulls_distinct": true,
       "all_tenants?": false,
+      "concurrently": false,
       "error_fields": [
         "meta"
-      ]
+      ],
+      "nulls_distinct": true,
+      "using": "gin"
     }
   ],
+  "base_filter": null,
+  "check_constraints": [],
   "custom_statements": [],
   "has_create_action": true
 }

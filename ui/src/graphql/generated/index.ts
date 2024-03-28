@@ -464,6 +464,7 @@ export type Notification = {
   insertedAt: Scalars["DateTime"]["output"];
   meta?: Maybe<Scalars["Json"]["output"]>;
   notifiedCount?: Maybe<Scalars["Int"]["output"]>;
+  notifiedCountUpdatedAt?: Maybe<Scalars["DateTime"]["output"]>;
   progress?: Maybe<Scalars["Float"]["output"]>;
   targetCount?: Maybe<Scalars["Int"]["output"]>;
 };
@@ -524,6 +525,7 @@ export type NotificationFilterInput = {
   meta?: InputMaybe<NotificationFilterMeta>;
   not?: InputMaybe<Array<NotificationFilterInput>>;
   notifiedCount?: InputMaybe<NotificationFilterNotifiedCount>;
+  notifiedCountUpdatedAt?: InputMaybe<NotificationFilterNotifiedCountUpdatedAt>;
   or?: InputMaybe<Array<NotificationFilterInput>>;
   progress?: InputMaybe<NotificationFilterProgress>;
   targetCount?: InputMaybe<NotificationFilterTargetCount>;
@@ -562,6 +564,17 @@ export type NotificationFilterNotifiedCount = {
   notEq?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
+export type NotificationFilterNotifiedCountUpdatedAt = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
 export type NotificationFilterProgress = {
   eq?: InputMaybe<Scalars["Float"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Float"]["input"]>;
@@ -592,6 +605,7 @@ export type NotificationSortField =
   | "INSERTED_AT"
   | "META"
   | "NOTIFIED_COUNT"
+  | "NOTIFIED_COUNT_UPDATED_AT"
   | "PROGRESS"
   | "TARGET_COUNT";
 
@@ -988,6 +1002,7 @@ export type CancelNotificationMutation = {
       insertedAt: Date;
       targetCount?: number | null;
       notifiedCount?: number | null;
+      notifiedCountUpdatedAt?: Date | null;
       progress?: number | null;
       finished?: boolean | null;
     } | null;
@@ -1021,6 +1036,7 @@ export type NotifyConfirmedCandidateMutation = {
       notifiedCount?: number | null;
       progress?: number | null;
       finished?: boolean | null;
+      notifiedCountUpdatedAt?: Date | null;
     } | null;
     errors?: Array<{
       __typename?: "MutationError";
@@ -1274,6 +1290,7 @@ export type NotificationsForCandidateQuery = {
     insertedAt: Date;
     targetCount?: number | null;
     notifiedCount?: number | null;
+    notifiedCountUpdatedAt?: Date | null;
     progress?: number | null;
     finished?: boolean | null;
   }>;
@@ -1408,6 +1425,7 @@ export const CancelNotificationDocument = `
       insertedAt
       targetCount
       notifiedCount
+      notifiedCountUpdatedAt
       progress
       finished
     }
@@ -1473,6 +1491,7 @@ export const NotifyConfirmedCandidateDocument = `
       notifiedCount
       progress
       finished
+      notifiedCountUpdatedAt
     }
     errors {
       code
@@ -2072,6 +2091,7 @@ export const NotificationsForCandidateDocument = `
     insertedAt
     targetCount
     notifiedCount
+    notifiedCountUpdatedAt
     progress
     finished
   }

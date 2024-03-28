@@ -1,4 +1,4 @@
-defmodule Orcasite.Repo.Migrations.AddCountsToNotifications do
+defmodule Orcasite.Repo.Migrations.AddTrackingToNotifications do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -11,11 +11,13 @@ defmodule Orcasite.Repo.Migrations.AddCountsToNotifications do
     alter table(:notifications) do
       add :target_count, :bigint
       add :notified_count, :bigint, default: 0
+      add :notified_count_updated_at, :utc_datetime
     end
   end
 
   def down do
     alter table(:notifications) do
+      remove :notified_count_updated_at
       remove :notified_count
       remove :target_count
     end

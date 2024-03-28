@@ -27,13 +27,17 @@ defmodule Orcasite.Notifications.Notification do
 
     attribute :target_count, :integer
     attribute :notified_count, :integer, default: 0
+    attribute :notified_count_updated_at, :utc_datetime
 
     create_timestamp :inserted_at, private?: false, writable?: false
     update_timestamp :updated_at
   end
 
   calculations do
-    calculate :progress, :float, expr(notified_count / target_count)
+    calculate :progress,
+              :float,
+              expr(if(target_count == 0, do: 1, else: notified_count / target_count))
+
     calculate :finished, :boolean, expr(notified_count == target_count)
   end
 
@@ -113,6 +117,7 @@ defmodule Orcasite.Notifications.Notification do
 
     update :increment_notified_count do
       change atomic_update(:notified_count, expr(notified_count + 1))
+      change atomic_update(:notified_count_updated_at, expr(now()))
     end
 
     create :notify_confirmed_candidate do

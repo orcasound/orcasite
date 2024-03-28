@@ -10,6 +10,7 @@ query notificationsForCandidate(
     insertedAt
     targetCount
     notifiedCount
+    notifiedCountUpdatedAt
     progress
     finished
   }
