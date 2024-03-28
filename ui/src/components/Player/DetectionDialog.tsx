@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
   Button,
@@ -25,7 +26,6 @@ import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 import { analytics } from "@/utils/analytics";
 
 import DetectionCategoryButton from "./DetectionCategoryButton";
-import CloseIcon from "@mui/icons-material/Close";
 
 export default function DetectionDialog({
   children,
@@ -249,7 +249,7 @@ export default function DetectionDialog({
                 BACK
               </Button>
               <Button
-                href="https://beta.orcasound.net/reports"
+                href="/reports"
                 target="_blank"
                 color="primary"
                 variant="contained"
