@@ -155,7 +155,6 @@ export default function DetectionDialog({
               align="center"
               sx={{
                 color: (theme) => theme.palette.primary.main,
-                fontWeight: 500,
               }}
             >
               Thank you for reporting
