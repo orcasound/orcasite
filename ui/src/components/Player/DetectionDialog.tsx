@@ -243,7 +243,7 @@ export default function DetectionDialog({
                 onClick={handleClose}
                 color="primary"
                 variant="outlined"
-                sx={{ py: 2, px: isDesktop ? 6 : 3, mx: 2 }}
+                sx={{ py: 2, px: [3, 6], mx: 2 }}
               >
                 BACK
               </Button>
@@ -252,7 +252,7 @@ export default function DetectionDialog({
                 target="_blank"
                 color="primary"
                 variant="contained"
-                sx={{ py: 2, px: isDesktop ? 6 : 3, mx: 2 }}
+                sx={{ py: 2, px: [3, 6], mx: 2 }}
               >
                 SEE REPORTS
               </Button>
