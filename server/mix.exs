@@ -74,7 +74,7 @@ defmodule Orcasite.Mixfile do
       {:reverse_proxy_plug, "~> 2.3.0"},
       {:httpoison, "~> 2.2"},
       {:corsica, "~> 2.1"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:ash, "~> 2.21.2"},
       {:ash_admin, "~> 0.10.8"},
