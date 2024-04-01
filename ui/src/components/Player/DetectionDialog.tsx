@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
   Button,
@@ -5,10 +6,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Paper,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -126,9 +129,43 @@ export default function DetectionDialog({
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">
-          {!submitted ? "Report what you heard" : "Thanks for submitting!"}
-        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+
+        {!submitted ? (
+          <DialogTitle id="form-dialog-title">
+            Report what you heard
+          </DialogTitle>
+        ) : (
+          <>
+            <DialogTitle
+              id="form-dialog-title"
+              variant="h4"
+              mt={8}
+              align="center"
+              sx={{
+                color: (theme) => theme.palette.primary.main,
+              }}
+            >
+              Thank you for reporting
+            </DialogTitle>
+            <Typography variant="body1" mb={2} mx={8} align="center">
+              Check out our reports to see how your support contributed to our
+              mission for marine conservation.
+            </Typography>
+          </>
+        )}
+
         {!submitted && (
           <DialogContent>
             <ToggleButtonGroup
@@ -200,11 +237,27 @@ export default function DetectionDialog({
             </Button>
           </DialogActions>
         ) : (
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              CLOSE
-            </Button>
-          </DialogActions>
+          <>
+            <DialogActions sx={{ justifyContent: "center", mb: 10 }}>
+              <Button
+                onClick={handleClose}
+                color="primary"
+                variant="outlined"
+                sx={{ py: 2, px: [3, 6], mx: 2 }}
+              >
+                BACK
+              </Button>
+              <Button
+                href="/reports"
+                target="_blank"
+                color="primary"
+                variant="contained"
+                sx={{ py: 2, px: [3, 6], mx: 2 }}
+              >
+                SEE REPORTS
+              </Button>
+            </DialogActions>
+          </>
         )}
       </Dialog>
     </>
