@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
+  CircularProgressProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -175,6 +177,8 @@ export default function DetectionsTable({
                 <TableRow>
                   <TableCell>Event</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell align="center">Progress</TableCell>
+                  <TableCell align="right">Last updated</TableCell>
                   <TableCell align="right">Created</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
@@ -191,6 +195,30 @@ export default function DetectionsTable({
                         variant="outlined"
                       />
                     </TableCell>
+                    <TableCell>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <Box sx={{ mr: 3 }}>
+                          {notification.notifiedCount} /{" "}
+                          {notification.targetCount}
+                        </Box>
+                        {typeof notification.progress === "number" && (
+                          <CircularProgressWithLabel
+                            value={notification.progress * 100}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                      title={notification.notifiedCountUpdatedAt?.toString()}
+                    >
+                      {notification.notifiedCountUpdatedAt &&
+                        formatTimestamp(notification.notifiedCountUpdatedAt)}
+                    </TableCell>
                     <TableCell
                       align="right"
                       title={notification.insertedAt.toString()}
@@ -198,7 +226,7 @@ export default function DetectionsTable({
                       {formatTimestamp(notification.insertedAt)}
                     </TableCell>
                     <TableCell align="right">
-                      {notification.active && (
+                      {notification.active && !notification.finished && (
                         <Button
                           onClick={() => {
                             cancelNotification.mutate({ id: notification.id });
@@ -321,5 +349,33 @@ function NotificationModal({
         </DialogActions>
       </Dialog>
     </>
+  );
+}
+
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number },
+) {
+  return (
+    <Box sx={{ position: "relative", display: "inline-flex" }}>
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
   );
 }

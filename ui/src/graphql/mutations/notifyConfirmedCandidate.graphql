@@ -7,6 +7,11 @@ mutation notifyConfirmedCandidate($candidateId: String!, $message: String!) {
       eventType
       meta
       active
+      targetCount
+      notifiedCount
+      progress
+      finished
+      notifiedCountUpdatedAt
     }
     errors {
       code
