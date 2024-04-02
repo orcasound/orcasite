@@ -206,6 +206,7 @@ defmodule OrcasiteWeb.Router do
   def set_actor_ip(conn, _opts) do
     actor_ip =
       conn.remote_ip
+      |> IO.inspect(label: "remote_ip")
       |> Tuple.to_list()
       |> Enum.join(".")
 
