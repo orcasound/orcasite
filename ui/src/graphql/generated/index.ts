@@ -459,9 +459,14 @@ export type Notification = {
   __typename?: "Notification";
   active?: Maybe<Scalars["Boolean"]["output"]>;
   eventType?: Maybe<NotificationEventType>;
+  finished?: Maybe<Scalars["Boolean"]["output"]>;
   id: Scalars["ID"]["output"];
   insertedAt: Scalars["DateTime"]["output"];
   meta?: Maybe<Scalars["Json"]["output"]>;
+  notifiedCount?: Maybe<Scalars["Int"]["output"]>;
+  notifiedCountUpdatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  progress?: Maybe<Scalars["Float"]["output"]>;
+  targetCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type NotificationEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
@@ -488,6 +493,17 @@ export type NotificationFilterEventType = {
   notEq?: InputMaybe<NotificationEventType>;
 };
 
+export type NotificationFilterFinished = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type NotificationFilterId = {
   eq?: InputMaybe<Scalars["ID"]["input"]>;
   greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
@@ -503,11 +519,16 @@ export type NotificationFilterInput = {
   active?: InputMaybe<NotificationFilterActive>;
   and?: InputMaybe<Array<NotificationFilterInput>>;
   eventType?: InputMaybe<NotificationFilterEventType>;
+  finished?: InputMaybe<NotificationFilterFinished>;
   id?: InputMaybe<NotificationFilterId>;
   insertedAt?: InputMaybe<NotificationFilterInsertedAt>;
   meta?: InputMaybe<NotificationFilterMeta>;
   not?: InputMaybe<Array<NotificationFilterInput>>;
+  notifiedCount?: InputMaybe<NotificationFilterNotifiedCount>;
+  notifiedCountUpdatedAt?: InputMaybe<NotificationFilterNotifiedCountUpdatedAt>;
   or?: InputMaybe<Array<NotificationFilterInput>>;
+  progress?: InputMaybe<NotificationFilterProgress>;
+  targetCount?: InputMaybe<NotificationFilterTargetCount>;
 };
 
 export type NotificationFilterInsertedAt = {
@@ -532,12 +553,61 @@ export type NotificationFilterMeta = {
   notEq?: InputMaybe<Scalars["Json"]["input"]>;
 };
 
+export type NotificationFilterNotifiedCount = {
+  eq?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Int"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  notEq?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type NotificationFilterNotifiedCountUpdatedAt = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type NotificationFilterProgress = {
+  eq?: InputMaybe<Scalars["Float"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Float"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Float"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Float"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Float"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Float"]["input"]>;
+  notEq?: InputMaybe<Scalars["Float"]["input"]>;
+};
+
+export type NotificationFilterTargetCount = {
+  eq?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Int"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  notEq?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
 export type NotificationSortField =
   | "ACTIVE"
   | "EVENT_TYPE"
+  | "FINISHED"
   | "ID"
   | "INSERTED_AT"
-  | "META";
+  | "META"
+  | "NOTIFIED_COUNT"
+  | "NOTIFIED_COUNT_UPDATED_AT"
+  | "PROGRESS"
+  | "TARGET_COUNT";
 
 export type NotificationSortInput = {
   field: NotificationSortField;
@@ -604,7 +674,7 @@ export type RegisterWithPasswordInput = {
   password: Scalars["String"]["input"];
   /** The proposed password for the user (again), in plain text. */
   passwordConfirmation: Scalars["String"]["input"];
-  username: Scalars["String"]["input"];
+  username?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type RegisterWithPasswordMetadata = {
@@ -797,7 +867,7 @@ export type User = {
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
   moderator: Scalars["Boolean"]["output"];
-  username: Scalars["String"]["output"];
+  username?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type UserFilterAdmin = {
@@ -888,7 +958,7 @@ export type UserFilterUsername = {
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
   ilike?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
@@ -930,6 +1000,11 @@ export type CancelNotificationMutation = {
       meta?: { [key: string]: any } | null;
       active?: boolean | null;
       insertedAt: Date;
+      targetCount?: number | null;
+      notifiedCount?: number | null;
+      notifiedCountUpdatedAt?: Date | null;
+      progress?: number | null;
+      finished?: boolean | null;
     } | null;
     errors?: Array<{
       __typename?: "MutationError";
@@ -957,6 +1032,11 @@ export type NotifyConfirmedCandidateMutation = {
       eventType?: NotificationEventType | null;
       meta?: { [key: string]: any } | null;
       active?: boolean | null;
+      targetCount?: number | null;
+      notifiedCount?: number | null;
+      progress?: number | null;
+      finished?: boolean | null;
+      notifiedCountUpdatedAt?: Date | null;
     } | null;
     errors?: Array<{
       __typename?: "MutationError";
@@ -986,7 +1066,7 @@ export type RegisterWithPasswordMutation = {
       __typename?: "User";
       id: string;
       email: string;
-      username: string;
+      username?: string | null;
       admin: boolean;
       firstName?: string | null;
       lastName?: string | null;
@@ -1208,6 +1288,11 @@ export type NotificationsForCandidateQuery = {
     meta?: { [key: string]: any } | null;
     active?: boolean | null;
     insertedAt: Date;
+    targetCount?: number | null;
+    notifiedCount?: number | null;
+    notifiedCountUpdatedAt?: Date | null;
+    progress?: number | null;
+    finished?: boolean | null;
   }>;
 };
 
@@ -1338,6 +1423,11 @@ export const CancelNotificationDocument = `
       meta
       active
       insertedAt
+      targetCount
+      notifiedCount
+      notifiedCountUpdatedAt
+      progress
+      finished
     }
     errors {
       code
@@ -1397,6 +1487,11 @@ export const NotifyConfirmedCandidateDocument = `
       eventType
       meta
       active
+      targetCount
+      notifiedCount
+      progress
+      finished
+      notifiedCountUpdatedAt
     }
     errors {
       code
@@ -1994,6 +2089,11 @@ export const NotificationsForCandidateDocument = `
     meta
     active
     insertedAt
+    targetCount
+    notifiedCount
+    notifiedCountUpdatedAt
+    progress
+    finished
   }
 }
     `;
