@@ -5,6 +5,11 @@ mutation cancelNotification($id: ID!) {
       meta
       active
       insertedAt
+      targetCount
+      notifiedCount
+      notifiedCountUpdatedAt
+      progress
+      finished
     }
     errors {
       code
