@@ -133,7 +133,14 @@ function Mobile({
             flexDirection="column"
             alignItems="center"
           >
-            <Box sx={{ my: 2 }}>
+            <Box sx={{ my: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <IconButton
+                sx={{ color: 'base.contrastText', position: 'absolute', left: '1%' }}
+                color="inherit"
+                onClick={handleMenuToggle}
+              >
+                <Close />
+              </IconButton>
               <Image
                 src={wordmark.src}
                 alt="Orcasound"
