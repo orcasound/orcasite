@@ -59,17 +59,19 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       NotificationInstance
-      |> Notifications.get!(notification_instance_id)
+      |> Notifications.get(notification_instance_id)
       |> case do
-        nil ->
+        {:error, _} ->
           nil
 
-        notif_instance ->
+        {:ok, notif_instance} ->
           notif_instance
           |> Ash.Changeset.for_destroy(:destroy)
           |> Notifications.destroy!()
       end
     end)
+
+    Orcasite.Notifications.Notification.increment_notified_count(notification)
 
     :ok
   end

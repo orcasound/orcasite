@@ -14,10 +14,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build containers
-        run: docker-compose build --build-arg MIX_ENV=test
+        run: docker compose build --build-arg MIX_ENV=test
 
       - name: Start containers
-        run: docker-compose up -d db cache
+        run: docker compose up -d db cache
 
       - name: Run tests
-        run: docker-compose run web bash -c 'cd server && mix test'
+        run: docker compose run web bash -c 'cd server && mix test'
