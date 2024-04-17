@@ -184,7 +184,7 @@ export default function DetectionDialog({
                   component={Paper}
                   sx={{
                     "&&&": {
-                      marginX: [1, 5],
+                      marginX: [1, 2],
                       marginY: [1, 0],
                       borderRadius: 1,
                       overflow: "visible",
