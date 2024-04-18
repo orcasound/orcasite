@@ -54,7 +54,7 @@
     "@types/node": "20.11.30",
     "@types/phoenix": "^1.6.4",
     "@types/react": "18.2.78",
-    "@types/react-dom": "18.2.23",
+    "@types/react-dom": "18.2.25",
     "@types/video.js": "^7.3.57",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "eslint": "8.57.0",
