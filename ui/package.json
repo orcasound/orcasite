@@ -32,7 +32,7 @@
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
     "next": "14.1.4",
-    "phoenix": "^1.7.11",
+    "phoenix": "^1.7.12",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-fast-marquee": "^1.6.4",
