@@ -1,6 +1,6 @@
 # Largely based on https://github.com/nicbet/docker-phoenix/blob/main/Dockerfile
 ARG ELIXIR_VERSION=1.16-otp-25
-ARG NODE_VERSION=20.11.1
+ARG NODE_VERSION=20.12.2
 
 FROM node:${NODE_VERSION}-alpine AS node
 FROM elixir:${ELIXIR_VERSION}-alpine AS setup
