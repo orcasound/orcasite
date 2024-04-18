@@ -51,7 +51,7 @@
     "@next/bundle-analyzer": "^14.1.4",
     "@tanstack/react-query-devtools": "^5.28.8",
     "@types/leaflet": "^1.9.9",
-    "@types/node": "20.11.30",
+    "@types/node": "20.12.7",
     "@types/phoenix": "^1.6.4",
     "@types/react": "18.2.78",
     "@types/react-dom": "18.2.23",
