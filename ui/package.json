@@ -48,7 +48,7 @@
     "@graphql-codegen/typescript": "^4.0.6",
     "@graphql-codegen/typescript-operations": "^4.2.0",
     "@graphql-codegen/typescript-react-query": "^6.1.0",
-    "@next/bundle-analyzer": "^14.1.4",
+    "@next/bundle-analyzer": "^14.2.2",
     "@tanstack/react-query-devtools": "^5.28.8",
     "@types/leaflet": "^1.9.9",
     "@types/node": "20.11.30",
