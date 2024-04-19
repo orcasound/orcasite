@@ -9,7 +9,7 @@
           "url": "https://github.com/HashNuke/heroku-buildpack-elixir"
         },
         {
-          "url": "https://github.com/gjaldon/heroku-buildpack-phoenix-static"
+          "url": "https://github.com/gigalixir/gigalixir-buildpack-phoenix-static"
         }
       ],
       "formation": {
