@@ -30,3 +30,12 @@ updates:
       time: "05:00"
       timezone: America/Los_Angeles
     open-pull-requests-limit: 3
+  # Updates Docker dependencies
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: America/Los_Angeles
+    open-pull-requests-limit: 3
