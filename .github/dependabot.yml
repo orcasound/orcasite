@@ -30,6 +30,50 @@ updates:
       time: "05:00"
       timezone: America/Los_Angeles
     open-pull-requests-limit: 3
+    # Group into fewer PRs
+    groups:
+      frameworks:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      styles:
+        patterns:
+          - "@mui/*"
+          - "@emotion/*"
+          - "@fontsource/*"
+      requests:
+        patterns:
+          - "graphql"
+          - "@graphql-codegen/*"
+          - "@tanstack/react-query*"
+      map:
+        patterns:
+          - "leaflet*"
+          - "react-leaflet"
+          - "@types/leaflet"
+      player:
+        patterns:
+          - "video.js"
+          - "videojs*"
+          - "@types/video.js"
+      code-style:
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint/*"
+          - "prettier"
+          - "lint-staged"
+          - "husky"
+      misc:
+        patterns:
+          - "*"
+        # Open individual PRs for the following packages
+        exclude-patterns:
+          - "typescript"
+          - "phoenix"
+          - "@types/node"
   # Updates Docker dependencies
   - package-ecosystem: docker
     directory: /
