@@ -37,6 +37,8 @@ updates:
           - "next"
           - "react"
           - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
       styles:
         patterns:
           - "@mui/*"
@@ -51,10 +53,12 @@ updates:
         patterns:
           - "leaflet*"
           - "react-leaflet"
+          - "@types/leaflet"
       player:
         patterns:
           - "video.js"
           - "videojs*"
+          - "@types/video.js"
       code-style:
         patterns:
           - "eslint*"
@@ -69,6 +73,7 @@ updates:
         exclude-patterns:
           - "typescript"
           - "phoenix"
+          - "@types/node"
   # Updates Docker dependencies
   - package-ecosystem: docker
     directory: /
