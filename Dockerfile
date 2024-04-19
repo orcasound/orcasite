@@ -1,9 +1,7 @@
 # Largely based on https://github.com/nicbet/docker-phoenix/blob/main/Dockerfile
-ARG ELIXIR_VERSION=1.16-otp-25
-ARG NODE_VERSION=20.11.1
 
-FROM node:${NODE_VERSION}-alpine AS node
-FROM elixir:${ELIXIR_VERSION}-alpine AS setup
+FROM node:20.11.1-alpine AS node
+FROM elixir:1.16-otp-25-alpine AS setup
 
 
 ### Install deps
@@ -31,10 +29,12 @@ RUN mix local.hex --force && \
 # and https://stackoverflow.com/a/76132347
 COPY --from=node /usr/local /opt/node
 # Use rsync to merge in the node files into /usr/local without overwriting
-# everything already in there, then clean up and remove rsync
+# everything already in there, then clean up
 RUN rsync -a /opt/node/ /usr/local && \
-    rm -rf /opt/node && \
-    npm i -g yarn --force
+    rm -rf /opt/node
+
+# Install global npm packages
+RUN npm install -g yarn --force
 
 
 ### Container setup
@@ -48,8 +48,9 @@ EXPOSE 3000
 EXPOSE 4000
 ENV PORT=4000 UI_PORT=3000 MIX_ENV=${MIX_ENV}
 
-# Create a new stage so that local dev setup can stop here
-# Local dev mounts into the container so there's no point in adding/compiling
+# Create a new stage for local dev docker-compose to stop at (using taget: setup)
+# Local dev is configured to mount local files into the container so there's no
+# point in adding/compiling deps as part of the docker build process
 FROM setup AS compile
 
 ### Install dependencies and compile
