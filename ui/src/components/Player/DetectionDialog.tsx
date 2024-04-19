@@ -12,9 +12,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import type { StaticImageData } from "next/legacy/image";
 import { useState } from "react";
 
@@ -48,8 +46,6 @@ export default function DetectionDialog({
   const [description, setDescription] = useState("");
   const [playerOffset, setPlayerOffset] = useState<number>();
   const [playlistTimestamp, setPlaylistTimestamp] = useState<number>();
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
 
   const submitDetection = useSubmitDetectionMutation({
     onSuccess: () => {
@@ -175,9 +171,9 @@ export default function DetectionDialog({
               size="large"
               aria-label="Report sound"
               fullWidth
-              orientation={isDesktop ? "horizontal" : "vertical"}
+              orientation="horizontal"
               sx={{
-                marginY: isDesktop ? 4 : 1,
+                marginY: [1, 4],
               }}
             >
               {categoryButtons.map(({ id, iconImage }) => (
@@ -188,8 +184,8 @@ export default function DetectionDialog({
                   component={Paper}
                   sx={{
                     "&&&": {
-                      marginX: isDesktop ? 5 : 0,
-                      marginY: isDesktop ? 0 : 1,
+                      marginX: [1, 2],
+                      marginY: [1, 0],
                       borderRadius: 1,
                       overflow: "visible",
                       border: "solid 2px",
@@ -209,7 +205,6 @@ export default function DetectionDialog({
               ))}
             </ToggleButtonGroup>
             <TextField
-              autoFocus
               margin="dense"
               placeholder="Describe what you heard (optional)"
               type="text"
