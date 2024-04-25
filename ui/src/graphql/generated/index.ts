@@ -61,6 +61,7 @@ export type CancelNotificationResult = {
 
 export type Candidate = {
   __typename?: "Candidate";
+  category?: Maybe<CandidateCategory>;
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
   detections: Array<Detection>;
   feed: Feed;
@@ -78,7 +79,20 @@ export type CandidateDetectionsArgs = {
   sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
 };
 
+export type CandidateCategory = "OTHER" | "VESSEL" | "WHALE";
+
 export type CandidateEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
+
+export type CandidateFilterCategory = {
+  eq?: InputMaybe<CandidateCategory>;
+  greaterThan?: InputMaybe<CandidateCategory>;
+  greaterThanOrEqual?: InputMaybe<CandidateCategory>;
+  in?: InputMaybe<Array<InputMaybe<CandidateCategory>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<CandidateCategory>;
+  lessThanOrEqual?: InputMaybe<CandidateCategory>;
+  notEq?: InputMaybe<CandidateCategory>;
+};
 
 export type CandidateFilterDetectionCount = {
   eq?: InputMaybe<Scalars["Int"]["input"]>;
@@ -97,6 +111,7 @@ export type CandidateFilterId = {
 
 export type CandidateFilterInput = {
   and?: InputMaybe<Array<CandidateFilterInput>>;
+  category?: InputMaybe<CandidateFilterCategory>;
   detectionCount?: InputMaybe<CandidateFilterDetectionCount>;
   detections?: InputMaybe<DetectionFilterInput>;
   feed?: InputMaybe<FeedFilterInput>;
@@ -142,6 +157,7 @@ export type CandidateFilterVisible = {
 };
 
 export type CandidateSortField =
+  | "CATEGORY"
   | "DETECTION_COUNT"
   | "ID"
   | "MAX_TIME"
@@ -156,7 +172,7 @@ export type CandidateSortInput = {
 export type Detection = {
   __typename?: "Detection";
   candidate?: Maybe<Candidate>;
-  category?: Maybe<DetectionCategory>;
+  category: DetectionCategory;
   description?: Maybe<Scalars["String"]["output"]>;
   feed?: Maybe<Feed>;
   id: Scalars["ID"]["output"];
@@ -175,7 +191,7 @@ export type DetectionFilterCategory = {
   eq?: InputMaybe<DetectionCategory>;
   greaterThan?: InputMaybe<DetectionCategory>;
   greaterThanOrEqual?: InputMaybe<DetectionCategory>;
-  in?: InputMaybe<Array<InputMaybe<DetectionCategory>>>;
+  in?: InputMaybe<Array<DetectionCategory>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<DetectionCategory>;
   lessThanOrEqual?: InputMaybe<DetectionCategory>;
@@ -1218,6 +1234,7 @@ export type CandidateQuery = {
     maxTime: Date;
     detectionCount?: number | null;
     visible?: boolean | null;
+    category?: CandidateCategory | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -1228,7 +1245,7 @@ export type CandidateQuery = {
     detections: Array<{
       __typename?: "Detection";
       id: string;
-      category?: DetectionCategory | null;
+      category: DetectionCategory;
       description?: string | null;
       listenerCount?: number | null;
       playlistTimestamp: number;
@@ -1317,6 +1334,7 @@ export type CandidatesQuery = {
       id: string;
       minTime: Date;
       maxTime: Date;
+      category?: CandidateCategory | null;
       detectionCount?: number | null;
       visible?: boolean | null;
       feed: {
@@ -1329,7 +1347,7 @@ export type CandidatesQuery = {
       detections: Array<{
         __typename?: "Detection";
         id: string;
-        category?: DetectionCategory | null;
+        category: DetectionCategory;
         description?: string | null;
         listenerCount?: number | null;
         playlistTimestamp: number;
@@ -1935,6 +1953,7 @@ export const CandidateDocument = `
     maxTime
     detectionCount
     visible
+    category
     feed {
       id
       slug
@@ -2150,6 +2169,7 @@ export const CandidatesDocument = `
       id
       minTime
       maxTime
+      category
       detectionCount
       visible
       feed {
