@@ -4,6 +4,7 @@ defmodule Orcasite.Radio.Detection do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  alias Orcasite.Radio.Category
   alias Orcasite.Radio.{Feed, Candidate}
 
   postgres do
@@ -33,9 +34,8 @@ defmodule Orcasite.Radio.Detection do
     attribute :visible, :boolean, default: true
 
     attribute :category, :atom do
-      # TODO: Make non-null after we migrate
-      # allow_nil? false
-      constraints one_of: [:whale, :vessel, :other]
+      allow_nil? false
+      constraints one_of: Category.list()
     end
 
     create_timestamp :inserted_at
@@ -115,7 +115,7 @@ defmodule Orcasite.Radio.Detection do
 
       argument :category, :atom do
         allow_nil? false
-        constraints one_of: [:whale, :vessel, :other]
+        constraints one_of: Category.list()
       end
 
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
@@ -184,7 +184,7 @@ defmodule Orcasite.Radio.Detection do
 
       argument :category, :atom,
         allow_nil?: false,
-        constraints: [one_of: [:whale, :vessel, :other]]
+        constraints: [one_of: Category.list()]
 
       argument :send_notifications, :boolean, default: true
 
@@ -211,6 +211,7 @@ defmodule Orcasite.Radio.Detection do
       change fn changeset, _context ->
         playlist_timestamp = changeset |> Ash.Changeset.get_argument(:playlist_timestamp)
         player_offset = changeset |> Ash.Changeset.get_argument(:player_offset)
+        category = changeset |> Ash.Changeset.get_argument(:category)
 
         changeset
         |> Ash.Changeset.change_attribute(
@@ -227,7 +228,8 @@ defmodule Orcasite.Radio.Detection do
             Candidate
             |> Ash.Query.for_read(:find_nearby_candidate, %{
               timestamp: detection.timestamp,
-              feed_id: detection.feed_id
+              feed_id: detection.feed_id,
+              category: category
             })
             |> Orcasite.Radio.read!()
             |> case do
@@ -237,7 +239,8 @@ defmodule Orcasite.Radio.Detection do
                   min_time: detection.timestamp,
                   max_time: detection.timestamp,
                   detection_count: 1,
-                  feed: %{id: detection.feed_id}
+                  feed: %{id: detection.feed_id},
+                  category: category
                 })
                 |> Orcasite.Radio.create!()
 

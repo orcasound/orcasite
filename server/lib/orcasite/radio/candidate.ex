@@ -4,6 +4,7 @@ defmodule Orcasite.Radio.Candidate do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  alias Orcasite.Radio.Category
   alias Orcasite.Radio.{Detection, Feed}
   alias Orcasite.Notifications.Event
 
@@ -27,6 +28,10 @@ defmodule Orcasite.Radio.Candidate do
     attribute :min_time, :utc_datetime_usec, allow_nil?: false
     attribute :max_time, :utc_datetime_usec, allow_nil?: false
     attribute :visible, :boolean, default: true
+
+    attribute :category, :atom do
+      constraints one_of: Category.list()
+    end
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -85,6 +90,8 @@ defmodule Orcasite.Radio.Candidate do
     create :create do
       primary? true
 
+      accept [:min_time, :max_time, :detection_count, :category]
+
       argument :detections, {:array, :map}
       argument :feed, :map
 
@@ -94,6 +101,12 @@ defmodule Orcasite.Radio.Candidate do
 
     read :find_nearby_candidate do
       get? true
+
+      argument :category, :atom do
+        allow_nil? false
+        constraints one_of: Category.list()
+      end
+
       argument :timestamp, :utc_datetime
       argument :within_minutes, :integer, default: 3
       argument :feed_id, :string
@@ -102,6 +115,7 @@ defmodule Orcasite.Radio.Candidate do
         require Ash.Query
         timestamp = Ash.Query.get_argument(query, :timestamp)
         within_minutes = Ash.Query.get_argument(query, :within_minutes)
+        category = Ash.Query.get_argument(query, :category)
 
         feed_id =
           Ash.Query.get_argument(query, :feed_id)
@@ -121,7 +135,8 @@ defmodule Orcasite.Radio.Candidate do
 
         query
         |> Ash.Query.filter(
-          feed_id == ^feed_id and ^max_time >= min_time and max_time >= ^min_time
+          feed_id == ^feed_id and ^max_time >= min_time and max_time >= ^min_time and
+            category == ^category
         )
       end
     end
