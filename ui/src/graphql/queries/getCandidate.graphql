@@ -5,6 +5,7 @@ query candidate($id: ID!) {
     maxTime
     detectionCount
     visible
+    category
     feed {
       id
       slug

@@ -61,6 +61,7 @@ export type CancelNotificationResult = {
 
 export type Candidate = {
   __typename?: "Candidate";
+  category?: Maybe<CandidateCategory>;
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
   detections: Array<Detection>;
   feed: Feed;
@@ -78,7 +79,20 @@ export type CandidateDetectionsArgs = {
   sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
 };
 
+export type CandidateCategory = "OTHER" | "VESSEL" | "WHALE";
+
 export type CandidateEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
+
+export type CandidateFilterCategory = {
+  eq?: InputMaybe<CandidateCategory>;
+  greaterThan?: InputMaybe<CandidateCategory>;
+  greaterThanOrEqual?: InputMaybe<CandidateCategory>;
+  in?: InputMaybe<Array<InputMaybe<CandidateCategory>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<CandidateCategory>;
+  lessThanOrEqual?: InputMaybe<CandidateCategory>;
+  notEq?: InputMaybe<CandidateCategory>;
+};
 
 export type CandidateFilterDetectionCount = {
   eq?: InputMaybe<Scalars["Int"]["input"]>;
@@ -97,6 +111,7 @@ export type CandidateFilterId = {
 
 export type CandidateFilterInput = {
   and?: InputMaybe<Array<CandidateFilterInput>>;
+  category?: InputMaybe<CandidateFilterCategory>;
   detectionCount?: InputMaybe<CandidateFilterDetectionCount>;
   detections?: InputMaybe<DetectionFilterInput>;
   feed?: InputMaybe<FeedFilterInput>;
@@ -142,6 +157,7 @@ export type CandidateFilterVisible = {
 };
 
 export type CandidateSortField =
+  | "CATEGORY"
   | "DETECTION_COUNT"
   | "ID"
   | "MAX_TIME"
@@ -1218,6 +1234,7 @@ export type CandidateQuery = {
     maxTime: Date;
     detectionCount?: number | null;
     visible?: boolean | null;
+    category?: CandidateCategory | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -1317,6 +1334,7 @@ export type CandidatesQuery = {
       id: string;
       minTime: Date;
       maxTime: Date;
+      category?: CandidateCategory | null;
       detectionCount?: number | null;
       visible?: boolean | null;
       feed: {
@@ -1935,6 +1953,7 @@ export const CandidateDocument = `
     maxTime
     detectionCount
     visible
+    category
     feed {
       id
       slug
@@ -2150,6 +2169,7 @@ export const CandidatesDocument = `
       id
       minTime
       maxTime
+      category
       detectionCount
       visible
       feed {
