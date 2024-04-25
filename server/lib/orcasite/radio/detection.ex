@@ -17,6 +17,7 @@ defmodule Orcasite.Radio.Detection do
       index [:timestamp]
       index [:description]
       index [:inserted_at]
+      index [:category]
     end
 
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
@@ -34,7 +35,9 @@ defmodule Orcasite.Radio.Detection do
     attribute :visible, :boolean, default: true
 
     attribute :category, :atom do
-      allow_nil? false
+      # TODO: Figure out what to do with old detections
+      # without a category
+      # allow_nil? false
       constraints one_of: Category.list()
     end
 

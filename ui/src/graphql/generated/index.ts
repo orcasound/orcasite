@@ -172,7 +172,7 @@ export type CandidateSortInput = {
 export type Detection = {
   __typename?: "Detection";
   candidate?: Maybe<Candidate>;
-  category: DetectionCategory;
+  category?: Maybe<DetectionCategory>;
   description?: Maybe<Scalars["String"]["output"]>;
   feed?: Maybe<Feed>;
   id: Scalars["ID"]["output"];
@@ -191,7 +191,7 @@ export type DetectionFilterCategory = {
   eq?: InputMaybe<DetectionCategory>;
   greaterThan?: InputMaybe<DetectionCategory>;
   greaterThanOrEqual?: InputMaybe<DetectionCategory>;
-  in?: InputMaybe<Array<DetectionCategory>>;
+  in?: InputMaybe<Array<InputMaybe<DetectionCategory>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<DetectionCategory>;
   lessThanOrEqual?: InputMaybe<DetectionCategory>;
@@ -1245,7 +1245,7 @@ export type CandidateQuery = {
     detections: Array<{
       __typename?: "Detection";
       id: string;
-      category: DetectionCategory;
+      category?: DetectionCategory | null;
       description?: string | null;
       listenerCount?: number | null;
       playlistTimestamp: number;
@@ -1347,7 +1347,7 @@ export type CandidatesQuery = {
       detections: Array<{
         __typename?: "Detection";
         id: string;
-        category: DetectionCategory;
+        category?: DetectionCategory | null;
         description?: string | null;
         listenerCount?: number | null;
         playlistTimestamp: number;

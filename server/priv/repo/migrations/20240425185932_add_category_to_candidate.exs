@@ -8,22 +8,22 @@ defmodule Orcasite.Repo.Migrations.AddCategoryToCandidate do
   use Ecto.Migration
 
   def up do
-    alter table(:detections) do
-      modify :category, :text, null: false
-    end
+    create index(:detections, [:category])
 
     alter table(:candidates) do
       add :category, :text
     end
+
+    create index(:candidates, [:category])
   end
 
   def down do
+    drop_if_exists index(:candidates, [:category])
+
     alter table(:candidates) do
       remove :category
     end
 
-    alter table(:detections) do
-      modify :category, :text, null: true
-    end
+    drop_if_exists index(:detections, [:category])
   end
 end

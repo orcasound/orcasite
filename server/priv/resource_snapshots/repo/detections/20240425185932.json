@@ -7,8 +7,8 @@
       "source": "id",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": true,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": true
     },
     {
       "default": "nil",
@@ -17,8 +17,8 @@
       "source": "source_ip",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -27,8 +27,8 @@
       "source": "playlist_timestamp",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -37,8 +37,8 @@
       "source": "player_offset",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -47,8 +47,8 @@
       "source": "listener_count",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -57,8 +57,8 @@
       "source": "timestamp",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -67,8 +67,8 @@
       "source": "description",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "true",
@@ -77,8 +77,8 @@
       "source": "visible",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -86,9 +86,9 @@
       "type": "text",
       "source": "category",
       "references": null,
-      "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "allow_nil?": true,
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "fragment(\"now()\")",
@@ -97,8 +97,8 @@
       "source": "inserted_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "fragment(\"now()\")",
@@ -107,8 +107,8 @@
       "source": "updated_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -119,24 +119,24 @@
         "name": "detections_candidate_id_fkey",
         "table": "candidates",
         "schema": null,
-        "primary_key?": true,
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "strategy": null,
           "attribute": null
         },
+        "primary_key?": true,
         "destination_attribute": "id",
-        "on_delete": null,
-        "on_update": null,
         "deferrable": false,
-        "match_with": null,
         "match_type": null,
+        "match_with": null,
+        "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
       },
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -147,24 +147,24 @@
         "name": "detections_feed_id_fkey",
         "table": "feeds",
         "schema": null,
-        "primary_key?": true,
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "strategy": null,
           "attribute": null
         },
+        "primary_key?": true,
         "destination_attribute": "id",
-        "on_delete": null,
-        "on_update": null,
         "deferrable": false,
-        "match_with": null,
         "match_type": null,
+        "match_with": null,
+        "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
       },
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -175,150 +175,172 @@
         "name": "detections_user_id_fkey",
         "table": "users",
         "schema": null,
-        "primary_key?": true,
+        "on_delete": null,
         "multitenancy": {
           "global": null,
           "strategy": null,
           "attribute": null
         },
+        "primary_key?": true,
         "destination_attribute": "id",
-        "on_delete": null,
-        "on_update": null,
         "deferrable": false,
-        "match_with": null,
         "match_type": null,
+        "match_with": null,
+        "on_update": null,
         "destination_attribute_default": null,
         "destination_attribute_generated": null
       },
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     }
   ],
   "table": "detections",
-  "hash": "EFB84A32660E7A87B9E4915AFC3A386397C5D0832156D52C4C7876ACB0982536",
+  "hash": "CFD0E418D994C7BD15D5F52C6489F817459C6F43C2B8E3833E1EFFB3CF8A4B4B",
   "repo": "Elixir.Orcasite.Repo",
   "identities": [],
+  "schema": null,
+  "multitenancy": {
+    "global": null,
+    "strategy": null,
+    "attribute": null
+  },
   "custom_indexes": [
     {
       "message": null,
       "name": null,
       "table": null,
       "include": null,
-      "prefix": null,
       "fields": [
         {
           "type": "atom",
           "value": "playlist_timestamp"
         }
       ],
+      "prefix": null,
       "where": null,
       "unique": false,
+      "all_tenants?": false,
+      "concurrently": false,
       "error_fields": [
         "playlist_timestamp"
       ],
-      "concurrently": false,
-      "using": null,
       "nulls_distinct": true,
-      "all_tenants?": false
+      "using": null
     },
     {
       "message": null,
       "name": null,
       "table": null,
       "include": null,
-      "prefix": null,
       "fields": [
         {
           "type": "atom",
           "value": "player_offset"
         }
       ],
+      "prefix": null,
       "where": null,
       "unique": false,
+      "all_tenants?": false,
+      "concurrently": false,
       "error_fields": [
         "player_offset"
       ],
-      "concurrently": false,
-      "using": null,
       "nulls_distinct": true,
-      "all_tenants?": false
+      "using": null
     },
     {
       "message": null,
       "name": null,
       "table": null,
       "include": null,
-      "prefix": null,
       "fields": [
         {
           "type": "atom",
           "value": "timestamp"
         }
       ],
+      "prefix": null,
       "where": null,
       "unique": false,
+      "all_tenants?": false,
+      "concurrently": false,
       "error_fields": [
         "timestamp"
       ],
-      "concurrently": false,
-      "using": null,
       "nulls_distinct": true,
-      "all_tenants?": false
+      "using": null
     },
     {
       "message": null,
       "name": null,
       "table": null,
       "include": null,
-      "prefix": null,
       "fields": [
         {
           "type": "atom",
           "value": "description"
         }
       ],
+      "prefix": null,
       "where": null,
       "unique": false,
+      "all_tenants?": false,
+      "concurrently": false,
       "error_fields": [
         "description"
       ],
-      "concurrently": false,
-      "using": null,
       "nulls_distinct": true,
-      "all_tenants?": false
+      "using": null
     },
     {
       "message": null,
       "name": null,
       "table": null,
       "include": null,
-      "prefix": null,
       "fields": [
         {
           "type": "atom",
           "value": "inserted_at"
         }
       ],
+      "prefix": null,
       "where": null,
       "unique": false,
+      "all_tenants?": false,
+      "concurrently": false,
       "error_fields": [
         "inserted_at"
       ],
-      "concurrently": false,
-      "using": null,
       "nulls_distinct": true,
-      "all_tenants?": false
+      "using": null
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "category"
+        }
+      ],
+      "prefix": null,
+      "where": null,
+      "unique": false,
+      "all_tenants?": false,
+      "concurrently": false,
+      "error_fields": [
+        "category"
+      ],
+      "nulls_distinct": true,
+      "using": null
     }
   ],
-  "schema": null,
-  "check_constraints": [],
-  "multitenancy": {
-    "global": null,
-    "strategy": null,
-    "attribute": null
-  },
   "base_filter": null,
+  "check_constraints": [],
   "custom_statements": [],
   "has_create_action": true
 }
