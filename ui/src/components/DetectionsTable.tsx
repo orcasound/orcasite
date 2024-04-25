@@ -113,7 +113,7 @@ export default function DetectionsTable({
             .slice()
             .sort(({ timestamp: a }, { timestamp: b }) =>
               // Sort by timestamp, low to high
-              a == b ? 0 : a < b ? -1 : 0,
+              a === b ? 0 : a < b ? -1 : 0,
             )
             .map((detection, index) => (
               <TableRow
