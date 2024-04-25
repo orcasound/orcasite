@@ -116,7 +116,7 @@ export default function DetectionsTable({
               const date_b = new Date(b);
 
               // Sort by timestamp, low to high
-              return date_a === date_b ? 0 : date_a < date_b ? -1 : 0;
+              return +date_a - +date_b;
             })
             .map((detection, index) => (
               <TableRow
