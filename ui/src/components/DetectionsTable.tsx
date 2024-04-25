@@ -111,10 +111,13 @@ export default function DetectionsTable({
         <TableBody>
           {detections
             .slice()
-            .sort(({ timestamp: a }, { timestamp: b }) =>
+            .sort(({ timestamp: a }, { timestamp: b }) => {
+              const date_a = new Date(a);
+              const date_b = new Date(b);
+
               // Sort by timestamp, low to high
-              a === b ? 0 : a < b ? -1 : 0,
-            )
+              return date_a === date_b ? 0 : date_a < date_b ? -1 : 0;
+            })
             .map((detection, index) => (
               <TableRow
                 key={detection.id}
