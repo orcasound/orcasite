@@ -1,4 +1,4 @@
-name: fast-forward
+name: Fast forward
 
 on:
   issue_comment:
