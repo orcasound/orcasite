@@ -1,10 +1,11 @@
-name: Check Heroku Deployment Status
+name: Heroku
 # Based on https://janjones.me/posts/github-action-heroku-deployment/
 
 on: deployment_status
 
 jobs:
   deployment-status:
+    name: Check deployment status
     runs-on: ubuntu-latest
 
     # Continue only if some definitive status has been reported.
@@ -17,14 +18,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           route: POST /repos/:repository/statuses/${{ github.event.deployment.sha }}
-          repo: ${{ github.repository }}
+          repository: ${{ github.repository }}
           state: ${{ github.event.deployment_status.state }}
           target_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           description: >
             ${{ format('Heroku deployment is {0}', github.event.deployment_status.state) }}
-          context: deployment-status
+          context: Heroku / Deployment status
 
   health-check:
+    name: Check site health
     runs-on: ubuntu-latest
 
     # Run health check only if deployment succeeds.
@@ -51,4 +53,4 @@ jobs:
           target_url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           description: >
             ${{ format('Site health is {0}', steps.health_check.outcome) }}
-          context: health-check
+          context: Heroku / Site health
