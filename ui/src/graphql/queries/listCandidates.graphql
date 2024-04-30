@@ -11,6 +11,7 @@ query candidates(
       id
       minTime
       maxTime
+      category
       detectionCount
       visible
       feed {

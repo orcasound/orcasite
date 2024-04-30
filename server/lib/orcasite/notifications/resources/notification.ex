@@ -36,7 +36,12 @@ defmodule Orcasite.Notifications.Notification do
   calculations do
     calculate :progress,
               :float,
-              expr(if(target_count == 0, do: 1, else: notified_count / target_count))
+              expr(
+                if(target_count == 0 or is_nil(target_count),
+                  do: 1,
+                  else: notified_count / target_count
+                )
+              )
 
     calculate :finished, :boolean, expr(notified_count == target_count)
   end
