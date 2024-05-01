@@ -48,7 +48,7 @@ defmodule Orcasite.Notifications.Email do
         {{/if}}
         {{#if meta["candidate_id"] }}
           <mj-text font-size="20px" font-family="helvetica">
-            Review here: <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}">{{ meta["candidate_id"] }}</a>
+            Review here: <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}?utm_source=email&utm_medium=email&utm_campaign=notifications">{{ meta["candidate_id"] }}</a>
           </mj-text>
         {{/if}}
 
@@ -70,7 +70,7 @@ defmodule Orcasite.Notifications.Email do
               <td style="padding: 0 0 0 15px;">{{ notif_meta["description"] }}</td>
               <td style="padding: 0 0 0 15px;">
                 {{#if notif_meta["candidate_id"] }}
-                  <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}">Review</a>
+                  <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}?utm_source=email&utm_medium=email&utm_campaign=notifications">Review</a>
                 {{/if}}
               </td>
             </tr>
@@ -80,7 +80,7 @@ defmodule Orcasite.Notifications.Email do
 
 
         <mj-text font-size="20px">
-          Listen here: <a href="https://live.orcasound.net/listen/{{node}}">https://live.orcasound.net/listen/{{ node }}</a>
+          Listen here: <a href="https://live.orcasound.net/listen/{{node}}?utm_source=email&utm_medium=email&utm_campaign=notifications">https://live.orcasound.net/listen/{{ node }}</a>
         </mj-text>
 
         {{#if unsubscribe_token }}
