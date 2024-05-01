@@ -116,7 +116,7 @@ defmodule Orcasite.Notifications.Email do
 
         <mj-section>
           <mj-column background-color="#404040" padding="18px">
-            <mj-text font-size="14px" color="#F2F2F2" font-family="Helvetica" line-height="150%">
+            <mj-text font-size="18px" color="#F2F2F2" font-family="Helvetica" line-height="150%">
               {{ meta["message"] }}
             </mj-text>
           </mj-column>
@@ -126,14 +126,14 @@ defmodule Orcasite.Notifications.Email do
           <mj-column>
             <mj-image src="https://orcasite.s3.us-west-2.amazonaws.com/email_assets/orcasound_dont_miss.jpg"></mj-image>
 
-            <mj-button href="http://live.orcasound.net/listen/{{ node }}" background-color="#0F0F0F" border-radius="31px" font-size="18px" padding="18px" font-weight="bold">LISTEN NOW!</mj-button>
+            <mj-button href="http://live.orcasound.net/listen/{{ node }}?utm_source=email&utm_medium=email&utm_campaign=notifications" background-color="#0F0F0F" border-radius="31px" font-size="18px" padding="18px" font-weight="bold">LISTEN NOW!</mj-button>
           </mj-column>
         </mj-section>
 
         <mj-section>
           <mj-column background-color="#404040">
             <mj-text color="#F2F2F2" font-size="16px" align="center" line-height="150%" font-family="Helvetica">
-              If you miss the concert, <br /> watch the <a href="https://orcasound.net/blog?ecm" style="color: #007C89;">Orcasound blog</a> for recordings & bioacoustic analysis!
+              If you miss the concert, <br /> watch the <a href="https://orcasound.net/blog?ecm&utm_source=email&utm_medium=email&utm_campaign=notifications" style="color: #007C89;">Orcasound blog</a> for recordings & bioacoustic analysis!
             </mj-text>
           </mj-column>
         </mj-section>
