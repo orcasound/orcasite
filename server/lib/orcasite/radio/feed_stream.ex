@@ -13,8 +13,8 @@ defmodule Orcasite.Radio.FeedStream do
       index [:start_time]
       index [:end_time]
       index [:feed_id]
-      index [:prev_feed_id]
-      index [:next_feed_id]
+      index [:prev_feed_stream_id]
+      index [:next_feed_stream_id]
     end
   end
 
@@ -46,6 +46,11 @@ defmodule Orcasite.Radio.FeedStream do
     belongs_to :feed, Orcasite.Radio.Feed
     belongs_to :prev_feed_stream, Orcasite.Radio.FeedStream
     belongs_to :next_feed_stream, Orcasite.Radio.FeedStream
+    has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream
+
+    many_to_many :bouts, Orcasite.Radio.Bout do
+      through Orcasite.Radio.BoutFeedStream
+    end
   end
 
   actions do

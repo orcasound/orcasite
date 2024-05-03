@@ -9,6 +9,11 @@ defmodule Orcasite.Radio.Bout do
     repo Orcasite.Repo
 
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
+
+    custom_indexes do
+      index [:feed_id]
+      index [:created_by_user_id]
+    end
   end
 
   attributes do
@@ -31,7 +36,13 @@ defmodule Orcasite.Radio.Bout do
     belongs_to :created_by_user, Orcasite.Accounts.User do
       api Orcasite.Accounts
     end
+
     belongs_to :feed, Orcasite.Radio.Feed
+    has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream
+
+    many_to_many :feed_streams, Orcasite.Radio.FeedStream do
+      through Orcasite.Radio.BoutFeedStream
+    end
   end
 
   policies do
