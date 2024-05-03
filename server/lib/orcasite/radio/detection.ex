@@ -200,15 +200,13 @@ defmodule Orcasite.Radio.Detection do
 
       change manage_relationship(:feed_id, :feed, type: :append)
 
-      change fn changeset, %{actor: actor} ->
-        case actor do
-          %Orcasite.Accounts.User{} ->
-            changeset
-            |> Ash.Changeset.manage_relationship(:user, actor, type: :append)
+      change fn
+        changeset, %{actor: %Orcasite.Accounts.User{} = actor} ->
+          changeset
+          |> Ash.Changeset.manage_relationship(:created_by_user, actor, type: :append)
 
-          _ ->
-            changeset
-        end
+        changeset, _ ->
+          changeset
       end
 
       change fn changeset, _context ->
