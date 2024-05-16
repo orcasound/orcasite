@@ -23,7 +23,7 @@
         }
       },
       "addons": [
-        "heroku-postgresql:mini",
+        "heroku-postgresql:essential-0",
         "autoidle:hobby-web",
         "heroku-redis:mini"
       ],
