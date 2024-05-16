@@ -35,6 +35,11 @@ defmodule Orcasite.Radio.Feed do
     update_timestamp :updated_at
   end
 
+  relationships do
+    has_many :feed_streams, Orcasite.Radio.FeedStream
+  end
+
+
   calculations do
     calculate :lat_lng,
               Orcasite.Types.LatLng,
