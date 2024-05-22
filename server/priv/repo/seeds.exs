@@ -17,37 +17,49 @@ feeds = [
     lat_lng_string: "48.5583362, -123.1735774",
     name: "Orcasound Lab (Haro Strait)",
     node_name: "rpi_orcasound_lab",
-    slug: "orcasound-lab"
+    slug: "orcasound-lab",
+    bucket: "dev-streaming-orcasound-net",
+    bucket_region: "us-west-2",
   },
   %{
     lat_lng_string: "47.34922, -122.32512",
     name: "MaST Center Aquarium",
     node_name: "rpi_mast_center",
-    slug: "mast-center"
+    slug: "mast-center",
+    bucket: "dev-streaming-orcasound-net",
+    bucket_region: "us-west-2",
   },
   %{
     lat_lng_string: "48.0336664, -122.6040035",
     name: "Bush Point",
     node_name: "rpi_bush_point",
-    slug: "bush-point"
+    slug: "bush-point",
+    bucket: "dev-streaming-orcasound-net",
+    bucket_region: "us-west-2",
   },
   %{
     lat_lng_string: "48.135743, -122.760614",
     name: "Port Townsend",
     node_name: "rpi_port_townsend",
-    slug: "port-townsend"
+    slug: "port-townsend",
+    bucket: "dev-streaming-orcasound-net",
+    bucket_region: "us-west-2",
   },
   %{
     lat_lng_string: "47.86497296593844, -122.33393605795372",
     name: "Sunset Bay",
     node_name: "rpi_sunset_bay",
-    slug: "sunset-bay"
+    slug: "sunset-bay",
+    bucket: "dev-streaming-orcasound-net",
+    bucket_region: "us-west-2",
   },
   %{
     lat_lng_string: "48.591294, -123.058779",
     name: "North San Juan Channel",
     node_name: "rpi_north_sjc",
-    slug: "north-sjc"
+    slug: "north-sjc",
+    bucket: "dev-streaming-orcasound-net",
+    bucket_region: "us-west-2",
   }
 ]
 

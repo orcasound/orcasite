@@ -100,3 +100,12 @@ config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"
 config :ash_graphql, :policies, show_policy_breakdowns?: true
 config :orcasite, Orcasite.Radio, graphql: [show_raised_errors?: true]
 config :orcasite, Orcasite.Accounts, graphql: [show_raised_errors?: true]
+
+config :ex_aws,
+  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, {:awscli, "orcasound", 1000}, :instance_role],
+  secret_access_key: [
+    {:system, "AWS_SECRET_ACCESS_KEY"},
+    {:awscli, "orcasound", 1000},
+    :instance_role
+  ],
+  region: "us-west-2"
