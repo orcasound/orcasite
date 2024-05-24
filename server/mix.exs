@@ -104,7 +104,8 @@ defmodule Orcasite.Mixfile do
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
       {:sweet_xml, "~> 0.6"},
-      {:configparser_ex, "~> 4.0", only: :dev}
+      {:configparser_ex, "~> 4.0", only: :dev},
+      {:broadway_sqs, "~> 0.7"},
     ]
   end
 

@@ -92,6 +92,10 @@ defmodule Orcasite.Radio.Feed do
       get_by :slug
     end
 
+    read :get_by_node_name do
+      get_by :node_name
+    end
+
     create :create do
       primary? true
       reject [:location_point]
@@ -129,6 +133,7 @@ defmodule Orcasite.Radio.Feed do
     define_for Orcasite.Radio
 
     define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end
 
   json_api do

@@ -6,23 +6,29 @@ defmodule Orcasite.Application do
   def start(_type, _args) do
     pub_sub_redis = Application.get_env(:orcasite, :pub_sub_redis, [])
 
-    pubsub_options = case(Keyword.get(pub_sub_redis, :enabled)) do
-      true -> Keyword.merge(pub_sub_redis, adapter: Phoenix.PubSub.Redis)
-      _ -> []
-    end
+    pubsub_options =
+      case(Keyword.get(pub_sub_redis, :enabled)) do
+        true -> Keyword.merge(pub_sub_redis, adapter: Phoenix.PubSub.Redis)
+        _ -> []
+      end
 
-    children = [
-      OrcasiteWeb.Telemetry,
-      Orcasite.Repo,
-      {Orcasite.Cache, []},
-      {Oban, Application.fetch_env!(:orcasite, Oban)},
-      {Phoenix.PubSub, Keyword.merge([name: Orcasite.PubSub], pubsub_options)},
-      OrcasiteWeb.Presence,
-      {Finch, name: Orcasite.Finch},
-      {Task.Supervisor, name: Orcasite.TaskSupervisor},
-      {AshAuthentication.Supervisor, otp_app: :orcasite},
-      OrcasiteWeb.Endpoint
-    ]
+    children =
+      [
+        OrcasiteWeb.Telemetry,
+        Orcasite.Repo,
+        {Orcasite.Cache, []},
+        {Oban, Application.fetch_env!(:orcasite, Oban)},
+        {Phoenix.PubSub, Keyword.merge([name: Orcasite.PubSub], pubsub_options)},
+        OrcasiteWeb.Presence,
+        {Finch, name: Orcasite.Finch},
+        {Task.Supervisor, name: Orcasite.TaskSupervisor},
+        {AshAuthentication.Supervisor, otp_app: :orcasite},
+        if(Application.get_env(:orcasite, :feed_stream_queue_url),
+          do: {Orcasite.Radio.FeedStreamQueue, []}
+        ),
+        OrcasiteWeb.Endpoint
+      ]
+      |> Enum.filter(&Function.identity/1)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
