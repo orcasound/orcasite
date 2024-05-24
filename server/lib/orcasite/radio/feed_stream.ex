@@ -165,6 +165,15 @@ defmodule Orcasite.Radio.FeedStream do
       primary? true
       upsert? true
       upsert_identity :feed_stream_timestamp
+      upsert_fields [
+        :start_time,
+        :end_time,
+        :duration,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :playlist_timestamp
+      ]
 
       accept [
         :start_time,
