@@ -1,6 +1,6 @@
 defmodule Orcasite.RateLimiter do
   @moduledoc """
-  Based on Boardway's Broadway.Topology.RateLimiter, but uses the Registry
+  Based on Broadway's Broadway.Topology.RateLimiter, but uses the Registry
   to make it distributed
   """
 

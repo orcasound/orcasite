@@ -11,6 +11,8 @@ defmodule Orcasite.Radio.Feed do
     custom_indexes do
       index [:name]
       index [:node_name]
+      index [:visible]
+      index [:slug]
     end
 
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
@@ -30,6 +32,9 @@ defmodule Orcasite.Radio.Feed do
     attribute :intro_html, :string, default: ""
     attribute :image_url, :string, default: ""
     attribute :visible, :boolean, default: true
+    attribute :bucket, :string
+    attribute :bucket_region, :string
+    attribute :cloudfront_url, :string
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -54,6 +59,10 @@ defmodule Orcasite.Radio.Feed do
     calculate :map_url,
               :string,
               {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"}
+  end
+
+  relationships do
+    has_many :feed_streams, Orcasite.Radio.FeedStream
   end
 
   policies do
@@ -81,6 +90,10 @@ defmodule Orcasite.Radio.Feed do
 
     read :get_by_slug do
       get_by :slug
+    end
+
+    read :get_by_node_name do
+      get_by :node_name
     end
 
     create :create do
@@ -120,6 +133,7 @@ defmodule Orcasite.Radio.Feed do
     define_for Orcasite.Radio
 
     define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end
 
   json_api do

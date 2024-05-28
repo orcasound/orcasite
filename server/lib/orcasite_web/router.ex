@@ -78,7 +78,7 @@ defmodule OrcasiteWeb.Router do
     pipe_through(:graphql)
 
     forward("/", Absinthe.Plug,
-      schema: OrcasiteWeb.Schema,
+      schema: Module.concat(["OrcasiteWeb.Schema"]),
       json_codec: Jason,
       before_send: {__MODULE__, :absinthe_before_send}
     )
@@ -89,7 +89,7 @@ defmodule OrcasiteWeb.Router do
     pipe_through(:graphql)
 
     forward("/", Absinthe.Plug.GraphiQL,
-      schema: OrcasiteWeb.Schema,
+      schema: Module.concat(["OrcasiteWeb.Schema"]),
       interface: :playground,
       json_codec: Jason,
       before_send: {__MODULE__, :absinthe_before_send}

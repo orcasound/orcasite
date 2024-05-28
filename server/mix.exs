@@ -99,7 +99,13 @@ defmodule Orcasite.Mixfile do
       {:hammer, "~> 6.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_unit_notifier, "~> 1.2", only: :test},
-      {:remote_ip, "~> 1.1"}
+      {:remote_ip, "~> 1.1"},
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:hackney, "~> 1.9"},
+      {:sweet_xml, "~> 0.6"},
+      {:configparser_ex, "~> 4.0", only: :dev},
+      {:broadway_sqs, "~> 0.7"},
     ]
   end
 
