@@ -12,7 +12,7 @@ This repo specifies the web backend and frontend for the [Orcasound app](http://
 
 Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a successful contribution, as well as learning resources!
 
-## Quick Start (e.g. at hackathons):
+## Quick Start (e.g., at hackathons):
 
 - Load the Docker Configuration: `docker-compose up`
 - Wait for container to start up
@@ -40,7 +40,7 @@ The default Docker configuration is great for getting the project up and running
 
 ### Setup options
 
-There are several options for how to setup your dev environment:
+There are several options for how to set up your dev environment:
 
 - [VS Code with dev containers](#using-vs-code)
 - [Using docker-compose](#using-docker-compose-directly)
@@ -92,7 +92,7 @@ Language-level dependencies can be found under `.tool-versions`.
 
 ##### Database
 
-You will need to install Postgres and setup the `postgres` user with a password. The default connection details are:
+You will need to install Postgres and set up the `postgres` user with a password. The default connection details are:
 
 ```
 username: "postgres"
