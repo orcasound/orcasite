@@ -51,7 +51,9 @@ if config_env() == :prod do
   host = System.get_env("HOST_URL") || "live.orcasite.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
-  config :orcasite, :feed_stream_queue_url, System.get_env("FEED_STREAM_QUEUE_URL")
+  if System.get_env("FEED_STREAM_QUEUE_URL", "") != "" do
+    config :orcasite, :feed_stream_queue_url, System.get_env("FEED_STREAM_QUEUE_URL")
+  end
 
   config :orcasite, OrcasiteWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
