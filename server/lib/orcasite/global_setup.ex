@@ -4,11 +4,12 @@ defmodule Orcasite.GlobalSetup do
     |> Ash.Query.for_read(:read)
     |> Orcasite.Radio.read!()
     |> Stream.map(fn feed ->
-      with {:ok, %{timestamps: timestamps}} <- Orcasite.Radio.AwsClient.list_timestamps(feed) do
+      Orcasite.Radio.AwsClient.list_timestamps(feed, fn timestamps ->
         timestamps
         |> Enum.map(&%{feed: feed, playlist_timestamp: &1})
         |> Orcasite.Radio.bulk_create(Orcasite.Radio.FeedStream, :create)
-      end
+      end)
+      :ok
     end)
     |> Enum.to_list()
   end

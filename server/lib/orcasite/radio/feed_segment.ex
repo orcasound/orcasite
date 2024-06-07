@@ -1,10 +1,10 @@
-defmodule Orcasite.Radio.FeedStream do
+defmodule Orcasite.Radio.FeedSegment do
   use Ash.Resource,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
   postgres do
-    table "feed_streams"
+    table "feed_segments"
     repo Orcasite.Repo
 
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
@@ -13,18 +13,17 @@ defmodule Orcasite.Radio.FeedStream do
       index [:start_time]
       index [:end_time]
       index [:feed_id]
-      index [:prev_feed_stream_id]
-      index [:next_feed_stream_id]
+      index [:feed_stream_id]
       index [:bucket]
     end
   end
 
   identities do
-    identity :feed_stream_timestamp, [:feed_id, :start_time]
+    identity :feed_segment_timestamp, [:feed_id, :start_time]
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdstrm"
+    uuid_attribute :id, prefix: "fdseg"
 
     attribute :start_time, :utc_datetime
     attribute :end_time, :utc_datetime
@@ -42,8 +41,16 @@ defmodule Orcasite.Radio.FeedStream do
       description "S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/)"
     end
 
+    attribute :playlist_path, :string do
+      description "S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/)"
+    end
+
     attribute :playlist_m3u8_path, :string do
       description "S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8)"
+    end
+
+    attribute :segment_path, :string do
+      description "S3 object path for ts file (e.g. /rpi_orcasound_lab/hls/1541027406/live005.ts)"
     end
 
     create_timestamp :inserted_at
@@ -52,14 +59,7 @@ defmodule Orcasite.Radio.FeedStream do
 
   relationships do
     belongs_to :feed, Orcasite.Radio.Feed
-    belongs_to :prev_feed_stream, Orcasite.Radio.FeedStream
-    belongs_to :next_feed_stream, Orcasite.Radio.FeedStream
-
-    has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream
-
-    many_to_many :bouts, Orcasite.Radio.Bout do
-      through Orcasite.Radio.BoutFeedStream
-    end
+    belongs_to :feed_stream, Orcasite.Radio.FeedStream
   end
 
   actions do
@@ -77,7 +77,7 @@ defmodule Orcasite.Radio.FeedStream do
       filter expr(if not is_nil(^arg(:feed_id), do: feed_id == ^arg(:feed_id)), else: true)
     end
 
-    create :from_m3u8_path do
+    create :from_ts_path do
       upsert? true
       upsert_identity :feed_stream_timestamp
 
