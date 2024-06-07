@@ -42,6 +42,9 @@ defmodule Orcasite.Radio.FeedStreamQueue do
               {:ok, %{"Records" => records}} -> records
               _ -> []
             end
+
+          _ ->
+            []
         end
       end)
       |> Enum.flat_map(fn %{"s3" => %{"object" => %{"key" => object_path}}} ->
