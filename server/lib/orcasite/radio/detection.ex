@@ -203,7 +203,7 @@ defmodule Orcasite.Radio.Detection do
       change fn
         changeset, %{actor: %Orcasite.Accounts.User{} = actor} ->
           changeset
-          |> Ash.Changeset.manage_relationship(:created_by_user, actor, type: :append)
+          |> Ash.Changeset.manage_relationship(:user, actor, type: :append)
 
         changeset, _ ->
           changeset
