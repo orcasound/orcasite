@@ -161,6 +161,16 @@ defmodule Orcasite.Radio.FeedSegment do
     end
   end
 
+  json_api do
+    type "feed_segment"
+
+    routes do
+      base "/feed_segments"
+
+      index :index
+    end
+  end
+
   graphql do
     type :feed_segment
 

@@ -76,7 +76,7 @@ defmodule Orcasite.Radio.FeedStream do
 
       argument :feed_id, :string
 
-      filter expr(if not is_nil(^arg(:feed_id), do: feed_id == ^arg(:feed_id)), else: true)
+      filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
     end
 
     create :from_m3u8_path do
@@ -334,6 +334,16 @@ defmodule Orcasite.Radio.FeedStream do
     define_for Orcasite.Radio
 
     define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
+  end
+
+  json_api do
+    type "feed_stream"
+
+    routes do
+      base "/feed_streams"
+
+      index :index
+    end
   end
 
   graphql do
