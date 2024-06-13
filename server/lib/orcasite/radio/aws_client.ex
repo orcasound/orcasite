@@ -48,7 +48,7 @@ defmodule Orcasite.Radio.AwsClient do
 
         count = Enum.count(timestamps)
 
-        token = body |> Map.get(:continuation_token)
+        token = body |> Map.get(:next_continuation_token)
         has_more = body |> Map.get(:is_truncated) == "true"
 
         if is_function(callback) do
