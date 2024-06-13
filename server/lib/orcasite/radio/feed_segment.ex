@@ -75,8 +75,16 @@ defmodule Orcasite.Radio.FeedSegment do
       end
 
       argument :feed_id, :string
+      argument :feed_stream_id, :string
 
-      filter expr(if not is_nil(^arg(:feed_id), do: feed_id == ^arg(:feed_id)), else: true)
+      filter expr(
+               if(not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true) and
+                 if(
+                   not is_nil(^arg(:feed_stream_id)),
+                   do: feed_stream_id == ^arg(:feed_stream_id),
+                   else: true
+                 )
+             )
     end
 
     create :create do
