@@ -116,7 +116,11 @@ defmodule OrcasiteWeb.Router do
 
   scope "/" do
     pipe_through [:browser, :require_admin]
-    live_dashboard "/admin/dashboard", metrics: OrcasiteWeb.Telemetry
+
+    live_dashboard "/admin/dashboard",
+      metrics: OrcasiteWeb.Telemetry,
+      ecto_repos: [Orcasite.Repo],
+      ecto_psql_extras_options: [long_running_queries: [threshold: "200 milliseconds"]]
 
     sign_in_route(
       path: "/admin/sign-in",
