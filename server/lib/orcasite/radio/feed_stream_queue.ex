@@ -61,7 +61,7 @@ defmodule Orcasite.Radio.FeedStreamQueue do
         Orcasite.Radio.FeedStream,
         :from_m3u8_path,
         upsert?: true,
-        upsert_identity: feed_stream_timestamp
+        upsert_identity: :feed_stream_timestamp
       )
     end)
 
