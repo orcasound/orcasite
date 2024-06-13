@@ -96,6 +96,7 @@ defmodule Orcasite.Radio.FeedStream do
       argument :m3u8_path, :string, allow_nil?: false
       argument :feed, :map
       argument :playlist_path, :string
+      argument :update_segments?, :boolean, default: false
 
       change fn changeset, _context ->
         path =
@@ -159,6 +160,15 @@ defmodule Orcasite.Radio.FeedStream do
             "/#{feed.node_name}/hls/#{playlist_timestamp}/live.m3u8"
           )
           |> Ash.Changeset.change_attribute(:playlist_timestamp, playlist_timestamp)
+          |> Ash.Changeset.after_action(fn change, %{id: feed_stream_id} = feed_stream ->
+            if Ash.Changeset.get_argument(changeset, :update_segments?) do
+              %{feed_stream_id: feed_stream_id}
+              |> Orcasite.Radio.Workers.UpdateFeedSegments.new()
+              |> Oban.insert()
+            end
+
+            {:ok, feed_stream}
+          end)
         end
       end
     end
@@ -188,6 +198,7 @@ defmodule Orcasite.Radio.FeedStream do
         :playlist_timestamp
       ]
 
+      argument :update_segments?, :boolean, default: false
       argument :feed, :map, allow_nil?: false
       argument :prev_feed_stream, :string
 
@@ -227,6 +238,15 @@ defmodule Orcasite.Radio.FeedStream do
           :playlist_m3u8_path,
           "/#{feed.node_name}/hls/#{playlist_timestamp}/live.m3u8"
         )
+        |> Ash.Changeset.after_action(fn change, %{id: feed_stream_id} = feed_stream ->
+          if Ash.Changeset.get_argument(changeset, :update_segments?) do
+            %{feed_stream_id: feed_stream_id}
+            |> Orcasite.Radio.Workers.UpdateFeedSegments.new()
+            |> Oban.insert()
+          end
+
+          {:ok, feed_stream}
+        end)
       end
     end
 

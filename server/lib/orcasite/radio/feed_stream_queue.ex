@@ -54,9 +54,11 @@ defmodule Orcasite.Radio.FeedStreamQueue do
           []
         end
       end)
+      |> Enum.uniq()
 
     Task.Supervisor.start_child(Orcasite.TaskSupervisor, fn ->
       paths
+      |> Enum.map(&Map.put(&1, :update_segments?, true))
       |> Orcasite.Radio.bulk_create(
         Orcasite.Radio.FeedStream,
         :from_m3u8_path,

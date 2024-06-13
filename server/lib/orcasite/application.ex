@@ -23,7 +23,7 @@ defmodule Orcasite.Application do
         {Finch, name: Orcasite.Finch},
         {Task.Supervisor, name: Orcasite.TaskSupervisor},
         {AshAuthentication.Supervisor, otp_app: :orcasite},
-        if(Application.get_env(:orcasite, :feed_stream_queue_url),
+        if(Application.get_env(:orcasite, :feed_stream_queue_url) not in [nil, ""],
           do: {Orcasite.Radio.FeedStreamQueue, []}
         ),
         OrcasiteWeb.Endpoint
