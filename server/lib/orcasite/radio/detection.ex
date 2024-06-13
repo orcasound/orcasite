@@ -316,6 +316,8 @@ defmodule Orcasite.Radio.Detection do
       :inserted_at
     ]
 
+    includes [:feed, :candidate]
+
     routes do
       base "/detections"
 
