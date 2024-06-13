@@ -20,6 +20,7 @@ defmodule Orcasite.Radio.FeedSegment do
 
   identities do
     identity :feed_segment_timestamp, [:feed_id, :start_time]
+    identity :feed_segment_path, [:segment_path]
   end
 
   attributes do
@@ -34,11 +35,7 @@ defmodule Orcasite.Radio.FeedSegment do
     attribute :cloudfront_url, :string
 
     attribute :playlist_timestamp, :string do
-      description "UTC Unix epoch for playlist start (e.g. 1541027406)"
-    end
-
-    attribute :playlist_path, :string do
-      description "S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/)"
+      description "UTC Unix epoch for playlist (m3u8 dir) start (e.g. 1541027406)"
     end
 
     attribute :playlist_path, :string do
@@ -51,6 +48,11 @@ defmodule Orcasite.Radio.FeedSegment do
 
     attribute :segment_path, :string do
       description "S3 object path for ts file (e.g. /rpi_orcasound_lab/hls/1541027406/live005.ts)"
+    end
+
+    attribute :file_name, :string do
+      description "ts file name (e.g. live005.ts)"
+      allow_nil? false
     end
 
     create_timestamp :inserted_at
@@ -77,103 +79,22 @@ defmodule Orcasite.Radio.FeedSegment do
       filter expr(if not is_nil(^arg(:feed_id), do: feed_id == ^arg(:feed_id)), else: true)
     end
 
-    create :from_ts_path do
-      upsert? true
-      upsert_identity :feed_stream_timestamp
-
-      upsert_fields [
-        :start_time,
-        :bucket,
-        :bucket_region,
-        :cloudfront_url,
-        :playlist_path,
-        :playlist_m3u8_path,
-        :playlist_timestamp
-      ]
-
-      argument :m3u8_path, :string, allow_nil?: false
-      argument :feed, :map
-      argument :playlist_path, :string
-
-      change fn changeset, _context ->
-        path =
-          changeset
-          |> Ash.Changeset.get_argument(:m3u8_path)
-          |> String.trim_leading("/")
-
-        with {:path, %{"node_name" => node_name, "timestamp" => playlist_timestamp}} <-
-               {:path,
-                Regex.named_captures(
-                  ~r|(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/live.m3u8|,
-                  path
-                )},
-             {:feed, _, {:ok, feed}} <-
-               {:feed, node_name, Orcasite.Radio.Feed.get_feed_by_node_name(node_name)} do
-          changeset
-          |> Ash.Changeset.manage_relationship(:feed, feed, type: :append)
-          |> Ash.Changeset.change_attribute(:playlist_timestamp, playlist_timestamp)
-          |> Ash.Changeset.set_argument(:feed, feed)
-        else
-          {:feed, node_name, _error} ->
-            changeset
-            |> Ash.Changeset.add_error("Feed for #{node_name} not found")
-
-          {:path, _error} ->
-            changeset
-            |> Ash.Changeset.add_error(
-              "Path #{path} does not match the hls object path format (<node_name>/hls/<timestamp>/live.m3u8)"
-            )
-        end
-      end
-
-      change fn changeset, context ->
-        if !changeset.valid? do
-          changeset
-        else
-          feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
-
-          playlist_timestamp =
-            changeset
-            |> Ash.Changeset.get_argument_or_attribute(:playlist_timestamp)
-
-          feed
-          |> Map.take([:bucket, :bucket_region, :cloudfront_url])
-          |> Enum.reduce(changeset, fn {attribute, value}, acc ->
-            acc
-            |> Ash.Changeset.change_new_attribute(attribute, value)
-          end)
-          |> Ash.Changeset.change_new_attribute(
-            :start_time,
-            playlist_timestamp
-            |> String.to_integer()
-            |> DateTime.from_unix!()
-          )
-          |> Ash.Changeset.change_new_attribute(
-            :playlist_path,
-            "/#{feed.node_name}/hls/#{playlist_timestamp}/"
-          )
-          |> Ash.Changeset.change_new_attribute(
-            :playlist_m3u8_path,
-            "/#{feed.node_name}/hls/#{playlist_timestamp}/live.m3u8"
-          )
-          |> Ash.Changeset.change_attribute(:playlist_timestamp, playlist_timestamp)
-        end
-      end
-    end
-
     create :create do
       primary? true
       upsert? true
-      upsert_identity :feed_stream_timestamp
+      upsert_identity :feed_segment_path
 
       upsert_fields [
+        :playlist_path,
+        :duration,
         :start_time,
         :end_time,
-        :duration,
         :bucket,
         :bucket_region,
         :cloudfront_url,
-        :playlist_timestamp
+        :playlist_timestamp,
+        :playlist_m3u8_path,
+        :file_name
       ]
 
       accept [
@@ -183,27 +104,30 @@ defmodule Orcasite.Radio.FeedSegment do
         :bucket,
         :bucket_region,
         :cloudfront_url,
-        :playlist_timestamp
+        :playlist_timestamp,
+        :playlist_m3u8_path,
+        :playlist_path,
+        :file_name
       ]
 
       argument :feed, :map, allow_nil?: false
-      argument :prev_feed_stream, :string
+      argument :feed_stream, :map, allow_nil?: false
 
-      argument :playlist_timestamp, :string do
+      argument :segment_path, :string do
         allow_nil? false
         constraints allow_empty?: false
       end
 
-      change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
+      change set_attribute(:segment_path, arg(:segment_path))
       change manage_relationship(:feed, type: :append)
-      change manage_relationship(:prev_feed_stream, type: :append)
+      change manage_relationship(:feed_stream, type: :append)
 
       change fn changeset, context ->
         feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
 
         playlist_timestamp =
           changeset
-          |> Ash.Changeset.get_argument(:playlist_timestamp)
+          |> Ash.Changeset.get_attribute(:playlist_timestamp)
 
         feed
         |> Map.take([:bucket, :bucket_region, :cloudfront_url])
@@ -229,17 +153,11 @@ defmodule Orcasite.Radio.FeedSegment do
     end
   end
 
-  code_interface do
-    define_for Orcasite.Radio
-
-    define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
-  end
-
   graphql do
-    type :feed_stream
+    type :feed_segment
 
     queries do
-      list :feed_streams, :index
+      list :feed_segments, :index
     end
   end
 end

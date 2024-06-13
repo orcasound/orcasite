@@ -56,7 +56,13 @@ defmodule Orcasite.Radio.FeedStreamQueue do
       end)
 
     Task.Supervisor.start_child(Orcasite.TaskSupervisor, fn ->
-      Orcasite.Radio.bulk_create(paths, Orcasite.Radio.FeedStream, :from_m3u8_path)
+      paths
+      |> Orcasite.Radio.bulk_create(
+        Orcasite.Radio.FeedStream,
+        :from_m3u8_path,
+        upsert?: true,
+        upsert_identity: feed_stream_timestamp
+      )
     end)
 
     messages
