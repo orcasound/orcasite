@@ -1,6 +1,6 @@
 defmodule Orcasite.Radio.Detection do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -283,12 +283,6 @@ defmodule Orcasite.Radio.Detection do
     end
   end
 
-  code_interface do
-    define_for Orcasite.Radio
-
-    define :submit_detection
-  end
-
   admin do
     table_columns [
       :id,
@@ -300,6 +294,35 @@ defmodule Orcasite.Radio.Detection do
       :candidate_id,
       :inserted_at
     ]
+  end
+
+  code_interface do
+    define_for Orcasite.Radio
+
+    define :submit_detection
+  end
+
+  json_api do
+    type "detection"
+
+    default_fields [
+      :id,
+      :playlist_timestamp,
+      :player_offset,
+      :listener_count,
+      :timestamp,
+      :description,
+      :category,
+      :inserted_at
+    ]
+
+    includes [:feed, :candidate]
+
+    routes do
+      base "/detections"
+
+      index :index
+    end
   end
 
   graphql do

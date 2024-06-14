@@ -62,6 +62,8 @@ defmodule Orcasite.Radio.FeedStreamQueue do
       |> Orcasite.Radio.bulk_create(
         Orcasite.Radio.FeedStream,
         :from_m3u8_path,
+        return_errors?: true,
+        stop_on_error?: true,
         upsert?: true,
         upsert_identity: :feed_stream_timestamp
       )

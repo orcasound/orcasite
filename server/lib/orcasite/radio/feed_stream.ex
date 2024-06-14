@@ -90,7 +90,8 @@ defmodule Orcasite.Radio.FeedStream do
         :cloudfront_url,
         :playlist_path,
         :playlist_m3u8_path,
-        :playlist_timestamp
+        :playlist_timestamp,
+        :updated_at
       ]
 
       argument :m3u8_path, :string, allow_nil?: false
@@ -185,7 +186,8 @@ defmodule Orcasite.Radio.FeedStream do
         :bucket,
         :bucket_region,
         :cloudfront_url,
-        :playlist_timestamp
+        :playlist_timestamp,
+        :updated_at
       ]
 
       accept [
