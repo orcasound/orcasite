@@ -71,7 +71,7 @@ defmodule Orcasite.Mixfile do
       {:geo_postgis, "~> 3.0"},
       {:jason, "~> 1.2"},
       # Reverse proxy for proxying to nextjs app
-      {:reverse_proxy_plug, "~> 2.3.0"},
+      {:reverse_proxy_plug, "~> 3.0.1"},
       {:httpoison, "~> 2.2"},
       {:corsica, "~> 2.1"},
       {:telemetry_metrics, "~> 1.0"},
