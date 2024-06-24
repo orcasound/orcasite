@@ -13,12 +13,12 @@ This repo specifies the web backend and frontend for the [Orcasound app](http://
 
 Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a successful contribution, as well as learning resources!
 
-## Quick Start (e.g. at hackathons):
+## Quick Start:
 
-- Load the Docker Configuration: `docker-compose up`
-- Wait for container to start up
-- Navigate to [localhost:3000](http://localhost:3000) to view the website
-- Navigate to [localhost:4000](http://localhost:4000) to access the API server
+1. Load the Docker Configuration: `docker-compose up`
+2. Wait for containers to start up
+3. Navigate to [localhost:3000](http://localhost:3000) to view the website
+4. Navigate to [localhost:4000](http://localhost:4000) to access the API server
 
 > **Note**
 > This assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
@@ -37,11 +37,11 @@ This will build an image locally with all the dependencies you need. It will als
 
 ## Developing
 
-The default Docker configuration is great for getting the project up and running, but if you want to do development, you'll want to be able to modify the source code without re-building an entire Docker image.
+The [quick start](#quick-start) setup is great for getting the project up and running, but if you want to do development, you'll want to be able to modify the source code without re-building an entire Docker image.
 
 ### Setup options
 
-There are several options for how to setup your dev environment:
+There are several options for how to set up your dev environment:
 
 - [VS Code with dev containers](#using-vs-code)
 - [Using docker-compose](#using-docker-compose-directly)
@@ -93,7 +93,7 @@ Language-level dependencies can be found under `.tool-versions`.
 
 ##### Database
 
-You will need to install Postgres and setup the `postgres` user with a password. The default connection details are:
+You will need to install Postgres and set up the `postgres` user with a password. The default connection details are:
 
 ```
 username: "postgres"

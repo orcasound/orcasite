@@ -54,9 +54,19 @@ defmodule Orcasite.Radio.FeedStreamQueue do
           []
         end
       end)
+      |> Enum.uniq()
 
     Task.Supervisor.start_child(Orcasite.TaskSupervisor, fn ->
-      Orcasite.Radio.bulk_create(paths, Orcasite.Radio.FeedStream, :from_m3u8_path)
+      paths
+      |> Enum.map(&Map.put(&1, :update_segments?, true))
+      |> Orcasite.Radio.bulk_create(
+        Orcasite.Radio.FeedStream,
+        :from_m3u8_path,
+        return_errors?: true,
+        stop_on_error?: true,
+        upsert?: true,
+        upsert_identity: :feed_stream_timestamp
+      )
     end)
 
     messages

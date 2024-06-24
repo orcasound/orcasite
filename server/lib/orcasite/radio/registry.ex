@@ -8,6 +8,7 @@ defmodule Orcasite.Radio.Registry do
     entry Orcasite.Radio.Bout
     entry Orcasite.Radio.FeedStream
     entry Orcasite.Radio.BoutFeedStream
+    entry Orcasite.Radio.FeedSegment
   end
 
 end
