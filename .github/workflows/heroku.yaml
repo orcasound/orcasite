@@ -22,7 +22,7 @@ jobs:
           egress-policy: audit
 
       # Forward deployment's status to the deployed commit.
-      - uses: octokit/request-action@v2.x
+      - uses: octokit/request-action@1f5f8ff67cfd43e6d1abe41548675d93e4f402c5 # v2.x
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -50,7 +50,7 @@ jobs:
           egress-policy: audit
 
       - id: health_check
-        uses: jtalk/url-health-check-action@v4
+        uses: jtalk/url-health-check-action@b716ccb6645355dd9fcce8002ce460e5474f7f00 # v4
         with:
           url: ${{ github.event.deployment.payload.web_url }}
           follow-redirect: true
@@ -58,7 +58,7 @@ jobs:
           retry-delay: 30s
         continue-on-error: true
       # Set appropriate status to the deployed commit.
-      - uses: octokit/request-action@v2.x
+      - uses: octokit/request-action@1f5f8ff67cfd43e6d1abe41548675d93e4f402c5 # v2.x
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
