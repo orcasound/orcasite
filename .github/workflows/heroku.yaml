@@ -17,6 +17,10 @@ jobs:
       || (contains(github.event.comment.body, '/refresh-heroku-status') && github.event.issue.pull_request) }}
 
     steps:
+      - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       # Forward deployment's status to the deployed commit.
       - uses: octokit/request-action@v2.x
         env:
@@ -41,6 +45,10 @@ jobs:
 
     # Check that the deployed app returns successful HTTP response.
     steps:
+      - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - id: health_check
         uses: jtalk/url-health-check-action@v4
         with:
