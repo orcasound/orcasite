@@ -46,14 +46,14 @@ const helperTheme = createTheme();
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#1b2b7b",
+      main: "#0097A4",
     },
     secondary: {
-      main: "#080d26",
+      main: "#01325C",
     },
     base: helperTheme.palette.augmentColor({
       color: {
-        main: "#080d26",
+        main: "#7FE5D9",
         contrastText: "#ffffff",
       },
     }),
