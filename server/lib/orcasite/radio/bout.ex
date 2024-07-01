@@ -25,8 +25,7 @@ defmodule Orcasite.Radio.Bout do
     attribute :duration, :decimal, public?: true
     attribute :ongoing, :boolean, public?: true
 
-    attribute :category, :atom do
-      constraints one_of: [:biophony, :anthrophony, :geophony]
+    attribute :category, Orcasite.Types.AudioCategory do
       public? true
     end
 

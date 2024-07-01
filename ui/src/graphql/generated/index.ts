@@ -37,9 +37,11 @@ export type Scalars = {
   Json: { input: { [key: string]: any }; output: { [key: string]: any } };
 };
 
+export type AudioCategory = "ANTHROPHONY" | "BIOPHONY" | "GEOPHONY";
+
 export type Bout = {
   __typename?: "Bout";
-  category?: Maybe<Scalars["String"]["output"]>;
+  category?: Maybe<AudioCategory>;
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ID"]["output"];
@@ -48,14 +50,14 @@ export type Bout = {
 };
 
 export type BoutFilterCategory = {
-  eq?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  eq?: InputMaybe<AudioCategory>;
+  greaterThan?: InputMaybe<AudioCategory>;
+  greaterThanOrEqual?: InputMaybe<AudioCategory>;
+  in?: InputMaybe<Array<InputMaybe<AudioCategory>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["String"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  notEq?: InputMaybe<Scalars["String"]["input"]>;
+  lessThan?: InputMaybe<AudioCategory>;
+  lessThanOrEqual?: InputMaybe<AudioCategory>;
+  notEq?: InputMaybe<AudioCategory>;
 };
 
 export type BoutFilterDuration = {
