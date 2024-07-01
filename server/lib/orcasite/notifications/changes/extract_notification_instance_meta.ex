@@ -1,7 +1,6 @@
 defmodule Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta do
   use Ash.Resource.Change
 
-  alias Orcasite.Notifications
   alias Orcasite.Notifications.{Notification, Subscription}
 
   def change(
@@ -19,9 +18,9 @@ defmodule Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta do
     # body based on event type
 
     with {:get_sub, {:ok, subscription}} <-
-           {:get_sub, Notifications.get(Subscription, changeset.arguments.subscription)},
+           {:get_sub, Ash.get(Subscription, changeset.arguments.subscription)},
          {:get_notif, {:ok, notification}} <-
-           {:get_notif, Notifications.get(Notification, changeset.arguments.notification)} do
+           {:get_notif, Ash.get(Notification, changeset.arguments.notification)} do
       changeset
       |> Ash.Changeset.change_attribute(:meta, %{
         email: Map.get(subscription.meta, "email"),

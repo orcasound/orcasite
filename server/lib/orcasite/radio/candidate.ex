@@ -1,12 +1,11 @@
 defmodule Orcasite.Radio.Candidate do
   use Ash.Resource,
+    domain: Orcasite.Radio,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
-  alias Orcasite.Radio.Category
   alias Orcasite.Radio.{Detection, Feed}
-  alias Orcasite.Notifications.Event
 
   postgres do
     table "candidates"
@@ -23,16 +22,14 @@ defmodule Orcasite.Radio.Candidate do
   end
 
   attributes do
-    uuid_attribute(:id, prefix: "cand")
+    uuid_attribute :id, prefix: "cand", public?: true
 
-    attribute :detection_count, :integer
-    attribute :min_time, :utc_datetime_usec, allow_nil?: false
-    attribute :max_time, :utc_datetime_usec, allow_nil?: false
-    attribute :visible, :boolean, default: true
+    attribute :detection_count, :integer, public?: true
+    attribute :min_time, :utc_datetime_usec, allow_nil?: false, public?: true
+    attribute :max_time, :utc_datetime_usec, allow_nil?: false, public?: true
+    attribute :visible, :boolean, default: true, public?: true
 
-    attribute :category, :atom do
-      constraints one_of: Category.list()
-    end
+    attribute :category, Orcasite.Types.DetectionCategory, public?: true
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -43,9 +40,14 @@ defmodule Orcasite.Radio.Candidate do
   end
 
   relationships do
-    has_many :detections, Detection
+    has_many :detections, Detection do
+      public? true
+    end
 
-    belongs_to :feed, Feed, allow_nil?: false
+    belongs_to :feed, Feed do
+      allow_nil? false
+      public? true
+    end
   end
 
   policies do
@@ -71,7 +73,7 @@ defmodule Orcasite.Radio.Candidate do
   end
 
   actions do
-    defaults [:update, :destroy]
+    defaults [:destroy]
 
     read :read do
       primary? true
@@ -103,9 +105,8 @@ defmodule Orcasite.Radio.Candidate do
     read :find_nearby_candidate do
       get? true
 
-      argument :category, :atom do
+      argument :category, Orcasite.Types.DetectionCategory do
         allow_nil? false
-        constraints one_of: Category.list()
       end
 
       argument :timestamp, :utc_datetime
@@ -142,11 +143,16 @@ defmodule Orcasite.Radio.Candidate do
       end
     end
 
+    update :update do
+      primary? true
+      accept [:min_time, :max_time, :detection_count, :visible]
+    end
+
     update :cancel_notifications do
       accept []
+      require_atomic? false
 
-      argument :event_type, :atom do
-        constraints one_of: Event.types()
+      argument :event_type, Orcasite.Types.NotificationEventType do
         default :confirmed_candidate
       end
 
@@ -159,11 +165,11 @@ defmodule Orcasite.Radio.Candidate do
             event_type: Ash.Changeset.get_argument(changeset, :event_type),
             active: true
           })
-          |> Orcasite.Notifications.read!()
+          |> Ash.read!()
           |> Enum.map(fn notification ->
             notification
             |> Ash.Changeset.for_update(:cancel_notification, %{})
-            |> Orcasite.Notifications.update!()
+            |> Ash.update!()
           end)
 
           {:ok, record}

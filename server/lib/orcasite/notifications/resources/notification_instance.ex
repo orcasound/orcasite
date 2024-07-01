@@ -1,5 +1,6 @@
 defmodule Orcasite.Notifications.NotificationInstance do
   use Ash.Resource,
+  domain: Orcasite.Notifications,
     extensions: [AshAdmin.Resource],
     data_layer: Ash.DataLayer.Ets
 
@@ -32,7 +33,6 @@ defmodule Orcasite.Notifications.NotificationInstance do
   end
 
   code_interface do
-    define_for Orcasite.Notifications
     define :update, action: :update, args: [:status, :meta, :processed_at]
   end
 
@@ -46,8 +46,6 @@ defmodule Orcasite.Notifications.NotificationInstance do
     defaults [:create, :read, :update, :destroy]
 
     create :create_with_relationships do
-      accept [:subscription, :notification]
-
       argument :subscription, :uuid
       argument :notification, :uuid
 

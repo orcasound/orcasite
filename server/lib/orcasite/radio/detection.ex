@@ -1,10 +1,10 @@
 defmodule Orcasite.Radio.Detection do
   use Ash.Resource,
+    domain: Orcasite.Radio,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
-  alias Orcasite.Radio.Category
   alias Orcasite.Radio.{Feed, Candidate}
 
   postgres do
@@ -24,21 +24,21 @@ defmodule Orcasite.Radio.Detection do
   end
 
   attributes do
-    uuid_attribute(:id, prefix: "det")
+    uuid_attribute :id, prefix: "det", public?: true
 
-    attribute :source_ip, :string
-    attribute :playlist_timestamp, :integer, allow_nil?: false
-    attribute :player_offset, :decimal, allow_nil?: false
-    attribute :listener_count, :integer
-    attribute :timestamp, :utc_datetime_usec, allow_nil?: false
-    attribute :description, :string
-    attribute :visible, :boolean, default: true
+    attribute :source_ip, :string, public?: true
+    attribute :playlist_timestamp, :integer, allow_nil?: false, public?: true
+    attribute :player_offset, :decimal, allow_nil?: false, public?: true
+    attribute :listener_count, :integer, public?: true
+    attribute :timestamp, :utc_datetime_usec, allow_nil?: false, public?: true
+    attribute :description, :string, public?: true
+    attribute :visible, :boolean, default: true, public?: true
 
-    attribute :category, :atom do
+    attribute :category, Orcasite.Types.DetectionCategory do
       # TODO: Figure out what to do with old detections
       # without a category
       # allow_nil? false
-      constraints one_of: Category.list()
+      public? true
     end
 
     create_timestamp :inserted_at
@@ -50,12 +50,10 @@ defmodule Orcasite.Radio.Detection do
   end
 
   relationships do
-    belongs_to :candidate, Candidate
-    belongs_to :feed, Feed
+    belongs_to :candidate, Candidate, public?: true
+    belongs_to :feed, Feed, public?: true
 
-    belongs_to :user, Orcasite.Accounts.User do
-      api Orcasite.Accounts
-    end
+    belongs_to :user, Orcasite.Accounts.User
   end
 
   policies do
@@ -116,9 +114,8 @@ defmodule Orcasite.Radio.Detection do
         default_limit 100
       end
 
-      argument :category, :atom do
+      argument :category, Orcasite.Types.DetectionCategory do
         allow_nil? false
-        constraints one_of: Category.list()
       end
 
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
@@ -129,12 +126,14 @@ defmodule Orcasite.Radio.Detection do
     update :update do
       primary? true
       argument :candidate, :map
+      require_atomic? false
 
       change manage_relationship(:candidate, type: :append)
     end
 
     update :set_visible do
       accept [:visible]
+      require_atomic? false
       argument :visible, :boolean, default: true
 
       change set_attribute(:visible, arg(:visible))
@@ -144,7 +143,7 @@ defmodule Orcasite.Radio.Detection do
         |> Ash.Changeset.after_action(fn changeset, detection ->
           candidate =
             detection
-            |> Orcasite.Radio.load!(candidate: [:detections])
+            |> Ash.load!(candidate: [:detections])
             |> Map.get(:candidate)
 
           # If all detections are hidden, make the candidate hidden
@@ -152,7 +151,7 @@ defmodule Orcasite.Radio.Detection do
           |> Ash.Changeset.for_update(:update, %{
             visible: !Enum.all?(candidate.detections, &(!&1.visible))
           })
-          |> Orcasite.Radio.update!()
+          |> Ash.update!()
 
           {:ok, detection}
         end)
@@ -174,8 +173,7 @@ defmodule Orcasite.Radio.Detection do
         :player_offset,
         :listener_count,
         :description,
-        :category,
-        :send_notifications
+        :category
       ]
 
       argument :feed_id, :string, allow_nil?: false
@@ -185,9 +183,9 @@ defmodule Orcasite.Radio.Detection do
       argument :listener_count, :integer, allow_nil?: true
       argument :description, :string
 
-      argument :category, :atom,
-        allow_nil?: false,
-        constraints: [one_of: Category.list()]
+      argument :category, Orcasite.Types.DetectionCategory do
+        allow_nil? false
+      end
 
       argument :send_notifications, :boolean, default: true
 
@@ -232,7 +230,7 @@ defmodule Orcasite.Radio.Detection do
               feed_id: detection.feed_id,
               category: category
             })
-            |> Orcasite.Radio.read!()
+            |> Ash.read!()
             |> case do
               [] ->
                 Candidate
@@ -243,7 +241,7 @@ defmodule Orcasite.Radio.Detection do
                   feed: %{id: detection.feed_id},
                   category: category
                 })
-                |> Orcasite.Radio.create!()
+                |> Ash.create!()
 
               [candidate] ->
                 candidate
@@ -252,18 +250,18 @@ defmodule Orcasite.Radio.Detection do
                   min_time: datetime_min(candidate.min_time, detection.timestamp),
                   max_time: datetime_max(candidate.max_time, detection.timestamp)
                 })
-                |> Orcasite.Radio.update!()
+                |> Ash.update!()
             end
 
           detection
           |> Ash.Changeset.for_update(:update, %{candidate: candidate})
-          |> Orcasite.Radio.update()
+          |> Ash.update()
         end)
         |> Ash.Changeset.after_action(fn changeset, detection ->
           # Happens second
           detection =
             detection
-            |> Orcasite.Radio.load!([:feed, :candidate])
+            |> Ash.load!([:feed, :candidate])
 
           if Ash.Changeset.get_argument(changeset, :send_notifications) do
             Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
@@ -297,8 +295,6 @@ defmodule Orcasite.Radio.Detection do
   end
 
   code_interface do
-    define_for Orcasite.Radio
-
     define :submit_detection
   end
 
@@ -327,9 +323,6 @@ defmodule Orcasite.Radio.Detection do
 
   graphql do
     type :detection
-    # Remove user until we want to make use of this behind
-    # an authenticated/authorized call
-    hide_fields [:user]
 
     queries do
       get :detection, :read

@@ -1,5 +1,6 @@
 defmodule Orcasite.Notifications.Subscriber do
   use Ash.Resource,
+    domain: Orcasite.Notifications,
     extensions: [AshAdmin.Resource, AshAuthentication, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
@@ -39,12 +40,11 @@ defmodule Orcasite.Notifications.Subscriber do
   end
 
   code_interface do
-    define_for Orcasite.Notifications
     define :by_email, args: [:email]
   end
 
   authentication do
-    api Orcasite.Notifications
+    domain Orcasite.Notifications
 
     strategies do
       magic_link :manage_subscriptions do
@@ -93,7 +93,6 @@ defmodule Orcasite.Notifications.Subscriber do
 
     create :individual_subscriber do
       description "Create a subscriber for an individual"
-      accept [:name, :email, :user_id]
       argument :name, :string
       argument :email, :string
       argument :user_id, :string
@@ -152,7 +151,7 @@ defmodule Orcasite.Notifications.Subscriber do
   end
 
   validations do
-    validate fn changeset ->
+    validate fn changeset, _context ->
       # Check if email subscriber already exists
       with email when is_binary(email) <- changeset |> Ash.Changeset.get_argument(:email),
            %{action_type: :create} <- changeset,

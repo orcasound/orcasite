@@ -1,7 +1,6 @@
 defmodule Orcasite.Notifications.ManualReadNotificationsSince do
   use Ash.Resource.ManualRead
 
-  alias Orcasite.Notifications
   alias Orcasite.Notifications.Notification
 
   require Ash.Query
@@ -14,13 +13,13 @@ defmodule Orcasite.Notifications.ManualReadNotificationsSince do
 
     notification =
       Notification
-      |> Notifications.get!(notification_id)
+      |> Ash.get!(notification_id)
 
     Notification
     |> Ash.Query.filter(
         event_type == ^notification.event_type and
         inserted_at > ^notification.inserted_at
     )
-    |> Notifications.read()
+    |> Ash.read()
   end
 end

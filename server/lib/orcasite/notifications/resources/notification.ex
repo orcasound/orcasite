@@ -1,10 +1,11 @@
 defmodule Orcasite.Notifications.Notification do
   use Ash.Resource,
+    domain: Orcasite.Notifications,
     extensions: [AshAdmin.Resource, AshGraphql.Resource],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
-  alias Orcasite.Notifications.{Event, NotificationInstance, Subscription}
+  alias Orcasite.Notifications.{NotificationInstance, Subscription}
 
   postgres do
     table "notifications"
@@ -19,17 +20,15 @@ defmodule Orcasite.Notifications.Notification do
     uuid_primary_key :id
 
     attribute :meta, :map, default: %{}
-    attribute :active, :boolean, default: true
+    attribute :active, :boolean, default: true, public?: true
 
-    attribute :event_type, :atom do
-      constraints one_of: Event.types()
-    end
+    attribute :event_type, Orcasite.Types.NotificationEventType, public?: true
 
-    attribute :target_count, :integer
-    attribute :notified_count, :integer, default: 0
-    attribute :notified_count_updated_at, :utc_datetime
+    attribute :target_count, :integer, public?: true
+    attribute :notified_count, :integer, default: 0, public?: true
+    attribute :notified_count_updated_at, :utc_datetime, public?: true
 
-    create_timestamp :inserted_at, private?: false, writable?: false
+    create_timestamp :inserted_at, writable?: false, public?: true
     update_timestamp :updated_at
   end
 
@@ -41,9 +40,9 @@ defmodule Orcasite.Notifications.Notification do
                   do: 1,
                   else: notified_count / target_count
                 )
-              )
+              ), public?: true
 
-    calculate :finished, :boolean, expr(notified_count == target_count)
+    calculate :finished, :boolean, expr(notified_count == target_count), public?: true
   end
 
   relationships do
@@ -69,7 +68,7 @@ defmodule Orcasite.Notifications.Notification do
   end
 
   actions do
-    defaults [:create, :read, :update, :destroy]
+    defaults [:create, :read, :destroy]
 
     read :since_notification do
       description "Get all notifications after a given notification ID."
@@ -82,9 +81,7 @@ defmodule Orcasite.Notifications.Notification do
       prepare build(sort: [inserted_at: :desc])
       argument :candidate_id, :string, allow_nil?: false
 
-      argument :event_type, :atom do
-        constraints one_of: Event.types()
-      end
+      argument :event_type, Orcasite.Types.NotificationEventType
 
       argument :active, :boolean
 
@@ -101,7 +98,13 @@ defmodule Orcasite.Notifications.Notification do
              )
     end
 
+    update :update do
+      primary? true
+      accept [:target_count]
+    end
+
     update :cancel_notification do
+      require_atomic? false
       accept []
       change set_attribute(:active, false)
 
@@ -127,7 +130,6 @@ defmodule Orcasite.Notifications.Notification do
 
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
-      accept [:candidate_id, :message]
       argument :candidate_id, :string, allow_nil?: false
 
       argument :message, :string do
@@ -147,8 +149,8 @@ defmodule Orcasite.Notifications.Notification do
 
         candidate =
           Orcasite.Radio.Candidate
-          |> Orcasite.Radio.get(candidate_id)
-          |> Orcasite.Radio.load!(:feed)
+          |> Ash.get(candidate_id)
+          |> Ash.load!(:feed)
 
         changeset
         |> Ash.Changeset.change_attribute(:meta, %{
@@ -161,7 +163,6 @@ defmodule Orcasite.Notifications.Notification do
 
     create :notify_new_detection do
       description "Create a notification for a new detection (e.g. button push from user)."
-      accept [:detection_id]
       argument :detection_id, :string
       argument :node, :string, allow_nil?: false
       argument :description, :string, allow_nil?: true
@@ -185,8 +186,6 @@ defmodule Orcasite.Notifications.Notification do
   end
 
   code_interface do
-    define_for Orcasite.Notifications
-
     define :notify_new_detection,
       action: :notify_new_detection,
       args: [:detection_id, :node, :description, :listener_count, :candidate_id]
@@ -227,20 +226,20 @@ defmodule Orcasite.Notifications.Notification do
                      notification_id: notification.id,
                      event_type: notification.event_type
                    })
-                   |> Orcasite.Notifications.stream!()
+                   |> Ash.stream!()
                    |> Stream.map(fn subscription ->
                      Orcasite.Notifications.NotificationInstance
                      |> Ash.Changeset.for_create(:create_with_relationships, %{
                        notification: notification.id,
                        subscription: subscription.id
                      })
-                     |> Orcasite.Notifications.create!()
+                     |> Ash.create!()
                    end)
                    |> Enum.reduce(0, fn _, sum -> sum + 1 end)
 
                  notification
                  |> Ash.Changeset.for_update(:update, %{target_count: target_count})
-                 |> Orcasite.Notifications.update()
+                 |> Ash.update()
                end)
 
                {:ok, notification}

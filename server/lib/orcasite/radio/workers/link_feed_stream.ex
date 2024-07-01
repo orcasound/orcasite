@@ -10,17 +10,17 @@ defmodule Orcasite.Radio.Workers.LinkFeedStream do
 
     feed_stream =
       Orcasite.Radio.FeedStream
-      |> Orcasite.Radio.get!(feed_stream_id)
+      |> Ash.get!(feed_stream_id)
 
     # If new link to next stream, update times and maybe queue next feed_stream to link
     feed_stream
     |> Ash.Changeset.for_update(:link_next_stream)
-    |> Orcasite.Radio.update()
+    |> Ash.update()
     |> case do
       {:ok, %{next_feed_stream_id: next_feed_stream_id} = fs} ->
         fs
         |> Ash.Changeset.for_update(:update_end_time_and_duration)
-        |> Orcasite.Radio.update()
+        |> Ash.update()
 
         if enqueue_next_stream and next_depth > 0 do
           %{
@@ -38,7 +38,7 @@ defmodule Orcasite.Radio.Workers.LinkFeedStream do
 
     feed_stream
     |> Ash.Changeset.for_update(:link_prev_stream)
-    |> Orcasite.Radio.update()
+    |> Ash.update()
     |> case do
       {:ok, %{prev_feed_stream_id: prev_feed_stream_id}} ->
         # If new link to previous stream, queue another link job

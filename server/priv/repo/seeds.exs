@@ -68,12 +68,12 @@ feeds =
     Orcasite.Radio.Feed
     |> Ash.Query.for_read(:read)
     |> Ash.Query.filter(slug == ^attrs.slug)
-    |> Orcasite.Radio.read()
+    |> Ash.read()
     |> case do
       {:ok, []} ->
         Orcasite.Radio.Feed
         |> Ash.Changeset.for_create(:create, attrs)
-        |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
+        |> Ash.create!(verbose?: true, authorize?: false)
 
       {:ok, [feed | _]} ->
         feed
@@ -91,7 +91,7 @@ Orcasite.Accounts.User
 })
 |> Ash.Changeset.force_change_attribute(:admin, true)
 |> Ash.Changeset.force_change_attribute(:moderator, true)
-|> Orcasite.Accounts.create(authorize?: false)
+|> Ash.create(authorize?: false)
 
 [
   %{
@@ -304,5 +304,5 @@ Orcasite.Accounts.User
     :submit_detection,
     Map.merge(attrs, %{feed_id: feed_id, send_notifications: false})
   )
-  |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
+  |> Ash.create!(verbose?: true, authorize?: false)
 end)

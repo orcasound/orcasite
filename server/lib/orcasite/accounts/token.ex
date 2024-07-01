@@ -1,11 +1,12 @@
 defmodule Orcasite.Accounts.Token do
   use Ash.Resource,
+    domain: Orcasite.Accounts,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication.TokenResource],
     authorizers: [Ash.Policy.Authorizer]
 
   token do
-    api Orcasite.Accounts
+    domain Orcasite.Accounts
   end
 
   postgres do
