@@ -27,7 +27,7 @@ feeds = [
     node_name: "rpi_mast_center",
     slug: "mast-center",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   },
   # %{
   #   lat_lng_string: "48.0336664, -122.6040035",
@@ -51,7 +51,7 @@ feeds = [
     node_name: "rpi_sunset_bay",
     slug: "sunset-bay",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   },
   %{
     lat_lng_string: "48.591294, -123.058779",
@@ -59,7 +59,7 @@ feeds = [
     node_name: "rpi_north_sjc",
     slug: "north-sjc",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   }
 ]
 
@@ -297,12 +297,18 @@ Orcasite.Accounts.User
   }
 ]
 |> Enum.map(fn attrs ->
-  feed_id = feeds |> Enum.find(fn feed -> feed.slug == attrs[:slug] end) |> Map.get(:id)
+  feeds
+  |> Enum.find(fn feed -> feed.slug == attrs[:slug] end)
+  |> case do
+    %{id: feed_id} ->
+      Orcasite.Radio.Detection
+      |> Ash.Changeset.for_create(
+        :submit_detection,
+        Map.merge(attrs, %{feed_id: feed_id, send_notifications: false})
+      )
+      |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
 
-  Orcasite.Radio.Detection
-  |> Ash.Changeset.for_create(
-    :submit_detection,
-    Map.merge(attrs, %{feed_id: feed_id, send_notifications: false})
-  )
-  |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
+    _ ->
+      :ok
+  end
 end)
