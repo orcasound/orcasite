@@ -73,7 +73,7 @@ feeds =
       {:ok, []} ->
         Orcasite.Radio.Feed
         |> Ash.Changeset.for_create(:create, attrs)
-        |> Ash.create!(verbose?: true, authorize?: false)
+        |> Ash.create!(authorize?: false)
 
       {:ok, [feed | _]} ->
         feed
@@ -306,7 +306,7 @@ Orcasite.Accounts.User
         :submit_detection,
         Map.merge(attrs, %{feed_id: feed_id, send_notifications: false})
       )
-      |> Ash.create!(verbose?: true, authorize?: false)
+      |> Ash.create!(authorize?: false)
 
     _ ->
       :ok
