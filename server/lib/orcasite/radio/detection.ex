@@ -281,7 +281,8 @@ defmodule Orcasite.Radio.Detection do
                 detection.feed.slug,
                 detection.description,
                 detection.listener_count,
-                detection.candidate.id
+                detection.candidate.id,
+                authorize?: false
               )
             end)
           end

@@ -13,13 +13,13 @@ defmodule Orcasite.Notifications.ManualReadNotificationsSince do
 
     notification =
       Notification
-      |> Ash.get!(notification_id)
+      |> Ash.get!(notification_id, authorize?: false)
 
     Notification
     |> Ash.Query.filter(
         event_type == ^notification.event_type and
         inserted_at > ^notification.inserted_at
     )
-    |> Ash.read()
+    |> Ash.read(authorize?: false)
   end
 end

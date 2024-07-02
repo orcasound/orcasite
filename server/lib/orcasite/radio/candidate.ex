@@ -165,11 +165,11 @@ defmodule Orcasite.Radio.Candidate do
             event_type: Ash.Changeset.get_argument(changeset, :event_type),
             active: true
           })
-          |> Ash.read!()
+          |> Ash.read!(authorize?: false)
           |> Enum.map(fn notification ->
             notification
             |> Ash.Changeset.for_update(:cancel_notification, %{})
-            |> Ash.update!()
+            |> Ash.update!(authorize?: false)
           end)
 
           {:ok, record}

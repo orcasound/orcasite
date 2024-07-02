@@ -28,7 +28,7 @@ defmodule Orcasite.Notifications.Subscription do
 
     attribute :active, :boolean, default: true
 
-      attribute :event_type, Orcasite.Types.NotificationEventType
+    attribute :event_type, Orcasite.Types.NotificationEventType
 
     attribute :last_notified_at, :utc_datetime_usec
 
@@ -136,6 +136,7 @@ defmodule Orcasite.Notifications.Subscription do
 
       argument :name, :string
       argument :email, :string
+
       argument :event_type, Orcasite.Types.NotificationEventType do
         default nil
       end
@@ -167,7 +168,6 @@ defmodule Orcasite.Notifications.Subscription do
       change manage_relationship(:subscriber_id, :subscriber, type: :append)
     end
 
-
     update :update_last_notification do
       require_atomic? false
 
@@ -176,7 +176,6 @@ defmodule Orcasite.Notifications.Subscription do
       change manage_relationship(:last_notification, type: :append)
       change set_attribute(:last_notified_at, &DateTime.utc_now/0)
     end
-
   end
 
   def unsubscribe_token(subscription) do

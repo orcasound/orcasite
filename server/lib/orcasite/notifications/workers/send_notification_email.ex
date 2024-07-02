@@ -13,7 +13,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
             "notification_instance_id" => notification_instance_id
           } = _args
       }) do
-    notification = Notification |> Ash.get!(notification_id)
+    notification = Notification |> Ash.get!(notification_id, authorize?: false)
 
     subscription =
       Subscription |> Ash.get!(subscription_id) |> Ash.load!(:subscriber)
@@ -35,7 +35,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
         notif_id ->
           Notification
           |> Ash.Query.for_read(:since_notification, %{notification_id: notif_id})
-          |> Ash.read!()
+          |> Ash.read!(authorize?: false)
       end
       |> Enum.filter(&(&1.id != notification_id))
 
@@ -50,7 +50,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       notifications_since: notifications_since |> Enum.map(& &1.meta),
       notifications_since_count: Enum.count(notifications_since)
     })
-    |> email_for_notif(stringify(params["event_type"]))
+    |> email_for_notif(stringify(notification.event_type))
     |> Orcasite.Mailer.deliver()
 
     subscription
@@ -70,7 +70,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       end
     end)
 
-    Orcasite.Notifications.Notification.increment_notified_count(notification)
+    Orcasite.Notifications.Notification.increment_notified_count(notification, authorize?: false)
 
     :ok
   end

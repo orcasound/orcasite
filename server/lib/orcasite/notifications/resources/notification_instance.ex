@@ -46,8 +46,8 @@ defmodule Orcasite.Notifications.NotificationInstance do
     defaults [:create, :read, :update, :destroy]
 
     create :create_with_relationships do
-      argument :subscription, :uuid
-      argument :notification, :uuid
+      argument :subscription, :map
+      argument :notification, :map
 
       change manage_relationship(:subscription, type: :append)
       change manage_relationship(:notification, type: :append)

@@ -40,7 +40,8 @@ defmodule Orcasite.Notifications.Notification do
                   do: 1,
                   else: notified_count / target_count
                 )
-              ), public?: true
+              ),
+              public?: true
 
     calculate :finished, :boolean, expr(notified_count == target_count), public?: true
   end
@@ -143,22 +144,22 @@ defmodule Orcasite.Notifications.Notification do
 
       change set_attribute(:event_type, :confirmed_candidate)
 
-      change fn changeset, _context ->
-        candidate_id =
-          Ash.Changeset.get_argument(changeset, :candidate_id)
+      change before_action(fn changeset, _context ->
+               candidate_id =
+                 Ash.Changeset.get_argument(changeset, :candidate_id)
 
-        candidate =
-          Orcasite.Radio.Candidate
-          |> Ash.get(candidate_id)
-          |> Ash.load!(:feed)
+               candidate =
+                 Orcasite.Radio.Candidate
+                 |> Ash.get(candidate_id)
+                 |> Ash.load!(:feed)
 
-        changeset
-        |> Ash.Changeset.change_attribute(:meta, %{
-          candidate_id: candidate_id,
-          node: candidate.feed.slug,
-          message: Ash.Changeset.get_argument(changeset, :message)
-        })
-      end
+               changeset
+               |> Ash.Changeset.change_attribute(:meta, %{
+                 candidate_id: candidate_id,
+                 node: candidate.feed.slug,
+                 message: Ash.Changeset.get_argument(changeset, :message)
+               })
+             end)
     end
 
     create :notify_new_detection do
@@ -218,20 +219,20 @@ defmodule Orcasite.Notifications.Notification do
   changes do
     change fn changeset, _context ->
              changeset
-             |> Ash.Changeset.after_action(fn _, notification ->
+             |> Ash.Changeset.after_action(fn _, %{id: notification_id} = notification ->
                Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
                  target_count =
                    Orcasite.Notifications.Subscription
                    |> Ash.Query.for_read(:available_for_notification, %{
-                     notification_id: notification.id,
+                     notification_id: notification_id,
                      event_type: notification.event_type
                    })
                    |> Ash.stream!()
                    |> Stream.map(fn subscription ->
                      Orcasite.Notifications.NotificationInstance
                      |> Ash.Changeset.for_create(:create_with_relationships, %{
-                       notification: notification.id,
-                       subscription: subscription.id
+                       notification: notification,
+                       subscription: subscription
                      })
                      |> Ash.create!()
                    end)
@@ -239,7 +240,7 @@ defmodule Orcasite.Notifications.Notification do
 
                  notification
                  |> Ash.Changeset.for_update(:update, %{target_count: target_count})
-                 |> Ash.update()
+                 |> Ash.update(authorize?: false)
                end)
 
                {:ok, notification}
