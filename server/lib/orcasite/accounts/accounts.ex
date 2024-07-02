@@ -1,8 +1,9 @@
 defmodule Orcasite.Accounts do
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api]
+  use Ash.Domain, extensions: [AshAdmin.Domain, AshGraphql.Domain]
 
   resources do
-    registry Orcasite.Accounts.Registry
+    resource Orcasite.Accounts.User
+    resource Orcasite.Accounts.Token
   end
 
   admin do

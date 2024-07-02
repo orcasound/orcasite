@@ -13,7 +13,7 @@ defmodule OrcasiteWeb.SubscriptionAuthController do
   def success(conn, _activity, subscription, _token) when not is_nil(subscription) do
     subscription
     |> Ash.Changeset.for_update(:update, %{active: false})
-    |> Orcasite.Notifications.update!()
+    |> Ash.update!()
 
     conn
     |> delete_session(:return_to)

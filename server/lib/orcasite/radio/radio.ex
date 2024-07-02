@@ -1,8 +1,14 @@
 defmodule Orcasite.Radio do
-  use Ash.Api, extensions: [AshAdmin.Api, AshGraphql.Api, AshJsonApi.Api]
+  use Ash.Domain, extensions: [AshAdmin.Domain, AshGraphql.Domain, AshJsonApi.Domain]
 
   resources do
-    registry Orcasite.Radio.Registry
+    resource Orcasite.Radio.Feed
+    resource Orcasite.Radio.Candidate
+    resource Orcasite.Radio.Detection
+    resource Orcasite.Radio.Bout
+    resource Orcasite.Radio.FeedStream
+    resource Orcasite.Radio.BoutFeedStream
+    resource Orcasite.Radio.FeedSegment
   end
 
   admin do

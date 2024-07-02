@@ -1,6 +1,7 @@
 defmodule Orcasite.Notifications.Job do
   use Ash.Resource,
-    extensions: [AshAdmin.Resource, AshGraphql.Resource],
+    domain: Orcasite.Notifications,
+    extensions: [AshAdmin.Resource],
     data_layer: AshPostgres.DataLayer
 
   @states [:available, :scheduled, :executing, :retryable, :completed, :discarded, :cancelled]
@@ -59,9 +60,7 @@ defmodule Orcasite.Notifications.Job do
       argument :email, :string
       argument :node, :string
 
-      argument :event_type, :atom do
-        constraints one_of: Orcasite.Notifications.Event.types()
-      end
+      argument :event_type, Orcasite.Types.NotificationEventType
 
       filter expr(
                if(is_nil(^arg(:notification_id)),

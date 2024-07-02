@@ -29,7 +29,6 @@ query candidates(
         playerOffset
         timestamp
         visible
-        sourceIp
       }
     }
   }

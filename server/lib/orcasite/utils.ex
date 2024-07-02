@@ -28,4 +28,12 @@ defmodule Orcasite.Utils do
   def atomize_keys(not_a_map) do
     not_a_map
   end
+
+  def oban_error(error_tuple) do
+    error_tuple
+    |> elem(0)
+    |> Jason.decode!()
+    |> Map.get("error")
+    |> IO.puts
+  end
 end

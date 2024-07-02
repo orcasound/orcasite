@@ -1,5 +1,6 @@
 defmodule Orcasite.Accounts.User do
   use Ash.Resource,
+    domain: Orcasite.Accounts,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshAuthentication, AshAdmin.Resource, AshGraphql.Resource],
     authorizers: [Ash.Policy.Authorizer]
@@ -16,14 +17,15 @@ defmodule Orcasite.Accounts.User do
 
   attributes do
     uuid_primary_key :id
-    attribute :email, :ci_string, allow_nil?: false
+    attribute :email, :ci_string, allow_nil?: false, public?: true
     attribute :hashed_password, :string, allow_nil?: false, sensitive?: true
-    attribute :first_name, :string
-    attribute :last_name, :string
-    attribute :admin, :boolean, default: false, allow_nil?: false
-    attribute :moderator, :boolean, default: false, allow_nil?: false
+    attribute :first_name, :string, public?: true
+    attribute :last_name, :string, public?: true
+    attribute :admin, :boolean, default: false, allow_nil?: false, public?: true
+    attribute :moderator, :boolean, default: false, allow_nil?: false, public?: true
 
     attribute :username, :string do
+      public? true
       allow_nil? true
       constraints allow_empty?: false, trim?: true
     end
@@ -33,7 +35,7 @@ defmodule Orcasite.Accounts.User do
   end
 
   authentication do
-    api Orcasite.Accounts
+    domain Orcasite.Accounts
 
     strategies do
       password :password do
@@ -106,7 +108,7 @@ defmodule Orcasite.Accounts.User do
   end
 
   code_interface do
-    define_for Orcasite.Accounts
+    domain Orcasite.Accounts
 
     define :register_with_password
     define :sign_in_with_password
@@ -133,7 +135,6 @@ defmodule Orcasite.Accounts.User do
 
   graphql do
     type :user
-    hide_fields [:hashed_password]
 
     queries do
       read_one :current_user, :current_user

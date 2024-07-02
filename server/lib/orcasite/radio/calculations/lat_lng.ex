@@ -1,5 +1,5 @@
 defmodule Orcasite.Radio.Calculations.LatLng do
-  use Ash.Calculation
+  use Ash.Resource.Calculation
 
   @impl true
   def load(_query, _opts, _context) do

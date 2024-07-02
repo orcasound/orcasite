@@ -1,5 +1,6 @@
 defmodule Orcasite.Radio.Bout do
   use Ash.Resource,
+    domain: Orcasite.Radio,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
@@ -17,15 +18,15 @@ defmodule Orcasite.Radio.Bout do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "bout"
+    uuid_attribute :id, prefix: "bout", public?: true
 
-    attribute :start_time, :utc_datetime
-    attribute :end_time, :utc_datetime
-    attribute :duration, :decimal
-    attribute :ongoing, :boolean
+    attribute :start_time, :utc_datetime, public?: true
+    attribute :end_time, :utc_datetime, public?: true
+    attribute :duration, :decimal, public?: true
+    attribute :ongoing, :boolean, public?: true
 
-    attribute :category, :atom do
-      constraints one_of: [:biophony, :anthrophony, :geophony]
+    attribute :category, Orcasite.Types.AudioCategory do
+      public? true
     end
 
     create_timestamp :inserted_at
@@ -33,9 +34,7 @@ defmodule Orcasite.Radio.Bout do
   end
 
   relationships do
-    belongs_to :created_by_user, Orcasite.Accounts.User do
-      api Orcasite.Accounts
-    end
+    belongs_to :created_by_user, Orcasite.Accounts.User
 
     belongs_to :feed, Orcasite.Radio.Feed
     has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream

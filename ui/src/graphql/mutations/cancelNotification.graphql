@@ -2,7 +2,6 @@ mutation cancelNotification($id: ID!) {
   cancelNotification(id: $id) {
     result {
       id
-      meta
       active
       insertedAt
       targetCount

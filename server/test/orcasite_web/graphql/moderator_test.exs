@@ -32,7 +32,7 @@ defmodule OrcasiteWeb.ModeratorTest do
           slug: "orcasound-lab"
         }
       )
-      |> Orcasite.Radio.create!()
+      |> Ash.create!(authorize?: false)
 
     detection =
       Orcasite.Radio.Detection.submit_detection(%{
@@ -44,7 +44,7 @@ defmodule OrcasiteWeb.ModeratorTest do
         listener_count: 1,
         send_notifications: false
       })
-      |> Orcasite.Radio.load!(:candidate)
+      |> Ash.load!(:candidate)
 
     [moderator: moderator, user: user, detection: detection, candidate: detection.candidate]
   end

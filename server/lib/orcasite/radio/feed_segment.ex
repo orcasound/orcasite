@@ -1,5 +1,6 @@
 defmodule Orcasite.Radio.FeedSegment do
   use Ash.Resource,
+    domain: Orcasite.Radio,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
@@ -24,33 +25,38 @@ defmodule Orcasite.Radio.FeedSegment do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdseg"
+    uuid_attribute :id, prefix: "fdseg", public?: true
 
-    attribute :start_time, :utc_datetime
-    attribute :end_time, :utc_datetime
-    attribute :duration, :decimal
+    attribute :start_time, :utc_datetime, public?: true
+    attribute :end_time, :utc_datetime, public?: true
+    attribute :duration, :decimal, public?: true
 
-    attribute :bucket, :string
-    attribute :bucket_region, :string
-    attribute :cloudfront_url, :string
+    attribute :bucket, :string, public?: true
+    attribute :bucket_region, :string, public?: true
+    attribute :cloudfront_url, :string, public?: true
 
     attribute :playlist_timestamp, :string do
+      public? true
       description "UTC Unix epoch for playlist (m3u8 dir) start (e.g. 1541027406)"
     end
 
     attribute :playlist_path, :string do
+      public? true
       description "S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/)"
     end
 
     attribute :playlist_m3u8_path, :string do
+      public? true
       description "S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8)"
     end
 
     attribute :segment_path, :string do
+      public? true
       description "S3 object path for ts file (e.g. /rpi_orcasound_lab/hls/1541027406/live005.ts)"
     end
 
     attribute :file_name, :string do
+      public? true
       description "ts file name (e.g. live005.ts)"
       allow_nil? false
     end
@@ -60,8 +66,8 @@ defmodule Orcasite.Radio.FeedSegment do
   end
 
   relationships do
-    belongs_to :feed, Orcasite.Radio.Feed
-    belongs_to :feed_stream, Orcasite.Radio.FeedStream
+    belongs_to :feed, Orcasite.Radio.Feed, public?: true
+    belongs_to :feed_stream, Orcasite.Radio.FeedStream, public?: true
   end
 
   actions do
@@ -115,7 +121,7 @@ defmodule Orcasite.Radio.FeedSegment do
         :playlist_timestamp,
         :playlist_m3u8_path,
         :playlist_path,
-        :file_name
+        :file_name,
       ]
 
       argument :feed, :map, allow_nil?: false

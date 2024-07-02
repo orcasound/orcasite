@@ -1,6 +1,6 @@
 Orcasite.Radio.Detection
 |> Ash.Query.for_read(:read)
-|> Orcasite.Radio.read!()
+|> Ash.read!()
 |> Enum.map(fn detection ->
   category = case Regex.run(~r/^\[(orca|vessel|other)\]/, detection.description || "") do
     [_full, category | _rest ] -> category
@@ -11,5 +11,5 @@ Orcasite.Radio.Detection
   |> Ash.Changeset.for_update(:update, %{
     category: category
   })
-  |> Orcasite.Radio.update!()
+  |> Ash.update!()
 end)

@@ -1,8 +1,13 @@
 defmodule Orcasite.Notifications do
-  use Ash.Api, extensions: [AshAdmin.Api, AshJsonApi.Api, AshGraphql.Api]
+  use Ash.Domain, extensions: [AshAdmin.Domain, AshJsonApi.Domain, AshGraphql.Domain]
 
   resources do
-    registry Orcasite.Notifications.Registry
+    resource Orcasite.Notifications.Notification
+    resource Orcasite.Notifications.Subscriber
+    resource Orcasite.Notifications.Subscription
+    resource Orcasite.Notifications.NotificationInstance
+    resource Orcasite.Notifications.Token
+    resource Orcasite.Notifications.Job
   end
 
   admin do
