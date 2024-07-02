@@ -8,7 +8,7 @@ defmodule Orcasite.Radio.Workers.LinkFeedStream do
     ]
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"feed_stream_id" => nil} = args}) do
+  def perform(%Oban.Job{args: %{"feed_stream_id" => nil}}) do
     :ok
   end
 

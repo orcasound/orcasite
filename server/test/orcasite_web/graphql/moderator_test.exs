@@ -32,7 +32,7 @@ defmodule OrcasiteWeb.ModeratorTest do
           slug: "orcasound-lab"
         }
       )
-      |> Ash.create!()
+      |> Ash.create!(authorize?: false)
 
     detection =
       Orcasite.Radio.Detection.submit_detection(%{

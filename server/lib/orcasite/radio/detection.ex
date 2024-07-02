@@ -69,6 +69,10 @@ defmodule Orcasite.Radio.Detection do
       authorize_if always()
     end
 
+    bypass action(:update_candidate) do
+      authorize_if always()
+    end
+
     policy changing_attributes([:visible]) do
       authorize_if actor_attribute_equals(:moderator, true)
     end
@@ -125,6 +129,13 @@ defmodule Orcasite.Radio.Detection do
 
     update :update do
       primary? true
+      argument :candidate, :map
+      require_atomic? false
+
+      change manage_relationship(:candidate, type: :append)
+    end
+
+    update :update_candidate do
       argument :candidate, :map
       require_atomic? false
 
@@ -254,7 +265,7 @@ defmodule Orcasite.Radio.Detection do
             end
 
           detection
-          |> Ash.Changeset.for_update(:update, %{candidate: candidate})
+          |> Ash.Changeset.for_update(:update_candidate, %{candidate: candidate})
           |> Ash.update()
         end)
         |> Ash.Changeset.after_action(fn changeset, detection ->
