@@ -21,6 +21,7 @@ query candidate($id: ID!) {
       playerOffset
       timestamp
       visible
+      sourceIp
     }
   }
 }

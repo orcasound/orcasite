@@ -102,6 +102,7 @@ export default function DetectionsTable({
             {currentUser?.moderator && (
               <>
                 <TableCell>Status</TableCell>
+                <TableCell>IP</TableCell>
                 <TableCell>Actions</TableCell>
               </>
             )}
@@ -140,6 +141,7 @@ export default function DetectionsTable({
                         variant="outlined"
                       />
                     </TableCell>
+                    <TableCell>{detection.sourceIp || "-"}</TableCell>
                     <TableCell>
                       <Button
                         onClick={() => {

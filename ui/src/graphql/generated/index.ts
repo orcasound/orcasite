@@ -1864,6 +1864,7 @@ export type CandidateQuery = {
       playerOffset: number;
       timestamp: Date;
       visible?: boolean | null;
+      sourceIp?: string | null;
     }>;
   } | null;
 };
@@ -1964,6 +1965,7 @@ export type CandidatesQuery = {
         playerOffset: number;
         timestamp: Date;
         visible?: boolean | null;
+        sourceIp?: string | null;
       }>;
     }> | null;
   } | null;
@@ -2576,6 +2578,7 @@ export const CandidateDocument = `
       playerOffset
       timestamp
       visible
+      sourceIp
     }
   }
 }
@@ -2792,6 +2795,7 @@ export const CandidatesDocument = `
         playerOffset
         timestamp
         visible
+        sourceIp
       }
     }
   }
