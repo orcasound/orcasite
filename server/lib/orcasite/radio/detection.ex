@@ -162,7 +162,7 @@ defmodule Orcasite.Radio.Detection do
           |> Ash.Changeset.for_update(:update, %{
             visible: !Enum.all?(candidate.detections, &(!&1.visible))
           })
-          |> Ash.update!()
+          |> Ash.update!(authorize?: false)
 
           {:ok, detection}
         end)
@@ -261,12 +261,12 @@ defmodule Orcasite.Radio.Detection do
                   min_time: datetime_min(candidate.min_time, detection.timestamp),
                   max_time: datetime_max(candidate.max_time, detection.timestamp)
                 })
-                |> Ash.update!()
+                |> Ash.update!(authorize?: false)
             end
 
           detection
           |> Ash.Changeset.for_update(:update_candidate, %{candidate: candidate})
-          |> Ash.update()
+          |> Ash.update(authorize?: false)
         end)
         |> Ash.Changeset.after_action(fn changeset, detection ->
           # Happens second

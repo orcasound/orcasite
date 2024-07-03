@@ -301,10 +301,11 @@ Orcasite.Accounts.User
   |> Enum.find(fn feed -> feed.slug == attrs[:slug] end)
   |> case do
     %{id: feed_id} ->
+      detection_attrs = Map.drop(attrs, [:slug])
       Orcasite.Radio.Detection
       |> Ash.Changeset.for_create(
         :submit_detection,
-        Map.merge(attrs, %{feed_id: feed_id, send_notifications: false})
+        Map.merge(detection_attrs, %{feed_id: feed_id, send_notifications: false})
       )
       |> Ash.create!(authorize?: false)
 
