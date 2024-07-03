@@ -1,5 +1,6 @@
 defmodule Orcasite.Radio.Feed do
   use Ash.Resource,
+    domain: Orcasite.Radio,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
@@ -23,18 +24,18 @@ defmodule Orcasite.Radio.Feed do
   end
 
   attributes do
-    uuid_attribute(:id, prefix: "feed")
+    uuid_attribute :id, prefix: "feed", public?: true
 
-    attribute :name, :string, allow_nil?: false
-    attribute :node_name, :string, allow_nil?: false
-    attribute :slug, :string, allow_nil?: false
-    attribute :location_point, :geometry, allow_nil?: false
-    attribute :intro_html, :string, default: ""
-    attribute :image_url, :string, default: ""
-    attribute :visible, :boolean, default: true
-    attribute :bucket, :string
-    attribute :bucket_region, :string
-    attribute :cloudfront_url, :string
+    attribute :name, :string, allow_nil?: false, public?: true
+    attribute :node_name, :string, allow_nil?: false, public?: true
+    attribute :slug, :string, allow_nil?: false, public?: true
+    attribute :location_point, :geometry, allow_nil?: false, public?: true
+    attribute :intro_html, :string, default: "", public?: true
+    attribute :image_url, :string, default: "", public?: true
+    attribute :visible, :boolean, default: true, public?: true
+    attribute :bucket, :string, public?: true
+    attribute :bucket_region, :string, public?: true
+    attribute :cloudfront_url, :string, public?: true
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -45,7 +46,8 @@ defmodule Orcasite.Radio.Feed do
               Orcasite.Types.LatLng,
               {Orcasite.Radio.Calculations.LatLng,
                keys: [:location_point], select: [:location_point]},
-              allow_nil?: false
+              allow_nil?: false,
+              public?: true
 
     calculate :lat_lng_string,
               :string,
@@ -54,15 +56,19 @@ defmodule Orcasite.Radio.Feed do
 
     calculate :thumb_url,
               :string,
-              {Orcasite.Radio.Calculations.FeedImageUrl, object: "thumbnail.png"}
+              {Orcasite.Radio.Calculations.FeedImageUrl, object: "thumbnail.png"},
+              public?: true
 
     calculate :map_url,
               :string,
-              {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"}
+              {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"},
+              public?: true
   end
 
   relationships do
-    has_many :feed_streams, Orcasite.Radio.FeedStream
+    has_many :feed_streams, Orcasite.Radio.FeedStream do
+      public? true
+    end
   end
 
   policies do
@@ -98,7 +104,18 @@ defmodule Orcasite.Radio.Feed do
 
     create :create do
       primary? true
-      reject [:location_point]
+
+      accept [
+        :name,
+        :node_name,
+        :slug,
+        :intro_html,
+        :image_url,
+        :visible,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url
+      ]
 
       argument :lat_lng_string, :string do
         description "A comma-separated string of longitude and latitude"
@@ -109,7 +126,19 @@ defmodule Orcasite.Radio.Feed do
 
     update :update do
       primary? true
-      reject [:location_point]
+      require_atomic? false
+
+      accept [
+        :name,
+        :node_name,
+        :slug,
+        :intro_html,
+        :image_url,
+        :visible,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url
+      ]
 
       argument :lat_lng_string, :string do
         description "A comma-separated string of longitude and latitude"
@@ -130,8 +159,6 @@ defmodule Orcasite.Radio.Feed do
   end
 
   code_interface do
-    define_for Orcasite.Radio
-
     define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
     define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end

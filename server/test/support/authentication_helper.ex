@@ -29,7 +29,7 @@ defmodule OrcasiteWeb.TestSupport.AuthenticationHelper do
         user_changeset
       end
 
-    user_changeset |> Orcasite.Accounts.create!()
+    user_changeset |> Ash.create!()
   end
 
   def register_user(conn, %{

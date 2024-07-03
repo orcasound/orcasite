@@ -37,15 +37,111 @@ export type Scalars = {
   Json: { input: { [key: string]: any }; output: { [key: string]: any } };
 };
 
+export type AudioCategory = "ANTHROPHONY" | "BIOPHONY" | "GEOPHONY";
+
+export type Bout = {
+  __typename?: "Bout";
+  category?: Maybe<AudioCategory>;
+  duration?: Maybe<Scalars["Decimal"]["output"]>;
+  endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  id: Scalars["ID"]["output"];
+  ongoing?: Maybe<Scalars["Boolean"]["output"]>;
+  startTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type BoutFilterCategory = {
+  eq?: InputMaybe<AudioCategory>;
+  greaterThan?: InputMaybe<AudioCategory>;
+  greaterThanOrEqual?: InputMaybe<AudioCategory>;
+  in?: InputMaybe<Array<InputMaybe<AudioCategory>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<AudioCategory>;
+  lessThanOrEqual?: InputMaybe<AudioCategory>;
+  notEq?: InputMaybe<AudioCategory>;
+};
+
+export type BoutFilterDuration = {
+  eq?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Decimal"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  notEq?: InputMaybe<Scalars["Decimal"]["input"]>;
+};
+
+export type BoutFilterEndTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type BoutFilterId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type BoutFilterInput = {
+  and?: InputMaybe<Array<BoutFilterInput>>;
+  category?: InputMaybe<BoutFilterCategory>;
+  duration?: InputMaybe<BoutFilterDuration>;
+  endTime?: InputMaybe<BoutFilterEndTime>;
+  id?: InputMaybe<BoutFilterId>;
+  not?: InputMaybe<Array<BoutFilterInput>>;
+  ongoing?: InputMaybe<BoutFilterOngoing>;
+  or?: InputMaybe<Array<BoutFilterInput>>;
+  startTime?: InputMaybe<BoutFilterStartTime>;
+};
+
+export type BoutFilterOngoing = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type BoutFilterStartTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type BoutSortField =
+  | "CATEGORY"
+  | "DURATION"
+  | "END_TIME"
+  | "ID"
+  | "ONGOING"
+  | "START_TIME";
+
+export type BoutSortInput = {
+  field: BoutSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
 export type CancelCandidateNotificationsInput = {
-  eventType?: InputMaybe<CandidateEventType>;
+  eventType?: InputMaybe<NotificationEventType>;
 };
 
 /** The result of the :cancel_candidate_notifications mutation */
 export type CancelCandidateNotificationsResult = {
   __typename?: "CancelCandidateNotificationsResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<MutationError>>;
+  errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Candidate>;
 };
@@ -54,21 +150,21 @@ export type CancelCandidateNotificationsResult = {
 export type CancelNotificationResult = {
   __typename?: "CancelNotificationResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<MutationError>>;
+  errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Notification>;
 };
 
 export type Candidate = {
   __typename?: "Candidate";
-  category?: Maybe<CandidateCategory>;
+  category?: Maybe<DetectionCategory>;
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
   detections: Array<Detection>;
   feed: Feed;
+  feedId: Scalars["ID"]["output"];
   id: Scalars["ID"]["output"];
   maxTime: Scalars["DateTime"]["output"];
   minTime: Scalars["DateTime"]["output"];
-  uuid?: Maybe<Scalars["String"]["output"]>;
   visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
@@ -79,19 +175,15 @@ export type CandidateDetectionsArgs = {
   sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
 };
 
-export type CandidateCategory = "OTHER" | "VESSEL" | "WHALE";
-
-export type CandidateEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
-
 export type CandidateFilterCategory = {
-  eq?: InputMaybe<CandidateCategory>;
-  greaterThan?: InputMaybe<CandidateCategory>;
-  greaterThanOrEqual?: InputMaybe<CandidateCategory>;
-  in?: InputMaybe<Array<InputMaybe<CandidateCategory>>>;
+  eq?: InputMaybe<DetectionCategory>;
+  greaterThan?: InputMaybe<DetectionCategory>;
+  greaterThanOrEqual?: InputMaybe<DetectionCategory>;
+  in?: InputMaybe<Array<InputMaybe<DetectionCategory>>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<CandidateCategory>;
-  lessThanOrEqual?: InputMaybe<CandidateCategory>;
-  notEq?: InputMaybe<CandidateCategory>;
+  lessThan?: InputMaybe<DetectionCategory>;
+  lessThanOrEqual?: InputMaybe<DetectionCategory>;
+  notEq?: InputMaybe<DetectionCategory>;
 };
 
 export type CandidateFilterDetectionCount = {
@@ -105,6 +197,10 @@ export type CandidateFilterDetectionCount = {
   notEq?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
+export type CandidateFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type CandidateFilterId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
@@ -115,6 +211,7 @@ export type CandidateFilterInput = {
   detectionCount?: InputMaybe<CandidateFilterDetectionCount>;
   detections?: InputMaybe<DetectionFilterInput>;
   feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<CandidateFilterFeedId>;
   id?: InputMaybe<CandidateFilterId>;
   maxTime?: InputMaybe<CandidateFilterMaxTime>;
   minTime?: InputMaybe<CandidateFilterMinTime>;
@@ -159,6 +256,7 @@ export type CandidateFilterVisible = {
 export type CandidateSortField =
   | "CATEGORY"
   | "DETECTION_COUNT"
+  | "FEED_ID"
   | "ID"
   | "MAX_TIME"
   | "MIN_TIME"
@@ -169,23 +267,37 @@ export type CandidateSortInput = {
   order?: InputMaybe<SortOrder>;
 };
 
+/** The result of the :create_bout mutation */
+export type CreateBoutResult = {
+  __typename?: "CreateBoutResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Bout>;
+};
+
 export type Detection = {
   __typename?: "Detection";
   candidate?: Maybe<Candidate>;
+  candidateId?: Maybe<Scalars["ID"]["output"]>;
   category?: Maybe<DetectionCategory>;
   description?: Maybe<Scalars["String"]["output"]>;
   feed?: Maybe<Feed>;
+  feedId?: Maybe<Scalars["ID"]["output"]>;
   id: Scalars["ID"]["output"];
   listenerCount?: Maybe<Scalars["Int"]["output"]>;
   playerOffset: Scalars["Decimal"]["output"];
   playlistTimestamp: Scalars["Int"]["output"];
   sourceIp?: Maybe<Scalars["String"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
-  uuid?: Maybe<Scalars["String"]["output"]>;
   visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type DetectionCategory = "OTHER" | "VESSEL" | "WHALE";
+
+export type DetectionFilterCandidateId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
 
 export type DetectionFilterCategory = {
   eq?: InputMaybe<DetectionCategory>;
@@ -211,6 +323,10 @@ export type DetectionFilterDescription = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type DetectionFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type DetectionFilterId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
@@ -218,9 +334,11 @@ export type DetectionFilterId = {
 export type DetectionFilterInput = {
   and?: InputMaybe<Array<DetectionFilterInput>>;
   candidate?: InputMaybe<CandidateFilterInput>;
+  candidateId?: InputMaybe<DetectionFilterCandidateId>;
   category?: InputMaybe<DetectionFilterCategory>;
   description?: InputMaybe<DetectionFilterDescription>;
   feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<DetectionFilterFeedId>;
   id?: InputMaybe<DetectionFilterId>;
   listenerCount?: InputMaybe<DetectionFilterListenerCount>;
   not?: InputMaybe<Array<DetectionFilterInput>>;
@@ -301,8 +419,10 @@ export type DetectionFilterVisible = {
 };
 
 export type DetectionSortField =
+  | "CANDIDATE_ID"
   | "CATEGORY"
   | "DESCRIPTION"
+  | "FEED_ID"
   | "ID"
   | "LISTENER_COUNT"
   | "PLAYER_OFFSET"
@@ -318,11 +438,14 @@ export type DetectionSortInput = {
 
 export type Feed = {
   __typename?: "Feed";
+  bucket?: Maybe<Scalars["String"]["output"]>;
+  bucketRegion?: Maybe<Scalars["String"]["output"]>;
+  cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
+  feedStreams: Array<FeedStream>;
   id: Scalars["ID"]["output"];
   imageUrl?: Maybe<Scalars["String"]["output"]>;
   introHtml?: Maybe<Scalars["String"]["output"]>;
   latLng: LatLng;
-  latLngString?: Maybe<Scalars["String"]["output"]>;
   locationPoint: Scalars["Json"]["output"];
   mapUrl?: Maybe<Scalars["String"]["output"]>;
   name: Scalars["String"]["output"];
@@ -330,6 +453,52 @@ export type Feed = {
   slug: Scalars["String"]["output"];
   thumbUrl?: Maybe<Scalars["String"]["output"]>;
   visible?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type FeedFeedStreamsArgs = {
+  filter?: InputMaybe<FeedStreamFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedStreamSortInput>>>;
+};
+
+export type FeedFilterBucket = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedFilterBucketRegion = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedFilterCloudfrontUrl = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type FeedFilterId = {
@@ -351,6 +520,10 @@ export type FeedFilterImageUrl = {
 
 export type FeedFilterInput = {
   and?: InputMaybe<Array<FeedFilterInput>>;
+  bucket?: InputMaybe<FeedFilterBucket>;
+  bucketRegion?: InputMaybe<FeedFilterBucketRegion>;
+  cloudfrontUrl?: InputMaybe<FeedFilterCloudfrontUrl>;
+  feedStreams?: InputMaybe<FeedStreamFilterInput>;
   id?: InputMaybe<FeedFilterId>;
   imageUrl?: InputMaybe<FeedFilterImageUrl>;
   introHtml?: InputMaybe<FeedFilterIntroHtml>;
@@ -430,7 +603,232 @@ export type FeedFilterVisible = {
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+export type FeedSegment = {
+  __typename?: "FeedSegment";
+  bucket?: Maybe<Scalars["String"]["output"]>;
+  bucketRegion?: Maybe<Scalars["String"]["output"]>;
+  cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
+  duration?: Maybe<Scalars["Decimal"]["output"]>;
+  endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  feed?: Maybe<Feed>;
+  feedId?: Maybe<Scalars["ID"]["output"]>;
+  feedStream?: Maybe<FeedStream>;
+  feedStreamId?: Maybe<Scalars["ID"]["output"]>;
+  /** ts file name (e.g. live005.ts) */
+  fileName: Scalars["String"]["output"];
+  id: Scalars["ID"]["output"];
+  /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
+  playlistM3u8Path?: Maybe<Scalars["String"]["output"]>;
+  /** S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/) */
+  playlistPath?: Maybe<Scalars["String"]["output"]>;
+  /** UTC Unix epoch for playlist (m3u8 dir) start (e.g. 1541027406) */
+  playlistTimestamp?: Maybe<Scalars["String"]["output"]>;
+  /** S3 object path for ts file (e.g. /rpi_orcasound_lab/hls/1541027406/live005.ts) */
+  segmentPath?: Maybe<Scalars["String"]["output"]>;
+  startTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type FeedSegmentFilterBucket = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterBucketRegion = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterCloudfrontUrl = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterDuration = {
+  eq?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Decimal"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  notEq?: InputMaybe<Scalars["Decimal"]["input"]>;
+};
+
+export type FeedSegmentFilterEndTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type FeedSegmentFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type FeedSegmentFilterFeedStreamId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type FeedSegmentFilterFileName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type FeedSegmentFilterInput = {
+  and?: InputMaybe<Array<FeedSegmentFilterInput>>;
+  bucket?: InputMaybe<FeedSegmentFilterBucket>;
+  bucketRegion?: InputMaybe<FeedSegmentFilterBucketRegion>;
+  cloudfrontUrl?: InputMaybe<FeedSegmentFilterCloudfrontUrl>;
+  duration?: InputMaybe<FeedSegmentFilterDuration>;
+  endTime?: InputMaybe<FeedSegmentFilterEndTime>;
+  feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<FeedSegmentFilterFeedId>;
+  feedStream?: InputMaybe<FeedStreamFilterInput>;
+  feedStreamId?: InputMaybe<FeedSegmentFilterFeedStreamId>;
+  /** ts file name (e.g. live005.ts) */
+  fileName?: InputMaybe<FeedSegmentFilterFileName>;
+  id?: InputMaybe<FeedSegmentFilterId>;
+  not?: InputMaybe<Array<FeedSegmentFilterInput>>;
+  or?: InputMaybe<Array<FeedSegmentFilterInput>>;
+  /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
+  playlistM3u8Path?: InputMaybe<FeedSegmentFilterPlaylistM3u8Path>;
+  /** S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/) */
+  playlistPath?: InputMaybe<FeedSegmentFilterPlaylistPath>;
+  /** UTC Unix epoch for playlist (m3u8 dir) start (e.g. 1541027406) */
+  playlistTimestamp?: InputMaybe<FeedSegmentFilterPlaylistTimestamp>;
+  /** S3 object path for ts file (e.g. /rpi_orcasound_lab/hls/1541027406/live005.ts) */
+  segmentPath?: InputMaybe<FeedSegmentFilterSegmentPath>;
+  startTime?: InputMaybe<FeedSegmentFilterStartTime>;
+};
+
+export type FeedSegmentFilterPlaylistM3u8Path = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterPlaylistPath = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterPlaylistTimestamp = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterSegmentPath = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedSegmentFilterStartTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type FeedSegmentSortField =
+  | "BUCKET"
+  | "BUCKET_REGION"
+  | "CLOUDFRONT_URL"
+  | "DURATION"
+  | "END_TIME"
+  | "FEED_ID"
+  | "FEED_STREAM_ID"
+  | "FILE_NAME"
+  | "ID"
+  | "PLAYLIST_M3U8_PATH"
+  | "PLAYLIST_PATH"
+  | "PLAYLIST_TIMESTAMP"
+  | "SEGMENT_PATH"
+  | "START_TIME";
+
+export type FeedSegmentSortInput = {
+  field: FeedSegmentSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
 export type FeedSortField =
+  | "BUCKET"
+  | "BUCKET_REGION"
+  | "CLOUDFRONT_URL"
   | "ID"
   | "IMAGE_URL"
   | "INTRO_HTML"
@@ -442,6 +840,174 @@ export type FeedSortField =
 
 export type FeedSortInput = {
   field: FeedSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
+export type FeedStream = {
+  __typename?: "FeedStream";
+  bucket?: Maybe<Scalars["String"]["output"]>;
+  bucketRegion?: Maybe<Scalars["String"]["output"]>;
+  cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
+  duration?: Maybe<Scalars["Decimal"]["output"]>;
+  endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  id: Scalars["ID"]["output"];
+  /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
+  playlistM3u8Path?: Maybe<Scalars["String"]["output"]>;
+  /** S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/) */
+  playlistPath?: Maybe<Scalars["String"]["output"]>;
+  /** UTC Unix epoch for playlist start (e.g. 1541027406) */
+  playlistTimestamp?: Maybe<Scalars["String"]["output"]>;
+  startTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type FeedStreamFilterBucket = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedStreamFilterBucketRegion = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedStreamFilterCloudfrontUrl = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedStreamFilterDuration = {
+  eq?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Decimal"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Decimal"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Decimal"]["input"]>;
+  notEq?: InputMaybe<Scalars["Decimal"]["input"]>;
+};
+
+export type FeedStreamFilterEndTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type FeedStreamFilterId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type FeedStreamFilterInput = {
+  and?: InputMaybe<Array<FeedStreamFilterInput>>;
+  bucket?: InputMaybe<FeedStreamFilterBucket>;
+  bucketRegion?: InputMaybe<FeedStreamFilterBucketRegion>;
+  cloudfrontUrl?: InputMaybe<FeedStreamFilterCloudfrontUrl>;
+  duration?: InputMaybe<FeedStreamFilterDuration>;
+  endTime?: InputMaybe<FeedStreamFilterEndTime>;
+  id?: InputMaybe<FeedStreamFilterId>;
+  not?: InputMaybe<Array<FeedStreamFilterInput>>;
+  or?: InputMaybe<Array<FeedStreamFilterInput>>;
+  /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
+  playlistM3u8Path?: InputMaybe<FeedStreamFilterPlaylistM3u8Path>;
+  /** S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/) */
+  playlistPath?: InputMaybe<FeedStreamFilterPlaylistPath>;
+  /** UTC Unix epoch for playlist start (e.g. 1541027406) */
+  playlistTimestamp?: InputMaybe<FeedStreamFilterPlaylistTimestamp>;
+  startTime?: InputMaybe<FeedStreamFilterStartTime>;
+};
+
+export type FeedStreamFilterPlaylistM3u8Path = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedStreamFilterPlaylistPath = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedStreamFilterPlaylistTimestamp = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedStreamFilterStartTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type FeedStreamSortField =
+  | "BUCKET"
+  | "BUCKET_REGION"
+  | "CLOUDFRONT_URL"
+  | "DURATION"
+  | "END_TIME"
+  | "ID"
+  | "PLAYLIST_M3U8_PATH"
+  | "PLAYLIST_PATH"
+  | "PLAYLIST_TIMESTAMP"
+  | "START_TIME";
+
+export type FeedStreamSortInput = {
+  field: FeedStreamSortField;
   order?: InputMaybe<SortOrder>;
 };
 
@@ -478,7 +1044,6 @@ export type Notification = {
   finished?: Maybe<Scalars["Boolean"]["output"]>;
   id: Scalars["ID"]["output"];
   insertedAt: Scalars["DateTime"]["output"];
-  meta?: Maybe<Scalars["Json"]["output"]>;
   notifiedCount?: Maybe<Scalars["Int"]["output"]>;
   notifiedCountUpdatedAt?: Maybe<Scalars["DateTime"]["output"]>;
   progress?: Maybe<Scalars["Float"]["output"]>;
@@ -538,7 +1103,6 @@ export type NotificationFilterInput = {
   finished?: InputMaybe<NotificationFilterFinished>;
   id?: InputMaybe<NotificationFilterId>;
   insertedAt?: InputMaybe<NotificationFilterInsertedAt>;
-  meta?: InputMaybe<NotificationFilterMeta>;
   not?: InputMaybe<Array<NotificationFilterInput>>;
   notifiedCount?: InputMaybe<NotificationFilterNotifiedCount>;
   notifiedCountUpdatedAt?: InputMaybe<NotificationFilterNotifiedCountUpdatedAt>;
@@ -556,17 +1120,6 @@ export type NotificationFilterInsertedAt = {
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type NotificationFilterMeta = {
-  eq?: InputMaybe<Scalars["Json"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["Json"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["Json"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Json"]["input"]>>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["Json"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["Json"]["input"]>;
-  notEq?: InputMaybe<Scalars["Json"]["input"]>;
 };
 
 export type NotificationFilterNotifiedCount = {
@@ -619,7 +1172,6 @@ export type NotificationSortField =
   | "FINISHED"
   | "ID"
   | "INSERTED_AT"
-  | "META"
   | "NOTIFIED_COUNT"
   | "NOTIFIED_COUNT_UPDATED_AT"
   | "PROGRESS"
@@ -643,9 +1195,20 @@ export type NotifyConfirmedCandidateInput = {
 export type NotifyConfirmedCandidateResult = {
   __typename?: "NotifyConfirmedCandidateResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<MutationError>>;
+  errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Notification>;
+};
+
+/** A page of :bout */
+export type PageOfBout = {
+  __typename?: "PageOfBout";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<Bout>>;
 };
 
 /** A page of :candidate */
@@ -668,6 +1231,28 @@ export type PageOfDetection = {
   hasNextPage: Scalars["Boolean"]["output"];
   /** The records contained in the page */
   results?: Maybe<Array<Detection>>;
+};
+
+/** A page of :feed_segment */
+export type PageOfFeedSegment = {
+  __typename?: "PageOfFeedSegment";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<FeedSegment>>;
+};
+
+/** A page of :feed_stream */
+export type PageOfFeedStream = {
+  __typename?: "PageOfFeedStream";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<FeedStream>>;
 };
 
 export type PasswordResetInput = {
@@ -703,7 +1288,7 @@ export type RegisterWithPasswordMetadata = {
 export type RegisterWithPasswordResult = {
   __typename?: "RegisterWithPasswordResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<MutationError>>;
+  errors: Array<MutationError>;
   /** Metadata produced by the mutation */
   metadata?: Maybe<RegisterWithPasswordMetadata>;
   /** The successful result of the mutation */
@@ -718,6 +1303,7 @@ export type RootMutationType = {
   __typename?: "RootMutationType";
   cancelCandidateNotifications: CancelCandidateNotificationsResult;
   cancelNotification: CancelNotificationResult;
+  createBout: CreateBoutResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
   notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
   /** Register a new user with a username and password. */
@@ -731,20 +1317,20 @@ export type RootMutationType = {
 };
 
 export type RootMutationTypeCancelCandidateNotificationsArgs = {
-  id?: InputMaybe<Scalars["ID"]["input"]>;
+  id: Scalars["ID"]["input"];
   input?: InputMaybe<CancelCandidateNotificationsInput>;
 };
 
 export type RootMutationTypeCancelNotificationArgs = {
-  id?: InputMaybe<Scalars["ID"]["input"]>;
+  id: Scalars["ID"]["input"];
 };
 
 export type RootMutationTypeNotifyConfirmedCandidateArgs = {
-  input?: InputMaybe<NotifyConfirmedCandidateInput>;
+  input: NotifyConfirmedCandidateInput;
 };
 
 export type RootMutationTypeRegisterWithPasswordArgs = {
-  input?: InputMaybe<RegisterWithPasswordInput>;
+  input: RegisterWithPasswordInput;
 };
 
 export type RootMutationTypeRequestPasswordResetArgs = {
@@ -756,7 +1342,7 @@ export type RootMutationTypeResetPasswordArgs = {
 };
 
 export type RootMutationTypeSetDetectionVisibleArgs = {
-  id?: InputMaybe<Scalars["ID"]["input"]>;
+  id: Scalars["ID"]["input"];
   input?: InputMaybe<SetDetectionVisibleInput>;
 };
 
@@ -765,19 +1351,30 @@ export type RootMutationTypeSignInWithPasswordArgs = {
 };
 
 export type RootMutationTypeSubmitDetectionArgs = {
-  input?: InputMaybe<SubmitDetectionInput>;
+  input: SubmitDetectionInput;
 };
 
 export type RootQueryType = {
   __typename?: "RootQueryType";
+  bouts?: Maybe<PageOfBout>;
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
   currentUser?: Maybe<User>;
   detection?: Maybe<Detection>;
   detections?: Maybe<PageOfDetection>;
   feed: Feed;
+  feedSegments?: Maybe<PageOfFeedSegment>;
+  feedStreams?: Maybe<PageOfFeedStream>;
   feeds: Array<Feed>;
   notificationsForCandidate: Array<Notification>;
+};
+
+export type RootQueryTypeBoutsArgs = {
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
+  filter?: InputMaybe<BoutFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<BoutSortInput>>>;
 };
 
 export type RootQueryTypeCandidateArgs = {
@@ -811,6 +1408,23 @@ export type RootQueryTypeFeedArgs = {
   slug?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type RootQueryTypeFeedSegmentsArgs = {
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
+  feedStreamId?: InputMaybe<Scalars["String"]["input"]>;
+  filter?: InputMaybe<FeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedSegmentSortInput>>>;
+};
+
+export type RootQueryTypeFeedStreamsArgs = {
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
+  filter?: InputMaybe<FeedStreamFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedStreamSortInput>>>;
+};
+
 export type RootQueryTypeFeedsArgs = {
   filter?: InputMaybe<FeedFilterInput>;
   sort?: InputMaybe<Array<InputMaybe<FeedSortInput>>>;
@@ -832,7 +1446,7 @@ export type SetDetectionVisibleInput = {
 export type SetDetectionVisibleResult = {
   __typename?: "SetDetectionVisibleResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<MutationError>>;
+  errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
 };
@@ -870,7 +1484,7 @@ export type SubmitDetectionInput = {
 export type SubmitDetectionResult = {
   __typename?: "SubmitDetectionResult";
   /** Any errors generated, if the mutation failed */
-  errors?: Maybe<Array<MutationError>>;
+  errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
 };
@@ -991,14 +1605,14 @@ export type CancelCandidateNotificationsMutation = {
   cancelCandidateNotifications: {
     __typename?: "CancelCandidateNotificationsResult";
     result?: { __typename?: "Candidate"; id: string } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       code?: string | null;
       fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    }> | null;
+    }>;
   };
 };
 
@@ -1013,7 +1627,6 @@ export type CancelNotificationMutation = {
     result?: {
       __typename?: "Notification";
       id: string;
-      meta?: { [key: string]: any } | null;
       active?: boolean | null;
       insertedAt: Date;
       targetCount?: number | null;
@@ -1022,14 +1635,14 @@ export type CancelNotificationMutation = {
       progress?: number | null;
       finished?: boolean | null;
     } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       code?: string | null;
       fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    }> | null;
+    }>;
   };
 };
 
@@ -1046,7 +1659,6 @@ export type NotifyConfirmedCandidateMutation = {
       __typename?: "Notification";
       id: string;
       eventType?: NotificationEventType | null;
-      meta?: { [key: string]: any } | null;
       active?: boolean | null;
       targetCount?: number | null;
       notifiedCount?: number | null;
@@ -1054,14 +1666,14 @@ export type NotifyConfirmedCandidateMutation = {
       finished?: boolean | null;
       notifiedCountUpdatedAt?: Date | null;
     } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       code?: string | null;
       fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    }> | null;
+    }>;
   };
 };
 
@@ -1087,14 +1699,14 @@ export type RegisterWithPasswordMutation = {
       firstName?: string | null;
       lastName?: string | null;
     } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
       fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    }> | null;
+    }>;
   };
 };
 
@@ -1150,14 +1762,14 @@ export type SetDetectionVisibleMutation = {
       id: string;
       visible?: boolean | null;
     } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       code?: string | null;
       fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    }> | null;
+    }>;
   };
 };
 
@@ -1210,14 +1822,14 @@ export type SubmitDetectionMutation = {
   submitDetection: {
     __typename?: "SubmitDetectionResult";
     result?: { __typename?: "Detection"; id: string } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
       fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    }> | null;
+    }>;
   };
 };
 
@@ -1234,7 +1846,7 @@ export type CandidateQuery = {
     maxTime: Date;
     detectionCount?: number | null;
     visible?: boolean | null;
-    category?: CandidateCategory | null;
+    category?: DetectionCategory | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -1303,7 +1915,6 @@ export type NotificationsForCandidateQuery = {
     __typename?: "Notification";
     id: string;
     eventType?: NotificationEventType | null;
-    meta?: { [key: string]: any } | null;
     active?: boolean | null;
     insertedAt: Date;
     targetCount?: number | null;
@@ -1334,7 +1945,7 @@ export type CandidatesQuery = {
       id: string;
       minTime: Date;
       maxTime: Date;
-      category?: CandidateCategory | null;
+      category?: DetectionCategory | null;
       detectionCount?: number | null;
       visible?: boolean | null;
       feed: {
@@ -1439,7 +2050,6 @@ export const CancelNotificationDocument = `
   cancelNotification(id: $id) {
     result {
       id
-      meta
       active
       insertedAt
       targetCount
@@ -1504,7 +2114,6 @@ export const NotifyConfirmedCandidateDocument = `
     result {
       id
       eventType
-      meta
       active
       targetCount
       notifiedCount
@@ -2107,7 +2716,6 @@ export const NotificationsForCandidateDocument = `
   notificationsForCandidate(candidateId: $candidateId, eventType: $eventType) {
     id
     eventType
-    meta
     active
     insertedAt
     targetCount
