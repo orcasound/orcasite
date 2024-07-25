@@ -1,0 +1,383 @@
+{
+  "attributes": [
+    {
+      "default": "fragment(\"uuid_generate_v7()\")",
+      "size": null,
+      "type": "uuid",
+      "source": "id",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": true,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime",
+      "source": "start_time",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "utc_datetime",
+      "source": "end_time",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "decimal",
+      "source": "duration",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "bucket",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "bucket_region",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "cloudfront_url",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "playlist_timestamp",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "playlist_path",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "playlist_m3u8_path",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "segment_path",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "file_name",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "feed_id",
+      "references": {
+        "name": "feed_segments_feed_id_fkey",
+        "table": "feeds",
+        "primary_key?": true,
+        "schema": null,
+        "destination_attribute": "id",
+        "multitenancy": {
+          "global": null,
+          "strategy": null,
+          "attribute": null
+        },
+        "on_delete": null,
+        "on_update": null,
+        "deferrable": false,
+        "match_with": null,
+        "match_type": null,
+        "index?": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "uuid",
+      "source": "feed_stream_id",
+      "references": {
+        "name": "feed_segments_feed_stream_id_fkey",
+        "table": "feed_streams",
+        "primary_key?": true,
+        "schema": null,
+        "destination_attribute": "id",
+        "multitenancy": {
+          "global": null,
+          "strategy": null,
+          "attribute": null
+        },
+        "on_delete": null,
+        "on_update": null,
+        "deferrable": false,
+        "match_with": null,
+        "match_type": null,
+        "index?": false,
+        "destination_attribute_default": null,
+        "destination_attribute_generated": null
+      },
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    }
+  ],
+  "table": "feed_segments",
+  "hash": "982739E3EA32BAC99918F1BF32FF8221939BA9A923B5E5AA5238E991B2EB9E4C",
+  "repo": "Elixir.Orcasite.Repo",
+  "identities": [
+    {
+      "name": "feed_segment_path",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "segment_path"
+        }
+      ],
+      "where": null,
+      "base_filter": null,
+      "nils_distinct?": true,
+      "all_tenants?": false,
+      "index_name": "feed_segments_feed_segment_path_index"
+    },
+    {
+      "name": "feed_segment_timestamp",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "feed_id"
+        },
+        {
+          "type": "atom",
+          "value": "start_time"
+        }
+      ],
+      "where": null,
+      "base_filter": null,
+      "nils_distinct?": true,
+      "all_tenants?": false,
+      "index_name": "feed_segments_feed_segment_timestamp_index"
+    }
+  ],
+  "custom_indexes": [
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "where": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "start_time"
+        }
+      ],
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "start_time"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "where": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "end_time"
+        }
+      ],
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "end_time"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "where": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "feed_id"
+        }
+      ],
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "feed_id"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "where": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "feed_stream_id"
+        }
+      ],
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "feed_stream_id"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "where": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "bucket"
+        }
+      ],
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "bucket"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "where": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "inserted_at"
+        }
+      ],
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "inserted_at"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    }
+  ],
+  "schema": null,
+  "multitenancy": {
+    "global": null,
+    "strategy": null,
+    "attribute": null
+  },
+  "base_filter": null,
+  "check_constraints": [],
+  "custom_statements": [],
+  "has_create_action": true
+}

@@ -441,6 +441,7 @@ export type Feed = {
   bucket?: Maybe<Scalars["String"]["output"]>;
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
   cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
+  feedSegments: Array<FeedSegment>;
   feedStreams: Array<FeedStream>;
   id: Scalars["ID"]["output"];
   imageUrl?: Maybe<Scalars["String"]["output"]>;
@@ -450,9 +451,17 @@ export type Feed = {
   mapUrl?: Maybe<Scalars["String"]["output"]>;
   name: Scalars["String"]["output"];
   nodeName: Scalars["String"]["output"];
+  online?: Maybe<Scalars["Boolean"]["output"]>;
   slug: Scalars["String"]["output"];
   thumbUrl?: Maybe<Scalars["String"]["output"]>;
   visible?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type FeedFeedSegmentsArgs = {
+  filter?: InputMaybe<FeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedSegmentSortInput>>>;
 };
 
 export type FeedFeedStreamsArgs = {
@@ -523,6 +532,7 @@ export type FeedFilterInput = {
   bucket?: InputMaybe<FeedFilterBucket>;
   bucketRegion?: InputMaybe<FeedFilterBucketRegion>;
   cloudfrontUrl?: InputMaybe<FeedFilterCloudfrontUrl>;
+  feedSegments?: InputMaybe<FeedSegmentFilterInput>;
   feedStreams?: InputMaybe<FeedStreamFilterInput>;
   id?: InputMaybe<FeedFilterId>;
   imageUrl?: InputMaybe<FeedFilterImageUrl>;
@@ -531,6 +541,7 @@ export type FeedFilterInput = {
   name?: InputMaybe<FeedFilterName>;
   nodeName?: InputMaybe<FeedFilterNodeName>;
   not?: InputMaybe<Array<FeedFilterInput>>;
+  online?: InputMaybe<FeedFilterOnline>;
   or?: InputMaybe<Array<FeedFilterInput>>;
   slug?: InputMaybe<FeedFilterSlug>;
   visible?: InputMaybe<FeedFilterVisible>;
@@ -577,6 +588,17 @@ export type FeedFilterNodeName = {
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
   like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedFilterOnline = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type FeedFilterSlug = {
@@ -835,6 +857,7 @@ export type FeedSortField =
   | "LOCATION_POINT"
   | "NAME"
   | "NODE_NAME"
+  | "ONLINE"
   | "SLUG"
   | "VISIBLE";
 
