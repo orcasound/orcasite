@@ -131,6 +131,7 @@ defmodule Orcasite.Radio.Detection do
       primary? true
       argument :candidate, :map
       require_atomic? false
+      accept [:description, :visible, :category]
 
       change manage_relationship(:candidate, type: :append)
     end
