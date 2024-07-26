@@ -11,10 +11,10 @@ We recommend following these steps if you'd like to contribute to the repo.
 
 0. Check out the [Trello board](https://trello.com/b/hRFh7Sc1/orcasite-development) for an overview of features being worked on.
     - This [public roadmap](https://trello.com/b/wBg0qhss/orcasound-roadmap) has a higher level view.
-1. Fork the Orcasite repo
-2. Develop on a [feature branch](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow)
+1. Fork the Orcasite repo.
+2. Develop on a [feature branch](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow).
 3. Submit a PR (don't review your own)!
-  	- To maintain a consistent style, we recommend running [Prettier](https://github.com/prettier/prettier) on js, and `mix format` before submission
+    - To maintain a consistent style, we recommend running [Prettier](https://github.com/prettier/prettier) on js, and `mix format` before submission.
 4. Once a PR is merged, we can throw it up onto the dev server to see how things look!
 
 ### Questions?
@@ -51,6 +51,6 @@ If you're new to Elixir (or JS and React), that's no problem! Here are some reso
 - [Apollo GraphQL](https://www.apollographql.com/docs/react/) - Javascript library for GraphQL
 
 ### Example codebases
-Some of these are convenient for reference
+Some of these are convenient for reference:
 
 - [Evercam](https://github.com/evercam/evercam-server/) - Good example of supervision trees

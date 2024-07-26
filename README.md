@@ -40,7 +40,7 @@ The default Docker configuration is great for getting the project up and running
 
 ### Setup options
 
-There are several options for how to setup your dev environment:
+There are several options for how to set up your dev environment:
 
 - [VS Code with dev containers](#using-vs-code)
 - [Using docker-compose](#using-docker-compose-directly)
@@ -92,7 +92,7 @@ Language-level dependencies can be found under `.tool-versions`.
 
 ##### Database
 
-You will need to install Postgres and setup the `postgres` user with a password. The default connection details are:
+You will need to install Postgres and set up the `postgres` user with a password. The default connection details are:
 
 ```
 username: "postgres"
@@ -146,7 +146,7 @@ Once everything finishes starting up, you'll be able to access the UI at [`http:
 
 ### UI
 
-The new version (v3) is currently under development, rapidly changing, and has no tests yet
+The new version (v3) is currently under development, rapidly changing, and has no tests yet.
 
 ## Deployment
 
