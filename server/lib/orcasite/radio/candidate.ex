@@ -145,7 +145,7 @@ defmodule Orcasite.Radio.Candidate do
 
     update :update do
       primary? true
-      accept [:min_time, :max_time, :detection_count, :visible]
+      accept [:min_time, :max_time, :detection_count, :visible, :category]
     end
 
     update :cancel_notifications do
