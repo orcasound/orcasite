@@ -16,6 +16,7 @@ defmodule Orcasite.Radio.FeedSegment do
       index [:feed_id]
       index [:feed_stream_id]
       index [:bucket]
+      index [:inserted_at]
     end
   end
 
