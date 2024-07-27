@@ -14,6 +14,7 @@ defmodule Orcasite.Radio.Feed do
       index [:node_name]
       index [:visible]
       index [:slug]
+      index [:dataplicity_id]
     end
 
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
@@ -36,6 +37,7 @@ defmodule Orcasite.Radio.Feed do
     attribute :bucket, :string, public?: true
     attribute :bucket_region, :string, public?: true
     attribute :cloudfront_url, :string, public?: true
+    attribute :dataplicity_id, :string, public?: true
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -65,8 +67,19 @@ defmodule Orcasite.Radio.Feed do
               public?: true
   end
 
+  aggregates do
+    exists :online, :feed_segments do
+      public? true
+      filter expr(inserted_at > ago(30, :second))
+    end
+  end
+
+
   relationships do
     has_many :feed_streams, Orcasite.Radio.FeedStream do
+      public? true
+    end
+    has_many :feed_segments, Orcasite.Radio.FeedSegment do
       public? true
     end
   end
@@ -86,12 +99,12 @@ defmodule Orcasite.Radio.Feed do
 
     read :read do
       primary? true
-      prepare build(load: [:lat_lng, :lat_lng_string])
+      prepare build(load: [:lat_lng, :lat_lng_string, :online])
     end
 
     read :index do
       filter expr(visible)
-      prepare build(load: [:lat_lng, :lat_lng_string])
+      prepare build(load: [:lat_lng, :lat_lng_string, :online])
     end
 
     read :get_by_slug do
@@ -114,7 +127,8 @@ defmodule Orcasite.Radio.Feed do
         :visible,
         :bucket,
         :bucket_region,
-        :cloudfront_url
+        :cloudfront_url,
+        :dataplicity_id
       ]
 
       argument :lat_lng_string, :string do
@@ -137,7 +151,8 @@ defmodule Orcasite.Radio.Feed do
         :visible,
         :bucket,
         :bucket_region,
-        :cloudfront_url
+        :cloudfront_url,
+        :dataplicity_id
       ]
 
       argument :lat_lng_string, :string do
@@ -149,7 +164,7 @@ defmodule Orcasite.Radio.Feed do
   end
 
   admin do
-    table_columns [:id, :name, :slug, :node_name, :location_point, :visible]
+    table_columns [:id, :name, :slug, :node_name, :location_point, :visible, :online]
 
     format_fields location_point: {Jason, :encode!, []}, lat_lng: {Jason, :encode!, []}
 
