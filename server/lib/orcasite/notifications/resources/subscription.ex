@@ -58,7 +58,7 @@ defmodule Orcasite.Notifications.Subscription do
 
         single_use_token? false
         # 14 days (in minutes)
-        token_lifetime 1_209_600
+        token_lifetime 40_320
 
         sender fn _subscription, _token, _opts ->
           # IO.inspect({subscription, token},
@@ -100,7 +100,7 @@ defmodule Orcasite.Notifications.Subscription do
   end
 
   actions do
-    defaults [:create, :read, :destroy]
+    defaults [:destroy, :read, create: :*]
 
     read :available_for_notification do
       description """
