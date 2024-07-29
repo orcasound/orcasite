@@ -51,8 +51,8 @@ defmodule Orcasite.Notifications.Subscriber do
         identity_field :id
 
         single_use_token? false
-        # 14 days (in minutes)
-        token_lifetime 1_209_600
+        # 4 weeks (in minutes)
+        token_lifetime 40_320
 
         sender fn _subscriber, _token, _opts ->
           # IO.inspect({subscriber, token},
