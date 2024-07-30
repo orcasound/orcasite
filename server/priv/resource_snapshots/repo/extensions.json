@@ -3,6 +3,9 @@
     "citext",
     "uuid-ossp",
     "postgis",
-    "ash-uuid_v1"
-  ]
+    "ash-uuid_v1",
+    "pg_stat_statements",
+    "ash-functions"
+  ],
+  "ash_functions_version": 3
 }

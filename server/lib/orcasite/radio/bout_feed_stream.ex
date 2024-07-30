@@ -1,5 +1,6 @@
 defmodule Orcasite.Radio.BoutFeedStream do
   use Ash.Resource,
+    domain: Orcasite.Radio,
     extensions: [AshAdmin.Resource, AshGraphql.Resource],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]

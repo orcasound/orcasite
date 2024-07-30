@@ -13,7 +13,7 @@ defmodule OrcasiteWeb.RadioTest do
           slug: "orcasound-lab"
         }
       )
-      |> Orcasite.Radio.create!()
+      |> Ash.create!(authorize?: false)
 
     [feed: feed]
   end

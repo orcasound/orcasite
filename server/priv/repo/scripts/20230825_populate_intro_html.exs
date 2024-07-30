@@ -1,12 +1,11 @@
 require Ash.Query
 
-alias Orcasite.Radio
 alias Orcasite.Radio.Feed
 
 Feed
 |> Ash.Query.for_read(:read)
 |> Ash.Query.filter(intro_html == "")
-|> Radio.read!()
+|> Ash.read!()
 |> Enum.map(fn feed ->
   node_name = feed.node_name
   s3_url = Application.get_env(:orcasite, :orcasite_s3_url)
@@ -28,5 +27,5 @@ Feed
   |> Ash.Changeset.for_update(:update, %{
     intro_html: intro_html
   })
-  |> Radio.update()
+  |> Ash.update()
 end)

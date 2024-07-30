@@ -1,9 +1,9 @@
 defmodule OrcasiteWeb.Schema do
   use Absinthe.Schema
 
-  @apis [Orcasite.Radio, Orcasite.Accounts, Orcasite.Notifications]
+  @domains [Orcasite.Radio, Orcasite.Accounts, Orcasite.Notifications]
 
-  use AshGraphql, apis: @apis
+  use AshGraphql, domains: @domains
 
   import_types Absinthe.Type.Custom
   import_types OrcasiteWeb.Graphql.Types.Accounts

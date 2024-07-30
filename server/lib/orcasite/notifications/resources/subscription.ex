@@ -1,9 +1,10 @@
 defmodule Orcasite.Notifications.Subscription do
   use Ash.Resource,
+    domain: Orcasite.Notifications,
     extensions: [AshAuthentication, AshAdmin.Resource],
     data_layer: AshPostgres.DataLayer
 
-  alias Orcasite.Notifications.{Event, Notification, NotificationInstance, Subscriber}
+  alias Orcasite.Notifications.{Notification, NotificationInstance, Subscriber}
 
   postgres do
     table "subscriptions"
@@ -27,9 +28,7 @@ defmodule Orcasite.Notifications.Subscription do
 
     attribute :active, :boolean, default: true
 
-    attribute :event_type, :atom do
-      constraints one_of: Event.types()
-    end
+    attribute :event_type, Orcasite.Types.NotificationEventType
 
     attribute :last_notified_at, :utc_datetime_usec
 
@@ -51,7 +50,7 @@ defmodule Orcasite.Notifications.Subscription do
   end
 
   authentication do
-    api Orcasite.Notifications
+    domain Orcasite.Notifications
 
     strategies do
       magic_link :unsubscribe do
@@ -59,7 +58,7 @@ defmodule Orcasite.Notifications.Subscription do
 
         single_use_token? false
         # 14 days (in minutes)
-        token_lifetime 1_209_600
+        token_lifetime 40_320
 
         sender fn _subscription, _token, _opts ->
           # IO.inspect({subscription, token},
@@ -84,8 +83,6 @@ defmodule Orcasite.Notifications.Subscription do
   end
 
   code_interface do
-    define_for Orcasite.Notifications
-
     define :update_last_notification,
       action: :update_last_notification,
       args: [:last_notification]
@@ -103,49 +100,7 @@ defmodule Orcasite.Notifications.Subscription do
   end
 
   actions do
-    defaults [:create, :read, :destroy]
-
-    update :update do
-      argument :subscriber_id, :uuid
-
-      change manage_relationship(:subscriber_id, :subscriber, type: :append)
-    end
-
-    create :email_subscribe do
-      description "Create a subscription for an individual email"
-      accept [:event_type, :subscriber, :email, :name]
-      argument :email, :string
-      argument :name, :string
-
-      argument :event_type, :atom do
-        constraints one_of: Event.types()
-        default nil
-      end
-
-      argument :subscriber, :uuid
-
-      change set_attribute(:event_type, arg(:event_type))
-
-      change fn changeset, _context ->
-        changeset
-        |> Ash.Changeset.change_attribute(:meta, %{
-          name: Ash.Changeset.get_argument(changeset, :name),
-          email: Ash.Changeset.get_argument(changeset, :email),
-          channel: :email
-        })
-      end
-
-      change manage_relationship(:subscriber, type: :append)
-    end
-
-    update :update_last_notification do
-      accept [:last_notification]
-
-      argument :last_notification, :uuid
-
-      change manage_relationship(:last_notification, type: :append)
-      change set_attribute(:last_notified_at, &DateTime.utc_now/0)
-    end
+    defaults [:destroy, :read, create: :*]
 
     read :available_for_notification do
       description """
@@ -157,8 +112,7 @@ defmodule Orcasite.Notifications.Subscription do
 
       argument :notification_id, :uuid
 
-      argument :event_type, :atom do
-        constraints one_of: Event.types()
+      argument :event_type, Orcasite.Types.NotificationEventType do
         default nil
       end
 
@@ -175,6 +129,52 @@ defmodule Orcasite.Notifications.Subscription do
                       ^arg(:minutes_ago)
                     ))
              )
+    end
+
+    create :email_subscribe do
+      description "Create a subscription for an individual email"
+
+      argument :name, :string
+      argument :email, :string
+
+      argument :event_type, Orcasite.Types.NotificationEventType do
+        default nil
+      end
+
+      argument :subscriber, :uuid
+
+      change set_attribute(:event_type, arg(:event_type))
+      change set_attribute(:name, arg(:name))
+
+      change fn changeset, _context ->
+        changeset
+        |> Ash.Changeset.change_attribute(:meta, %{
+          name: Ash.Changeset.get_argument(changeset, :name),
+          email: Ash.Changeset.get_argument(changeset, :email),
+          channel: :email
+        })
+      end
+
+      change manage_relationship(:subscriber, type: :append)
+    end
+
+    update :update do
+      primary? true
+      require_atomic? false
+
+      accept [:active]
+      argument :subscriber_id, :uuid
+
+      change manage_relationship(:subscriber_id, :subscriber, type: :append)
+    end
+
+    update :update_last_notification do
+      require_atomic? false
+
+      argument :last_notification, :uuid
+
+      change manage_relationship(:last_notification, type: :append)
+      change set_attribute(:last_notified_at, &DateTime.utc_now/0)
     end
   end
 

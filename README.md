@@ -5,6 +5,7 @@
 
 [![Slack](https://img.shields.io/badge/slack-join%20chat-blue.svg?logo=slack)](https://join.slack.com/t/orcasound/shared_invite/zt-293mdpy47-El~xXZA6YmHOWoCzB~8WpQ)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)](https://github.com/orcasound/orcasite/blob/master/CONTRIBUTING.md)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/orcasound/orcasite/badge)](https://scorecard.dev/viewer/?uri=github.com/orcasound/orcasite)
 
 This repo specifies the web backend and frontend for the [Orcasound app](http://live.orcasound.net) that plays a live audio stream through the user's browser of choice. The backend is an [Elixir](https://elixir-lang.org/) app using the [Phoenix framework](https://phoenixframework.org/). The frontend is built in [Next.js](https://nextjs.org/).
 
@@ -12,12 +13,12 @@ This repo specifies the web backend and frontend for the [Orcasound app](http://
 
 Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a successful contribution, as well as learning resources!
 
-## Quick Start (e.g. at hackathons):
+## Quick Start:
 
-- Load the Docker Configuration: `docker-compose up`
-- Wait for container to start up
-- Navigate to [localhost:3000](http://localhost:3000) to view the website
-- Navigate to [localhost:4000](http://localhost:4000) to access the API server
+1. Load the Docker Configuration: `docker-compose up`
+2. Wait for containers to start up
+3. Navigate to [localhost:3000](http://localhost:3000) to view the website
+4. Navigate to [localhost:4000](http://localhost:4000) to access the API server
 
 > **Note**
 > This assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
@@ -36,7 +37,7 @@ This will build an image locally with all the dependencies you need. It will als
 
 ## Developing
 
-The default Docker configuration is great for getting the project up and running, but if you want to do development, you'll want to be able to modify the source code without re-building an entire Docker image.
+The [quick start](#quick-start) setup is great for getting the project up and running, but if you want to do development, you'll want to be able to modify the source code without re-building an entire Docker image.
 
 ### Setup options
 
@@ -153,7 +154,7 @@ The new version (v3) is currently under development, rapidly changing, and has n
 For the moment, this app is running in a Heroku instance with `mix phx.server`. To access the console, run:
 
 ```
-heroku run POOL_SIZE=2 iex -a <app name> -- -S mix
+heroku run FEED_STREAM_QUEUE_URL="" REDIS_URL="" POOL_SIZE=2 iex -a <app name> -- -S mix
 ```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).

@@ -42,6 +42,9 @@ defmodule Orcasite.Radio.FeedStreamQueue do
               {:ok, %{"Records" => records}} -> records
               _ -> []
             end
+
+          _ ->
+            []
         end
       end)
       |> Enum.flat_map(fn %{"s3" => %{"object" => %{"key" => object_path}}} ->
@@ -51,9 +54,19 @@ defmodule Orcasite.Radio.FeedStreamQueue do
           []
         end
       end)
+      |> Enum.uniq()
 
     Task.Supervisor.start_child(Orcasite.TaskSupervisor, fn ->
-      Orcasite.Radio.bulk_create(paths, Orcasite.Radio.FeedStream, :from_m3u8_path)
+      paths
+      |> Enum.map(&Map.merge(&1, %{update_segments?: true, link_streams?: true}))
+      |> Ash.bulk_create(
+        Orcasite.Radio.FeedStream,
+        :from_m3u8_path,
+        return_errors?: true,
+        stop_on_error?: true,
+        upsert?: true,
+        upsert_identity: :feed_stream_timestamp
+      )
     end)
 
     messages

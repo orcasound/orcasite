@@ -1,17 +1,26 @@
-name: Heroku
 # Based on https://janjones.me/posts/github-action-heroku-deployment/
+name: Heroku
 
-on: deployment_status
+on:
+  deployment_status:
+  issue_comment:
+    types: [created, edited]
 
 jobs:
   deployment-status:
     name: Check deployment status
     runs-on: ubuntu-latest
 
-    # Continue only if some definitive status has been reported.
-    if: github.event.deployment_status.state != 'pending'
+    # Continue only if some definitive status has been reported. Also allow
+    # manual refresh of status checks by commenting '/refresh-heroku-status'.
+    if: ${{ github.event.deployment_status.state != 'pending'
+      || (contains(github.event.comment.body, '/refresh-heroku-status') && github.event.issue.pull_request) }}
 
     steps:
+      - uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       # Forward deployment's status to the deployed commit.
       - uses: octokit/request-action@v2.x
         env:
@@ -29,11 +38,17 @@ jobs:
     name: Check site health
     runs-on: ubuntu-latest
 
-    # Run health check only if deployment succeeds.
-    if: github.event.deployment_status.state == 'success'
+    # Run health check only if deployment succeeds. Also allow manual refresh
+    # of status checks by commenting '/refresh-heroku-status'.
+    if: ${{ github.event.deployment_status.state == 'success'
+      || (contains(github.event.comment.body, '/refresh-heroku-status') && github.event.issue.pull_request) }}
 
     # Check that the deployed app returns successful HTTP response.
     steps:
+      - uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+
       - id: health_check
         uses: jtalk/url-health-check-action@v4
         with:

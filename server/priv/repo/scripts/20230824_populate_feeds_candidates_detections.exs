@@ -10,7 +10,7 @@ feed_map =
     Orcasite.Radio.Feed
     |> Ash.Query.for_read(:read)
     |> Ash.Query.filter(slug == ^feed.slug)
-    |> Orcasite.Radio.read()
+    |> Ash.read()
     |> case do
       {:ok, [%Orcasite.Radio.Feed{} = new_feed | _]} ->
         {feed.id, new_feed.id}
@@ -51,7 +51,7 @@ from(cand in Orcasite.RadioLegacy.Candidate,
     min_time == ^candidate.min_time and max_time == ^candidate.max_time and
       feed_id == ^feed_id
   )
-  |> Orcasite.Radio.read()
+  |> Ash.read()
   |> case do
     {:ok, [%Orcasite.Radio.Candidate{} | _]} ->
       nil
@@ -86,7 +86,7 @@ from(det in Orcasite.RadioLegacy.Detection, order_by: [asc: det.inserted_at])
       playlist_timestamp == ^detection.playlist_timestamp and
       player_offset == ^detection.player_offset
   )
-  |> Orcasite.Radio.read()
+  |> Ash.read()
   |> case do
     {:ok, [%Orcasite.Radio.Detection{} | _]} ->
       nil
@@ -99,7 +99,7 @@ from(det in Orcasite.RadioLegacy.Detection, order_by: [asc: det.inserted_at])
                feed_id == ^feed_id and min_time <= ^detection.timestamp and
                  max_time >= ^detection.timestamp
              )
-             |> Orcasite.Radio.read!() do
+             |> Ash.read!() do
         Orcasite.Radio.Detection
         |> Ash.Changeset.for_create(
           :create,

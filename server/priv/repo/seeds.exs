@@ -13,45 +13,45 @@
 require Ash.Query
 
 feeds = [
-  %{
-    lat_lng_string: "48.5583362, -123.1735774",
-    name: "Orcasound Lab (Haro Strait)",
-    node_name: "rpi_orcasound_lab",
-    slug: "orcasound-lab",
-    bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
-  },
+  # %{
+  #   lat_lng_string: "48.5583362, -123.1735774",
+  #   name: "Orcasound Lab (Haro Strait)",
+  #   node_name: "rpi_orcasound_lab",
+  #   slug: "orcasound-lab",
+  #   bucket: "dev-streaming-orcasound-net",
+  #   bucket_region: "us-west-2",
+  # },
   %{
     lat_lng_string: "47.34922, -122.32512",
     name: "MaST Center Aquarium",
     node_name: "rpi_mast_center",
     slug: "mast-center",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   },
-  %{
-    lat_lng_string: "48.0336664, -122.6040035",
-    name: "Bush Point",
-    node_name: "rpi_bush_point",
-    slug: "bush-point",
-    bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
-  },
-  %{
-    lat_lng_string: "48.135743, -122.760614",
-    name: "Port Townsend",
-    node_name: "rpi_port_townsend",
-    slug: "port-townsend",
-    bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
-  },
+  # %{
+  #   lat_lng_string: "48.0336664, -122.6040035",
+  #   name: "Bush Point",
+  #   node_name: "rpi_bush_point",
+  #   slug: "bush-point",
+  #   bucket: "dev-streaming-orcasound-net",
+  #   bucket_region: "us-west-2",
+  # },
+  # %{
+  #   lat_lng_string: "48.135743, -122.760614",
+  #   name: "Port Townsend",
+  #   node_name: "rpi_port_townsend",
+  #   slug: "port-townsend",
+  #   bucket: "dev-streaming-orcasound-net",
+  #   bucket_region: "us-west-2",
+  # },
   %{
     lat_lng_string: "47.86497296593844, -122.33393605795372",
     name: "Sunset Bay",
     node_name: "rpi_sunset_bay",
     slug: "sunset-bay",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   },
   %{
     lat_lng_string: "48.591294, -123.058779",
@@ -59,7 +59,7 @@ feeds = [
     node_name: "rpi_north_sjc",
     slug: "north-sjc",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   }
 ]
 
@@ -68,12 +68,12 @@ feeds =
     Orcasite.Radio.Feed
     |> Ash.Query.for_read(:read)
     |> Ash.Query.filter(slug == ^attrs.slug)
-    |> Orcasite.Radio.read()
+    |> Ash.read()
     |> case do
       {:ok, []} ->
         Orcasite.Radio.Feed
         |> Ash.Changeset.for_create(:create, attrs)
-        |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
+        |> Ash.create!(authorize?: false)
 
       {:ok, [feed | _]} ->
         feed
@@ -91,7 +91,7 @@ Orcasite.Accounts.User
 })
 |> Ash.Changeset.force_change_attribute(:admin, true)
 |> Ash.Changeset.force_change_attribute(:moderator, true)
-|> Orcasite.Accounts.create(authorize?: false)
+|> Ash.create(authorize?: false)
 
 [
   %{
@@ -297,12 +297,19 @@ Orcasite.Accounts.User
   }
 ]
 |> Enum.map(fn attrs ->
-  feed_id = feeds |> Enum.find(fn feed -> feed.slug == attrs[:slug] end) |> Map.get(:id)
+  feeds
+  |> Enum.find(fn feed -> feed.slug == attrs[:slug] end)
+  |> case do
+    %{id: feed_id} ->
+      detection_attrs = Map.drop(attrs, [:slug])
+      Orcasite.Radio.Detection
+      |> Ash.Changeset.for_create(
+        :submit_detection,
+        Map.merge(detection_attrs, %{feed_id: feed_id, send_notifications: false})
+      )
+      |> Ash.create!(authorize?: false)
 
-  Orcasite.Radio.Detection
-  |> Ash.Changeset.for_create(
-    :submit_detection,
-    Map.merge(attrs, %{feed_id: feed_id, send_notifications: false})
-  )
-  |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
+    _ ->
+      :ok
+  end
 end)
