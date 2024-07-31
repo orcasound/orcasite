@@ -64,9 +64,11 @@ updates:
         patterns:
           - "graphql"
           - "@graphql-codegen/*"
+          - "@tanstack/react-query"
           - "@tanstack/react-query*"
       map:
         patterns:
+          - "leaflet"
           - "leaflet*"
           - "react-leaflet"
           - "@types/leaflet"
@@ -77,6 +79,7 @@ updates:
           - "@types/video.js"
       code-style:
         patterns:
+          - "eslint"
           - "eslint*"
           - "@typescript-eslint/*"
           - "prettier"
