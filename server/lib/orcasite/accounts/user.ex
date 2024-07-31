@@ -95,7 +95,7 @@ defmodule Orcasite.Accounts.User do
   end
 
   actions do
-    defaults [:read, :create, :update, :destroy]
+    defaults [:read, :destroy, create: :*, update: :*]
 
     read :by_email do
       get_by :email
