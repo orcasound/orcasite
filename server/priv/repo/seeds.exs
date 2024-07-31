@@ -27,7 +27,7 @@ feeds = [
     node_name: "rpi_mast_center",
     slug: "mast-center",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   },
   # %{
   #   lat_lng_string: "48.0336664, -122.6040035",
@@ -51,7 +51,7 @@ feeds = [
     node_name: "rpi_sunset_bay",
     slug: "sunset-bay",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   },
   %{
     lat_lng_string: "48.591294, -123.058779",
@@ -59,7 +59,7 @@ feeds = [
     node_name: "rpi_north_sjc",
     slug: "north-sjc",
     bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2",
+    bucket_region: "us-west-2"
   }
 ]
 
@@ -68,12 +68,12 @@ feeds =
     Orcasite.Radio.Feed
     |> Ash.Query.for_read(:read)
     |> Ash.Query.filter(slug == ^attrs.slug)
-    |> Orcasite.Radio.read()
+    |> Ash.read()
     |> case do
       {:ok, []} ->
         Orcasite.Radio.Feed
         |> Ash.Changeset.for_create(:create, attrs)
-        |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
+        |> Ash.create!(authorize?: false)
 
       {:ok, [feed | _]} ->
         feed
@@ -91,7 +91,7 @@ Orcasite.Accounts.User
 })
 |> Ash.Changeset.force_change_attribute(:admin, true)
 |> Ash.Changeset.force_change_attribute(:moderator, true)
-|> Orcasite.Accounts.create(authorize?: false)
+|> Ash.create(authorize?: false)
 
 [
   %{
@@ -297,12 +297,19 @@ Orcasite.Accounts.User
   }
 ]
 |> Enum.map(fn attrs ->
-  feed_id = feeds |> Enum.find(fn feed -> feed.slug == attrs[:slug] end) |> Map.get(:id)
+  feeds
+  |> Enum.find(fn feed -> feed.slug == attrs[:slug] end)
+  |> case do
+    %{id: feed_id} ->
+      detection_attrs = Map.drop(attrs, [:slug])
+      Orcasite.Radio.Detection
+      |> Ash.Changeset.for_create(
+        :submit_detection,
+        Map.merge(detection_attrs, %{feed_id: feed_id, send_notifications: false})
+      )
+      |> Ash.create!(authorize?: false)
 
-  Orcasite.Radio.Detection
-  |> Ash.Changeset.for_create(
-    :submit_detection,
-    Map.merge(attrs, %{feed_id: feed_id, send_notifications: false})
-  )
-  |> Orcasite.Radio.create!(verbose?: true, authorize?: false)
+    _ ->
+      :ok
+  end
 end)

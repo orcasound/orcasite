@@ -3,7 +3,7 @@ defmodule Orcasite.Radio.AwsClient do
 
   @default_results %{count: 0, timestamps: []}
 
-  def get_feed_stream(%FeedStream{
+  def get_stream_manifest_body(%FeedStream{
         bucket_region: bucket_region,
         bucket: bucket,
         playlist_m3u8_path: path

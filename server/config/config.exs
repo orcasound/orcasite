@@ -73,13 +73,11 @@ config :orcasite, OrcasiteWeb.Auth.AuthAccessPipeline,
   error_handler: OrcasiteWeb.Auth.AuthErrorHandler
 
 config :orcasite, :ecto_repos, [Orcasite.Repo]
-config :orcasite, :ash_apis, [Orcasite.Notifications, Orcasite.Accounts, Orcasite.Radio]
+config :orcasite, :ash_domains, [Orcasite.Notifications, Orcasite.Accounts, Orcasite.Radio]
 config :orcasite, :ash_uuid, migration_default?: true
-config :ash, :use_all_identities_in_manage_relationship?, false
 config :ash, :custom_types, geometry: Orcasite.Types.Geometry
 config :ash_graphql, :default_managed_relationship_type_name_template, :action_name
 config :ash_graphql, :json_type, :json
-config :ash, :utc_datetime_type, :datetime
 
 config :mime, :types, %{
   "application/vnd.api+json" => ["json"]
@@ -93,7 +91,7 @@ config :orcasite, Oban,
   repo: Orcasite.Repo,
   # 7 day job retention
   plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}],
-  queues: [default: 10, email: 10, feed_segments: 10]
+  queues: [default: 10, email: 10, feeds: 10]
 
 config :spark, :formatter,
   remove_parens?: true,

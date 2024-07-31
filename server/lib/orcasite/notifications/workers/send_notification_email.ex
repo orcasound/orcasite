@@ -1,7 +1,6 @@
 defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
   use Oban.Worker, queue: :email, unique: [keys: [:notification_id, :subscription_id]]
 
-  alias Orcasite.Notifications
   alias Orcasite.Notifications.{Subscription, NotificationInstance, Notification}
 
   @impl Oban.Worker
@@ -14,10 +13,10 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
             "notification_instance_id" => notification_instance_id
           } = _args
       }) do
-    notification = Notification |> Notifications.get!(notification_id)
+    notification = Notification |> Ash.get!(notification_id, authorize?: false)
 
     subscription =
-      Subscription |> Notifications.get!(subscription_id) |> Notifications.load!(:subscriber)
+      Subscription |> Ash.get!(subscription_id) |> Ash.load!(:subscriber)
 
     params =
       [meta, subscription.meta, notification.meta]
@@ -36,7 +35,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
         notif_id ->
           Notification
           |> Ash.Query.for_read(:since_notification, %{notification_id: notif_id})
-          |> Orcasite.Notifications.read!()
+          |> Ash.read!(authorize?: false)
       end
       |> Enum.filter(&(&1.id != notification_id))
 
@@ -51,7 +50,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       notifications_since: notifications_since |> Enum.map(& &1.meta),
       notifications_since_count: Enum.count(notifications_since)
     })
-    |> email_for_notif(stringify(params["event_type"]))
+    |> email_for_notif(stringify(notification.event_type))
     |> Orcasite.Mailer.deliver()
 
     subscription
@@ -59,7 +58,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       NotificationInstance
-      |> Notifications.get(notification_instance_id)
+      |> Ash.get(notification_instance_id)
       |> case do
         {:error, _} ->
           nil
@@ -67,11 +66,11 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
         {:ok, notif_instance} ->
           notif_instance
           |> Ash.Changeset.for_destroy(:destroy)
-          |> Notifications.destroy!()
+          |> Ash.destroy!()
       end
     end)
 
-    Orcasite.Notifications.Notification.increment_notified_count(notification)
+    Orcasite.Notifications.Notification.increment_notified_count(notification, authorize?: false)
 
     :ok
   end
