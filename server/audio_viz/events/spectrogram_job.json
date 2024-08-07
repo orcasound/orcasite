@@ -1,7 +1,7 @@
 {
   "id": "test_image",
   "audio_bucket": "streaming-orcasound-net",
-  "audio_key": "rpi_sunset_bay/hls/1654758019/live003.ts",
+  "audio_key": "rpi_sunset_bay/hls/1654758019/live004.ts",
   "image_bucket": "dev-archive-orcasound-net",
-  "image_key": "spectrograms/test_spect.png"
+  "image_key": "spectrograms/live004_spect.png"
 }

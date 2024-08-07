@@ -61,7 +61,7 @@ def lambda_handler(event, context):
     }
 
 def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, store_image=False) -> None:
-    local_path = f"data/{job["id"]}"
+    local_path = f"/tmp/{job["id"]}"
     s3 = boto3.client("s3")
 
     if not os.path.exists(local_path):
@@ -91,7 +91,7 @@ def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, s
         imshow(spectrogram)
 
     # Store spectrogram image either as a file or in-memory
-    image_store = f"data/{job["id"]}.png" if store_image else io.BytesIO()
+    image_store = f"/tmp/{job["id"]}.png" if store_image else io.BytesIO()
     matplotlib.image.imsave(image_store, spectrogram)
     if not store_image:
         image_store.seek(0)
