@@ -39,3 +39,5 @@ config/*.secret.exs
 
 .elixir_ls
 erl_crash.dump
+
+audio_viz/.aws-sam

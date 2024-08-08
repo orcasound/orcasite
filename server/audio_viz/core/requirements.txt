@@ -1,0 +1,7 @@
+boto3
+imutils
+librosa
+matplotlib
+numpy<2.0
+opencv-python
+requests
