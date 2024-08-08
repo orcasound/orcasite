@@ -3,6 +3,34 @@ defmodule Orcasite.Radio.AwsClient do
 
   @default_results %{count: 0, timestamps: []}
 
+  def generate_spectrogram() do
+    ExAws.Lambda.list_functions()
+    |> ExAws.request!()
+    |> Map.get("Functions")
+    |> Enum.find_value(fn %{"FunctionName" => name} ->
+      if String.contains?(name, "AudioVizFunction"), do: {:ok, name}
+    end)
+    |> case do
+      {:ok, name} ->
+        ExAws.Lambda.invoke(
+          name,
+          %{
+            "id" => "test_image",
+            "audio_bucket" => "streaming-orcasound-net",
+            "audio_key" => "rpi_sunset_bay/hls/1654758019/live006.ts",
+            "image_bucket" => "dev-archive-orcasound-net",
+            "image_key" => "spectrograms/live006_spect.png"
+          },
+          %{},
+          invocation_type: :request_response
+        )
+        |> ExAws.request()
+
+      _ ->
+        nil
+    end
+  end
+
   def get_stream_manifest_body(%FeedStream{
         bucket_region: bucket_region,
         bucket: bucket,
