@@ -102,7 +102,7 @@ defmodule Orcasite.Radio.Feed do
       prepare build(load: [:lat_lng, :lat_lng_string, :online])
     end
 
-    read :index do
+    read :public do
       filter expr(visible)
       prepare build(load: [:lat_lng, :lat_lng_string, :online])
     end
@@ -186,7 +186,7 @@ defmodule Orcasite.Radio.Feed do
     routes do
       base "/feeds"
 
-      index :index
+      index :read
     end
   end
 
@@ -195,7 +195,7 @@ defmodule Orcasite.Radio.Feed do
 
     queries do
       read_one :feed, :get_by_slug, allow_nil?: false
-      list :feeds, :index
+      list :feeds, :public
     end
   end
 
