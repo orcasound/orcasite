@@ -1,7 +1,7 @@
 # Largely based on https://github.com/nicbet/docker-phoenix/blob/main/Dockerfile
 
 FROM node:22.6.0-alpine@sha256:4162c8a0f1fef9d3b003eb1fd3d8a26db46815288832aa453d829f4129d4dfd3 AS node
-FROM elixir:1.16-otp-26-alpine@sha256:829bebfcdc6fc58c56effc0d77f660de7c902fcf74e785b3175ee3a8f739b3f5 AS setup
+FROM elixir:1.17.1-otp-27-alpine@sha256:a2075d94010b25214e649dbd40ca047832e12ecb75c8098b155032bbcda13c98 AS setup
 
 
 ### Install deps
