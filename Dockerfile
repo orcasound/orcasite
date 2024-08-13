@@ -48,7 +48,7 @@ EXPOSE 3000
 EXPOSE 4000
 ENV PORT=4000 UI_PORT=3000 MIX_ENV=${MIX_ENV}
 
-# Create a new stage for local dev docker-compose to stop at (using taget: setup)
+# Create a new stage for local dev docker-compose to stop at (using target: setup)
 # Local dev is configured to mount local files into the container so there's no
 # point in adding/compiling deps as part of the docker build process
 FROM setup AS compile
