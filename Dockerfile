@@ -1,6 +1,6 @@
 # Largely based on https://github.com/nicbet/docker-phoenix/blob/main/Dockerfile
 
-FROM node:22.5.1-alpine@sha256:9fcc1a6da2b9eee38638df75c5f826e06e9c79f6a0f97f16ed98fe0ebb0725c0 AS node
+FROM node:22.6.0-alpine@sha256:4162c8a0f1fef9d3b003eb1fd3d8a26db46815288832aa453d829f4129d4dfd3 AS node
 FROM elixir:1.16-otp-26-alpine@sha256:829bebfcdc6fc58c56effc0d77f660de7c902fcf74e785b3175ee3a8f739b3f5 AS setup
 
 
@@ -48,7 +48,7 @@ EXPOSE 3000
 EXPOSE 4000
 ENV PORT=4000 UI_PORT=3000 MIX_ENV=${MIX_ENV}
 
-# Create a new stage for local dev docker-compose to stop at (using taget: setup)
+# Create a new stage for local dev docker-compose to stop at (using target: setup)
 # Local dev is configured to mount local files into the container so there's no
 # point in adding/compiling deps as part of the docker build process
 FROM setup AS compile

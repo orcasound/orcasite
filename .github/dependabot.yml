@@ -26,6 +26,13 @@ updates:
       time: "05:00"
       timezone: America/Los_Angeles
     open-pull-requests-limit: 3
+    ignore:
+      # Ignore odd-numbered node versions because they're not LTS
+      # Have to manage this manually until https://github.com/dependabot/dependabot-core/issues/2247 is resolved
+      # Even-numbered releases also need to be ignored for the first 6 months,
+      # but there's no way to configure that in Dependabot yet
+      - dependency-name: node
+        versions: ["21.x", "23.x", "25.x", "27.x"]
 
   # Updates Elixir dependencies
   - package-ecosystem: mix
