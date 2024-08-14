@@ -1,5 +1,3 @@
-import json
-
 from matplotlib.pyplot import imshow
 from spectrogram_generator import SpectrogramGenerator
 from subprocess import check_output
@@ -10,15 +8,6 @@ import json
 import librosa
 import matplotlib
 import os.path
-import tempfile
-
-class SpecJob(TypedDict):
-    id: str
-    audio_bucket: str
-    audio_key: str
-    sample_rate: int
-    image_key: Optional[str]
-    image_bucket: Optional[str]
 
 SpectrogramJob = TypedDict(
     "SpectrogramJob",
