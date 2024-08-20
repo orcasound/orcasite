@@ -4,6 +4,9 @@ on:
   issue_comment:
     types: [created, edited]
 
+permissions:
+  contents: read
+
 jobs:
   fast-forward:
     # Only run if the comment contains the /fast-forward command.
@@ -17,12 +20,12 @@ jobs:
       issues: write
 
     steps:
-      - uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+      - uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
         with:
           egress-policy: audit
 
       - name: Fast forwarding
-        uses: sequoia-pgp/fast-forward@v1
+        uses: sequoia-pgp/fast-forward@ea7628bedcb0b0b96e94383ada458d812fca4979 # v1.0.0
         with:
           merge: true
           # To reduce the workflow's verbosity, use 'on-error'

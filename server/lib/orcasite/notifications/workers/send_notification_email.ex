@@ -54,7 +54,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     |> Orcasite.Mailer.deliver()
 
     subscription
-    |> Subscription.update_last_notification(notification_id)
+    |> Subscription.update_last_notification(notification_id, authorize?: false)
 
     Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
       NotificationInstance

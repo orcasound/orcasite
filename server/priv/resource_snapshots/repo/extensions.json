@@ -1,4 +1,5 @@
 {
+  "ash_functions_version": 4,
   "installed": [
     "citext",
     "uuid-ossp",
@@ -6,6 +7,5 @@
     "ash-uuid_v1",
     "pg_stat_statements",
     "ash-functions"
-  ],
-  "ash_functions_version": 3
+  ]
 }

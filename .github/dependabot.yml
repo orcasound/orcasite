@@ -3,6 +3,37 @@
 # See https://docs.github.com/en/code-security/dependabot/dependabot-alerts/configuring-dependabot-alerts
 version: 2
 updates:
+  # Updates GHA dependencies
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: America/Los_Angeles
+    groups:
+      actions:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 3
+
+  # Updates Docker dependencies
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: America/Los_Angeles
+    open-pull-requests-limit: 3
+    ignore:
+      # Ignore odd-numbered node versions because they're not LTS
+      # Have to manage this manually until https://github.com/dependabot/dependabot-core/issues/2247 is resolved
+      # Even-numbered releases also need to be ignored for the first 6 months,
+      # but there's no way to configure that in Dependabot yet
+      - dependency-name: node
+        versions: ["21.x", "23.x", "25.x", "27.x"]
+
   # Updates Elixir dependencies
   - package-ecosystem: mix
     directory: server/
@@ -13,20 +44,12 @@ updates:
       timezone: America/Los_Angeles
     # Will only open a maximum of 3 PRs
     open-pull-requests-limit: 3
-  # Updates GHA dependencies
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-      day: monday
-      time: "05:00"
-      timezone: America/Los_Angeles
-    open-pull-requests-limit: 3
+
   # Updates JavaScript dependencies
   - package-ecosystem: npm
     directory: /ui
     schedule:
-      interval: daily
+      interval: weekly
       time: "05:00"
       timezone: America/Los_Angeles
     open-pull-requests-limit: 3
@@ -48,9 +71,11 @@ updates:
         patterns:
           - "graphql"
           - "@graphql-codegen/*"
+          - "@tanstack/react-query"
           - "@tanstack/react-query*"
       map:
         patterns:
+          - "leaflet"
           - "leaflet*"
           - "react-leaflet"
           - "@types/leaflet"
@@ -61,6 +86,7 @@ updates:
           - "@types/video.js"
       code-style:
         patterns:
+          - "eslint"
           - "eslint*"
           - "@typescript-eslint/*"
           - "prettier"
@@ -69,17 +95,16 @@ updates:
       misc:
         patterns:
           - "*"
-        # Open individual PRs for the following packages
         exclude-patterns:
+          # Open individual PRs for the following packages
           - "typescript"
           - "phoenix"
           - "@types/node"
-  # Updates Docker dependencies
-  - package-ecosystem: docker
-    directory: /
-    schedule:
-      interval: weekly
-      day: monday
-      time: "05:00"
-      timezone: America/Los_Angeles
-    open-pull-requests-limit: 3
+    ignore:
+      # Ignore until nextjs adds eslint 9 support https://github.com/vercel/next.js/issues/64409
+      - dependency-name: "eslint"
+        versions: ["9.0 - 9.9"]
+      - dependency-name: "eslint-plugin-unused-imports"
+        versions: ["4.0 - 4.1"]
+      - dependency-name: "@typescript-eslint/eslint-plugin"
+        versions: ["8.0 - 8.1"]

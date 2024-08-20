@@ -147,7 +147,7 @@ Once everything finishes starting up, you'll be able to access the UI at [`http:
 
 ### UI
 
-The new version (v3) is currently under development, rapidly changing, and has no tests yet
+The new version (v3) is currently under development, rapidly changing, and has no tests yet.
 
 ## Deployment
 

@@ -1,0 +1,285 @@
+{
+  "attributes": [
+    {
+      "default": "fragment(\"uuid_generate_v7()\")",
+      "size": null,
+      "type": "uuid",
+      "source": "id",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": true,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "name",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "node_name",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "slug",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "geometry",
+      "source": "location_point",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "\"\"",
+      "size": null,
+      "type": "text",
+      "source": "intro_html",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "\"\"",
+      "size": null,
+      "type": "text",
+      "source": "image_url",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "true",
+      "size": null,
+      "type": "boolean",
+      "source": "visible",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "bucket",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "bucket_region",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "cloudfront_url",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "nil",
+      "size": null,
+      "type": "text",
+      "source": "dataplicity_id",
+      "references": null,
+      "allow_nil?": true,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "inserted_at",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    },
+    {
+      "default": "fragment(\"(now() AT TIME ZONE 'utc')\")",
+      "size": null,
+      "type": "utc_datetime_usec",
+      "source": "updated_at",
+      "references": null,
+      "allow_nil?": false,
+      "primary_key?": false,
+      "generated?": false
+    }
+  ],
+  "table": "feeds",
+  "hash": "99973C5AE25C93EA36B8CDCC884A4A925D9E05BDF3D1659589D36BFBDD9CFF8C",
+  "repo": "Elixir.Orcasite.Repo",
+  "identities": [
+    {
+      "name": "unique_slug",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "slug"
+        }
+      ],
+      "where": null,
+      "base_filter": null,
+      "nils_distinct?": true,
+      "all_tenants?": false,
+      "index_name": "feeds_unique_slug_index"
+    }
+  ],
+  "custom_indexes": [
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "name"
+        }
+      ],
+      "where": null,
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "name"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "node_name"
+        }
+      ],
+      "where": null,
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "node_name"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "visible"
+        }
+      ],
+      "where": null,
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "visible"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "slug"
+        }
+      ],
+      "where": null,
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "slug"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    },
+    {
+      "message": null,
+      "name": null,
+      "table": null,
+      "include": null,
+      "prefix": null,
+      "fields": [
+        {
+          "type": "atom",
+          "value": "dataplicity_id"
+        }
+      ],
+      "where": null,
+      "unique": false,
+      "all_tenants?": false,
+      "error_fields": [
+        "dataplicity_id"
+      ],
+      "concurrently": false,
+      "using": null,
+      "nulls_distinct": true
+    }
+  ],
+  "schema": null,
+  "multitenancy": {
+    "global": null,
+    "attribute": null,
+    "strategy": null
+  },
+  "base_filter": null,
+  "check_constraints": [],
+  "custom_statements": [],
+  "has_create_action": true
+}
