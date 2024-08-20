@@ -15,6 +15,7 @@ defmodule Orcasite.Radio.Feed do
       index [:visible]
       index [:slug]
       index [:dataplicity_id]
+      index [:orcahello_id]
     end
 
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
@@ -38,6 +39,7 @@ defmodule Orcasite.Radio.Feed do
     attribute :bucket_region, :string, public?: true
     attribute :cloudfront_url, :string, public?: true
     attribute :dataplicity_id, :string, public?: true
+    attribute :orcahello_id, :string, public?: true
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
