@@ -20,8 +20,8 @@ defmodule Orcasite.Radio.Bout do
   attributes do
     uuid_attribute :id, prefix: "bout", public?: true
 
-    attribute :start_time, :utc_datetime, public?: true
-    attribute :end_time, :utc_datetime, public?: true
+    attribute :start_time, :utc_datetime_usec, public?: true
+    attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
     attribute :ongoing, :boolean, public?: true
 

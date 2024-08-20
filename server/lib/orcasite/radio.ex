@@ -9,6 +9,8 @@ defmodule Orcasite.Radio do
     resource Orcasite.Radio.FeedStream
     resource Orcasite.Radio.BoutFeedStream
     resource Orcasite.Radio.FeedSegment
+    resource Orcasite.Radio.AudioImage
+    resource Orcasite.Radio.AudioImageFeedSegment
   end
 
   admin do
