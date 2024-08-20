@@ -23,12 +23,12 @@ defmodule Orcasite.Notifications.Subscription do
   attributes do
     uuid_primary_key :id
 
-    attribute :name, :string
-    attribute :meta, :map, default: %{}
+    attribute :name, :string, public?: true
+    attribute :meta, :map, default: %{}, public?: true
 
-    attribute :active, :boolean, default: true
+    attribute :active, :boolean, default: true, public?: true
 
-    attribute :event_type, Orcasite.Types.NotificationEventType
+    attribute :event_type, Orcasite.Types.NotificationEventType, public?: true
 
     attribute :last_notified_at, :utc_datetime_usec
 
