@@ -130,7 +130,8 @@ defmodule Orcasite.Radio.Feed do
         :bucket,
         :bucket_region,
         :cloudfront_url,
-        :dataplicity_id
+        :dataplicity_id,
+        :orcahello_id
       ]
 
       argument :lat_lng_string, :string do
@@ -154,7 +155,8 @@ defmodule Orcasite.Radio.Feed do
         :bucket,
         :bucket_region,
         :cloudfront_url,
-        :dataplicity_id
+        :dataplicity_id,
+        :orcahello_id
       ]
 
       argument :lat_lng_string, :string do
