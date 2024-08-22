@@ -39,10 +39,6 @@ defmodule Orcasite.Notifications.Subscriber do
     has_many :subscriptions, Subscription
   end
 
-  code_interface do
-    define :by_email, args: [:email]
-  end
-
   authentication do
     domain Orcasite.Notifications
 
@@ -74,12 +70,6 @@ defmodule Orcasite.Notifications.Subscriber do
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
-  end
-
-  resource do
-    description """
-    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
-    """
   end
 
   actions do
@@ -122,7 +112,9 @@ defmodule Orcasite.Notifications.Subscriber do
 
       change fn changeset, _context ->
         meta =
-          case Orcasite.Accounts.User.by_email(Ash.Changeset.get_argument(changeset, :email)) do
+          case Orcasite.Accounts.User.by_email(Ash.Changeset.get_argument(changeset, :email),
+                 authorize?: false
+               ) do
             {:ok, %{id: user_id}} -> %{user_id: user_id}
             _ -> %{}
           end
@@ -150,6 +142,26 @@ defmodule Orcasite.Notifications.Subscriber do
     end
   end
 
+  code_interface do
+    define :by_email, args: [:email]
+  end
+
+  resource do
+    description """
+    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
+    """
+  end
+
+  admin do
+    table_columns [:id, :name, :meta, :inserted_at]
+    read_actions [:read, :by_email]
+    format_fields meta: {Jason, :encode!, []}
+
+    form do
+      field :event_type, type: :default
+    end
+  end
+
   validations do
     validate fn changeset, _context ->
       # Check if email subscriber already exists
@@ -164,16 +176,6 @@ defmodule Orcasite.Notifications.Subscriber do
         err ->
           :ok
       end
-    end
-  end
-
-  admin do
-    table_columns [:id, :name, :meta, :inserted_at]
-    read_actions [:read, :by_email]
-    format_fields meta: {Jason, :encode!, []}
-
-    form do
-      field :event_type, type: :default
     end
   end
 
