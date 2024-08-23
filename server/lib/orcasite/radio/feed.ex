@@ -26,7 +26,7 @@ defmodule Orcasite.Radio.Feed do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "feed", public?: true
+    uuid_attribute :id, public?: true
 
     attribute :name, :string, allow_nil?: false, public?: true
     attribute :node_name, :string, allow_nil?: false, public?: true
@@ -67,6 +67,8 @@ defmodule Orcasite.Radio.Feed do
               :string,
               {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"},
               public?: true
+
+    # calculate :uuid, :string, Orcasite.Radio.Calculations.DecodeUUID
   end
 
   aggregates do

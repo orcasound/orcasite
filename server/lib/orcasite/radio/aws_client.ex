@@ -1,33 +1,58 @@
 defmodule Orcasite.Radio.AwsClient do
   alias Orcasite.Radio.{Feed, FeedStream}
 
-  @default_results %{count: 0, timestamps: []}
+  @default_timestamp_results %{count: 0, timestamps: []}
 
-  def generate_spectrogram() do
-    ExAws.Lambda.list_functions()
-    |> ExAws.request!()
-    |> Map.get("Functions")
-    |> Enum.find_value(fn %{"FunctionName" => name} ->
-      if String.contains?(name, "AudioVizFunction"), do: {:ok, name}
-    end)
+  def generate_spectrogram(%{
+        image_id: image_id,
+        audio_bucket: audio_bucket,
+        audio_key: audio_key,
+        image_bucket: image_bucket,
+        image_key: image_key
+      }) do
+
+    ExAws.S3.head_object(image_bucket, String.trim_leading(image_key, "/"))
+    |> ExAws.request()
     |> case do
-      {:ok, name} ->
-        ExAws.Lambda.invoke(
-          name,
-          %{
-            "id" => "test_image",
-            "audio_bucket" => "streaming-orcasound-net",
-            "audio_key" => "rpi_sunset_bay/hls/1654758019/live006.ts",
-            "image_bucket" => "dev-archive-orcasound-net",
-            "image_key" => "spectrograms/live006_spect.png"
-          },
-          %{},
-          invocation_type: :request_response
-        )
-        |> ExAws.request()
+      {:ok, %{headers: headers}} ->
+        # Exists, skip
+        size =
+          headers
+          |> Enum.find(&(elem(&1, 0) == "Content-Length"))
+          |> elem(1)
+          |> String.to_integer()
+
+        {:ok, %{size: size}}
 
       _ ->
-        nil
+        # Doesn't exist, make spectrogram
+        ExAws.Lambda.list_functions()
+        |> ExAws.request!()
+        |> Map.get("Functions")
+        |> Enum.find_value(fn %{"FunctionName" => name} ->
+          if String.contains?(name, "AudioVizFunction"), do: {:ok, name}
+        end)
+        |> case do
+          {:ok, name} ->
+            ExAws.Lambda.invoke(
+              name,
+              %{
+                "id" => image_id,
+                "audio_bucket" => audio_bucket,
+                "audio_key" => String.trim_leading(audio_key, "/"),
+                "image_bucket" => image_bucket,
+                "image_key" => String.trim_leading(image_key, "/")
+              },
+              %{},
+              invocation_type: :request_response
+            )
+            |> ExAws.request()
+
+            # TODO: Set sample rate, size
+
+          _ ->
+            nil
+        end
     end
   end
 
@@ -91,7 +116,12 @@ defmodule Orcasite.Radio.AwsClient do
     end
   end
 
-  def loop_request_timestamp(feed, callback \\ nil, token \\ nil, results \\ @default_results) do
+  def loop_request_timestamp(
+        feed,
+        callback \\ nil,
+        token \\ nil,
+        results \\ @default_timestamp_results
+      ) do
     request_timestamps(feed, token, callback)
     |> case do
       {:ok,

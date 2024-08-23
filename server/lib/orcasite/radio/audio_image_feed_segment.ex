@@ -2,7 +2,7 @@ defmodule Orcasite.Radio.AudioImageFeedSegment do
   use Ash.Resource,
     otp_app: :orcasite,
     domain: Orcasite.Radio,
-    extensions: [AshGraphql.Resource],
+    extensions: [AshGraphql.Resource, AshUUID],
     data_layer: AshPostgres.DataLayer
 
   postgres do

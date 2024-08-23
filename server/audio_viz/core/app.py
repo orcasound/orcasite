@@ -8,6 +8,7 @@ import json
 import librosa
 import matplotlib
 import os.path
+import sys
 
 SpectrogramJob = TypedDict(
     "SpectrogramJob",
@@ -43,13 +44,15 @@ def lambda_handler(event, context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    make_spectrogram(event)
+    result = make_spectrogram(event)
 
     return {
-        "statusCode": 200,
+        "status": 200,
+        "image_size": result["image_size"],
+        "sample_rate": result["sample_rate"],
     }
 
-def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, store_image=False) -> None:
+def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, store_image=False):
     local_path = f"/tmp/{job["id"]}"
     s3 = boto3.client("s3")
 
@@ -80,14 +83,20 @@ def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, s
         imshow(spectrogram)
 
     # Store spectrogram image either as a file or in-memory
+    image_size = None
     image_store = f"/tmp/{job["id"]}.png" if store_image else io.BytesIO()
     matplotlib.image.imsave(image_store, spectrogram)
-    if not store_image:
+    if store_image:
+        image_size = os.path.getsize(image_store)
+    else:
         image_store.seek(0)
+        image_size = sys.getsizeof(image_store)
 
     if job["image_key"] is not None and job["image_bucket"] is not None:
         image_content = open(image_store, "rb") if store_image else image_store
         s3.put_object(Bucket=job["image_bucket"], Key=job["image_key"], Body=image_content)
+
+    return {"sample_rate": sample_rate, "image_size": image_size}
 
 def get_audio_metadata(local_path):
     result = check_output(['ffprobe',
