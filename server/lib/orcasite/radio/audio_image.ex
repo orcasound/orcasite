@@ -2,6 +2,7 @@ defmodule Orcasite.Radio.AudioImage do
   require Ash.Resource.Change.Builtins
   require Ash.Resource.Change.Builtins
   require Ash.Resource.Change.Builtins
+  require Ash.Resource.Change.Builtins
 
   use Ash.Resource,
     otp_app: :orcasite,
@@ -54,6 +55,7 @@ defmodule Orcasite.Radio.AudioImage do
     attribute :bucket, :string, public?: true
     attribute :bucket_region, :string, public?: true
     attribute :object_path, :string, public?: true
+    attribute :last_error, :string
 
     timestamps()
   end
@@ -113,30 +115,78 @@ defmodule Orcasite.Radio.AudioImage do
              end)
 
       change after_action(
-               fn record, _context ->
-                 feed = record |> Ash.load(:feed) |> Map.get(:feed)
+               fn _change, record, _context ->
+                 feed = record |> Ash.load!(:feed) |> Map.get(:feed)
 
                  record
                  |> Ash.Changeset.for_update(:update, %{
-                   object_path: "/#{feed.node_name}/#{record.id}.png"
+                   object_path: "/#{feed.node_name}/spectrograms/#{record.id}.png"
                  })
                  |> Ash.update(authorize?: false)
                end,
                prepend?: true
              )
 
-      change after_action(fn record, _context ->
-               record
-               |> Ash.Changeset.for_update(:generate_spectrogram)
-               |> Ash.update(authorize?: false)
+      change after_action(fn _change, record, _context ->
+               %{audio_image_id: record.id}
+               |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
+               |> Oban.insert()
+
+               {:ok, record}
              end)
     end
 
     update :generate_spectrogram do
       change set_attribute(:status, :processing)
-      change fn change, _context ->
-        change
-      end
+
+      change after_action(
+               fn _change, image, _context ->
+                 # Only one feed segment at a time for now
+                 [feed_segment] = image |> Ash.load!(:feed_segments) |> Map.get(:feed_segments)
+
+                 %{
+                   image_id: image.id,
+                   audio_bucket: feed_segment.bucket,
+                   audio_key: feed_segment.segment_path,
+                   image_bucket: image.bucket,
+                   image_key: image.object_path
+                 }
+                 |> Orcasite.Radio.AwsClient.generate_spectrogram()
+                 |> case do
+                   {:ok, %{"errorMessage" => _} = error} ->
+                     image
+                     |> Ash.Changeset.for_update(:update, %{
+                       status: :failed
+                     })
+                     |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
+                     |> Ash.update(authorize?: false)
+
+                     {:error, :spectrogram_failed}
+
+                   {:ok, %{image_size: image_size, sample_rate: _sample_rate}} ->
+                     image
+                     |> Ash.Changeset.for_update(:update, %{
+                       status: :complete,
+                       image_size: image_size
+                     })
+                     |> Ash.Changeset.force_change_attribute(:last_error, nil)
+                     |> Ash.update(authorize?: false)
+
+                     {:ok, image}
+
+                   {:error, error} ->
+                     image
+                     |> Ash.Changeset.for_update(:update, %{
+                       status: :failed
+                     })
+                     |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
+                     |> Ash.update(authorize?: false)
+
+                     error
+                 end
+               end,
+               prepend?: true
+             )
     end
   end
 

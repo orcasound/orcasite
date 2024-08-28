@@ -10,7 +10,6 @@ defmodule Orcasite.Radio.AwsClient do
         image_bucket: image_bucket,
         image_key: image_key
       }) do
-
     ExAws.S3.head_object(image_bucket, String.trim_leading(image_key, "/"))
     |> ExAws.request()
     |> case do
@@ -29,6 +28,7 @@ defmodule Orcasite.Radio.AwsClient do
         ExAws.Lambda.list_functions()
         |> ExAws.request!()
         |> Map.get("Functions")
+        |> Enum.sort_by(&Map.get(&1, "LastModified"), :desc)
         |> Enum.find_value(fn %{"FunctionName" => name} ->
           if String.contains?(name, "AudioVizFunction"), do: {:ok, name}
         end)
@@ -46,12 +46,17 @@ defmodule Orcasite.Radio.AwsClient do
               %{},
               invocation_type: :request_response
             )
-            |> ExAws.request()
+            |> ExAws.request(timeout: :timer.minutes(2))
+            |> case do
+              {:ok, %{"image_size" => image_size, "sample_rate" => sample_rate}} ->
+                {:ok, %{image_size: image_size, sample_rate: sample_rate}}
 
-            # TODO: Set sample rate, size
+              {:error, err} ->
+                {:error, err}
+            end
 
           _ ->
-            nil
+            {:error, :lambda_not_found}
         end
     end
   end
