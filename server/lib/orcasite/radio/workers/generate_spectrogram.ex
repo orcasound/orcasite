@@ -5,7 +5,8 @@ defmodule Orcasite.Radio.Workers.GenerateSpectrogram do
       keys: [:audio_image_id],
       period: :infinity,
       states: [:available, :scheduled, :executing]
-    ]
+    ],
+    max_attempts: 3
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"audio_image_id" => audio_image_id}}) do

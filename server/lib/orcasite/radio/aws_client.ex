@@ -51,6 +51,9 @@ defmodule Orcasite.Radio.AwsClient do
               {:ok, %{"image_size" => image_size, "sample_rate" => sample_rate}} ->
                 {:ok, %{image_size: image_size, sample_rate: sample_rate}}
 
+              {:ok, %{"errorMessage" => _} = err} ->
+                {:error, err}
+
               {:error, err} ->
                 {:error, err}
             end

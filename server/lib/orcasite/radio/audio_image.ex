@@ -153,16 +153,6 @@ defmodule Orcasite.Radio.AudioImage do
                  |> Orcasite.Radio.AwsClient.generate_spectrogram()
                  |> IO.inspect(label: "gen spect result")
                  |> case do
-                   {:ok, %{"errorMessage" => _} = error} ->
-                     image
-                     |> Ash.Changeset.for_update(:update, %{
-                       status: :failed
-                     })
-                     |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
-                     |> Ash.update(authorize?: false)
-
-                    #  {:error, :spectrogram_failed}
-
                    {:ok, %{image_size: image_size, sample_rate: _sample_rate}} ->
                      image
                      |> Ash.Changeset.for_update(:update, %{
@@ -183,6 +173,7 @@ defmodule Orcasite.Radio.AudioImage do
                      |> Ash.update(authorize?: false)
 
                     #  error
+                    {:ok, image}
                  end
                end,
                prepend?: true
