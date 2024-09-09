@@ -6,7 +6,7 @@ import Marquee from "react-fast-marquee";
 
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
-import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
+import { S3_BUCKET, useTimestampFetcher } from "@/hooks/useTimestampFetcher";
 import fin512 from "@/public/photos/fin-512x512.png";
 import {
   displayDesktopOnly,
@@ -33,13 +33,23 @@ export default function Player({
 }: {
   currentFeed?: Pick<
     Feed,
-    "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl" | "thumbUrl"
+    | "id"
+    | "slug"
+    | "nodeName"
+    | "name"
+    | "latLng"
+    | "imageUrl"
+    | "thumbUrl"
+    | "bucket"
   >;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
-  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName);
+  const { timestamp, hlsURI } = useTimestampFetcher(
+    currentFeed?.bucket || S3_BUCKET,
+    currentFeed?.nodeName,
+  );
 
   const feedPresence = useFeedPresence(currentFeed?.slug);
   const listenerCount = feedPresence?.metas.length ?? 0;

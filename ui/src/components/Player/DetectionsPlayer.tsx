@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Feed } from "@/graphql/generated";
-import { getHlsURI } from "@/hooks/useTimestampFetcher";
+import { getHlsURI, S3_BUCKET } from "@/hooks/useTimestampFetcher";
 import { mobileOnly } from "@/styles/responsive";
 
 import { type PlayerStatus } from "./Player";
@@ -24,7 +24,7 @@ export function DetectionsPlayer({
   endOffset,
   onAudioPlay,
 }: {
-  feed: Pick<Feed, "nodeName">;
+  feed: Pick<Feed, "nodeName" | "bucket">;
   marks: { label: string; value: number }[];
   timestamp: number;
   startOffset: number;
@@ -38,7 +38,7 @@ export function DetectionsPlayer({
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
 
-  const hlsURI = getHlsURI(feed.nodeName, timestamp);
+  const hlsURI = getHlsURI(feed.bucket || S3_BUCKET, feed.nodeName, timestamp);
 
   const playerOptions = useMemo(
     () => ({
