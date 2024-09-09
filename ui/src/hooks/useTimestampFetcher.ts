@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
   throw new Error("NEXT_PUBLIC_S3_BUCKET is not set");
 }
-export const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET;
+const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET;
 
 const bucketBaseString = (bucket: string) =>
-  `https://s3.amazonaws.com/${bucket}`;
+  `https://${bucket}.s3.amazonaws.com/`;
 
 export const getHlsURI = (
   bucket: string,
@@ -34,14 +34,16 @@ export const getHlsURI = (
  * @returns {TimestampFetcherResult} The latest timestamp, HLS URI, and AWS console URI
  */
 export function useTimestampFetcher(
-  bucket: string,
+  bucket?: string,
   nodeName?: string,
   { onStart, onStop }: { onStart?: () => void; onStop?: () => void } = {},
 ) {
   const [timestamp, setTimestamp] = useState<number>();
 
   const hlsURI =
-    nodeName && timestamp ? getHlsURI(bucket, nodeName, timestamp) : undefined;
+    nodeName && timestamp
+      ? getHlsURI(bucket ?? S3_BUCKET, nodeName, timestamp)
+      : undefined;
   const awsConsoleUri =
     nodeName && timestamp
       ? `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
@@ -52,7 +54,7 @@ export function useTimestampFetcher(
     let intervalId: NodeJS.Timeout | undefined;
 
     const fetchTimestamp = (feed: string) => {
-      const timestampURI = `${bucketBaseString(bucket)}/${feed}/latest.txt`;
+      const timestampURI = `${bucketBaseString(bucket ?? S3_BUCKET)}/${feed}/latest.txt`;
 
       const xhr = new XMLHttpRequest();
       currentXhr = xhr;

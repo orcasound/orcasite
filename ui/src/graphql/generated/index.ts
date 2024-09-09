@@ -438,9 +438,10 @@ export type DetectionSortInput = {
 
 export type Feed = {
   __typename?: "Feed";
-  bucket?: Maybe<Scalars["String"]["output"]>;
+  bucket: Scalars["String"]["output"];
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
   cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
+  dataplicityId?: Maybe<Scalars["String"]["output"]>;
   feedSegments: Array<FeedSegment>;
   feedStreams: Array<FeedStream>;
   id: Scalars["ID"]["output"];
@@ -452,6 +453,7 @@ export type Feed = {
   name: Scalars["String"]["output"];
   nodeName: Scalars["String"]["output"];
   online?: Maybe<Scalars["Boolean"]["output"]>;
+  orcahelloId?: Maybe<Scalars["String"]["output"]>;
   slug: Scalars["String"]["output"];
   thumbUrl?: Maybe<Scalars["String"]["output"]>;
   visible?: Maybe<Scalars["Boolean"]["output"]>;
@@ -476,7 +478,7 @@ export type FeedFilterBucket = {
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
   ilike?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["String"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
@@ -498,6 +500,19 @@ export type FeedFilterBucketRegion = {
 };
 
 export type FeedFilterCloudfrontUrl = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type FeedFilterDataplicityId = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
@@ -532,6 +547,7 @@ export type FeedFilterInput = {
   bucket?: InputMaybe<FeedFilterBucket>;
   bucketRegion?: InputMaybe<FeedFilterBucketRegion>;
   cloudfrontUrl?: InputMaybe<FeedFilterCloudfrontUrl>;
+  dataplicityId?: InputMaybe<FeedFilterDataplicityId>;
   feedSegments?: InputMaybe<FeedSegmentFilterInput>;
   feedStreams?: InputMaybe<FeedStreamFilterInput>;
   id?: InputMaybe<FeedFilterId>;
@@ -543,6 +559,7 @@ export type FeedFilterInput = {
   not?: InputMaybe<Array<FeedFilterInput>>;
   online?: InputMaybe<FeedFilterOnline>;
   or?: InputMaybe<Array<FeedFilterInput>>;
+  orcahelloId?: InputMaybe<FeedFilterOrcahelloId>;
   slug?: InputMaybe<FeedFilterSlug>;
   visible?: InputMaybe<FeedFilterVisible>;
 };
@@ -599,6 +616,19 @@ export type FeedFilterOnline = {
   lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type FeedFilterOrcahelloId = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type FeedFilterSlug = {
@@ -851,6 +881,7 @@ export type FeedSortField =
   | "BUCKET"
   | "BUCKET_REGION"
   | "CLOUDFRONT_URL"
+  | "DATAPLICITY_ID"
   | "ID"
   | "IMAGE_URL"
   | "INTRO_HTML"
@@ -858,6 +889,7 @@ export type FeedSortField =
   | "NAME"
   | "NODE_NAME"
   | "ONLINE"
+  | "ORCAHELLO_ID"
   | "SLUG"
   | "VISIBLE";
 

@@ -6,7 +6,7 @@ import Marquee from "react-fast-marquee";
 
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
-import { S3_BUCKET, useTimestampFetcher } from "@/hooks/useTimestampFetcher";
+import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
 import fin512 from "@/public/photos/fin-512x512.png";
 import {
   displayDesktopOnly,
@@ -47,7 +47,7 @@ export default function Player({
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
   const { timestamp, hlsURI } = useTimestampFetcher(
-    currentFeed?.bucket || S3_BUCKET,
+    currentFeed?.bucket,
     currentFeed?.nodeName,
   );
 
