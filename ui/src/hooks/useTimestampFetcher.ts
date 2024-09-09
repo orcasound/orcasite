@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
   throw new Error("NEXT_PUBLIC_S3_BUCKET is not set");
 }
-const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET;
 
-const bucketBase = (bucket: string) => `https://${bucket}.s3.amazonaws.com`;
+const getBucketBase = (bucket: string) => `https://${bucket}.s3.amazonaws.com`;
+
+const getTimestampURI = (bucket: string, nodeName: string) =>
+  `${getBucketBase(bucket)}/${nodeName}/latest.txt`;
 
 export const getHlsURI = (
   bucket: string,
   nodeName: string,
   timestamp: number,
-) => `${bucketBase(bucket)}/${nodeName}/hls/${timestamp}/live.m3u8`;
+) => `${getBucketBase(bucket)}/${nodeName}/hls/${timestamp}/live.m3u8`;
 
 /**
  * @typedef {Object} TimestampFetcherOptions
@@ -34,16 +36,14 @@ export const getHlsURI = (
  * @returns {TimestampFetcherResult} The latest timestamp, HLS URI, and AWS console URI
  */
 export function useTimestampFetcher(
-  bucket?: string,
+  bucket: string,
   nodeName?: string,
   { onStart, onStop }: { onStart?: () => void; onStop?: () => void } = {},
 ) {
   const [timestamp, setTimestamp] = useState<number>();
 
   const hlsURI =
-    nodeName && timestamp
-      ? getHlsURI(bucket ?? S3_BUCKET, nodeName, timestamp)
-      : undefined;
+    nodeName && timestamp ? getHlsURI(bucket, nodeName, timestamp) : undefined;
   const awsConsoleUri =
     nodeName && timestamp
       ? `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
@@ -54,7 +54,7 @@ export function useTimestampFetcher(
     let intervalId: NodeJS.Timeout | undefined;
 
     const fetchTimestamp = (feed: string) => {
-      const timestampURI = `${bucketBase(bucket ?? S3_BUCKET)}/${feed}/latest.txt`;
+      const timestampURI = getTimestampURI(bucket, feed);
 
       const xhr = new XMLHttpRequest();
       currentXhr = xhr;
@@ -90,7 +90,7 @@ export function useTimestampFetcher(
       stopFetcher();
       onStop?.();
     };
-  }, [nodeName, onStart, onStop]);
+  }, [nodeName, onStart, onStop, bucket]);
 
   return { timestamp, hlsURI, awsConsoleUri };
 }

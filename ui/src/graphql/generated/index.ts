@@ -1908,6 +1908,7 @@ export type CandidateQuery = {
       slug: string;
       name: string;
       nodeName: string;
+      bucket: string;
     };
     detections: Array<{
       __typename?: "Detection";
@@ -1955,6 +1956,7 @@ export type FeedQuery = {
     thumbUrl?: string | null;
     imageUrl?: string | null;
     mapUrl?: string | null;
+    bucket: string;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
   };
 };
@@ -2623,6 +2625,7 @@ export const CandidateDocument = `
       slug
       name
       nodeName
+      bucket
     }
     detections {
       id
@@ -2740,6 +2743,7 @@ export const FeedDocument = `
     thumbUrl
     imageUrl
     mapUrl
+    bucket
   }
 }
     `;
