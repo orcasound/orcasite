@@ -4,8 +4,6 @@ if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
   throw new Error("NEXT_PUBLIC_S3_BUCKET is not set");
 }
 
-const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET;
-
 const getBucketBase = (bucket: string) => `https://${bucket}.s3.amazonaws.com`;
 
 const getTimestampURI = (bucket: string, nodeName: string) =>
@@ -45,11 +43,11 @@ export function useTimestampFetcher(
   const [timestamp, setTimestamp] = useState<number>();
 
   const hlsURI =
-    nodeName && timestamp
-      ? getHlsURI(bucket ?? S3_BUCKET, nodeName, timestamp)
+    nodeName && bucket && timestamp
+      ? getHlsURI(bucket, nodeName, timestamp)
       : undefined;
   const awsConsoleUri =
-    nodeName && timestamp
+    nodeName && bucket && timestamp
       ? `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
       : undefined;
 
@@ -57,9 +55,7 @@ export function useTimestampFetcher(
     let currentXhr: XMLHttpRequest | undefined;
     let intervalId: NodeJS.Timeout | undefined;
 
-    const fetchTimestamp = (feed: string) => {
-      const timestampURI = getTimestampURI(bucket ?? S3_BUCKET, feed);
-
+    const fetchTimestamp = (timestampURI: string) => {
       const xhr = new XMLHttpRequest();
       currentXhr = xhr;
       xhr.open("GET", timestampURI);
@@ -75,11 +71,15 @@ export function useTimestampFetcher(
     };
 
     const startFetcher = () => {
-      if (!nodeName) return;
+      if (!nodeName || !bucket) return;
+      const timestampURI = getTimestampURI(bucket, nodeName);
 
       onStart?.();
-      fetchTimestamp(nodeName);
-      const newIntervalId = setInterval(() => fetchTimestamp(nodeName), 10000);
+      fetchTimestamp(timestampURI);
+      const newIntervalId = setInterval(
+        () => fetchTimestamp(timestampURI),
+        10000,
+      );
       intervalId = newIntervalId;
     };
 
