@@ -25,7 +25,7 @@ export const getHlsURI = (
  * @typedef {Object} TimestampFetcherResult
  * @property {number} timestamp The latest timestamp
  * @property {string} hlsURI The URI to the latest HLS stream
- * @property {string} awsConsoleUri The URI to the AWS console for the latest HLS stream
+ * @property {string} awsConsoleURI The URI to the AWS console for the latest HLS stream
  */
 
 /**
@@ -46,7 +46,7 @@ export function useTimestampFetcher(
     nodeName && bucket && timestamp
       ? getHlsURI(bucket, nodeName, timestamp)
       : undefined;
-  const awsConsoleUri =
+  const awsConsoleURI =
     nodeName && bucket && timestamp
       ? `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
       : undefined;
@@ -96,5 +96,5 @@ export function useTimestampFetcher(
     };
   }, [nodeName, onStart, onStop, bucket]);
 
-  return { timestamp, hlsURI, awsConsoleUri };
+  return { timestamp, hlsURI, awsConsoleURI };
 }
