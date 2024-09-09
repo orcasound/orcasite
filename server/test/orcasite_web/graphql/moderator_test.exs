@@ -29,6 +29,7 @@ defmodule OrcasiteWeb.ModeratorTest do
           lat_lng_string: "48.5583362, -123.1735774",
           name: "Orcasound Lab (Haro Strait)",
           node_name: "rpi_orcasound_lab",
+          bucket: "streaming-orcasound-net",
           slug: "orcasound-lab"
         }
       )
