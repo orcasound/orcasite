@@ -49,7 +49,7 @@ defmodule Orcasite.Radio.AwsClient do
             |> ExAws.request(timeout: :timer.minutes(2))
             |> case do
               {:ok, %{"image_size" => image_size, "sample_rate" => sample_rate}} ->
-                {:ok, %{image_size: image_size, sample_rate: sample_rate}}
+                {:ok, %{file_size: image_size, sample_rate: sample_rate}}
 
               {:ok, %{"errorMessage" => _} = err} ->
                 {:error, err}

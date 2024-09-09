@@ -17,9 +17,10 @@ defmodule Orcasite.GlobalSetup do
 
   def populate_latest_feed_segments(feed) do
     feed
-    |> Orcasite.Radio.AwsClient.request_timestamps()
+    |> Orcasite.Radio.AwsClient.list_timestamps()
     |> case do
-      {:ok, %{timestamps: [timestamp | _]}} ->
+      {:ok, %{timestamps: [_ | _] = timestamps}} ->
+        timestamp = List.last(timestamps)
         {:ok, feed_stream} =
           Orcasite.Radio.FeedStream
           |> Ash.Changeset.for_create(:create, %{feed: feed, playlist_timestamp: timestamp})

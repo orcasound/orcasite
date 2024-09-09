@@ -53,6 +53,7 @@ def lambda_handler(event, context):
     }
 
 def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, store_image=False):
+    print(f"Received job: {json.dumps(job)}")
     local_path = f"/tmp/{job["id"]}"
     s3 = boto3.client("s3")
 
@@ -91,6 +92,7 @@ def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, s
     else:
         image_store.seek(0)
         image_size = sys.getsizeof(image_store)
+        image_store.seek(0)
 
     if job["image_key"] is not None and job["image_bucket"] is not None:
         image_content = open(image_store, "rb") if store_image else image_store

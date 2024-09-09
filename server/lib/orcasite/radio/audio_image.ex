@@ -143,38 +143,42 @@ defmodule Orcasite.Radio.AudioImage do
                  # Only one feed segment at a time for now
                  [feed_segment] = image |> Ash.load!(:feed_segments) |> Map.get(:feed_segments)
 
-                 %{
-                   image_id: image.id,
-                   audio_bucket: feed_segment.bucket,
-                   audio_key: feed_segment.segment_path,
-                   image_bucket: image.bucket,
-                   image_key: image.object_path
-                 }
-                 |> Orcasite.Radio.AwsClient.generate_spectrogram()
-                 |> IO.inspect(label: "gen spect result")
-                 |> case do
-                   {:ok, %{image_size: image_size, sample_rate: _sample_rate}} ->
-                     image
-                     |> Ash.Changeset.for_update(:update, %{
-                       status: :complete,
-                       image_size: image_size
-                     })
-                     |> Ash.Changeset.force_change_attribute(:last_error, nil)
-                     |> Ash.update(authorize?: false)
+                 timeout = :timer.minutes(2)
 
-                     {:ok, image}
+                 Task.Supervisor.async_nolink(
+                   Orcasite.TaskSupervisor,
+                   fn ->
+                     %{
+                       image_id: image.id,
+                       audio_bucket: feed_segment.bucket,
+                       audio_key: feed_segment.segment_path,
+                       image_bucket: image.bucket,
+                       image_key: image.object_path
+                     }
+                     |> Orcasite.Radio.AwsClient.generate_spectrogram()
+                     |> case do
+                       {:ok, %{file_size: image_size}} ->
+                         image
+                         |> Ash.Changeset.for_update(:update, %{
+                           status: :complete,
+                           image_size: image_size
+                         })
+                         |> Ash.Changeset.force_change_attribute(:last_error, nil)
+                         |> Ash.update(authorize?: false)
 
-                   {:error, error} ->
-                     image
-                     |> Ash.Changeset.for_update(:update, %{
-                       status: :failed
-                     })
-                     |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
-                     |> Ash.update(authorize?: false)
+                       {:error, error} ->
+                         image
+                         |> Ash.Changeset.for_update(:update, %{
+                           status: :failed
+                         })
+                         |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
+                         |> Ash.update(authorize?: false)
+                     end
+                   end,
+                   timeout: timeout
+                 )
 
-                    #  error
-                    {:ok, image}
-                 end
+                 {:ok, image}
                end,
                prepend?: true
              )
