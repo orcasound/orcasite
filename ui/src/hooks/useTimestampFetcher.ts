@@ -5,14 +5,13 @@ if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
 }
 const S3_BUCKET = process.env.NEXT_PUBLIC_S3_BUCKET;
 
-const bucketBaseString = (bucket: string) =>
-  `https://${bucket}.s3.amazonaws.com/`;
+const bucketBase = (bucket: string) => `https://${bucket}.s3.amazonaws.com`;
 
 export const getHlsURI = (
   bucket: string,
   nodeName: string,
   timestamp: number,
-) => `${bucketBaseString(bucket)}/${nodeName}/hls/${timestamp}/live.m3u8`;
+) => `${bucketBase(bucket)}/${nodeName}/hls/${timestamp}/live.m3u8`;
 
 /**
  * @typedef {Object} TimestampFetcherOptions
@@ -29,6 +28,7 @@ export const getHlsURI = (
 
 /**
  * Starts a timer that fetches the latest timestamp from a feed
+ * @param {string} bucket The bucket name of the node
  * @param {string} nodeName The name of the feed to fetch from, as defined in the S3 bucket
  * @param {TimestampFetcherOptions} options Callbacks for when the fetcher starts and stops
  * @returns {TimestampFetcherResult} The latest timestamp, HLS URI, and AWS console URI
@@ -54,7 +54,7 @@ export function useTimestampFetcher(
     let intervalId: NodeJS.Timeout | undefined;
 
     const fetchTimestamp = (feed: string) => {
-      const timestampURI = `${bucketBaseString(bucket ?? S3_BUCKET)}/${feed}/latest.txt`;
+      const timestampURI = `${bucketBase(bucket ?? S3_BUCKET)}/${feed}/latest.txt`;
 
       const xhr = new XMLHttpRequest();
       currentXhr = xhr;
