@@ -1,9 +1,4 @@
 defmodule Orcasite.Radio.AudioImage do
-  require Ash.Resource.Change.Builtins
-  require Ash.Resource.Change.Builtins
-  require Ash.Resource.Change.Builtins
-  require Ash.Resource.Change.Builtins
-
   use Ash.Resource,
     otp_app: :orcasite,
     domain: Orcasite.Radio,
@@ -22,6 +17,10 @@ defmodule Orcasite.Radio.AudioImage do
       index [:image_type]
       index [:status]
     end
+  end
+
+  identities do
+    identity :unique_audio_image, [:feed_id, :image_type, :start_time, :end_time]
   end
 
   attributes do
@@ -80,7 +79,7 @@ defmodule Orcasite.Radio.AudioImage do
     defaults [:read, :destroy, create: :*, update: :*]
 
     create :for_feed_segment do
-      argument :feed_segment_id, :uuid, allow_nil?: false
+      argument :feed_segment_id, :string, allow_nil?: false
 
       argument :image_type, Orcasite.Types.ImageType do
         default :spectrogram
@@ -152,6 +151,7 @@ defmodule Orcasite.Radio.AudioImage do
                    image_key: image.object_path
                  }
                  |> Orcasite.Radio.AwsClient.generate_spectrogram()
+                 |> IO.inspect(label: "gen spect result")
                  |> case do
                    {:ok, %{"errorMessage" => _} = error} ->
                      image
@@ -161,7 +161,7 @@ defmodule Orcasite.Radio.AudioImage do
                      |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
                      |> Ash.update(authorize?: false)
 
-                     {:error, :spectrogram_failed}
+                    #  {:error, :spectrogram_failed}
 
                    {:ok, %{image_size: image_size, sample_rate: _sample_rate}} ->
                      image
@@ -182,7 +182,7 @@ defmodule Orcasite.Radio.AudioImage do
                      |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
                      |> Ash.update(authorize?: false)
 
-                     error
+                    #  error
                  end
                end,
                prepend?: true

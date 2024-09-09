@@ -1,4 +1,6 @@
 defmodule Orcasite.Radio.Feed do
+  require Ash.Resource.Change.Builtins
+
   use Ash.Resource,
     domain: Orcasite.Radio,
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
@@ -68,7 +70,7 @@ defmodule Orcasite.Radio.Feed do
               {Orcasite.Radio.Calculations.FeedImageUrl, object: "map.png"},
               public?: true
 
-    # calculate :uuid, :string, Orcasite.Radio.Calculations.DecodeUUID
+    calculate :uuid, :string, Orcasite.Radio.Calculations.DecodeUUID
   end
 
   aggregates do
@@ -78,12 +80,16 @@ defmodule Orcasite.Radio.Feed do
     end
   end
 
-
   relationships do
     has_many :feed_streams, Orcasite.Radio.FeedStream do
       public? true
     end
+
     has_many :feed_segments, Orcasite.Radio.FeedSegment do
+      public? true
+    end
+
+    has_many :audio_images, Orcasite.Radio.AudioImage do
       public? true
     end
   end
@@ -167,6 +173,44 @@ defmodule Orcasite.Radio.Feed do
 
       change &change_lat_lng/2
     end
+
+    update :generate_spectrogram do
+      require_atomic? false
+      argument :start_time, :utc_datetime_usec, allow_nil?: false
+      argument :end_time, :utc_datetime_usec, allow_nil?: false
+
+      validate {Orcasite.Validations.Compare, [lt: [:start_time, :end_time]]}
+
+      change before_action(fn change, _context ->
+               # Get feed_segments between the start time and end time, and, for now
+               # create a single spectrogram per segment. Once we can create an
+               # audio image for multiple segments (with concatenation in the lambda),
+               # we can change this to a single spectrogram with all those audio segments
+
+               feed_segments =
+                 Orcasite.Radio.FeedSegment
+                 |> Ash.Query.for_read(:for_feed_range, %{
+                   feed_id: change.data.id,
+                   start_time: change.arguments.start_time,
+                   end_time: change.arguments.end_time
+                 })
+                 |> Ash.read!(authorize?: false)
+
+               audio_image_inputs = feed_segments |> Enum.map(&%{feed_segment_id: &1.id})
+
+               change
+               |> Ash.Changeset.manage_relationship(:audio_images, audio_image_inputs,
+                 on_no_match: {:create, :for_feed_segment},
+                 on_match: :ignore
+               )
+               |> IO.inspect(label: "new change")
+             end)
+    end
+  end
+
+  code_interface do
+    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end
 
   admin do
@@ -177,11 +221,6 @@ defmodule Orcasite.Radio.Feed do
     form do
       field :intro_html, type: :long_text
     end
-  end
-
-  code_interface do
-    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
-    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end
 
   json_api do

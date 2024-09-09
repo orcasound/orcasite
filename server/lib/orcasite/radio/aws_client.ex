@@ -21,7 +21,7 @@ defmodule Orcasite.Radio.AwsClient do
           |> elem(1)
           |> String.to_integer()
 
-        {:ok, %{size: size}}
+        {:ok, %{file_size: size}}
 
       _ ->
         # Doesn't exist, make spectrogram

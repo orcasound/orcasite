@@ -104,6 +104,28 @@ defmodule Orcasite.Radio.FeedSegment do
              )
     end
 
+    read :for_feed_range do
+      argument :start_time, :utc_datetime_usec, allow_nil?: false
+      argument :end_time, :utc_datetime_usec, allow_nil?: false
+      argument :feed_id, :string, allow_nil?: false
+
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 (fragment(
+                    "(?) between (?) and (?)",
+                    start_time,
+                    ^arg(:start_time),
+                    ^arg(:end_time)
+                  ) or
+                    fragment(
+                      "(?) between (?) and (?)",
+                      end_time,
+                      ^arg(:start_time),
+                      ^arg(:end_time)
+                    ))
+             )
+    end
+
     create :create do
       primary? true
       upsert? true
