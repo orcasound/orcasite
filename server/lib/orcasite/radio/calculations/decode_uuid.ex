@@ -14,15 +14,21 @@ defmodule Orcasite.Radio.Calculations.DecodeUUID do
   end
 
   def decode(record) do
-    [_, encoded_id] =
-      record
-      |> Map.get(:id)
-      |> String.split("_")
+    case Ecto.UUID.cast(record.id) do
+      {:ok, uuid} ->
+        uuid
 
-    with {:ok, uuid} <- AshUUID.Encoder.decode(encoded_id) do
-      uuid
-    else
-      _ -> nil
+      _ ->
+        [_, encoded_id] =
+          record
+          |> Map.get(:id)
+          |> String.split("_")
+
+        with {:ok, uuid} <- AshUUID.Encoder.decode(encoded_id) do
+          uuid
+        else
+          _ -> nil
+        end
     end
   end
 end

@@ -1,7 +1,71 @@
 defmodule Orcasite.Radio.AwsClient do
   alias Orcasite.Radio.{Feed, FeedStream}
 
-  @default_results %{count: 0, timestamps: []}
+  @default_timestamp_results %{count: 0, timestamps: []}
+
+  def generate_spectrogram(%{
+        image_id: image_id,
+        audio_bucket: audio_bucket,
+        audio_key: audio_key,
+        image_bucket: image_bucket,
+        image_key: image_key
+      }) do
+    ExAws.S3.head_object(image_bucket, String.trim_leading(image_key, "/"))
+    |> ExAws.request()
+    |> case do
+      {:ok, %{headers: headers}} ->
+        # Exists, skip
+        size =
+          headers
+          |> Enum.find(&(elem(&1, 0) == "Content-Length"))
+          |> elem(1)
+          |> String.to_integer()
+
+        {:ok, %{file_size: size}}
+
+      _ ->
+        # Doesn't exist, make spectrogram
+        ExAws.Lambda.list_functions()
+        |> ExAws.request!()
+        |> Map.get("Functions")
+        |> Enum.sort_by(&Map.get(&1, "LastModified"), :desc)
+        |> Enum.find_value(fn %{"FunctionName" => name} ->
+          if String.contains?(name, "AudioVizFunction"), do: {:ok, name}
+        end)
+        |> case do
+          {:ok, name} ->
+            ExAws.Lambda.invoke(
+              name,
+              %{
+                "id" => image_id,
+                "audio_bucket" => audio_bucket,
+                "audio_key" => String.trim_leading(audio_key, "/"),
+                "image_bucket" => image_bucket,
+                "image_key" => String.trim_leading(image_key, "/")
+              },
+              %{},
+              invocation_type: :request_response
+            )
+            |> ExAws.request(
+              http_opts: [recv_timeout: :timer.minutes(2)],
+              retries: [max_attempts: 1]
+            )
+            |> case do
+              {:ok, %{"image_size" => image_size, "sample_rate" => sample_rate}} ->
+                {:ok, %{file_size: image_size, sample_rate: sample_rate}}
+
+              {:ok, %{"errorMessage" => _} = err} ->
+                {:error, err}
+
+              {:error, err} ->
+                {:error, err}
+            end
+
+          _ ->
+            {:error, :lambda_not_found}
+        end
+    end
+  end
 
   def get_stream_manifest_body(%FeedStream{
         bucket_region: bucket_region,
@@ -63,7 +127,12 @@ defmodule Orcasite.Radio.AwsClient do
     end
   end
 
-  def loop_request_timestamp(feed, callback \\ nil, token \\ nil, results \\ @default_results) do
+  def loop_request_timestamp(
+        feed,
+        callback \\ nil,
+        token \\ nil,
+        results \\ @default_timestamp_results
+      ) do
     request_timestamps(feed, token, callback)
     |> case do
       {:ok,

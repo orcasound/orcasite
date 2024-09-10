@@ -39,6 +39,254 @@ export type Scalars = {
 
 export type AudioCategory = "ANTHROPHONY" | "BIOPHONY" | "GEOPHONY";
 
+export type AudioImage = {
+  __typename?: "AudioImage";
+  audioImageFeedSegments: Array<AudioImageFeedSegment>;
+  bucket?: Maybe<Scalars["String"]["output"]>;
+  bucketRegion?: Maybe<Scalars["String"]["output"]>;
+  endTime: Scalars["DateTime"]["output"];
+  feed: Feed;
+  feedId: Scalars["ID"]["output"];
+  feedSegments: Array<FeedSegment>;
+  id: Scalars["ID"]["output"];
+  imageSize?: Maybe<Scalars["Int"]["output"]>;
+  imageType?: Maybe<ImageType>;
+  objectPath?: Maybe<Scalars["String"]["output"]>;
+  /** Parameters used for generating the image (e.g. n_fft for spectrograms, etc) */
+  parameters?: Maybe<Scalars["Json"]["output"]>;
+  startTime: Scalars["DateTime"]["output"];
+  status: Scalars["String"]["output"];
+};
+
+export type AudioImageAudioImageFeedSegmentsArgs = {
+  filter?: InputMaybe<AudioImageFeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<AudioImageFeedSegmentSortInput>>>;
+};
+
+export type AudioImageFeedSegmentsArgs = {
+  filter?: InputMaybe<FeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedSegmentSortInput>>>;
+};
+
+export type AudioImageFeedSegment = {
+  __typename?: "AudioImageFeedSegment";
+  audioImage?: Maybe<AudioImage>;
+  audioImageId?: Maybe<Scalars["ID"]["output"]>;
+  feedSegment?: Maybe<FeedSegment>;
+  feedSegmentId?: Maybe<Scalars["ID"]["output"]>;
+  id: Scalars["ID"]["output"];
+};
+
+export type AudioImageFeedSegmentFilterAudioImageId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["ID"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type AudioImageFeedSegmentFilterFeedSegmentId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type AudioImageFeedSegmentFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type AudioImageFeedSegmentFilterInput = {
+  and?: InputMaybe<Array<AudioImageFeedSegmentFilterInput>>;
+  audioImage?: InputMaybe<AudioImageFilterInput>;
+  audioImageId?: InputMaybe<AudioImageFeedSegmentFilterAudioImageId>;
+  feedSegment?: InputMaybe<FeedSegmentFilterInput>;
+  feedSegmentId?: InputMaybe<AudioImageFeedSegmentFilterFeedSegmentId>;
+  id?: InputMaybe<AudioImageFeedSegmentFilterId>;
+  not?: InputMaybe<Array<AudioImageFeedSegmentFilterInput>>;
+  or?: InputMaybe<Array<AudioImageFeedSegmentFilterInput>>;
+};
+
+export type AudioImageFeedSegmentSortField =
+  | "AUDIO_IMAGE_ID"
+  | "FEED_SEGMENT_ID"
+  | "ID";
+
+export type AudioImageFeedSegmentSortInput = {
+  field: AudioImageFeedSegmentSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
+export type AudioImageFilterBucket = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type AudioImageFilterBucketRegion = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type AudioImageFilterEndTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type AudioImageFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type AudioImageFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type AudioImageFilterImageSize = {
+  eq?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Int"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Int"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Int"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
+  notEq?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type AudioImageFilterImageType = {
+  eq?: InputMaybe<ImageType>;
+  greaterThan?: InputMaybe<ImageType>;
+  greaterThanOrEqual?: InputMaybe<ImageType>;
+  in?: InputMaybe<Array<InputMaybe<ImageType>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<ImageType>;
+  lessThanOrEqual?: InputMaybe<ImageType>;
+  notEq?: InputMaybe<ImageType>;
+};
+
+export type AudioImageFilterInput = {
+  and?: InputMaybe<Array<AudioImageFilterInput>>;
+  audioImageFeedSegments?: InputMaybe<AudioImageFeedSegmentFilterInput>;
+  bucket?: InputMaybe<AudioImageFilterBucket>;
+  bucketRegion?: InputMaybe<AudioImageFilterBucketRegion>;
+  endTime?: InputMaybe<AudioImageFilterEndTime>;
+  feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<AudioImageFilterFeedId>;
+  feedSegments?: InputMaybe<FeedSegmentFilterInput>;
+  id?: InputMaybe<AudioImageFilterId>;
+  imageSize?: InputMaybe<AudioImageFilterImageSize>;
+  imageType?: InputMaybe<AudioImageFilterImageType>;
+  not?: InputMaybe<Array<AudioImageFilterInput>>;
+  objectPath?: InputMaybe<AudioImageFilterObjectPath>;
+  or?: InputMaybe<Array<AudioImageFilterInput>>;
+  /** Parameters used for generating the image (e.g. n_fft for spectrograms, etc) */
+  parameters?: InputMaybe<AudioImageFilterParameters>;
+  startTime?: InputMaybe<AudioImageFilterStartTime>;
+  status?: InputMaybe<AudioImageFilterStatus>;
+};
+
+export type AudioImageFilterObjectPath = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type AudioImageFilterParameters = {
+  eq?: InputMaybe<Scalars["Json"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Json"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Json"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["Json"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Json"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Json"]["input"]>;
+  notEq?: InputMaybe<Scalars["Json"]["input"]>;
+};
+
+export type AudioImageFilterStartTime = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type AudioImageFilterStatus = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type AudioImageSortField =
+  | "BUCKET"
+  | "BUCKET_REGION"
+  | "END_TIME"
+  | "FEED_ID"
+  | "ID"
+  | "IMAGE_SIZE"
+  | "IMAGE_TYPE"
+  | "OBJECT_PATH"
+  | "PARAMETERS"
+  | "START_TIME"
+  | "STATUS";
+
+export type AudioImageSortInput = {
+  field: AudioImageSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
 export type Bout = {
   __typename?: "Bout";
   category?: Maybe<AudioCategory>;
@@ -438,6 +686,7 @@ export type DetectionSortInput = {
 
 export type Feed = {
   __typename?: "Feed";
+  audioImages: Array<AudioImage>;
   bucket: Scalars["String"]["output"];
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
   cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
@@ -457,6 +706,13 @@ export type Feed = {
   slug: Scalars["String"]["output"];
   thumbUrl?: Maybe<Scalars["String"]["output"]>;
   visible?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
+export type FeedAudioImagesArgs = {
+  filter?: InputMaybe<AudioImageFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<AudioImageSortInput>>>;
 };
 
 export type FeedFeedSegmentsArgs = {
@@ -544,6 +800,7 @@ export type FeedFilterImageUrl = {
 
 export type FeedFilterInput = {
   and?: InputMaybe<Array<FeedFilterInput>>;
+  audioImages?: InputMaybe<AudioImageFilterInput>;
   bucket?: InputMaybe<FeedFilterBucket>;
   bucketRegion?: InputMaybe<FeedFilterBucketRegion>;
   cloudfrontUrl?: InputMaybe<FeedFilterCloudfrontUrl>;
@@ -657,6 +914,8 @@ export type FeedFilterVisible = {
 
 export type FeedSegment = {
   __typename?: "FeedSegment";
+  audioImageFeedSegments: Array<AudioImageFeedSegment>;
+  audioImages: Array<AudioImage>;
   bucket?: Maybe<Scalars["String"]["output"]>;
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
   cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
@@ -678,6 +937,20 @@ export type FeedSegment = {
   /** S3 object path for ts file (e.g. /rpi_orcasound_lab/hls/1541027406/live005.ts) */
   segmentPath?: Maybe<Scalars["String"]["output"]>;
   startTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type FeedSegmentAudioImageFeedSegmentsArgs = {
+  filter?: InputMaybe<AudioImageFeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<AudioImageFeedSegmentSortInput>>>;
+};
+
+export type FeedSegmentAudioImagesArgs = {
+  filter?: InputMaybe<AudioImageFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<AudioImageSortInput>>>;
 };
 
 export type FeedSegmentFilterBucket = {
@@ -768,6 +1041,8 @@ export type FeedSegmentFilterId = {
 
 export type FeedSegmentFilterInput = {
   and?: InputMaybe<Array<FeedSegmentFilterInput>>;
+  audioImageFeedSegments?: InputMaybe<AudioImageFeedSegmentFilterInput>;
+  audioImages?: InputMaybe<AudioImageFilterInput>;
   bucket?: InputMaybe<FeedSegmentFilterBucket>;
   bucketRegion?: InputMaybe<FeedSegmentFilterBucketRegion>;
   cloudfrontUrl?: InputMaybe<FeedSegmentFilterCloudfrontUrl>;
@@ -1066,6 +1341,22 @@ export type FeedStreamSortInput = {
   order?: InputMaybe<SortOrder>;
 };
 
+export type GenerateFeedSpectrogramInput = {
+  endTime: Scalars["DateTime"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+};
+
+/** The result of the :generate_feed_spectrogram mutation */
+export type GenerateFeedSpectrogramResult = {
+  __typename?: "GenerateFeedSpectrogramResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Feed>;
+};
+
+export type ImageType = "SPECTROGRAM";
+
 export type LatLng = {
   __typename?: "LatLng";
   lat: Scalars["Float"]["output"];
@@ -1359,6 +1650,7 @@ export type RootMutationType = {
   cancelCandidateNotifications: CancelCandidateNotificationsResult;
   cancelNotification: CancelNotificationResult;
   createBout: CreateBoutResult;
+  generateFeedSpectrogram: GenerateFeedSpectrogramResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
   notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
   /** Register a new user with a username and password. */
@@ -1378,6 +1670,11 @@ export type RootMutationTypeCancelCandidateNotificationsArgs = {
 
 export type RootMutationTypeCancelNotificationArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type RootMutationTypeGenerateFeedSpectrogramArgs = {
+  id: Scalars["ID"]["input"];
+  input: GenerateFeedSpectrogramInput;
 };
 
 export type RootMutationTypeNotifyConfirmedCandidateArgs = {

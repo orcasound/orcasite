@@ -28,8 +28,8 @@ defmodule Orcasite.Radio.FeedStream do
   attributes do
     uuid_attribute :id, prefix: "fdstrm", public?: true
 
-    attribute :start_time, :utc_datetime, public?: true
-    attribute :end_time, :utc_datetime, public?: true
+    attribute :start_time, :utc_datetime_usec, public?: true
+    attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
 
     attribute :bucket, :string, public?: true

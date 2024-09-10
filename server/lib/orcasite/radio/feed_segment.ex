@@ -28,8 +28,8 @@ defmodule Orcasite.Radio.FeedSegment do
   attributes do
     uuid_attribute :id, prefix: "fdseg", public?: true
 
-    attribute :start_time, :utc_datetime, public?: true
-    attribute :end_time, :utc_datetime, public?: true
+    attribute :start_time, :utc_datetime_usec, public?: true
+    attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
 
     attribute :bucket, :string, public?: true
@@ -48,6 +48,7 @@ defmodule Orcasite.Radio.FeedSegment do
 
     attribute :playlist_m3u8_path, :string do
       public? true
+
       description "S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8)"
     end
 
@@ -69,6 +70,15 @@ defmodule Orcasite.Radio.FeedSegment do
   relationships do
     belongs_to :feed, Orcasite.Radio.Feed, public?: true
     belongs_to :feed_stream, Orcasite.Radio.FeedStream, public?: true
+
+    has_many :audio_image_feed_segments, Orcasite.Radio.AudioImageFeedSegment do
+      public? true
+    end
+
+    many_to_many :audio_images, Orcasite.Radio.AudioImage do
+      through Orcasite.Radio.AudioImageFeedSegment
+      public? true
+    end
   end
 
   actions do
@@ -91,6 +101,28 @@ defmodule Orcasite.Radio.FeedSegment do
                    do: feed_stream_id == ^arg(:feed_stream_id),
                    else: true
                  )
+             )
+    end
+
+    read :for_feed_range do
+      argument :start_time, :utc_datetime_usec, allow_nil?: false
+      argument :end_time, :utc_datetime_usec, allow_nil?: false
+      argument :feed_id, :string, allow_nil?: false
+
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 (fragment(
+                    "(?) between (?) and (?)",
+                    start_time,
+                    ^arg(:start_time),
+                    ^arg(:end_time)
+                  ) or
+                    fragment(
+                      "(?) between (?) and (?)",
+                      end_time,
+                      ^arg(:start_time),
+                      ^arg(:end_time)
+                    ))
              )
     end
 
@@ -122,7 +154,7 @@ defmodule Orcasite.Radio.FeedSegment do
         :playlist_timestamp,
         :playlist_m3u8_path,
         :playlist_path,
-        :file_name,
+        :file_name
       ]
 
       argument :feed, :map, allow_nil?: false
