@@ -129,7 +129,7 @@ defmodule Orcasite.Radio.AudioImage do
 
                  date_string = record.start_time |> DateTime.to_date() |> to_string()
 
-                 # Convert to string like: ""2024-09-10_17-41-53Z"
+                 # Convert to string like: "2024-09-10_17-41-53Z"
                  start_time_string =
                    record.start_time
                    |> DateTime.truncate(:second)
