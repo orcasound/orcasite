@@ -24,7 +24,7 @@ export function DetectionsPlayer({
   endOffset,
   onAudioPlay,
 }: {
-  feed: Pick<Feed, "nodeName">;
+  feed: Pick<Feed, "nodeName" | "bucket">;
   marks: { label: string; value: number }[];
   timestamp: number;
   startOffset: number;
@@ -38,7 +38,7 @@ export function DetectionsPlayer({
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
 
-  const hlsURI = getHlsURI(feed.nodeName, timestamp);
+  const hlsURI = getHlsURI(feed.bucket, feed.nodeName, timestamp);
 
   const playerOptions = useMemo(
     () => ({

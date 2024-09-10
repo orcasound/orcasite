@@ -11,6 +11,7 @@ import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ReactElement, ReactNode, useState } from "react";
+import React from "react";
 import ReactGA from "react-ga4";
 
 import theme from "@/styles/theme";
@@ -27,6 +28,13 @@ type AppPropsWithLayout = AppProps & {
 if (GA_TRACKING_ID) {
   ReactGA.initialize(GA_TRACKING_ID);
 }
+
+// From https://tanstack.com/query/latest/docs/framework/react/devtools#modern-bundlers
+const ReactQueryDevtoolsProd = React.lazy(() =>
+  import("@tanstack/react-query-devtools/production").then((d) => ({
+    default: d.ReactQueryDevtools,
+  })),
+);
 
 // App needs to be customized in order to make MUI work with SSR
 // https://mui.com/material-ui/integrations/nextjs/#pages-router
@@ -51,6 +59,16 @@ export default function MyApp(props: AppPropsWithLayout) {
       }),
   );
 
+  // From https://tanstack.com/query/latest/docs/framework/react/devtools#devtools-in-production
+  const [showReactQueryDevtoolsProd, setShowReactQueryDevtoolsProd] =
+    React.useState(false);
+
+  React.useEffect(() => {
+    // @ts-expect-error toggleQueryDevtools doesn't exist on window
+    window.toggleQueryDevtools = () =>
+      setShowReactQueryDevtoolsProd((old) => !old);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <HydrationBoundary state={pageProps.dehydratedState}>
@@ -68,6 +86,11 @@ export default function MyApp(props: AppPropsWithLayout) {
           </ThemeProvider>
         </AppCacheProvider>
       </HydrationBoundary>
+      {showReactQueryDevtoolsProd && (
+        <React.Suspense fallback={null}>
+          <ReactQueryDevtoolsProd />
+        </React.Suspense>
+      )}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

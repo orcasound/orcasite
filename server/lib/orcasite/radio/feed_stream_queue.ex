@@ -48,7 +48,8 @@ defmodule Orcasite.Radio.FeedStreamQueue do
         end
       end)
       |> Enum.flat_map(fn %{"s3" => %{"object" => %{"key" => object_path}}} ->
-        if String.ends_with?(object_path, ".m3u8") do
+        if String.ends_with?(object_path, ".m3u8") and
+             select_recent_timestamp(object_path, ~U[2024-09-09 00:00:00Z]) do
           [%{m3u8_path: object_path}]
         else
           []
@@ -70,5 +71,23 @@ defmodule Orcasite.Radio.FeedStreamQueue do
     end)
 
     messages
+  end
+
+  def select_recent_timestamp(object_path, after_date) do
+    with {:path, %{"timestamp" => timestamp}} <-
+           {:path,
+            Regex.named_captures(
+              ~r|(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/live.m3u8|,
+              object_path
+            )},
+         timestamp_time =
+           timestamp
+           |> String.to_integer()
+           |> DateTime.from_unix!(),
+         :gt <- DateTime.compare(timestamp_time, after_date) do
+      true
+    else
+      _ -> false
+    end
   end
 end
