@@ -46,7 +46,10 @@ defmodule Orcasite.Radio.AwsClient do
               %{},
               invocation_type: :request_response
             )
-            |> ExAws.request(timeout: :timer.minutes(2))
+            |> ExAws.request(
+              http_opts: [recv_timeout: :timer.minutes(2)],
+              retries: [max_attempts: 1]
+            )
             |> case do
               {:ok, %{"image_size" => image_size, "sample_rate" => sample_rate}} ->
                 {:ok, %{file_size: image_size, sample_rate: sample_rate}}
