@@ -86,8 +86,18 @@ defmodule Orcasite.Radio.AudioImage do
       end
 
       change set_attribute(:image_type, arg(:image_type))
-      change set_attribute(:bucket, "dev-audio-viz")
-      change set_attribute(:bucket_region, "us-west-2")
+
+      change fn change, _context ->
+        change
+        |> Ash.Changeset.change_attribute(
+          :bucket,
+          Application.fetch_env!(:orcasite, :audio_image_bucket)
+        )
+        |> Ash.Changeset.change_attribute(
+          :bucket_region,
+          Application.fetch_env!(:orcasite, :audio_image_bucket_region)
+        )
+      end
 
       change before_action(fn change, _context ->
                feed_segment_id = Ash.Changeset.get_argument(change, :feed_segment_id)
