@@ -35,7 +35,7 @@ defmodule Orcasite.Radio.Feed do
     attribute :intro_html, :string, default: "", public?: true
     attribute :image_url, :string, default: "", public?: true
     attribute :visible, :boolean, default: true, public?: true
-    attribute :bucket, :string, public?: true
+    attribute :bucket, :string, public?: true, allow_nil?: false
     attribute :bucket_region, :string, public?: true
     attribute :cloudfront_url, :string, public?: true
     attribute :dataplicity_id, :string, public?: true

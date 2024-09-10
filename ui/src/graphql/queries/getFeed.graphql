@@ -12,5 +12,6 @@ query feed($slug: String!) {
     thumbUrl
     imageUrl
     mapUrl
+    bucket
   }
 }

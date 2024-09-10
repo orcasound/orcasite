@@ -11,6 +11,7 @@ query candidate($id: ID!) {
       slug
       name
       nodeName
+      bucket
     }
     detections {
       id

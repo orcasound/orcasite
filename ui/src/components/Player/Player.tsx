@@ -33,13 +33,23 @@ export default function Player({
 }: {
   currentFeed?: Pick<
     Feed,
-    "id" | "slug" | "nodeName" | "name" | "latLng" | "imageUrl" | "thumbUrl"
+    | "id"
+    | "slug"
+    | "nodeName"
+    | "name"
+    | "latLng"
+    | "imageUrl"
+    | "thumbUrl"
+    | "bucket"
   >;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
-  const { timestamp, hlsURI } = useTimestampFetcher(currentFeed?.nodeName);
+  const { timestamp, hlsURI } = useTimestampFetcher(
+    currentFeed?.bucket,
+    currentFeed?.nodeName,
+  );
 
   const feedPresence = useFeedPresence(currentFeed?.slug);
   const listenerCount = feedPresence?.metas.length ?? 0;
