@@ -79,6 +79,9 @@ defmodule Orcasite.Radio.AudioImage do
     defaults [:read, :destroy, create: :*, update: :*]
 
     create :for_feed_segment do
+      upsert? true
+      upsert_identity :unique_audio_image
+
       argument :feed_segment_id, :string, allow_nil?: false
 
       argument :image_type, Orcasite.Types.ImageType do

@@ -15,6 +15,10 @@ defmodule Orcasite.Radio.AudioImageFeedSegment do
     end
   end
 
+  identities do
+    identity :unique_audio_image, [:feed_segment_id, :audio_image_id]
+  end
+
   attributes do
     uuid_primary_key :id
 
@@ -27,7 +31,14 @@ defmodule Orcasite.Radio.AudioImageFeedSegment do
   end
 
   actions do
-    defaults [:read, :destroy, create: :*, update: :*]
+    defaults [:read, :destroy, update: :*]
+
+    create :create do
+      primary? true
+      accept :*
+      upsert? true
+      upsert_identity :unique_audio_image
+    end
   end
 
   graphql do
