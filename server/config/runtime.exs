@@ -17,10 +17,6 @@ import Config
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
 
-config :orcasite,
-  audio_image_bucket: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "audio-deriv-orcasound-net"),
-  audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
-
 if System.get_env("PHX_SERVER") do
   config :orcasite, OrcasiteWeb.Endpoint, server: true
 end
@@ -91,4 +87,9 @@ if config_env() == :prod do
   end
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
+
+  config :orcasite,
+    audio_image_bucket:
+      System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "audio-deriv-orcasound-net"),
+    audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
 end

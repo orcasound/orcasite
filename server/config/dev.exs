@@ -109,3 +109,7 @@ config :ex_aws,
     :instance_role
   ],
   region: "us-west-2"
+
+config :orcasite,
+  audio_image_bucket: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "dev-audio-viz"),
+  audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
