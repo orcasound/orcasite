@@ -102,6 +102,10 @@ defmodule Orcasite.Radio.Feed do
     bypass action_type(:read) do
       authorize_if always()
     end
+
+    policy action(:generate_spectrogram) do
+      authorize_if actor_attribute_equals(:moderator, true)
+    end
   end
 
   actions do
@@ -241,6 +245,10 @@ defmodule Orcasite.Radio.Feed do
     queries do
       read_one :feed, :get_by_slug, allow_nil?: false
       list :feeds, :public
+    end
+
+    mutations do
+      update :generate_feed_spectrogram, :generate_spectrogram
     end
   end
 
