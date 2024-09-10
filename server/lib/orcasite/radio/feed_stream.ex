@@ -48,6 +48,7 @@ defmodule Orcasite.Radio.FeedStream do
 
     attribute :playlist_m3u8_path, :string do
       public? true
+
       description "S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8)"
     end
 
@@ -103,6 +104,7 @@ defmodule Orcasite.Radio.FeedStream do
       argument :playlist_path, :string
       argument :update_segments?, :boolean, default: false
       argument :link_streams?, :boolean, default: false
+      argument :bucket, :string
 
       change fn changeset, _context ->
         path =
@@ -145,12 +147,15 @@ defmodule Orcasite.Radio.FeedStream do
             changeset
             |> Ash.Changeset.get_argument_or_attribute(:playlist_timestamp)
 
+          bucket_arg = Ash.Changeset.get_argument(changeset, :bucket)
+
           feed
-          |> Map.take([:bucket, :bucket_region, :cloudfront_url])
+          |> Map.take([:bucket_region, :cloudfront_url])
           |> Enum.reduce(changeset, fn {attribute, value}, acc ->
             acc
             |> Ash.Changeset.change_new_attribute(attribute, value)
           end)
+          |> Ash.Changeset.change_new_attribute(:bucket, bucket_arg || feed.bucket)
           |> Ash.Changeset.change_new_attribute(
             :start_time,
             playlist_timestamp

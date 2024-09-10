@@ -47,10 +47,15 @@ defmodule Orcasite.Radio.FeedStreamQueue do
             []
         end
       end)
-      |> Enum.flat_map(fn %{"s3" => %{"object" => %{"key" => object_path}}} ->
+      |> Enum.flat_map(fn %{
+                            "s3" => %{
+                              "object" => %{"key" => object_path},
+                              "bucket" => %{"name" => bucket}
+                            }
+                          } ->
         if String.ends_with?(object_path, ".m3u8") and
              select_recent_timestamp(object_path, ~U[2024-09-09 00:00:00Z]) do
-          [%{m3u8_path: object_path}]
+          [%{m3u8_path: object_path, bucket: bucket}]
         else
           []
         end
