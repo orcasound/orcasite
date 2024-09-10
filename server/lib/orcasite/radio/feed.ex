@@ -204,6 +204,7 @@ defmodule Orcasite.Radio.Feed do
 
                change
                |> Ash.Changeset.manage_relationship(:audio_images, audio_image_inputs,
+                 on_lookup: :ignore,
                  on_no_match: {:create, :for_feed_segment},
                  on_match: :ignore
                )
