@@ -58,12 +58,12 @@
     "@types/video.js": "^7.3.58",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.2.5",
+    "eslint-config-next": "14.2.11",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-unused-imports": "^3.2.0",
-    "husky": "^9.1.4",
-    "lint-staged": "^15.2.9",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "prettier": "3.3.3",
     "typescript": "5.5.4"
   }
