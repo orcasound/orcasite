@@ -42,7 +42,7 @@ export default function DetectionsTable({
   onDetectionUpdate,
 }: {
   detections: Detection[];
-  feed: Pick<Feed, "slug" | "nodeName" | "bucket">;
+  feed: Pick<Feed, "slug" | "nodeName" | "bucket" | "cloudfrontUrl">;
   candidate: Pick<Candidate, "id" | "visible">;
   onDetectionUpdate: () => void;
 }) {

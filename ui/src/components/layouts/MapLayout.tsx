@@ -22,8 +22,10 @@ const feedFromSlug = (feedSlug: string) => ({
   name: feedSlug,
   slug: feedSlug,
   nodeName: feedSlug,
-  // TODO: pass in bucket from dynamic feed instead of env/hardcoding
+  // TODO: pass in bucket and cloudfront from dynamic feed instead of env/hardcoding
   bucket: process.env.NEXT_PUBLIC_S3_BUCKET ?? "audio-orcasound-net",
+  cloudfrontUrl:
+    process.env.NEXT_PUBLIC_AUDIO_BASE_URL ?? "audio.orcasound.net",
   // TODO: figure out which coordinates to use for dynamic feeds
   latLng: { lat: 47.6, lng: -122.3 },
 });
