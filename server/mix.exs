@@ -83,7 +83,7 @@ defmodule Orcasite.Mixfile do
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
       {:gen_smtp, "~> 1.0"},
-      {:ash_authentication, "~> 4.0.1"},
+      {:ash_authentication, "~> 4.1.0"},
       {:ash_authentication_phoenix, "~> 2.0"},
       {:syn, "~> 3.3"},
       {:mjml, "~> 3.0.1"},
