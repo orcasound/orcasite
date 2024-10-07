@@ -13,5 +13,6 @@ query feed($slug: String!) {
     imageUrl
     mapUrl
     bucket
+    cloudfrontUrl
   }
 }

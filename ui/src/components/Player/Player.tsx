@@ -15,6 +15,7 @@ import {
 } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 import { useIsRelativeOverflow } from "@/utils/layout";
+import { getAudioBaseUrlFromBucket } from "@/utils/urls";
 
 import { TitlePopover } from "../TitlePopover";
 import DetectionButton from "./DetectionButton";
@@ -41,13 +42,18 @@ export default function Player({
     | "imageUrl"
     | "thumbUrl"
     | "bucket"
+    | "cloudfrontUrl"
   >;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
-  const { timestamp, hlsURI } = useTimestampFetcher(
-    currentFeed?.bucket,
+  const audioBaseUrl =
+    currentFeed?.cloudfrontUrl ??
+    (currentFeed?.bucket && getAudioBaseUrlFromBucket(currentFeed.bucket));
+
+  const { timestamp, hlsUrl } = useTimestampFetcher(
+    audioBaseUrl,
     currentFeed?.nodeName,
   );
 
@@ -91,17 +97,17 @@ export default function Player({
       sources: currentFeed?.nodeName
         ? [
             {
-              // If hlsURI isn't set, use a dummy URI to trigger an error
-              // The dummy URI doesn't actually exist, it should return 404
+              // If hlsUrl isn't set, use a dummy URL to trigger an error
+              // The dummy URL doesn't actually exist, it should return 404
               // This is the only way to get videojs to throw an error, otherwise
               // it just won't initialize (if src is undefined/null/empty))
-              src: hlsURI ?? `${currentFeed?.nodeName}/404`,
+              src: hlsUrl ?? `${currentFeed?.nodeName}/404`,
               type: "application/x-mpegurl",
             },
           ]
         : [],
     }),
-    [hlsURI, currentFeed?.nodeName, currentFeed?.imageUrl],
+    [hlsUrl, currentFeed?.nodeName, currentFeed?.imageUrl],
   );
 
   const updateMediaSession = useCallback(
@@ -161,14 +167,14 @@ export default function Player({
   };
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "development" && hlsURI) {
-      console.log(`New stream instance: ${hlsURI}`);
+    if (process.env.NODE_ENV === "development" && hlsUrl) {
+      console.log(`New stream instance: ${hlsUrl}`);
     }
 
     return () => {
       setPlayerStatus("idle");
     };
-  }, [hlsURI, currentFeed?.nodeName]);
+  }, [hlsUrl, currentFeed?.nodeName]);
 
   return (
     <Box

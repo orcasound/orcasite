@@ -13,53 +13,75 @@
 require Ash.Query
 
 feeds = [
-  # %{
-  #   lat_lng_string: "48.5583362, -123.1735774",
-  #   name: "Orcasound Lab (Haro Strait)",
-  #   node_name: "rpi_orcasound_lab",
-  #   slug: "orcasound-lab",
-  #   bucket: "dev-streaming-orcasound-net",
-  #   bucket_region: "us-west-2",
-  # },
+  %{
+    lat_lng_string: "48.5583362, -123.1735774",
+    name: "Orcasound Lab",
+    node_name: "rpi_orcasound_lab",
+    slug: "orcasound-lab",
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+    cloudfront_url: "https://audio.orcasound.net",
+    image_url: "https://s3-us-west-2.amazonaws.com/orcasite/rpi_orcasound_lab/thumbnail.png"
+   },
   %{
     lat_lng_string: "47.34922, -122.32512",
     name: "MaST Center Aquarium",
     node_name: "rpi_mast_center",
     slug: "mast-center",
-    bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2"
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+    cloudfront_url: "https://audio.orcasound.net",
+    image_url: "https://s3-us-west-2.amazonaws.com/orcasite/rpi_mast_center/thumbnail.png"
   },
-  # %{
-  #   lat_lng_string: "48.0336664, -122.6040035",
-  #   name: "Bush Point",
-  #   node_name: "rpi_bush_point",
-  #   slug: "bush-point",
-  #   bucket: "dev-streaming-orcasound-net",
-  #   bucket_region: "us-west-2",
-  # },
-  # %{
-  #   lat_lng_string: "48.135743, -122.760614",
-  #   name: "Port Townsend",
-  #   node_name: "rpi_port_townsend",
-  #   slug: "port-townsend",
-  #   bucket: "dev-streaming-orcasound-net",
-  #   bucket_region: "us-west-2",
-  # },
+  %{
+    lat_lng_string: "48.0336664, -122.6040035",
+    name: "Bush Point",
+    node_name: "rpi_bush_point",
+    slug: "bush-point",
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+    cloudfront_url: "https://audio.orcasound.net",
+    image_url: "https://s3-us-west-2.amazonaws.com/orcasite/rpi_bush_point/thumbnail.png"
+  },
+  %{
+    lat_lng_string: "48.135743, -122.760614",
+    name: "Port Townsend",
+    node_name: "rpi_port_townsend",
+    slug: "port-townsend",
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+    cloudfront_url: "https://audio.orcasound.net",
+    image_url: "https://s3-us-west-2.amazonaws.com/orcasite/rpi_port_townsend/thumbnail.png"
+  },
   %{
     lat_lng_string: "47.86497296593844, -122.33393605795372",
     name: "Sunset Bay",
     node_name: "rpi_sunset_bay",
     slug: "sunset-bay",
-    bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2"
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+    cloudfront_url: "https://audio.orcasound.net",
+    image_url: "https://s3-us-west-2.amazonaws.com/orcasite/rpi_sunset_bay/thumbnail.png"
   },
   %{
     lat_lng_string: "48.591294, -123.058779",
     name: "North San Juan Channel",
     node_name: "rpi_north_sjc",
     slug: "north-sjc",
-    bucket: "dev-streaming-orcasound-net",
-    bucket_region: "us-west-2"
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+    cloudfront_url: "https://audio.orcasound.net",
+    image_url: "https://s3-us-west-2.amazonaws.com/orcasite/rpi_north_sjc/thumbnail.png"
+  },
+  %{
+    lat_lng_string: "47.388383, -122.37267",
+    name: "Point Robinson",
+    node_name: "rpi_point_robinson",
+    slug: "point-robinson",
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+    cloudfront_url: "https://audio.orcasound.net",
+    image_url: "https://s3-us-west-2.amazonaws.com/orcasite/rpi_point_robinson/thumbnail.png"
   }
 ]
 

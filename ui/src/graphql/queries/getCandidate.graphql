@@ -12,6 +12,7 @@ query candidate($id: ID!) {
       name
       nodeName
       bucket
+      cloudfrontUrl
     }
     detections {
       id

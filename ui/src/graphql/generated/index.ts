@@ -2206,6 +2206,7 @@ export type CandidateQuery = {
       name: string;
       nodeName: string;
       bucket: string;
+      cloudfrontUrl?: string | null;
     };
     detections: Array<{
       __typename?: "Detection";
@@ -2254,6 +2255,7 @@ export type FeedQuery = {
     imageUrl?: string | null;
     mapUrl?: string | null;
     bucket: string;
+    cloudfrontUrl?: string | null;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
   };
 };
@@ -2923,6 +2925,7 @@ export const CandidateDocument = `
       name
       nodeName
       bucket
+      cloudfrontUrl
     }
     detections {
       id
@@ -3041,6 +3044,7 @@ export const FeedDocument = `
     imageUrl
     mapUrl
     bucket
+    cloudfrontUrl
   }
 }
     `;

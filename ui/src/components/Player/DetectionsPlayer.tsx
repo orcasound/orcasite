@@ -5,8 +5,12 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Feed } from "@/graphql/generated";
-import { getHlsURI } from "@/hooks/useTimestampFetcher";
 import { mobileOnly } from "@/styles/responsive";
+import {
+  getAudioBaseUrlFromBucket,
+  getHlsUrl,
+  getNodeRootUrl,
+} from "@/utils/urls";
 
 import { type PlayerStatus } from "./Player";
 import PlayPauseButton from "./PlayPauseButton";
@@ -24,7 +28,7 @@ export function DetectionsPlayer({
   endOffset,
   onAudioPlay,
 }: {
-  feed: Pick<Feed, "nodeName" | "bucket">;
+  feed: Pick<Feed, "nodeName" | "bucket" | "cloudfrontUrl">;
   marks: { label: string; value: number }[];
   timestamp: number;
   startOffset: number;
@@ -38,7 +42,10 @@ export function DetectionsPlayer({
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
 
-  const hlsURI = getHlsURI(feed.bucket, feed.nodeName, timestamp);
+  const audioBaseUrl =
+    feed.cloudfrontUrl ?? getAudioBaseUrlFromBucket(feed.bucket);
+  const nodeRootUrl = getNodeRootUrl(audioBaseUrl, feed.nodeName);
+  const hlsUrl = getHlsUrl(nodeRootUrl, timestamp);
 
   const playerOptions = useMemo(
     () => ({
@@ -55,16 +62,16 @@ export function DetectionsPlayer({
       },
       sources: [
         {
-          // If hlsURI isn't set, use a dummy URI to trigger an error
-          // The dummy URI doesn't actually exist, it should return 404
+          // If hlsUrl isn't set, use a dummy URL to trigger an error
+          // The dummy URL doesn't actually exist, it should return 404
           // This is the only way to get videojs to throw an error, otherwise
           // it just won't initialize (if src is undefined/null/empty))
-          src: hlsURI ?? `${feed.nodeName}/404`,
+          src: hlsUrl ?? `${feed.nodeName}/404`,
           type: "application/x-mpegurl",
         },
       ],
     }),
-    [hlsURI, feed?.nodeName],
+    [hlsUrl, feed?.nodeName],
   );
 
   const handleReady = useCallback(
@@ -127,14 +134,14 @@ export function DetectionsPlayer({
   };
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "development" && hlsURI) {
-      console.log(`New stream instance: ${hlsURI}`);
+    if (process.env.NODE_ENV === "development" && hlsUrl) {
+      console.log(`New stream instance: ${hlsUrl}`);
     }
 
     return () => {
       setPlayerStatus("idle");
     };
-  }, [hlsURI, feed.nodeName]);
+  }, [hlsUrl, feed.nodeName]);
 
   const handleSliderChange = (
     _e: Event,
