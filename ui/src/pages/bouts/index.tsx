@@ -1,7 +1,12 @@
+import { List, ListItem, Typography } from "@mui/material";
 import Head from "next/head";
 
 import { getReportsLayout } from "@/components/layouts/ReportsLayout";
-import { useFeedsQuery, useGetCurrentUserQuery } from "@/graphql/generated";
+import {
+  useDetectionsQuery,
+  useFeedsQuery,
+  useGetCurrentUserQuery,
+} from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const BoutsPage: NextPageWithLayout = () => {
@@ -11,6 +16,8 @@ const BoutsPage: NextPageWithLayout = () => {
   const feeds =
     useFeedsQuery({ sort: [{ field: "NAME", order: "ASC" }] }).data?.feeds ??
     [];
+
+  const recentDetections = useDetectionsQuery().data?.detections ?? [];
 
   return (
     <div>
@@ -23,14 +30,13 @@ const BoutsPage: NextPageWithLayout = () => {
         <p>Ongoing bouts (ones without an end time)</p>
 
         <h2>Feeds</h2>
-        <p>
-          For each feed, show recent detections/candidates. Button to create a
-          new bout for feed.
-        </p>
-        {JSON.stringify(feeds)}
-
-        <h2>Past bouts</h2>
-        <p>Filterable by feed, tag</p>
+        <List>
+          {feeds.map((feed, i) => (
+            <ListItem key={i}>
+              <Typography>{feed.name}</Typography>
+            </ListItem>
+          ))}
+        </List>
       </main>
     </div>
   );

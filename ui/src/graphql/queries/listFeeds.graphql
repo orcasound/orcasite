@@ -11,5 +11,6 @@ query feeds($sort: [FeedSortInput]) {
     imageUrl
     thumbUrl
     mapUrl
+    bucket
   }
 }
