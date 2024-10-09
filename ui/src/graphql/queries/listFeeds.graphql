@@ -1,5 +1,5 @@
-query feeds {
-  feeds {
+query feeds($sort: [FeedSortInput]) {
+  feeds(sort: $sort) {
     id
     name
     slug
