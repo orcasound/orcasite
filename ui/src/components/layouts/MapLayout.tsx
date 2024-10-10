@@ -4,7 +4,7 @@ import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ReactElement, ReactNode, useEffect, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
@@ -44,6 +44,11 @@ function MapLayout({ children }: { children: ReactNode }) {
   const [currentFeed, setCurrentFeed] = useState(feed);
   const [map, setMap] = useState<LeafletMap>();
   const feeds = useFeedsQuery().data?.feeds ?? [];
+  const feedsResult = useMemo(
+    () => feeds.filter(({ online }) => online),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [feeds.length],
+  );
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
@@ -52,7 +57,10 @@ function MapLayout({ children }: { children: ReactNode }) {
       map?.setZoom(9);
       map?.panTo(feed.latLng);
     }
-  }, [feed, map, currentFeed]);
+    if (!feed && !currentFeed && feedsResult.length > 0) {
+      setCurrentFeed(feedsResult[0]);
+    }
+  }, [feed, map, currentFeed, feedsResult]);
 
   const invalidateSize = () => {
     if (map) {
