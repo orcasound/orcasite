@@ -102,6 +102,11 @@ defmodule Orcasite.Notifications.Subscription do
   actions do
     defaults [:destroy, :read, create: :*]
 
+    read :by_email do
+      argument :email, :string
+      filter expr(meta[:email] == ^arg(:email))
+    end
+
     read :available_for_notification do
       description """
       Subscriptions that can be sent a notification. Finds subscriptions that haven't been sent a
@@ -176,6 +181,10 @@ defmodule Orcasite.Notifications.Subscription do
       change manage_relationship(:last_notification, type: :append)
       change set_attribute(:last_notified_at, &DateTime.utc_now/0)
     end
+
+    update :unsubscribe do
+      change set_attribute(:active, false)
+    end
   end
 
   def unsubscribe_token(subscription) do
@@ -186,7 +195,7 @@ defmodule Orcasite.Notifications.Subscription do
 
   admin do
     table_columns [:id, :name, :meta, :active, :event_type, :subscriber_id, :inserted_at]
-    read_actions [:read, :available_for_notification]
+    read_actions [:read, :available_for_notification, :by_email]
     format_fields meta: {Jason, :encode!, []}
   end
 end
