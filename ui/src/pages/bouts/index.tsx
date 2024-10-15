@@ -1,6 +1,7 @@
-import { List, ListItem, Typography } from "@mui/material";
+import { List, ListItem } from "@mui/material";
 import Head from "next/head";
 
+import FeedItem from "@/components/Bouts/FeedItem";
 import { getReportsLayout } from "@/components/layouts/ReportsLayout";
 import {
   useDetectionsQuery,
@@ -33,7 +34,7 @@ const BoutsPage: NextPageWithLayout = () => {
         <List>
           {feeds.map((feed, i) => (
             <ListItem key={i}>
-              <Typography>{feed.name}</Typography>
+              <FeedItem feed={feed} />
             </ListItem>
           ))}
         </List>
