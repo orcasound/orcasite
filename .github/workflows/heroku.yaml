@@ -22,7 +22,7 @@ jobs:
           egress-policy: audit
 
       # Forward deployment's status to the deployed commit.
-      - uses: octokit/request-action@872c5c97b3c85c23516a572f02b31401ef82415d # v2.3.1
+      - uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -58,7 +58,7 @@ jobs:
           retry-delay: 30s
         continue-on-error: true
       # Set appropriate status to the deployed commit.
-      - uses: octokit/request-action@872c5c97b3c85c23516a572f02b31401ef82415d # v2.3.1
+      - uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
