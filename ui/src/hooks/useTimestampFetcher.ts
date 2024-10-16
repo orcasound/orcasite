@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react";
 
-if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
-  throw new Error("NEXT_PUBLIC_S3_BUCKET is not set");
-}
-
-const getBucketBase = (bucket: string) => `https://${bucket}.s3.amazonaws.com`;
-
-const getTimestampURI = (bucket: string, nodeName: string) =>
-  `${getBucketBase(bucket)}/${nodeName}/latest.txt`;
-
-export const getHlsURI = (
-  bucket: string,
-  nodeName: string,
-  timestamp: number,
-) => `${getBucketBase(bucket)}/${nodeName}/hls/${timestamp}/live.m3u8`;
+import { getHlsUrl, getLatestTimestampUrl, getNodeRootUrl } from "@/utils/urls";
 
 /**
  * @typedef {Object} TimestampFetcherOptions
@@ -24,41 +11,39 @@ export const getHlsURI = (
 /**
  * @typedef {Object} TimestampFetcherResult
  * @property {number} timestamp The latest timestamp
- * @property {string} hlsURI The URI to the latest HLS stream
- * @property {string} awsConsoleURI The URI to the AWS console for the latest HLS stream
+ * @property {string} hlsUrl The URL to the latest HLS stream
  */
 
 /**
  * Starts a timer that fetches the latest timestamp from a feed
- * @param {string} bucket The bucket name of the node
- * @param {string} nodeName The name of the feed to fetch from, as defined in the S3 bucket
+ * @param {string} audioBaseUrl The base URL for the audio feed
+ * @param {string} nodeName The name of the feed to fetch from
  * @param {TimestampFetcherOptions} options Callbacks for when the fetcher starts and stops
- * @returns {TimestampFetcherResult} The latest timestamp, HLS URI, and AWS console URI
+ * @returns {TimestampFetcherResult} The latest timestamp and HLS URL
  */
 export function useTimestampFetcher(
-  bucket?: string,
+  audioBaseUrl?: string,
   nodeName?: string,
   { onStart, onStop }: { onStart?: () => void; onStop?: () => void } = {},
 ) {
   const [timestamp, setTimestamp] = useState<number>();
 
-  const hlsURI =
-    nodeName && bucket && timestamp
-      ? getHlsURI(bucket, nodeName, timestamp)
+  const nodeRootUrl =
+    audioBaseUrl && nodeName
+      ? getNodeRootUrl(audioBaseUrl, nodeName)
       : undefined;
-  const awsConsoleURI =
-    nodeName && bucket && timestamp
-      ? `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${nodeName}/hls/${timestamp}/`
-      : undefined;
+
+  const hlsUrl =
+    nodeRootUrl && timestamp ? getHlsUrl(nodeRootUrl, timestamp) : undefined;
 
   useEffect(() => {
     let currentXhr: XMLHttpRequest | undefined;
     let intervalId: NodeJS.Timeout | undefined;
 
-    const fetchTimestamp = (timestampURI: string) => {
+    const fetchTimestamp = (timestampUrl: string) => {
       const xhr = new XMLHttpRequest();
       currentXhr = xhr;
-      xhr.open("GET", timestampURI);
+      xhr.open("GET", timestampUrl);
       xhr.onload = () => {
         if (xhr.status === 200) {
           const newTimestamp = Number(xhr.responseText.trim());
@@ -71,13 +56,13 @@ export function useTimestampFetcher(
     };
 
     const startFetcher = () => {
-      if (!nodeName || !bucket) return;
-      const timestampURI = getTimestampURI(bucket, nodeName);
+      if (!nodeRootUrl) return;
+      const timestampUrl = getLatestTimestampUrl(nodeRootUrl);
 
       onStart?.();
-      fetchTimestamp(timestampURI);
+      fetchTimestamp(timestampUrl);
       const newIntervalId = setInterval(
-        () => fetchTimestamp(timestampURI),
+        () => fetchTimestamp(timestampUrl),
         10000,
       );
       intervalId = newIntervalId;
@@ -94,7 +79,7 @@ export function useTimestampFetcher(
       stopFetcher();
       onStop?.();
     };
-  }, [nodeName, onStart, onStop, bucket]);
+  }, [nodeRootUrl, onStart, onStop]);
 
-  return { timestamp, hlsURI, awsConsoleURI };
+  return { timestamp, hlsUrl };
 }

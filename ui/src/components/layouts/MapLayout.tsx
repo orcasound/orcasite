@@ -22,8 +22,10 @@ const feedFromSlug = (feedSlug: string) => ({
   name: feedSlug,
   slug: feedSlug,
   nodeName: feedSlug,
-  // TODO: pass in bucket from dynamic feed instead of env/hardcoding
+  // TODO: pass in bucket and cloudfront from dynamic feed instead of env/hardcoding
   bucket: process.env.NEXT_PUBLIC_S3_BUCKET ?? "audio-orcasound-net",
+  cloudfrontUrl:
+    process.env.NEXT_PUBLIC_AUDIO_BASE_URL ?? "audio.orcasound.net",
   // TODO: figure out which coordinates to use for dynamic feeds
   latLng: { lat: 47.6, lng: -122.3 },
 });
@@ -31,19 +33,23 @@ const feedFromSlug = (feedSlug: string) => ({
 function MapLayout({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const router = useRouter();
-  const slug = router.query.feed as string;
+  const slugFromQuery = router.query.feed as string;
+
+  const feeds = useFeedsQuery().data?.feeds ?? [];
+  // find the slug in the list of feeds to sanitize user provided query and prevent request forgery
+  const slug = feeds.find((feed) => feed.slug === slugFromQuery)?.slug;
 
   const isDynamic = router.asPath.split("/")[1] === "dynamic";
   // don't make feed request if there's no feed slug or is dynamic
   const feedFromQuery = useFeedQuery(
-    { slug: slug },
+    // slug is guaranteed to be non-null because of the `enabled` conditional below, but TS doesn't pick it up
+    { slug: slug! }, // use non-null assertion operator
     { enabled: !!slug || isDynamic },
   ).data?.feed;
-  const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery;
+  const feed = isDynamic ? feedFromSlug(slugFromQuery) : feedFromQuery;
 
   const [currentFeed, setCurrentFeed] = useState(feed);
   const [map, setMap] = useState<LeafletMap>();
-  const feeds = useFeedsQuery().data?.feeds ?? [];
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
