@@ -61,69 +61,85 @@ export default function FeedItem({
 
   return (
     <Card sx={{ width: "100%", p: 2 }} elevation={1}>
-      <Box display="flex" alignItems="center" flexWrap={"wrap"}>
-        <Tooltip title={feed.online ? "online" : "offline"}>
-          <Circle
-            sx={{
-              mr: 2,
-              fontSize: 12,
-              color: feed.online ? theme.palette.success.main : "gray",
-            }}
-          />
-        </Tooltip>
-        <Typography variant="body1">{feed.name}</Typography>
-        <Box ml="auto">
-          <Typography component="div" mr={3} variant="overline">
-            Detections
-          </Typography>
-          <Box
-            alignItems="center"
-            display="flex"
-            justifyContent="space-between"
-          >
-            <Typography component="div" mr={3}>
-              {detsCount5MinAgo}{" "}
-              <Typography
-                fontSize="small"
-                noWrap
-                fontWeight="bold"
-                color={theme.palette.accent2.main}
-              >
-                5 min
-              </Typography>
+      <Box
+        display="flex"
+        alignItems={{ sm: "center" }}
+        flexWrap={"wrap"}
+        flexDirection={{ xs: "column", sm: "row" }}
+      >
+        <Box display="flex" alignItems="center">
+          <Tooltip title={feed.online ? "online" : "offline"}>
+            <Circle
+              sx={{
+                mr: 2,
+                fontSize: 12,
+                color: feed.online ? theme.palette.success.main : "gray",
+              }}
+            />
+          </Tooltip>
+          <Typography variant="body1">{feed.name}</Typography>
+        </Box>
+        <Box
+          sx={{
+            ml: { sm: "auto" },
+            mt: { xs: 2, sm: 0 },
+            mb: { xs: 3, sm: 0 },
+          }}
+          display="flex"
+        >
+          <Box>
+            <Typography component="div" mr={3} variant="overline">
+              Detections
             </Typography>
-            <Typography component="div" mr={3}>
-              {detsCount15MinAgo}
-              <Typography
-                fontSize="small"
-                noWrap
-                color={theme.palette.accent2.main}
-                fontWeight="bold"
-              >
-                15 min
+            <Box
+              alignItems="center"
+              display="flex"
+              justifyContent="space-between"
+            >
+              <Typography component="div" mr={3}>
+                {detsCount5MinAgo}{" "}
+                <Typography
+                  fontSize="small"
+                  noWrap
+                  fontWeight="bold"
+                  color={theme.palette.accent2.main}
+                >
+                  5 min
+                </Typography>
               </Typography>
+              <Typography component="div" mr={3}>
+                {detsCount15MinAgo}
+                <Typography
+                  fontSize="small"
+                  noWrap
+                  color={theme.palette.accent2.main}
+                  fontWeight="bold"
+                >
+                  15 min
+                </Typography>
+              </Typography>
+              <Typography component="div" mr={5}>
+                {detsCount}{" "}
+                <Typography
+                  fontSize="small"
+                  noWrap
+                  color={theme.palette.accent2.main}
+                  fontWeight="bold"
+                >
+                  1 hr
+                </Typography>
+              </Typography>
+            </Box>
+          </Box>
+          <Box alignSelf={"stretch"}>
+            <Typography component="div" mr={3} variant="overline">
+              Listeners
             </Typography>
-            <Typography component="div" mr={5}>
-              {detsCount}{" "}
-              <Typography
-                fontSize="small"
-                noWrap
-                color={theme.palette.accent2.main}
-                fontWeight="bold"
-              >
-                1 hr
-              </Typography>
+            <Typography display="flex" alignItems="center" fontSize={14}>
+              <Person sx={{ mr: 1, color: theme.palette.accent2.main }} />
+              {listenerCount === undefined ? "-" : listenerCount}
             </Typography>
           </Box>
-        </Box>
-        <Box alignSelf={"stretch"}>
-          <Typography component="div" mr={3} variant="overline">
-            Listeners
-          </Typography>
-          <Typography display="flex" alignItems="center" fontSize={14}>
-            <Person sx={{ mr: 1, color: theme.palette.accent2.main }} />
-            {listenerCount === undefined ? "-" : listenerCount}
-          </Typography>
         </Box>
       </Box>
       <Box>
