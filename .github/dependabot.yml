@@ -102,8 +102,8 @@ updates:
     ignore:
       # Ignore until nextjs adds eslint 9 support https://github.com/vercel/next.js/issues/64409
       - dependency-name: "eslint"
-        versions: ["9.0 - 9.10"]
+        versions: ["9.0 - 9.12"]
       - dependency-name: "eslint-plugin-unused-imports"
         versions: ["4.0 - 4.1"]
       - dependency-name: "@typescript-eslint/eslint-plugin"
-        versions: ["8.0 - 8.5"]
+        versions: ["8.0 - 8.9"]
