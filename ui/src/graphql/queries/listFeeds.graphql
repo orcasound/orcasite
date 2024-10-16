@@ -11,5 +11,7 @@ query feeds {
     imageUrl
     thumbUrl
     mapUrl
+    bucket
+    online
   }
 }
