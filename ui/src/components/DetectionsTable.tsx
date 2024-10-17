@@ -75,7 +75,13 @@ export default function DetectionsTable({
       <DetectionsPlayer
         feed={feed}
         marks={detections
-          .sort((a, b) => a.id.localeCompare(b.id))
+          .sort(({ timestamp: a }, { timestamp: b }) => {
+            const date_a = new Date(a);
+            const date_b = new Date(b);
+
+            // Sort by timestamp, low to high
+            return +date_a - +date_b;
+          })
           .map((d, index) => ({
             label: (index + 1).toString(),
             value: Number((+d.playerOffset - +startOffset).toFixed(1)),
