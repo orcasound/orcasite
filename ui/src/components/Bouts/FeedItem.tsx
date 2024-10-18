@@ -1,9 +1,10 @@
-import { Circle, Close, Person, ViewList } from "@mui/icons-material";
+import { Circle, Close, Launch, Person, ViewList } from "@mui/icons-material";
 import {
   Box,
   Button,
   Card,
   Chip,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -13,7 +14,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   DetectionCategory,
@@ -26,20 +27,25 @@ import { formatTimestamp } from "@/utils/time";
 // eslint-disable-next-line import/no-unused-modules
 export default function FeedItem({
   feed,
+  onStatUpdate,
 }: {
   feed: Pick<Feed, "id" | "name" | "slug" | "online">;
+  onStatUpdate?: (feedId: string, stat: string, value: number) => void;
 }) {
   const categories: Array<DetectionCategory> = ["WHALE", "VESSEL", "OTHER"];
+
   const [showTable, setShowTable] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<DetectionCategory>();
   const theme = useTheme();
+
   const listenerCount = useListenerCount(feed.slug);
+
   const now = useMemo(() => new Date(), []);
   const oneHourAgo = new Date(now.valueOf() - 60 * 60 * 1000);
   const detectionQueryResult = useDetectionsQuery({
     filter: {
       feed: { slug: { eq: feed.slug } },
-      timestamp: { greaterThan: oneHourAgo },
+      // timestamp: { greaterThan: oneHourAgo },
     },
     sort: { field: "TIMESTAMP", order: "DESC" },
   });
@@ -59,8 +65,28 @@ export default function FeedItem({
     ({ timestamp }) => timestamp > new Date(now.valueOf() - 5 * 60 * 1000),
   ).length;
 
+  useEffect(() => {
+    if (onStatUpdate) {
+      if (listenerCount !== undefined) {
+        onStatUpdate(feed.id, "listeners", listenerCount);
+      }
+      if (typeof detsCount === "number") {
+        onStatUpdate(feed.id, "detections", detsCount);
+      }
+      ["whale", "vessel", "other"].forEach((cat) => {
+        onStatUpdate(
+          feed.id,
+          cat,
+          recentDetections.filter(
+            ({ category }) => category?.toLocaleLowerCase() === cat,
+          ).length,
+        );
+      });
+    }
+  }, [feed.id, recentDetections, detsCount, onStatUpdate, listenerCount]);
+
   return (
-    <Card sx={{ width: "100%", p: 2 }} elevation={1}>
+    <Card sx={{ width: "100%", p: 2, overflowX: "auto" }} elevation={1}>
       <Box
         display="flex"
         alignItems={{ sm: "center" }}
@@ -78,6 +104,13 @@ export default function FeedItem({
             />
           </Tooltip>
           <Typography variant="body1">{feed.name}</Typography>
+          <IconButton
+            href={`/listen/${feed.slug}`}
+            size="small"
+            sx={{ transform: "scale(0.8)" }}
+          >
+            <Launch />
+          </IconButton>
         </Box>
         <Box
           sx={{
@@ -131,6 +164,35 @@ export default function FeedItem({
               </Typography>
             </Box>
           </Box>
+
+          <Box>
+            <Typography component="div" mr={3} variant="overline">
+              Categories
+            </Typography>
+            <Box
+              alignItems="center"
+              display="flex"
+              justifyContent="space-between"
+            >
+              {categories.map((cat, i) => (
+                <Typography key={i} component="div" mr={3}>
+                  {
+                    recentDetections.filter(({ category }) => cat === category)
+                      .length
+                  }{" "}
+                  <Typography
+                    fontSize="small"
+                    noWrap
+                    color={theme.palette.accent2.main}
+                    fontWeight="bold"
+                  >
+                    {cat}
+                  </Typography>
+                </Typography>
+              ))}
+            </Box>
+          </Box>
+
           <Box alignSelf={"stretch"}>
             <Typography component="div" mr={3} variant="overline">
               Listeners
@@ -179,20 +241,36 @@ export default function FeedItem({
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>ID</TableCell>
                 <TableCell>Category</TableCell>
                 <TableCell>Description</TableCell>
                 <TableCell align="right">Timestamp</TableCell>
+                <TableCell align="right">Candidate</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {detections.map((det, index) => (
                 <TableRow key={index}>
                   <TableCell>
+                    <Typography variant="caption">{det.id}</Typography>
+                  </TableCell>
+                  <TableCell>
                     <Chip label={det.category} />
                   </TableCell>
                   <TableCell>{det.description}</TableCell>
                   <TableCell align="right" title={det.timestamp.toString()}>
                     {formatTimestamp(det.timestamp)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {det?.candidate?.id && (
+                      <IconButton
+                        href={`/reports/${det?.candidate?.id}`}
+                        size="small"
+                        sx={{ transform: "scale(0.8)" }}
+                      >
+                        <Launch />
+                      </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

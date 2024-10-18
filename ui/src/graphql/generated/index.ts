@@ -2359,6 +2359,7 @@ export type DetectionsQuery = {
       playerOffset: number;
       playlistTimestamp: number;
       timestamp: Date;
+      candidate?: { __typename?: "Candidate"; id: string } | null;
     }> | null;
   } | null;
 };
@@ -3250,6 +3251,9 @@ export const DetectionsDocument = `
       playerOffset
       playlistTimestamp
       timestamp
+      candidate {
+        id
+      }
     }
   }
 }

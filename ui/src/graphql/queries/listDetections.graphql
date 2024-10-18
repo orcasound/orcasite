@@ -16,6 +16,9 @@ query detections(
       playerOffset
       playlistTimestamp
       timestamp
+      candidate {
+        id
+      }
     }
   }
 }
