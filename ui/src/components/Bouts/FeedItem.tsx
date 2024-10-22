@@ -15,6 +15,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
+import { VegaLite } from "react-vega";
 
 import {
   DetectionCategory,
@@ -65,6 +66,22 @@ export default function FeedItem({
     ({ timestamp }) => timestamp > new Date(now.valueOf() - 5 * 60 * 1000),
   ).length;
 
+  const detectionChartData = useMemo(
+    () =>
+      recentDetections.map(({ timestamp, category }) =>
+        // Time ago in minutes
+        ({
+          cat: category,
+          // minutesAgo: Math.floor(
+          //   (now.valueOf() - timestamp.valueOf()) / (60 * 1000),
+          // ),
+          minutesAgo: Math.floor(60 * Math.random()),
+        }),
+      ),
+
+    [recentDetections.length],
+  );
+
   useEffect(() => {
     if (onStatUpdate) {
       if (listenerCount !== undefined) {
@@ -87,6 +104,7 @@ export default function FeedItem({
 
   return (
     <Card sx={{ width: "100%", p: 2, overflowX: "auto" }} elevation={1}>
+      {/* Feed Summary */}
       <Box
         display="flex"
         alignItems={{ sm: "center" }}
@@ -204,6 +222,62 @@ export default function FeedItem({
           </Box>
         </Box>
       </Box>
+
+      {/* Detections charts */}
+      {detsCount > 0 && (
+        <Box sx={{ mb: 3 }}>
+          <Typography>Charts</Typography>
+          <Box
+            display="flex"
+            flexDirection={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+            alignItems="center"
+            width="100%"
+          >
+            {categories.map((category) => (
+              <Box key={category} m={3} flexGrow={1} width={"100%"}>
+                <Typography
+                  fontSize="small"
+                  fontWeight="bold"
+                  textAlign={{ xs: "center", sm: "left" }}
+                >
+                  {category}
+                </Typography>
+                <VegaLite
+                  actions={false}
+                  spec={{
+                    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+                    description: `Bar chart of recent ${category.toLowerCase()} detections`,
+                    mark: "bar",
+                    data: {
+                      values: detectionChartData.filter(
+                        ({ cat }) => cat === category,
+                      ),
+                    },
+                    encoding: {
+                      x: {
+                        bin: { step: 5, extent: [0, 60] },
+                        field: "minutesAgo",
+                        type: "quantitative",
+                        title: "minutes ago",
+                        sort: "descending",
+                      },
+                      y: {
+                        aggregate: "count",
+                        title: "detections",
+                        type: "quantitative",
+                      },
+                      color: { value: theme.palette.accent2.light },
+                    },
+                  }}
+                />
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      )}
+
+      {/* Detections table */}
       <Box>
         <Box display="flex">
           <Button
