@@ -1,6 +1,7 @@
 import ReactGA from "react-ga4";
 
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
+let analyticsInitialized = false;
 
 const about = {
   sampleAudioPlayed: (exampleTitle: string) =>
@@ -67,7 +68,10 @@ const stream = {
 function sendEvent(...eventParams: Parameters<typeof ReactGA.event>) {
   try {
     if (GA_TRACKING_ID) {
-      ReactGA.initialize(GA_TRACKING_ID);
+      if (!analyticsInitialized) {
+        ReactGA.initialize(GA_TRACKING_ID);
+        analyticsInitialized = true;
+      }
       ReactGA.event(...eventParams);
     }
   } catch (e) {
