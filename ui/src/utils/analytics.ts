@@ -75,7 +75,10 @@ function sendEvent(...eventParams: Parameters<typeof ReactGA.event>) {
       ReactGA.event(...eventParams);
     }
   } catch (e) {
-    console.error(e);
+    console.error("Failed to send analytics event:", {
+      error: e,
+      eventParams,
+    });
   }
 }
 
