@@ -119,16 +119,26 @@ export default function Player({
     }
   }, [playerRef, updateMediaSession]);
 
-  const handleReady = useCallback((player: VideoJSPlayer) => {
-    playerRef.current = player;
+  const handleReady = useCallback(
+    (player: VideoJSPlayer) => {
+      playerRef.current = player;
 
-    player.on("playing", () => {
-      setPlayerStatus("playing");
-    });
-    player.on("pause", () => setPlayerStatus("paused"));
-    player.on("waiting", () => setPlayerStatus("loading"));
-    player.on("error", () => setPlayerStatus("error"));
-  }, []);
+      player.on("playing", () => {
+        setPlayerStatus("playing");
+        currentFeed?.slug && analytics.stream.started(currentFeed.slug);
+      });
+      player.on("pause", () => {
+        setPlayerStatus("paused");
+        currentFeed?.slug && analytics.stream.paused(currentFeed.slug);
+      });
+      player.on("waiting", () => setPlayerStatus("loading"));
+      player.on("error", () => {
+        setPlayerStatus("error");
+        currentFeed?.slug && analytics.stream.error(currentFeed.slug);
+      });
+    },
+    [currentFeed?.slug],
+  );
 
   const handlePlayPauseClick = async () => {
     const player = playerRef.current;
@@ -146,10 +156,8 @@ export default function Player({
     try {
       if (playerStatus === "loading" || playerStatus === "playing") {
         await player.pause();
-        currentFeed?.slug && analytics.stream.paused(currentFeed.slug);
       } else {
         await player.play();
-        currentFeed?.slug && analytics.stream.started(currentFeed.slug);
       }
     } catch (e) {
       console.error(e);

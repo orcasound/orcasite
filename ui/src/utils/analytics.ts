@@ -49,6 +49,12 @@ const stream = {
       action: "Player paused",
       label: feedSlug,
     }),
+  error: (feedSlug: string) =>
+    sendEvent({
+      category: "Stream",
+      action: "Player errored",
+      label: feedSlug,
+    }),
   playerTextClicked: (playerText: string) => {
     sendEvent({
       category: "Stream",
