@@ -137,6 +137,8 @@ export default function FeedItem({
             mb: { xs: 3, sm: 0 },
           }}
           display="flex"
+          flexDirection={{ xs: "column", sm: "row" }}
+          alignSelf={"flex-start"}
         >
           <Box>
             <Typography component="div" mr={3} variant="overline">
@@ -183,7 +185,7 @@ export default function FeedItem({
             </Box>
           </Box>
 
-          <Box>
+          <Box sx={{ my: { xs: 2, sm: 0 } }}>
             <Typography component="div" mr={3} variant="overline">
               Categories
             </Typography>
@@ -211,7 +213,7 @@ export default function FeedItem({
             </Box>
           </Box>
 
-          <Box alignSelf={"stretch"}>
+          <Box alignSelf={"stretch"} sx={{ my: { xs: 2, sm: 0 } }}>
             <Typography component="div" mr={3} variant="overline">
               Listeners
             </Typography>
@@ -226,16 +228,23 @@ export default function FeedItem({
       {/* Detections charts */}
       {detsCount > 0 && (
         <Box sx={{ mb: 3 }}>
-          <Typography>Charts</Typography>
           <Box
             display="flex"
-            flexDirection={{ xs: "column", sm: "row" }}
+            flexDirection={{ xs: "column", md: "row" }}
             justifyContent="space-between"
             alignItems="center"
             width="100%"
           >
             {categories.map((category) => (
-              <Box key={category} m={3} flexGrow={1} width={"100%"}>
+              <Box
+                key={category}
+                m={3}
+                flexGrow={1}
+                width={"100%"}
+                display="flex"
+                alignItems="center"
+                flexDirection="column"
+              >
                 <Typography
                   fontSize="small"
                   fontWeight="bold"
@@ -312,44 +321,46 @@ export default function FeedItem({
           )}
         </Box>
         {showTable && detsCount > 0 && (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Timestamp</TableCell>
-                <TableCell align="right">Candidate</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {detections.map((det, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Typography variant="caption">{det.id}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={det.category} />
-                  </TableCell>
-                  <TableCell>{det.description}</TableCell>
-                  <TableCell align="right" title={det.timestamp.toString()}>
-                    {formatTimestamp(det.timestamp)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {det?.candidate?.id && (
-                      <IconButton
-                        href={`/reports/${det?.candidate?.id}`}
-                        size="small"
-                        sx={{ transform: "scale(0.8)" }}
-                      >
-                        <Launch />
-                      </IconButton>
-                    )}
-                  </TableCell>
+          <Box sx={{ overflowX: "scroll" }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Category</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell align="right">Timestamp</TableCell>
+                  <TableCell align="right">Candidate</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {detections.map((det, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Typography variant="caption">{det.id}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip label={det.category} />
+                    </TableCell>
+                    <TableCell>{det.description}</TableCell>
+                    <TableCell align="right" title={det.timestamp.toString()}>
+                      {formatTimestamp(det.timestamp)}
+                    </TableCell>
+                    <TableCell align="right">
+                      {det?.candidate?.id && (
+                        <IconButton
+                          href={`/reports/${det?.candidate?.id}`}
+                          size="small"
+                          sx={{ transform: "scale(0.8)" }}
+                        >
+                          <Launch />
+                        </IconButton>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
         )}
       </Box>
     </Card>
