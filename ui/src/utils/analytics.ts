@@ -65,9 +65,13 @@ const stream = {
 };
 
 function sendEvent(...eventParams: Parameters<typeof ReactGA.event>) {
-  if (GA_TRACKING_ID) {
-    ReactGA.initialize(GA_TRACKING_ID);
-    ReactGA.event(...eventParams);
+  try {
+    if (GA_TRACKING_ID) {
+      ReactGA.initialize(GA_TRACKING_ID);
+      ReactGA.event(...eventParams);
+    }
+  } catch (e) {
+    console.error(e);
   }
 }
 
