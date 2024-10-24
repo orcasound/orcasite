@@ -50,6 +50,18 @@ const stream = {
       action: "Player paused",
       label: feedSlug,
     }),
+  userStarted: (feedSlug: string) =>
+    sendEvent({
+      category: "Stream",
+      action: "User started player",
+      label: feedSlug,
+    }),
+  userPaused: (feedSlug: string) =>
+    sendEvent({
+      category: "Stream",
+      action: "User paused player",
+      label: feedSlug,
+    }),
   error: (feedSlug: string) =>
     sendEvent({
       category: "Stream",

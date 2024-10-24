@@ -156,8 +156,10 @@ export default function Player({
     try {
       if (playerStatus === "loading" || playerStatus === "playing") {
         await player.pause();
+        currentFeed?.slug && analytics.stream.userPaused(currentFeed.slug);
       } else {
         await player.play();
+        currentFeed?.slug && analytics.stream.userStarted(currentFeed.slug);
       }
     } catch (e) {
       console.error(e);
