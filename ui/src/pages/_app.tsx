@@ -39,7 +39,7 @@ const ReactQueryDevtoolsProd = React.lazy(() =>
 // App needs to be customized in order to make MUI work with SSR
 // https://mui.com/material-ui/integrations/nextjs/#pages-router
 // https://github.com/mui/material-ui/blob/master/examples/material-ui-nextjs-pages-router-ts/pages/_app.tsx
-export default function MyApp(props: AppPropsWithLayout) {
+export default function OrcasiteApp(props: AppPropsWithLayout) {
   const { Component, pageProps } = props;
 
   // Allow pages to define custom per-page layout

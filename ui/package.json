@@ -38,7 +38,9 @@
     "react-fast-marquee": "^1.6.5",
     "react-ga4": "^2.1.0",
     "react-leaflet": "^4.2.1",
+    "react-vega": "^7.6.0",
     "sharp": "^0.33.5",
+    "vega-lite": "^5.21.0",
     "video.js": "^8.18.1",
     "videojs-offset": "^2.1.3"
   },

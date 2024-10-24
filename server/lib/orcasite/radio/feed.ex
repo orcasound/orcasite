@@ -92,6 +92,10 @@ defmodule Orcasite.Radio.Feed do
     has_many :audio_images, Orcasite.Radio.AudioImage do
       public? true
     end
+
+    has_many :bouts, Orcasite.Radio.Bout do
+      public? true
+    end
   end
 
   policies do
