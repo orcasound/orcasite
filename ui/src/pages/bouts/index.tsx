@@ -62,7 +62,7 @@ const BoutsPage: NextPageWithLayout = () => {
         {/* <h1>Current bouts</h1>
         <p>Ongoing bouts (ones without an end time)</p> */}
 
-        <Box display="flex" justifyContent="space-between" mx={2}>
+        <Box display="flex" justifyContent="space-between" m={2}>
           <h2>Feeds</h2>
           <Box>
             <InputLabel sx={{ textTransform: "uppercase", fontSize: 14 }}>
