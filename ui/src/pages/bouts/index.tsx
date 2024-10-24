@@ -48,7 +48,8 @@ const BoutsPage: NextPageWithLayout = () => {
           return sortDiff === 0 ? nameSort : sortDiff;
         }
       }),
-    [feeds, sortStats, sortField],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [feeds.length, sortStats, sortField],
   );
 
   return (
@@ -58,8 +59,8 @@ const BoutsPage: NextPageWithLayout = () => {
       </Head>
 
       <main>
-        <h1>Current bouts</h1>
-        <p>Ongoing bouts (ones without an end time)</p>
+        {/* <h1>Current bouts</h1>
+        <p>Ongoing bouts (ones without an end time)</p> */}
 
         <Box display="flex" justifyContent="space-between" mx={2}>
           <h2>Feeds</h2>

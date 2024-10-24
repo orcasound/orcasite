@@ -46,7 +46,7 @@ export default function FeedItem({
   const detectionQueryResult = useDetectionsQuery({
     filter: {
       feed: { slug: { eq: feed.slug } },
-      // timestamp: { greaterThan: oneHourAgo },
+      timestamp: { greaterThan: oneHourAgo },
     },
     sort: { field: "TIMESTAMP", order: "DESC" },
   });
@@ -72,13 +72,14 @@ export default function FeedItem({
         // Time ago in minutes
         ({
           cat: category,
-          // minutesAgo: Math.floor(
-          //   (now.valueOf() - timestamp.valueOf()) / (60 * 1000),
-          // ),
-          minutesAgo: Math.floor(60 * Math.random()),
+          minutesAgo: Math.floor(
+            (now.valueOf() - timestamp.valueOf()) / (60 * 1000),
+          ),
+          // minutesAgo: Math.floor(60 * Math.random()),
         }),
       ),
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [recentDetections.length],
   );
 
@@ -100,7 +101,14 @@ export default function FeedItem({
         );
       });
     }
-  }, [feed.id, recentDetections, detsCount, onStatUpdate, listenerCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    feed.id,
+    recentDetections.length,
+    detsCount,
+    onStatUpdate,
+    listenerCount,
+  ]);
 
   return (
     <Card sx={{ width: "100%", p: 2, overflowX: "auto" }} elevation={1}>
