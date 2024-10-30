@@ -75,7 +75,6 @@ export default function FeedItem({
           minutesAgo: Math.floor(
             (now.valueOf() - timestamp.valueOf()) / (60 * 1000),
           ),
-          // minutesAgo: Math.floor(60 * Math.random()),
         }),
       ),
 
