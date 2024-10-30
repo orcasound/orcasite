@@ -43,7 +43,7 @@ defmodule Orcasite.Notifications.NotificationInstance do
   end
 
   actions do
-    defaults [:create, :read, :update, :destroy]
+    defaults [:read, :destroy, update: :*, create: :*]
 
     create :create_with_relationships do
       argument :subscription, :map
