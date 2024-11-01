@@ -44,6 +44,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   const [currentFeed, setCurrentFeed] = useState(feed);
   const [map, setMap] = useState<LeafletMap>();
   const feeds = useFeedsQuery().data?.feeds ?? [];
+  const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
@@ -52,7 +53,10 @@ function MapLayout({ children }: { children: ReactNode }) {
       map?.setZoom(9);
       map?.panTo(feed.latLng);
     }
-  }, [feed, map, currentFeed]);
+    if (!feed && !currentFeed && firstOnlineFeed) {
+      setCurrentFeed(firstOnlineFeed);
+    }
+  }, [feed, map, currentFeed, firstOnlineFeed]);
 
   const invalidateSize = () => {
     if (map) {
