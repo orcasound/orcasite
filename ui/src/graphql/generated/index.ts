@@ -2382,6 +2382,7 @@ export type FeedsQuery = {
     thumbUrl?: string | null;
     mapUrl?: string | null;
     bucket: string;
+    online?: boolean | null;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
   }>;
 };
@@ -3309,6 +3310,7 @@ export const FeedsDocument = `
     thumbUrl
     mapUrl
     bucket
+    online
   }
 }
     `;
