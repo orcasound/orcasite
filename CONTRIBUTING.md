@@ -3,8 +3,8 @@
 Welcome to Orcasound! We're thrilled you're interested in contributing to the site.
 
 - [Code of Conduct](#code-of-conduct)
-- [Reporting Bugs](#bugs)
-- [Requesting New Features](#new-features)
+- [Reporting Bugs](#reporting-bugs)
+- [Requesting New Features](#requesting-new-features)
 - [Contributing Code](#contributing-code)
 - [Contacting Us](#contacting-us)
 - [Resources](#resources)
@@ -18,7 +18,7 @@ Please read and make sure you understand our [Code of Conduct](/CODE_OF_CONDUCT.
 First, **ensure the bug was not already reported** by searching on GitHub under
 [Issues](https://github.com/orcasound/orcasite/issues).
 
-If you found bug, you can help us by
+If you found a bug, you can help us by
 [submitting a GitHub Issue](https://github.com/orcasound/orcasite/issues/new).
 The best bug reports provide a detailed description of the issue and step-by-step instructions
 for reliably reproducing the issue.
