@@ -44,7 +44,6 @@ If you are willing to follow the conditions of this license, check out the follo
 to find an unassigned item to contribute to:
 
 - ["Good first issue" GitHub issues for first-timers](https://github.com/orcasound/orcasite/labels/good%20first%20issue)
-- ["Help wanted" GitHub issues](https://github.com/orcasound/orcasite/labels/help%20wanted)
 - [Project board](https://github.com/orgs/orcasound/projects/38/views/1)
 - [Figma](https://www.figma.com/design/41JuvNkXJhTUob8HMsJiNC/Orcasite%3A-design-updates?node-id=882-3971)
 - [Trello board with overview of features](https://trello.com/b/hRFh7Sc1/orcasite-development)
