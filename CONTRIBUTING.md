@@ -94,7 +94,7 @@ There are multiple ways you can ask questions:
 
 ### Meetings
 
-We meet for one hour other Wednesday via Google Meet.  You can request a calendar invite or check the
+We meet for one hour every other Wednesday via Google Meet.  You can request a calendar invite or check the
 [Zulip channel](https://orcasound.zulipchat.com/#narrow/stream/437031-orcasite) for the latest meeting
 date and time information.
 
