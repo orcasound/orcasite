@@ -45,9 +45,6 @@ to find an unassigned item to contribute to:
 
 - ["Good first issue" GitHub issues for first-timers](https://github.com/orcasound/orcasite/labels/good%20first%20issue)
 - [Project board](https://github.com/orgs/orcasound/projects/38/views/1)
-- [Figma](https://www.figma.com/design/41JuvNkXJhTUob8HMsJiNC/Orcasite%3A-design-updates?node-id=882-3971)
-- [Trello board with overview of features](https://trello.com/b/hRFh7Sc1/orcasite-development)
-- [Public roadmap](https://trello.com/b/wBg0qhss/orcasound-roadmap)
 
 Once you've chosen an issue and want to contribute code:
 
@@ -100,6 +97,9 @@ date and time information.
 - [Request a calendar invite](https://forms.gle/Tegj4x6qxWx7PSes5)
 - [Meeting link](https://meet.google.com/igp-gpdr-wwu)
 - [Meeting notes](https://docs.google.com/document/d/1zXngvGO5kdm24gqSTNfHleFifU6ldtbA4amGSXe5jpg/edit?tab=t.0#heading=h.qyef7i4h6hom)
+- [Figma](https://www.figma.com/design/41JuvNkXJhTUob8HMsJiNC/Orcasite%3A-design-updates?node-id=882-3971)
+- [Trello board with overview of features](https://trello.com/b/hRFh7Sc1/orcasite-development)
+- [Public roadmap](https://trello.com/b/wBg0qhss/orcasound-roadmap)
 
 ### Maintainers
 
