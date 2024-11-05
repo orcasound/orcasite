@@ -41,7 +41,8 @@ export default function FeedItem({
 
   const listenerCount = useListenerCount(feed.slug);
 
-  const now = useMemo(() => new Date(), []);
+  const [now] = useState(new Date());
+
   const oneHourAgo = new Date(now.valueOf() - 60 * 60 * 1000);
   const detectionQueryResult = useDetectionsQuery({
     filter: {
@@ -51,7 +52,10 @@ export default function FeedItem({
     sort: { field: "TIMESTAMP", order: "DESC" },
   });
 
-  const recentDetections = detectionQueryResult.data?.detections?.results ?? [];
+  const recentDetections = useMemo(
+    () => detectionQueryResult.data?.detections?.results ?? [],
+    [detectionQueryResult.data],
+  );
 
   const detections =
     selectedCategory !== undefined
@@ -77,9 +81,7 @@ export default function FeedItem({
           ),
         }),
       ),
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [recentDetections.length],
+    [recentDetections, now],
   );
 
   useEffect(() => {
@@ -100,14 +102,7 @@ export default function FeedItem({
         );
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    feed.id,
-    recentDetections.length,
-    detsCount,
-    onStatUpdate,
-    listenerCount,
-  ]);
+  }, [feed.id, recentDetections, detsCount, onStatUpdate, listenerCount]);
 
   return (
     <Card sx={{ width: "100%", p: 2, overflowX: "auto" }} elevation={1}>

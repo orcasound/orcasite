@@ -20,9 +20,8 @@ const BoutsPage: NextPageWithLayout = () => {
     Record<string, Record<string, number>>
   >({});
 
-  const feeds =
-    useFeedsQuery({ sort: [{ field: "NAME", order: "ASC" }] }).data?.feeds ??
-    [];
+  const feeds = useFeedsQuery({ sort: [{ field: "NAME", order: "ASC" }] }).data
+    ?.feeds;
 
   const handleStatUpdate = useCallback(
     (feedId: string, stat: string, value: number) => {
@@ -36,7 +35,7 @@ const BoutsPage: NextPageWithLayout = () => {
 
   const sortedFeeds = useMemo(
     () =>
-      feeds.sort((a, b) => {
+      (feeds ?? []).sort((a, b) => {
         const nameSort = a["name"].localeCompare(b["name"]);
         if (sortField === "name") {
           // Low to high (alphabetical) for names
@@ -48,8 +47,7 @@ const BoutsPage: NextPageWithLayout = () => {
           return sortDiff === 0 ? nameSort : sortDiff;
         }
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [feeds.length, sortStats, sortField],
+    [feeds, sortStats, sortField],
   );
 
   return (
