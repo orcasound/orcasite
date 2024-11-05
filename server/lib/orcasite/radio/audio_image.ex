@@ -167,6 +167,7 @@ defmodule Orcasite.Radio.AudioImage do
     end
 
     update :generate_spectrogram do
+      require_atomic? false
       change set_attribute(:status, :processing)
 
       change after_action(

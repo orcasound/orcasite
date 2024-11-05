@@ -1,6 +1,7 @@
 import ReactGA from "react-ga4";
 
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
+let analyticsInitialized = false;
 
 const about = {
   sampleAudioPlayed: (exampleTitle: string) =>
@@ -49,6 +50,24 @@ const stream = {
       action: "Player paused",
       label: feedSlug,
     }),
+  userStarted: (feedSlug: string) =>
+    sendEvent({
+      category: "Stream",
+      action: "User started player",
+      label: feedSlug,
+    }),
+  userPaused: (feedSlug: string) =>
+    sendEvent({
+      category: "Stream",
+      action: "User paused player",
+      label: feedSlug,
+    }),
+  error: (feedSlug: string) =>
+    sendEvent({
+      category: "Stream",
+      action: "Player errored",
+      label: feedSlug,
+    }),
   playerTextClicked: (playerText: string) => {
     sendEvent({
       category: "Stream",
@@ -59,9 +78,19 @@ const stream = {
 };
 
 function sendEvent(...eventParams: Parameters<typeof ReactGA.event>) {
-  if (GA_TRACKING_ID) {
-    ReactGA.initialize(GA_TRACKING_ID);
-    ReactGA.event(...eventParams);
+  try {
+    if (GA_TRACKING_ID) {
+      if (!analyticsInitialized) {
+        ReactGA.initialize(GA_TRACKING_ID);
+        analyticsInitialized = true;
+      }
+      ReactGA.event(...eventParams);
+    }
+  } catch (e) {
+    console.error("Failed to send analytics event:", {
+      error: e,
+      eventParams,
+    });
   }
 }
 
