@@ -1,6 +1,6 @@
 # Largely based on https://github.com/nicbet/docker-phoenix/blob/main/Dockerfile
 
-FROM node:22.9.0-alpine@sha256:c9bb43423a6229aeddf3d16ae6aaa0ff71a0b2951ce18ec8fedb6f5d766cf286 AS node
+FROM node:23.1.0-alpine@sha256:1467ea23cce893347696b155b9e00e7f0ac7d21555eb6f27236f1328212e045e AS node
 FROM elixir:1.16-otp-26-alpine@sha256:829bebfcdc6fc58c56effc0d77f660de7c902fcf74e785b3175ee3a8f739b3f5 AS setup
 
 
