@@ -25,7 +25,6 @@ import {
 import { useListenerCount } from "@/hooks/useFeedPresence";
 import { formatTimestamp } from "@/utils/time";
 
-// eslint-disable-next-line import/no-unused-modules
 export default function FeedItem({
   feed,
   onStatUpdate,
@@ -119,7 +118,7 @@ export default function FeedItem({
               sx={{
                 mr: 2,
                 fontSize: 12,
-                color: feed.online ? theme.palette.success.main : "gray",
+                color: feed.online ? "success.main" : "gray",
               }}
             />
           </Tooltip>
@@ -157,7 +156,7 @@ export default function FeedItem({
                   fontSize="small"
                   noWrap
                   fontWeight="bold"
-                  color={theme.palette.accent2.main}
+                  color="accent2"
                 >
                   5 min
                 </Typography>
@@ -167,7 +166,7 @@ export default function FeedItem({
                 <Typography
                   fontSize="small"
                   noWrap
-                  color={theme.palette.accent2.main}
+                  color="accent2"
                   fontWeight="bold"
                 >
                   15 min
@@ -178,7 +177,7 @@ export default function FeedItem({
                 <Typography
                   fontSize="small"
                   noWrap
-                  color={theme.palette.accent2.main}
+                  color="accent2"
                   fontWeight="bold"
                 >
                   1 hr
@@ -205,7 +204,7 @@ export default function FeedItem({
                   <Typography
                     fontSize="small"
                     noWrap
-                    color={theme.palette.accent2.main}
+                    color="accent2"
                     fontWeight="bold"
                   >
                     {cat}
@@ -220,7 +219,7 @@ export default function FeedItem({
               Listeners
             </Typography>
             <Typography display="flex" alignItems="center" fontSize={14}>
-              <Person sx={{ mr: 1, color: theme.palette.accent2.main }} />
+              <Person sx={{ mr: 1, color: "accent2.main" }} />
               {listenerCount === undefined ? "-" : listenerCount}
             </Typography>
           </Box>
