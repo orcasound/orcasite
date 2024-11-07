@@ -37,7 +37,7 @@ export default function useFeedPresence(feedId?: string) {
 }
 
 export function useListenerCount(feedSlug: string) {
-  const [listenerCount, setListenerCount] = useState<Record<string, number>>();
+  const [listenerCount, setListenerCount] = useState<number>();
 
   useEffect(() => {
     let channel: Channel | undefined;
