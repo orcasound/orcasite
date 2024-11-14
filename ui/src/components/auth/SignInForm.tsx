@@ -139,7 +139,7 @@ export default function SignInForm({ onSubmit, errors }: SignInFormProps) {
 }
 
 const errorCodeToMessage = (error: string) => {
-  if (error === "invalid_credentials") {
+  if (error === "Authentication failed") {
     return "Your email and password didn't match our records. Please try again.";
   } else if (error) {
     return `An error occurred: ${error}. Please try again and let us know if this keeps happening.`;
