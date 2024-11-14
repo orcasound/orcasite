@@ -27,6 +27,7 @@ defmodule Orcasite.Radio.Bout do
 
     attribute :category, Orcasite.Types.AudioCategory do
       public? true
+      allow_nil? false
     end
 
     create_timestamp :inserted_at
