@@ -2,7 +2,6 @@ defmodule OrcasiteWeb.Schema do
   use Absinthe.Schema
 
   @domains [Orcasite.Radio, Orcasite.Accounts, Orcasite.Notifications]
-  # @domains []
 
   use AshGraphql, domains: @domains
 
