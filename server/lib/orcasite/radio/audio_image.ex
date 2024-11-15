@@ -219,5 +219,6 @@ defmodule Orcasite.Radio.AudioImage do
 
   graphql do
     type :audio_image
+    attribute_types [feed_id: :id]
   end
 end

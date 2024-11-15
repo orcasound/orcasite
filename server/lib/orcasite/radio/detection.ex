@@ -336,6 +336,7 @@ defmodule Orcasite.Radio.Detection do
 
   graphql do
     type :detection
+    attribute_types [candidate_id: :id, feed_id: :id]
 
     queries do
       get :detection, :read
