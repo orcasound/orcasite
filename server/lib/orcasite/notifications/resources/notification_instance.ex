@@ -32,10 +32,6 @@ defmodule Orcasite.Notifications.NotificationInstance do
     belongs_to :notification, Notification
   end
 
-  # code_interface do
-  #   define :update, action: :update, args: [:status, :meta, :processed_at]
-  # end
-
   resource do
     description """
     Sends a single notification to a subscription
