@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 
-import { getReportsLayout } from "@/components/layouts/ReportsLayout";
+import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const NewBoutPage: NextPageWithLayout = () => {
@@ -12,6 +12,6 @@ const NewBoutPage: NextPageWithLayout = () => {
   return <p>New Bout</p>;
 };
 
-NewBoutPage.getLayout = getReportsLayout;
+NewBoutPage.getLayout = getSimpleLayout;
 
 export default NewBoutPage;

@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 
 import Header from "@/components/Header";
 
-function ReportsLayout({ children }: { children: React.ReactNode }) {
+function SimpleLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box
       sx={{
@@ -26,6 +26,6 @@ function ReportsLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function getReportsLayout(page: ReactElement) {
-  return <ReportsLayout>{page}</ReportsLayout>;
+export function getSimpleLayout(page: ReactElement) {
+  return <SimpleLayout>{page}</SimpleLayout>;
 }
