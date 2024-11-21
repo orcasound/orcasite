@@ -66,12 +66,12 @@ defmodule Orcasite.Mixfile do
       # Algorithm used by Comeonin to hash password
       {:bcrypt_elixir, "~> 3.0"},
       # JSON parser, works with Absinthe out of the box
-      {:poison, "~> 5.0"},
+      {:poison, "~> 6.0"},
       {:logfmt, "~> 3.0"},
       {:geo_postgis, "~> 3.0"},
       {:jason, "~> 1.2"},
       # Reverse proxy for proxying to nextjs app
-      {:reverse_proxy_plug, "~> 2.3.0"},
+      {:reverse_proxy_plug, "~> 3.0"},
       {:httpoison, "~> 2.2"},
       {:corsica, "~> 2.1"},
       {:telemetry_metrics, "~> 1.0"},
@@ -86,10 +86,9 @@ defmodule Orcasite.Mixfile do
       {:ash_authentication, "~> 4.2"},
       {:ash_authentication_phoenix, "~> 2.0"},
       {:syn, "~> 3.3"},
-      {:mjml, "~> 3.0.1"},
+      {:mjml, "~> 4.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
-      {:ash_uuid, github: "skanderm/ash_uuid", tag: "5140d0"},
-      # {:ash_uuid, "~> 1.1.1"},
+      {:ash_uuid, "~> 1.1.2"},
       {:ash_graphql, github: "ash-project/ash_graphql", branch: "main"},
       {:ash_json_api, "~> 1.2"},
       {:open_api_spex, "~> 3.16"},

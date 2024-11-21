@@ -184,6 +184,7 @@ defmodule Orcasite.Radio.Candidate do
 
   graphql do
     type :candidate
+    attribute_types [feed_id: :id]
 
     queries do
       get :candidate, :read

@@ -76,7 +76,7 @@ defmodule Orcasite.Radio.Feed do
   aggregates do
     exists :online, :feed_segments do
       public? true
-      filter expr(inserted_at > ago(30, :second))
+      filter expr(inserted_at > ago(5, :minute))
     end
   end
 
