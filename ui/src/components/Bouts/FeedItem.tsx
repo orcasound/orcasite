@@ -32,7 +32,10 @@ export default function FeedItem({
   feed: Pick<Feed, "id" | "name" | "slug" | "online">;
   onStatUpdate?: (feedId: string, stat: string, value: number) => void;
 }) {
-  const categories: Array<DetectionCategory> = ["WHALE", "VESSEL", "OTHER"];
+  const categories: Array<DetectionCategory> = useMemo(
+    () => ["WHALE", "VESSEL", "OTHER"],
+    [],
+  );
 
   const [showTable, setShowTable] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<DetectionCategory>();
@@ -63,10 +66,12 @@ export default function FeedItem({
 
   const detsCount = recentDetections.length;
   const detsCount15MinAgo = recentDetections.filter(
-    ({ timestamp }) => timestamp > new Date(now.valueOf() - 15 * 60 * 1000),
+    ({ timestamp }) =>
+      new Date(timestamp) > new Date(now.valueOf() - 15 * 60 * 1000),
   ).length;
   const detsCount5MinAgo = recentDetections.filter(
-    ({ timestamp }) => timestamp > new Date(now.valueOf() - 5 * 60 * 1000),
+    ({ timestamp }) =>
+      new Date(timestamp) > new Date(now.valueOf() - 5 * 60 * 1000),
   ).length;
 
   const detectionChartData = useMemo(
@@ -76,7 +81,7 @@ export default function FeedItem({
         ({
           cat: category,
           minutesAgo: Math.floor(
-            (now.valueOf() - timestamp.valueOf()) / (60 * 1000),
+            (now.valueOf() - new Date(timestamp).valueOf()) / (60 * 1000),
           ),
         }),
       ),
@@ -91,17 +96,22 @@ export default function FeedItem({
       if (typeof detsCount === "number") {
         onStatUpdate(feed.id, "detections", detsCount);
       }
-      ["whale", "vessel", "other"].forEach((cat) => {
+      categories.forEach((cat) => {
         onStatUpdate(
           feed.id,
           cat,
-          recentDetections.filter(
-            ({ category }) => category?.toLocaleLowerCase() === cat,
-          ).length,
+          recentDetections.filter(({ category }) => category === cat).length,
         );
       });
     }
-  }, [feed.id, recentDetections, detsCount, onStatUpdate, listenerCount]);
+  }, [
+    feed.id,
+    recentDetections,
+    detsCount,
+    onStatUpdate,
+    listenerCount,
+    categories,
+  ]);
 
   return (
     <Card sx={{ width: "100%", p: 2, overflowX: "auto" }} elevation={1}>
