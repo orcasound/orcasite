@@ -61,8 +61,14 @@ export default function FeedItem({
       ? recentDetections.filter((det) => det.category === selectedCategory)
       : recentDetections;
 
-  const fifteenMinutesAgo = new Date(now.valueOf() - 15 * 60 * 1000);
-  const fiveMinutesAgo = new Date(now.valueOf() - 5 * 60 * 1000);
+  const fifteenMinutesAgo = useMemo(
+    () => new Date(now.valueOf() - 15 * 60 * 1000),
+    [now],
+  );
+  const fiveMinutesAgo = useMemo(
+    () => new Date(now.valueOf() - 5 * 60 * 1000),
+    [now],
+  );
 
   const detsCount = recentDetections.length;
   const detsCount15MinAgo = recentDetections.filter(
