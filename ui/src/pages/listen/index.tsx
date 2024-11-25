@@ -1,6 +1,7 @@
 import { Container, Stack, Typography } from "@mui/material";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import Head from "next/head";
+import { useMemo } from "react";
 
 import FeedCard from "@/components/FeedCard";
 import { getMapLayout } from "@/components/layouts/MapLayout";
@@ -8,9 +9,16 @@ import { useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const FeedsPage: NextPageWithLayout = () => {
-  const feeds = useFeedsQuery().data?.feeds;
+  const feedsQueryResult = useFeedsQuery();
 
-  if (!feeds) return null;
+  // Sort feeds by high latitude to low (to match the order on the map)
+  const sortedFeeds = useMemo(
+    () =>
+      feedsQueryResult.data?.feeds.sort((a, b) => b.latLng.lat - a.latLng.lat),
+    [feedsQueryResult.data],
+  );
+
+  if (!sortedFeeds) return null;
 
   return (
     <div>
@@ -27,7 +35,7 @@ const FeedsPage: NextPageWithLayout = () => {
             Select a location to start listening live
           </Typography>
           <Stack spacing={4} mt={4}>
-            {feeds.map((feed) => (
+            {sortedFeeds.map((feed) => (
               <FeedCard key={feed.id} feed={feed} />
             ))}
           </Stack>
