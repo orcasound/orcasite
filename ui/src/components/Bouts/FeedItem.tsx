@@ -25,6 +25,8 @@ import {
 import { useListenerCount } from "@/hooks/useFeedPresence";
 import { formatTimestamp } from "@/utils/time";
 
+const categories: Array<DetectionCategory> = ["WHALE", "VESSEL", "OTHER"];
+
 export default function FeedItem({
   feed,
   onStatUpdate,
@@ -32,11 +34,6 @@ export default function FeedItem({
   feed: Pick<Feed, "id" | "name" | "slug" | "online">;
   onStatUpdate?: (feedId: string, stat: string, value: number) => void;
 }) {
-  const categories: Array<DetectionCategory> = useMemo(
-    () => ["WHALE", "VESSEL", "OTHER"],
-    [],
-  );
-
   const [showTable, setShowTable] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<DetectionCategory>();
   const theme = useTheme();
@@ -64,14 +61,21 @@ export default function FeedItem({
       ? recentDetections.filter((det) => det.category === selectedCategory)
       : recentDetections;
 
+  const fifteenMinutesAgo = useMemo(
+    () => new Date(now.valueOf() - 15 * 60 * 1000),
+    [now],
+  );
+  const fiveMinutesAgo = useMemo(
+    () => new Date(now.valueOf() - 5 * 60 * 1000),
+    [now],
+  );
+
   const detsCount = recentDetections.length;
   const detsCount15MinAgo = recentDetections.filter(
-    ({ timestamp }) =>
-      new Date(timestamp) > new Date(now.valueOf() - 15 * 60 * 1000),
+    ({ timestamp }) => new Date(timestamp) > fifteenMinutesAgo,
   ).length;
   const detsCount5MinAgo = recentDetections.filter(
-    ({ timestamp }) =>
-      new Date(timestamp) > new Date(now.valueOf() - 5 * 60 * 1000),
+    ({ timestamp }) => new Date(timestamp) > fiveMinutesAgo,
   ).length;
 
   const detectionChartData = useMemo(
@@ -104,14 +108,7 @@ export default function FeedItem({
         );
       });
     }
-  }, [
-    feed.id,
-    recentDetections,
-    detsCount,
-    onStatUpdate,
-    listenerCount,
-    categories,
-  ]);
+  }, [feed.id, recentDetections, detsCount, onStatUpdate, listenerCount]);
 
   return (
     <Card sx={{ width: "100%", p: 2, overflowX: "auto" }} elevation={1}>
