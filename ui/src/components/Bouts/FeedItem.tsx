@@ -25,6 +25,8 @@ import {
 import { useListenerCount } from "@/hooks/useFeedPresence";
 import { formatTimestamp } from "@/utils/time";
 
+const categories: Array<DetectionCategory> = ["WHALE", "VESSEL", "OTHER"];
+
 export default function FeedItem({
   feed,
   onStatUpdate,
@@ -32,8 +34,6 @@ export default function FeedItem({
   feed: Pick<Feed, "id" | "name" | "slug" | "online">;
   onStatUpdate?: (feedId: string, stat: string, value: number) => void;
 }) {
-  const categories: Array<DetectionCategory> = ["WHALE", "VESSEL", "OTHER"];
-
   const [showTable, setShowTable] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<DetectionCategory>();
   const theme = useTheme();
@@ -61,12 +61,21 @@ export default function FeedItem({
       ? recentDetections.filter((det) => det.category === selectedCategory)
       : recentDetections;
 
+  const fifteenMinutesAgo = useMemo(
+    () => new Date(now.valueOf() - 15 * 60 * 1000),
+    [now],
+  );
+  const fiveMinutesAgo = useMemo(
+    () => new Date(now.valueOf() - 5 * 60 * 1000),
+    [now],
+  );
+
   const detsCount = recentDetections.length;
   const detsCount15MinAgo = recentDetections.filter(
-    ({ timestamp }) => timestamp > new Date(now.valueOf() - 15 * 60 * 1000),
+    ({ timestamp }) => new Date(timestamp) > fifteenMinutesAgo,
   ).length;
   const detsCount5MinAgo = recentDetections.filter(
-    ({ timestamp }) => timestamp > new Date(now.valueOf() - 5 * 60 * 1000),
+    ({ timestamp }) => new Date(timestamp) > fiveMinutesAgo,
   ).length;
 
   const detectionChartData = useMemo(
@@ -76,7 +85,7 @@ export default function FeedItem({
         ({
           cat: category,
           minutesAgo: Math.floor(
-            (now.valueOf() - timestamp.valueOf()) / (60 * 1000),
+            (now.valueOf() - new Date(timestamp).valueOf()) / (60 * 1000),
           ),
         }),
       ),
@@ -91,13 +100,11 @@ export default function FeedItem({
       if (typeof detsCount === "number") {
         onStatUpdate(feed.id, "detections", detsCount);
       }
-      ["whale", "vessel", "other"].forEach((cat) => {
+      categories.forEach((cat) => {
         onStatUpdate(
           feed.id,
           cat,
-          recentDetections.filter(
-            ({ category }) => category?.toLocaleLowerCase() === cat,
-          ).length,
+          recentDetections.filter(({ category }) => category === cat).length,
         );
       });
     }
