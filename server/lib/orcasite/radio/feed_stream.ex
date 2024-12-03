@@ -73,7 +73,9 @@ defmodule Orcasite.Radio.FeedStream do
       public? true
     end
 
-    has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream
+    has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream do
+      public? true
+    end
 
     many_to_many :bouts, Orcasite.Radio.Bout do
       public? true
