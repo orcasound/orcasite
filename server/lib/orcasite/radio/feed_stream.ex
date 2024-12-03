@@ -57,14 +57,26 @@ defmodule Orcasite.Radio.FeedStream do
   end
 
   relationships do
-    belongs_to :feed, Orcasite.Radio.Feed
-    belongs_to :prev_feed_stream, Orcasite.Radio.FeedStream
-    belongs_to :next_feed_stream, Orcasite.Radio.FeedStream
+    belongs_to :feed, Orcasite.Radio.Feed do
+      public? true
+    end
 
-    has_many :feed_segments, Orcasite.Radio.FeedSegment
+    belongs_to :prev_feed_stream, Orcasite.Radio.FeedStream do
+      public? true
+    end
+
+    belongs_to :next_feed_stream, Orcasite.Radio.FeedStream do
+      public? true
+    end
+
+    has_many :feed_segments, Orcasite.Radio.FeedSegment do
+      public? true
+    end
+
     has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream
 
     many_to_many :bouts, Orcasite.Radio.Bout do
+      public? true
       through Orcasite.Radio.BoutFeedStream
     end
   end
@@ -413,6 +425,7 @@ defmodule Orcasite.Radio.FeedStream do
 
   graphql do
     type :feed_stream
+    attribute_types feed_id: :string, prev_feed_stream_id: :string, next_feed_stream_id: :string
 
     queries do
       list :feed_streams, :index

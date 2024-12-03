@@ -11,9 +11,9 @@ defmodule Orcasite.Radio.GraphqlClient do
     |> submit()
   end
 
-
-  def get_feed_stream(feed_id, from_datetime, to_datetime) do
+  def get_feed_streams_with_segments(feed_id, from_datetime, to_datetime) do
     day_before = from_datetime |> DateTime.add(-1, :day)
+
     ~s|
       {
         feedStreams(
@@ -40,6 +40,29 @@ defmodule Orcasite.Radio.GraphqlClient do
             playlistTimestamp
             playlistPath
             playlistM3u8Path
+
+            feedSegments(
+              filter: {
+                and: [
+                  {startTime: {lessThanOrEqual: "#{DateTime.to_iso8601(from_datetime)}"}},
+                  {startTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(day_before)}"}}
+                ],
+                or: [{endTime: {isNil: true}}, {endTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(to_datetime)}"}}]
+              },
+              sort: {field: START_TIME, order: DESC},
+            ) {
+              startTime
+              endTime
+              duration
+              bucket
+              bucketRegion
+              cloudfrontUrl
+              fileName
+              playlistM3u8Path
+              playlistPath
+              playlistTimestamp
+              segmentPath
+            }
           }
         }
       }

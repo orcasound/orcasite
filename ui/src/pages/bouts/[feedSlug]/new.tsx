@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import SpectrogramTimeline from "@/components/Bouts/SpectrogramTimeline";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
@@ -10,9 +10,9 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { BoutPlayer } from "@/components/Player/BoutPlayer";
 import {
   AudioCategory,
-  DetectionFilterFeedId,
   useDetectionsQuery,
   useFeedQuery,
+  useListFeedStreamsQuery,
 } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
@@ -28,13 +28,30 @@ const NewBoutPage: NextPageWithLayout = () => {
   );
   const feed = feedQueryResult.data?.feed;
 
+  const now = useMemo(() => new Date(), []);
+
+  // If feed is present, and there's no pre-set time,
+  // get latest stream and last 10 minutes of segments.
+  // Set time to end of last segment
+  const feedStreamQueryResult = useListFeedStreamsQuery(
+    {
+      feedId: feed?.id,
+      sort: { field: "START_TIME", order: "DESC" },
+      limit: 1,
+    },
+    { enabled: !!feed?.id },
+  );
+
   const detectionQueryResult = useDetectionsQuery(
-    { filter: { feedId: feed?.id as DetectionFilterFeedId } },
+    { feedId: feed?.id },
     { enabled: !!feed?.id },
   );
 
   if (!feedSlug || feedQueryResult.isLoading) return <LoadingSpinner mt={5} />;
   if (!feed) return <p>Feed not found</p>;
+
+  const feedStreams = feedStreamQueryResult.data?.feedStreams?.results ?? [];
+  const feedStream = feedStreams[0];
 
   return (
     <div>
