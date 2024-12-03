@@ -47,7 +47,7 @@ defmodule Orcasite.GlobalSetup do
 
       # Get stream for the last `minutes` minutes
       {:ok, feed_streams_response} =
-        Orcasite.Radio.GraphqlClient.get_feed_stream(feed_id, minutes_ago_datetime, now)
+        Orcasite.Radio.GraphqlClient.get_feed_streams_with_segments(feed_id, minutes_ago_datetime, now)
 
       feed_streams = get_in(feed_streams_response, ["data", "feedStreams", "results"])
 
