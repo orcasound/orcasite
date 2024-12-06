@@ -78,6 +78,18 @@ defmodule Orcasite.Radio.AudioImage do
   actions do
     defaults [:read, :destroy, create: :*, update: :*]
 
+    read :for_feed do
+      argument :feed_id, :string, allow_nil?: false
+
+      pagination do
+        offset? true
+        countable true
+        default_limit 100
+      end
+
+      filter expr(feed_id == ^arg(:feed_id))
+    end
+
     create :for_feed_segment do
       upsert? true
       upsert_identity :unique_audio_image
@@ -220,5 +232,10 @@ defmodule Orcasite.Radio.AudioImage do
   graphql do
     type :audio_image
     attribute_types [feed_id: :id]
+
+    queries do
+      list :audio_images, :for_feed
+    end
+
   end
 end

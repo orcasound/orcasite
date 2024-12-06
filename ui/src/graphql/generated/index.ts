@@ -289,7 +289,7 @@ export type AudioImageSortInput = {
 
 export type Bout = {
   __typename?: "Bout";
-  category?: Maybe<AudioCategory>;
+  category: AudioCategory;
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ID"]["output"];
@@ -301,7 +301,7 @@ export type BoutFilterCategory = {
   eq?: InputMaybe<AudioCategory>;
   greaterThan?: InputMaybe<AudioCategory>;
   greaterThanOrEqual?: InputMaybe<AudioCategory>;
-  in?: InputMaybe<Array<InputMaybe<AudioCategory>>>;
+  in?: InputMaybe<Array<AudioCategory>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<AudioCategory>;
   lessThanOrEqual?: InputMaybe<AudioCategory>;
@@ -1184,19 +1184,41 @@ export type FeedSortInput = {
 
 export type FeedStream = {
   __typename?: "FeedStream";
+  bouts: Array<Bout>;
   bucket?: Maybe<Scalars["String"]["output"]>;
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
   cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  feed?: Maybe<Feed>;
+  feedId?: Maybe<Scalars["String"]["output"]>;
+  feedSegments: Array<FeedSegment>;
   id: Scalars["ID"]["output"];
+  nextFeedStream?: Maybe<FeedStream>;
+  nextFeedStreamId?: Maybe<Scalars["String"]["output"]>;
   /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
   playlistM3u8Path?: Maybe<Scalars["String"]["output"]>;
   /** S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/) */
   playlistPath?: Maybe<Scalars["String"]["output"]>;
   /** UTC Unix epoch for playlist start (e.g. 1541027406) */
   playlistTimestamp?: Maybe<Scalars["String"]["output"]>;
+  prevFeedStream?: Maybe<FeedStream>;
+  prevFeedStreamId?: Maybe<Scalars["String"]["output"]>;
   startTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type FeedStreamBoutsArgs = {
+  filter?: InputMaybe<BoutFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<BoutSortInput>>>;
+};
+
+export type FeedStreamFeedSegmentsArgs = {
+  filter?: InputMaybe<FeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedSegmentSortInput>>>;
 };
 
 export type FeedStreamFilterBucket = {
@@ -1260,18 +1282,28 @@ export type FeedStreamFilterEndTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type FeedStreamFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type FeedStreamFilterId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type FeedStreamFilterInput = {
   and?: InputMaybe<Array<FeedStreamFilterInput>>;
+  bouts?: InputMaybe<BoutFilterInput>;
   bucket?: InputMaybe<FeedStreamFilterBucket>;
   bucketRegion?: InputMaybe<FeedStreamFilterBucketRegion>;
   cloudfrontUrl?: InputMaybe<FeedStreamFilterCloudfrontUrl>;
   duration?: InputMaybe<FeedStreamFilterDuration>;
   endTime?: InputMaybe<FeedStreamFilterEndTime>;
+  feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<FeedStreamFilterFeedId>;
+  feedSegments?: InputMaybe<FeedSegmentFilterInput>;
   id?: InputMaybe<FeedStreamFilterId>;
+  nextFeedStream?: InputMaybe<FeedStreamFilterInput>;
+  nextFeedStreamId?: InputMaybe<FeedStreamFilterNextFeedStreamId>;
   not?: InputMaybe<Array<FeedStreamFilterInput>>;
   or?: InputMaybe<Array<FeedStreamFilterInput>>;
   /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
@@ -1280,7 +1312,13 @@ export type FeedStreamFilterInput = {
   playlistPath?: InputMaybe<FeedStreamFilterPlaylistPath>;
   /** UTC Unix epoch for playlist start (e.g. 1541027406) */
   playlistTimestamp?: InputMaybe<FeedStreamFilterPlaylistTimestamp>;
+  prevFeedStream?: InputMaybe<FeedStreamFilterInput>;
+  prevFeedStreamId?: InputMaybe<FeedStreamFilterPrevFeedStreamId>;
   startTime?: InputMaybe<FeedStreamFilterStartTime>;
+};
+
+export type FeedStreamFilterNextFeedStreamId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type FeedStreamFilterPlaylistM3u8Path = {
@@ -1322,6 +1360,10 @@ export type FeedStreamFilterPlaylistTimestamp = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type FeedStreamFilterPrevFeedStreamId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type FeedStreamFilterStartTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -1339,10 +1381,13 @@ export type FeedStreamSortField =
   | "CLOUDFRONT_URL"
   | "DURATION"
   | "END_TIME"
+  | "FEED_ID"
   | "ID"
+  | "NEXT_FEED_STREAM_ID"
   | "PLAYLIST_M3U8_PATH"
   | "PLAYLIST_PATH"
   | "PLAYLIST_TIMESTAMP"
+  | "PREV_FEED_STREAM_ID"
   | "START_TIME";
 
 export type FeedStreamSortInput = {
@@ -1555,6 +1600,17 @@ export type NotifyConfirmedCandidateResult = {
   result?: Maybe<Notification>;
 };
 
+/** A page of :audio_image */
+export type PageOfAudioImage = {
+  __typename?: "PageOfAudioImage";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<AudioImage>>;
+};
+
 /** A page of :bout */
 export type PageOfBout = {
   __typename?: "PageOfBout";
@@ -1717,6 +1773,7 @@ export type RootMutationTypeSubmitDetectionArgs = {
 
 export type RootQueryType = {
   __typename?: "RootQueryType";
+  audioImages?: Maybe<PageOfAudioImage>;
   bouts?: Maybe<PageOfBout>;
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
@@ -1728,6 +1785,14 @@ export type RootQueryType = {
   feedStreams?: Maybe<PageOfFeedStream>;
   feeds: Array<Feed>;
   notificationsForCandidate: Array<Notification>;
+};
+
+export type RootQueryTypeAudioImagesArgs = {
+  feedId: Scalars["String"]["input"];
+  filter?: InputMaybe<AudioImageFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<AudioImageSortInput>>>;
 };
 
 export type RootQueryTypeBoutsArgs = {
@@ -1758,6 +1823,7 @@ export type RootQueryTypeDetectionArgs = {
 };
 
 export type RootQueryTypeDetectionsArgs = {
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
   filter?: InputMaybe<DetectionFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
@@ -2335,6 +2401,7 @@ export type CandidatesQuery = {
 };
 
 export type DetectionsQueryVariables = Exact<{
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
   filter?: InputMaybe<DetectionFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
@@ -2360,6 +2427,37 @@ export type DetectionsQuery = {
       playlistTimestamp: number;
       timestamp: Date;
       candidate?: { __typename?: "Candidate"; id: string } | null;
+    }> | null;
+  } | null;
+};
+
+export type ListFeedStreamsQueryVariables = Exact<{
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
+  filter?: InputMaybe<FeedStreamFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<
+    Array<InputMaybe<FeedStreamSortInput>> | InputMaybe<FeedStreamSortInput>
+  >;
+}>;
+
+export type ListFeedStreamsQuery = {
+  __typename?: "RootQueryType";
+  feedStreams?: {
+    __typename?: "PageOfFeedStream";
+    count?: number | null;
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "FeedStream";
+      id: string;
+      startTime?: Date | null;
+      endTime?: Date | null;
+      duration?: number | null;
+      bucket?: string | null;
+      bucketRegion?: string | null;
+      cloudfrontUrl?: string | null;
+      playlistM3u8Path?: string | null;
+      playlistPath?: string | null;
     }> | null;
   } | null;
 };
@@ -3239,8 +3337,14 @@ useCandidatesQuery.fetcher = (
   );
 
 export const DetectionsDocument = `
-    query detections($filter: DetectionFilterInput, $limit: Int, $offset: Int, $sort: [DetectionSortInput]) {
-  detections(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+    query detections($feedId: String, $filter: DetectionFilterInput, $limit: Int, $offset: Int, $sort: [DetectionSortInput]) {
+  detections(
+    feedId: $feedId
+    filter: $filter
+    limit: $limit
+    offset: $offset
+    sort: $sort
+  ) {
     count
     hasNextPage
     results {
@@ -3291,6 +3395,74 @@ useDetectionsQuery.fetcher = (
 ) =>
   fetcher<DetectionsQuery, DetectionsQueryVariables>(
     DetectionsDocument,
+    variables,
+    options,
+  );
+
+export const ListFeedStreamsDocument = `
+    query listFeedStreams($feedId: String, $filter: FeedStreamFilterInput, $limit: Int, $offset: Int, $sort: [FeedStreamSortInput]) {
+  feedStreams(
+    feedId: $feedId
+    filter: $filter
+    limit: $limit
+    offset: $offset
+    sort: $sort
+  ) {
+    count
+    hasNextPage
+    results {
+      id
+      startTime
+      endTime
+      duration
+      bucket
+      bucketRegion
+      cloudfrontUrl
+      playlistM3u8Path
+      playlistPath
+    }
+  }
+}
+    `;
+
+export const useListFeedStreamsQuery = <
+  TData = ListFeedStreamsQuery,
+  TError = unknown,
+>(
+  variables?: ListFeedStreamsQueryVariables,
+  options?: Omit<
+    UseQueryOptions<ListFeedStreamsQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<ListFeedStreamsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<ListFeedStreamsQuery, TError, TData>({
+    queryKey:
+      variables === undefined
+        ? ["listFeedStreams"]
+        : ["listFeedStreams", variables],
+    queryFn: fetcher<ListFeedStreamsQuery, ListFeedStreamsQueryVariables>(
+      ListFeedStreamsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useListFeedStreamsQuery.document = ListFeedStreamsDocument;
+
+useListFeedStreamsQuery.getKey = (variables?: ListFeedStreamsQueryVariables) =>
+  variables === undefined
+    ? ["listFeedStreams"]
+    : ["listFeedStreams", variables];
+
+useListFeedStreamsQuery.fetcher = (
+  variables?: ListFeedStreamsQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<ListFeedStreamsQuery, ListFeedStreamsQueryVariables>(
+    ListFeedStreamsDocument,
     variables,
     options,
   );

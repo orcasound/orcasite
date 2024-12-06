@@ -1,0 +1,29 @@
+query listFeedStreams(
+  $feedId: String
+  $filter: FeedStreamFilterInput
+  $limit: Int
+  $offset: Int
+  $sort: [FeedStreamSortInput]
+) {
+  feedStreams(
+    feedId: $feedId
+    filter: $filter
+    limit: $limit
+    offset: $offset
+    sort: $sort
+  ) {
+    count
+    hasNextPage
+    results {
+      id
+      startTime
+      endTime
+      duration
+      bucket
+      bucketRegion
+      cloudfrontUrl
+      playlistM3u8Path
+      playlistPath
+    }
+  }
+}
