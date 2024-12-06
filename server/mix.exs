@@ -109,7 +109,8 @@ defmodule Orcasite.Mixfile do
       {:configparser_ex, "~> 4.0", only: :dev},
       {:broadway_sqs, "~> 0.7"},
       {:recon, "~> 2.5"},
-      {:ecto_psql_extras, "~> 0.6"}
+      {:ecto_psql_extras, "~> 0.6"},
+      {:recase, "~> 0.5"}
     ]
   end
 
