@@ -297,6 +297,37 @@ export type Bout = {
   startTime?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
+/** Join table between Bout and FeedStream */
+export type BoutFeedStream = {
+  __typename?: "BoutFeedStream";
+  id: Scalars["ID"]["output"];
+};
+
+export type BoutFeedStreamFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type BoutFeedStreamFilterInput = {
+  and?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
+  id?: InputMaybe<BoutFeedStreamFilterId>;
+  not?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
+  or?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
+};
+
+export type BoutFeedStreamSortField = "ID";
+
+export type BoutFeedStreamSortInput = {
+  field: BoutFeedStreamSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
 export type BoutFilterCategory = {
   eq?: InputMaybe<AudioCategory>;
   greaterThan?: InputMaybe<AudioCategory>;
@@ -1184,6 +1215,7 @@ export type FeedSortInput = {
 
 export type FeedStream = {
   __typename?: "FeedStream";
+  boutFeedStreams: Array<BoutFeedStream>;
   bouts: Array<Bout>;
   bucket?: Maybe<Scalars["String"]["output"]>;
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
@@ -1205,6 +1237,13 @@ export type FeedStream = {
   prevFeedStream?: Maybe<FeedStream>;
   prevFeedStreamId?: Maybe<Scalars["String"]["output"]>;
   startTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type FeedStreamBoutFeedStreamsArgs = {
+  filter?: InputMaybe<BoutFeedStreamFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<BoutFeedStreamSortInput>>>;
 };
 
 export type FeedStreamBoutsArgs = {
@@ -1292,6 +1331,7 @@ export type FeedStreamFilterId = {
 
 export type FeedStreamFilterInput = {
   and?: InputMaybe<Array<FeedStreamFilterInput>>;
+  boutFeedStreams?: InputMaybe<BoutFeedStreamFilterInput>;
   bouts?: InputMaybe<BoutFilterInput>;
   bucket?: InputMaybe<FeedStreamFilterBucket>;
   bucketRegion?: InputMaybe<FeedStreamFilterBucketRegion>;
@@ -2433,12 +2473,9 @@ export type DetectionsQuery = {
 
 export type ListFeedStreamsQueryVariables = Exact<{
   feedId?: InputMaybe<Scalars["String"]["input"]>;
-  filter?: InputMaybe<FeedStreamFilterInput>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  sort?: InputMaybe<
-    Array<InputMaybe<FeedStreamSortInput>> | InputMaybe<FeedStreamSortInput>
-  >;
+  fromDateTime: Scalars["DateTime"]["input"];
+  toDateTime: Scalars["DateTime"]["input"];
+  dayBeforeFromDateTime: Scalars["DateTime"]["input"];
 }>;
 
 export type ListFeedStreamsQuery = {
@@ -2446,7 +2483,6 @@ export type ListFeedStreamsQuery = {
   feedStreams?: {
     __typename?: "PageOfFeedStream";
     count?: number | null;
-    hasNextPage: boolean;
     results?: Array<{
       __typename?: "FeedStream";
       id: string;
@@ -2456,8 +2492,23 @@ export type ListFeedStreamsQuery = {
       bucket?: string | null;
       bucketRegion?: string | null;
       cloudfrontUrl?: string | null;
-      playlistM3u8Path?: string | null;
+      playlistTimestamp?: string | null;
       playlistPath?: string | null;
+      playlistM3u8Path?: string | null;
+      feedSegments: Array<{
+        __typename?: "FeedSegment";
+        startTime?: Date | null;
+        endTime?: Date | null;
+        duration?: number | null;
+        bucket?: string | null;
+        bucketRegion?: string | null;
+        cloudfrontUrl?: string | null;
+        fileName: string;
+        playlistM3u8Path?: string | null;
+        playlistPath?: string | null;
+        playlistTimestamp?: string | null;
+        segmentPath?: string | null;
+      }>;
     }> | null;
   } | null;
 };
@@ -3400,16 +3451,14 @@ useDetectionsQuery.fetcher = (
   );
 
 export const ListFeedStreamsDocument = `
-    query listFeedStreams($feedId: String, $filter: FeedStreamFilterInput, $limit: Int, $offset: Int, $sort: [FeedStreamSortInput]) {
+    query listFeedStreams($feedId: String, $fromDateTime: DateTime!, $toDateTime: DateTime!, $dayBeforeFromDateTime: DateTime!) {
   feedStreams(
     feedId: $feedId
-    filter: $filter
-    limit: $limit
-    offset: $offset
-    sort: $sort
+    filter: {and: [{startTime: {lessThanOrEqual: $toDateTime}}, {startTime: {greaterThanOrEqual: $dayBeforeFromDateTime}}], or: [{endTime: {isNil: true}}, {endTime: {greaterThanOrEqual: $fromDateTime}}]}
+    sort: {field: START_TIME, order: DESC}
+    limit: 2
   ) {
     count
-    hasNextPage
     results {
       id
       startTime
@@ -3418,8 +3467,25 @@ export const ListFeedStreamsDocument = `
       bucket
       bucketRegion
       cloudfrontUrl
-      playlistM3u8Path
+      playlistTimestamp
       playlistPath
+      playlistM3u8Path
+      feedSegments(
+        filter: {and: [{startTime: {lessThanOrEqual: $toDateTime}}, {startTime: {greaterThanOrEqual: $dayBeforeFromDateTime}}], endTime: {greaterThanOrEqual: $fromDateTime}}
+        sort: {field: START_TIME, order: DESC}
+      ) {
+        startTime
+        endTime
+        duration
+        bucket
+        bucketRegion
+        cloudfrontUrl
+        fileName
+        playlistM3u8Path
+        playlistPath
+        playlistTimestamp
+        segmentPath
+      }
     }
   }
 }
@@ -3429,7 +3495,7 @@ export const useListFeedStreamsQuery = <
   TData = ListFeedStreamsQuery,
   TError = unknown,
 >(
-  variables?: ListFeedStreamsQueryVariables,
+  variables: ListFeedStreamsQueryVariables,
   options?: Omit<
     UseQueryOptions<ListFeedStreamsQuery, TError, TData>,
     "queryKey"
@@ -3438,10 +3504,7 @@ export const useListFeedStreamsQuery = <
   },
 ) => {
   return useQuery<ListFeedStreamsQuery, TError, TData>({
-    queryKey:
-      variables === undefined
-        ? ["listFeedStreams"]
-        : ["listFeedStreams", variables],
+    queryKey: ["listFeedStreams", variables],
     queryFn: fetcher<ListFeedStreamsQuery, ListFeedStreamsQueryVariables>(
       ListFeedStreamsDocument,
       variables,
@@ -3452,13 +3515,13 @@ export const useListFeedStreamsQuery = <
 
 useListFeedStreamsQuery.document = ListFeedStreamsDocument;
 
-useListFeedStreamsQuery.getKey = (variables?: ListFeedStreamsQueryVariables) =>
-  variables === undefined
-    ? ["listFeedStreams"]
-    : ["listFeedStreams", variables];
+useListFeedStreamsQuery.getKey = (variables: ListFeedStreamsQueryVariables) => [
+  "listFeedStreams",
+  variables,
+];
 
 useListFeedStreamsQuery.fetcher = (
-  variables?: ListFeedStreamsQueryVariables,
+  variables: ListFeedStreamsQueryVariables,
   options?: RequestInit["headers"],
 ) =>
   fetcher<ListFeedStreamsQuery, ListFeedStreamsQueryVariables>(

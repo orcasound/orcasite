@@ -47,7 +47,7 @@ defmodule Orcasite.Radio.GraphqlClient do
                   {startTime: {lessThanOrEqual: "#{DateTime.to_iso8601(to_datetime)}"}},
                   {startTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(day_before)}"}}
                 ],
-                or: [{endTime: {isNil: true}}, {endTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(from_datetime)}"}}]
+                endTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(from_datetime)}"}
               },
               sort: {field: START_TIME, order: DESC},
             ) {

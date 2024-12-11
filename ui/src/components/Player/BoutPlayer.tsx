@@ -1,6 +1,10 @@
 import { Box, Typography } from "@mui/material";
+import { differenceInSeconds } from "date-fns";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useRef, useState } from "react";
+
+import { Feed, FeedStream } from "@/graphql/generated";
+import { getHlsURI } from "@/hooks/useTimestampFetcher";
 
 import { type PlayerStatus } from "./Player";
 import PlayPauseButton from "./PlayPauseButton";
@@ -12,20 +16,37 @@ const playerOffsetToDateTime = (playlistDatetime: Date, playerOffset: number) =>
   new Date(playlistDatetime.valueOf() + playerOffset * 1000);
 
 export function BoutPlayer({
+  feed,
+  feedStream,
+  targetTime,
   onPlayerTimeUpdate,
 }: {
+  feed: Pick<Feed, "bucket" | "nodeName">;
+  feedStream: Pick<FeedStream, "bucket" | "playlistTimestamp">;
+  targetTime: Date;
   onPlayerTimeUpdate?: (time: Date) => void;
 }) {
-  const playlistTimestamp = "1732665619";
-  const playlistDatetime = new Date(Number(playlistTimestamp) * 1000);
-  const hlsURI = `https://audio-orcasound-net.s3.amazonaws.com/rpi_port_townsend/hls/${playlistTimestamp}/live.m3u8`;
+  const hlsURI = getHlsURI(
+    feed.bucket,
+    feed.nodeName,
+    Number(feedStream.playlistTimestamp),
+  );
+  const playlistTimestamp = feedStream.playlistTimestamp;
+  const playlistDatetime = useMemo(
+    () => new Date(Number(playlistTimestamp) * 1000),
+    [playlistTimestamp],
+  );
+
   const now = useMemo(() => new Date(), []);
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
-  const [playerOffset, setPlayerOffset] = useState<number>(
-    now.valueOf() / 1000 - Number(playlistTimestamp),
+  const targetOffset = useMemo(
+    () => differenceInSeconds(targetTime, playlistDatetime),
+    [targetTime, playlistDatetime],
   );
-
+  const [playerOffset, setPlayerOffset] = useState<number>(
+    targetOffset ?? now.valueOf() / 1000 - Number(playlistTimestamp),
+  );
   const playerDateTime = useMemo(
     () => playerOffsetToDateTime(playlistDatetime, playerOffset),
     [playlistDatetime, playerOffset],
@@ -76,7 +97,7 @@ export function BoutPlayer({
       // player.currentTime(startOffset);
 
       player.on("timeupdate", () => {
-        const currentTime = player.currentTime() ?? 0;
+        const currentTime = player.currentTime() ?? targetOffset ?? 0;
         // if (currentTime > endOffset) {
         //   player.currentTime(startOffset);
         //   setPlayerOffset(startOffset);
@@ -90,9 +111,15 @@ export function BoutPlayer({
           );
         }
       });
+
+      player.on("loadedmetadata", () => {
+        // On initial load, set target time
+        console.log("offset", targetOffset);
+        player.currentTime(targetOffset);
+      });
     },
     // [startOffset, endOffset],
-    [onPlayerTimeUpdate],
+    [onPlayerTimeUpdate, playlistDatetime, targetOffset],
   );
   const handlePlayPauseClick = () => {
     const player = playerRef.current;

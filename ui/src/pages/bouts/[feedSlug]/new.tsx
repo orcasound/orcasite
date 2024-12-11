@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { addMinutes, subDays, subMinutes } from "date-fns";
 import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -17,6 +18,11 @@ import {
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const NewBoutPage: NextPageWithLayout = () => {
+  const targetTime = new Date("2024-12-11 19:55:44.013Z");
+  const targetTimePlus10Minutes = addMinutes(targetTime, 10);
+  const targetTimeMinus10Minutes = subMinutes(targetTime, 10);
+  const targetTimeMinusADay = subDays(targetTime, 1);
+
   const params = useParams<{ feedSlug?: string }>();
   const feedSlug = params?.feedSlug;
   const searchParams = useSearchParams();
@@ -36,8 +42,9 @@ const NewBoutPage: NextPageWithLayout = () => {
   const feedStreamQueryResult = useListFeedStreamsQuery(
     {
       feedId: feed?.id,
-      sort: { field: "START_TIME", order: "DESC" },
-      limit: 1,
+      fromDateTime: targetTime,
+      toDateTime: targetTimeMinus10Minutes,
+      dayBeforeFromDateTime: targetTimeMinusADay,
     },
     { enabled: !!feed?.id },
   );
@@ -69,7 +76,14 @@ const NewBoutPage: NextPageWithLayout = () => {
           </Box>
         </Box>
         <Box display="flex" flexDirection="column" gap={2}>
-          <BoutPlayer onPlayerTimeUpdate={setPlayerTime} />
+          {feedStream && (
+            <BoutPlayer
+              feed={feed}
+              targetTime={targetTime}
+              feedStream={feedStream}
+              onPlayerTimeUpdate={setPlayerTime}
+            />
+          )}
           <SpectrogramTimeline playerTime={playerTime} />
         </Box>
       </main>
