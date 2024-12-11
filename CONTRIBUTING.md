@@ -98,8 +98,6 @@ date and time information.
 - [Meeting link](https://meet.google.com/igp-gpdr-wwu)
 - [Meeting notes](https://docs.google.com/document/d/1zXngvGO5kdm24gqSTNfHleFifU6ldtbA4amGSXe5jpg/edit?tab=t.0#heading=h.qyef7i4h6hom)
 - [Figma](https://www.figma.com/design/41JuvNkXJhTUob8HMsJiNC/Orcasite%3A-design-updates?node-id=882-3971)
-- [Trello board with overview of features](https://trello.com/b/hRFh7Sc1/orcasite-development)
-- [Public roadmap](https://trello.com/b/wBg0qhss/orcasound-roadmap)
 
 ### Maintainers
 
