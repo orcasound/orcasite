@@ -1,0 +1,59 @@
+query listFeedStreams(
+  $feedId: String
+  $fromDateTime: DateTime!
+  $toDateTime: DateTime!
+  $dayBeforeFromDateTime: DateTime!
+) {
+  feedStreams(
+    feedId: $feedId
+    filter: {
+      and: [
+        { startTime: { lessThanOrEqual: $toDateTime } }
+        { startTime: { greaterThanOrEqual: $dayBeforeFromDateTime } }
+      ]
+      or: [
+        { endTime: { isNil: true } }
+        { endTime: { greaterThanOrEqual: $fromDateTime } }
+      ]
+    }
+    sort: { field: START_TIME, order: DESC }
+    limit: 2
+  ) {
+    count
+    results {
+      id
+      startTime
+      endTime
+      duration
+      bucket
+      bucketRegion
+      cloudfrontUrl
+      playlistTimestamp
+      playlistPath
+      playlistM3u8Path
+
+      feedSegments(
+        filter: {
+          and: [
+            { startTime: { lessThanOrEqual: $toDateTime } }
+            { startTime: { greaterThanOrEqual: $dayBeforeFromDateTime } }
+          ]
+          endTime: { greaterThanOrEqual: $fromDateTime }
+        }
+        sort: { field: START_TIME, order: DESC }
+      ) {
+        startTime
+        endTime
+        duration
+        bucket
+        bucketRegion
+        cloudfrontUrl
+        fileName
+        playlistM3u8Path
+        playlistPath
+        playlistTimestamp
+        segmentPath
+      }
+    }
+  }
+}
