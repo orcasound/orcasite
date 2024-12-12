@@ -211,11 +211,11 @@ function Desktop() {
               href={page.url}
               target="_blank"
               key={page.label}
+              variant="text"
               sx={{
                 my: 2,
                 mx: 1,
                 color: "base.contrastText",
-                display: "block",
               }}
             >
               {page.label}
@@ -226,11 +226,7 @@ function Desktop() {
             title="Get notified when there's whale activity."
             target="_blank"
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textDecoration: "none",
-              textTransform: "uppercase",
+              my: 2,
               mx: 1,
             }}
             onClick={() => analytics.nav.notificationsClicked()}
@@ -250,22 +246,18 @@ function Desktop() {
             href="/join"
             title="Join Orcasound"
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textDecoration: "none",
-              textTransform: "uppercase",
+              my: 2,
               mx: 1,
             }}
             // TODO(@paulcretu): Add analytics event
             // onClick={() => analytics.nav.joinClicked()}
           >
             <Button
-              variant="outlined"
+              variant="contained"
+              color="primary"
               startIcon={<Person />}
               sx={{
                 borderRadius: 8,
-                backgroundColor: "white",
               }}
             >
               Join
