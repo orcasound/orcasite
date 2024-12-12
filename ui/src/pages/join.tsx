@@ -1,12 +1,14 @@
 import { getMapLayout } from "@/components/layouts/MapLayout";
+import {
+  AccountStep,
+  PreferencesStep,
+  ProfileStep,
+  StepLayout,
+  steps,
+  SuccessStep,
+  useSteps,
+} from "@/modules/join";
 import type { NextPageWithLayout } from "@/pages/_app";
-
-import { AccountStep } from "./components/AccountStep";
-import { PreferencesStep } from "./components/PreferencesStep";
-import { ProfileStep } from "./components/ProfileStep";
-import { StepLayout } from "./components/StepLayout";
-import { SuccessStep } from "./components/SuccessStep";
-import { steps, useSteps } from "./hooks/useSteps";
 
 type StepConfig = {
   pageTitle: string;
