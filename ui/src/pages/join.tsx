@@ -1,7 +1,10 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { getMapLayout } from "../components/layouts/MapLayout";
 import {
@@ -10,12 +13,32 @@ import {
 } from "../graphql/generated";
 import type { NextPageWithLayout } from "./_app";
 
+const joinSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    ),
+});
+
+type JoinFormInputs = z.infer<typeof joinSchema>;
+
 const JoinPage: NextPageWithLayout = () => {
   const router = useRouter();
   const [step] = useState(1);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<MutationError[]>([]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: formErrors },
+  } = useForm<JoinFormInputs>({
+    resolver: zodResolver(joinSchema),
+  });
 
   const submitRegister = useRegisterWithPasswordMutation({
     onMutate: () => {
@@ -42,12 +65,11 @@ const JoinPage: NextPageWithLayout = () => {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: JoinFormInputs) => {
     submitRegister.mutate({
-      email,
-      password,
-      passwordConfirmation: password, // Required by API
+      email: data.email,
+      password: data.password,
+      passwordConfirmation: data.password,
     });
   };
 
@@ -68,30 +90,35 @@ const JoinPage: NextPageWithLayout = () => {
             </Typography>
           </Box>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <TextField
+                {...register("email")}
                 label="Email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
                 fullWidth
-                error={errors.some((e) => e.fields?.includes("email"))}
+                error={
+                  !!formErrors.email ||
+                  errors.some((e) => e.fields?.includes("email"))
+                }
                 helperText={
-                  errors.find((e) => e.fields?.includes("email"))?.message || ""
+                  formErrors.email?.message ||
+                  errors.find((e) => e.fields?.includes("email"))?.message ||
+                  ""
                 }
               />
 
               <TextField
+                {...register("password")}
                 label="Password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
                 fullWidth
-                error={errors.some((e) => e.fields?.includes("password"))}
+                error={
+                  !!formErrors.password ||
+                  errors.some((e) => e.fields?.includes("password"))
+                }
                 helperText={
+                  formErrors.password?.message ||
                   errors.find((e) => e.fields?.includes("password"))?.message ||
                   ""
                 }
