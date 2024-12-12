@@ -4,6 +4,7 @@ import {
   Home,
   Menu,
   Notifications,
+  Person,
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -225,29 +226,44 @@ function Desktop() {
               justifyContent: "center",
               textDecoration: "none",
               textTransform: "uppercase",
-              "&:hover": { color: "#ccc" },
               mx: 1,
             }}
             onClick={() => analytics.nav.notificationsClicked()}
           >
             <Button
               variant="outlined"
-              // color="info"
               startIcon={<Notifications />}
               sx={{
                 borderRadius: 8,
                 backgroundColor: "white",
-                "&:hover": {
-                  borderColor: "#a2d1cf",
-                  backgroundColor: "#efefef",
-                },
-                "&:focus": {
-                  borderColor: "#a2d1cf",
-                  backgroundColor: "#efefef",
-                },
               }}
             >
               Get notified
+            </Button>
+          </Link>
+          <Link
+            href="/join"
+            title="Join Orcasound"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textDecoration: "none",
+              textTransform: "uppercase",
+              mx: 1,
+            }}
+            // TODO(@paulcretu): Add analytics event
+            // onClick={() => analytics.nav.joinClicked()}
+          >
+            <Button
+              variant="outlined"
+              startIcon={<Person />}
+              sx={{
+                borderRadius: 8,
+                backgroundColor: "white",
+              }}
+            >
+              Join
             </Button>
           </Link>
         </Box>
