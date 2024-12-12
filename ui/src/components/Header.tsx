@@ -235,6 +235,7 @@ function Desktop() {
                 my: 2,
                 mx: 1,
                 color: "base.contrastText",
+                textWrap: "nowrap",
               }}
             >
               {page.label}
@@ -247,6 +248,7 @@ function Desktop() {
             sx={{
               my: 2,
               mx: 1,
+              textWrap: "nowrap",
             }}
             onClick={() => analytics.nav.notificationsClicked()}
           >
@@ -267,6 +269,7 @@ function Desktop() {
             sx={{
               my: 2,
               mx: 1,
+              textWrap: "nowrap",
             }}
             // TODO(@paulcretu): Add analytics event
             // onClick={() => analytics.nav.joinClicked()}
