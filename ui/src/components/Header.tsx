@@ -227,11 +227,11 @@ function Desktop() {
             onClick={() => analytics.nav.notificationsClicked()}
           >
             <Button
-              variant="outlined"
-              startIcon={<Notifications />}
+              variant="contained"
+              color="primary"
+              startIcon={<Notifications sx={{ color: "gold" }} />}
               sx={{
                 borderRadius: 8,
-                backgroundColor: "white",
               }}
             >
               Get notified
