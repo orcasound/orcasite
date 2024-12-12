@@ -4,6 +4,7 @@ import {
   Home,
   Menu,
   Notifications,
+  Person,
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -106,6 +107,25 @@ function Mobile({
           {menuIsOpen ? <Close /> : <Menu />}
         </IconButton>
         <Brand onClick={onBrandClick} />
+        <Link
+          href="/join"
+          title="Join Orcasound"
+          sx={{
+            marginLeft: "auto",
+            paddingLeft: 1,
+          }}
+        >
+          <Button
+            variant="contained"
+            startIcon={<Person />}
+            color="primary"
+            sx={{
+              borderRadius: 8,
+            }}
+          >
+            Join
+          </Button>
+        </Link>
       </Box>
       <nav>
         <Drawer
@@ -210,11 +230,12 @@ function Desktop() {
               href={page.url}
               target="_blank"
               key={page.label}
+              variant="text"
               sx={{
                 my: 2,
                 mx: 1,
                 color: "base.contrastText",
-                display: "block",
+                textWrap: "nowrap",
               }}
             >
               {page.label}
@@ -225,34 +246,43 @@ function Desktop() {
             title="Get notified when there's whale activity."
             target="_blank"
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textDecoration: "none",
-              textTransform: "uppercase",
-              "&:hover": { color: "#ccc" },
+              my: 2,
               mx: 1,
+              textWrap: "nowrap",
             }}
             onClick={() => analytics.nav.notificationsClicked()}
           >
             <Button
-              variant="outlined"
-              // color="info"
-              startIcon={<Notifications />}
+              variant="contained"
+              color="primary"
+              startIcon={<Notifications sx={{ color: "gold" }} />}
               sx={{
                 borderRadius: 8,
-                backgroundColor: "white",
-                "&:hover": {
-                  borderColor: "#a2d1cf",
-                  backgroundColor: "#efefef",
-                },
-                "&:focus": {
-                  borderColor: "#a2d1cf",
-                  backgroundColor: "#efefef",
-                },
               }}
             >
               Get notified
+            </Button>
+          </Link>
+          <Link
+            href="/join"
+            title="Join Orcasound"
+            sx={{
+              my: 2,
+              mx: 1,
+              textWrap: "nowrap",
+            }}
+            // TODO(@paulcretu): Add analytics event
+            // onClick={() => analytics.nav.joinClicked()}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Person />}
+              sx={{
+                borderRadius: 8,
+              }}
+            >
+              Join
             </Button>
           </Link>
         </Box>
@@ -273,6 +303,7 @@ function Brand({ onClick }: { onClick?: () => void }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          px: 4,
         }}
         onClick={() => {
           if (onClick) onClick();
