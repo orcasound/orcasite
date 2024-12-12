@@ -7,7 +7,7 @@ export const steps = {
   success: 4,
 } as const;
 
-export type Step = (typeof steps)[keyof typeof steps];
+type Step = (typeof steps)[keyof typeof steps];
 
 export const useSteps = () => {
   const [currentStep, setCurrentStep] = useState<Step>(steps.account);
