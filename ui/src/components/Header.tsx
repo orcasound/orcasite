@@ -107,6 +107,25 @@ function Mobile({
           {menuIsOpen ? <Close /> : <Menu />}
         </IconButton>
         <Brand onClick={onBrandClick} />
+        <Link
+          href="/join"
+          title="Join Orcasound"
+          sx={{
+            marginLeft: "auto",
+            paddingLeft: 1,
+          }}
+        >
+          <Button
+            variant="contained"
+            startIcon={<Person />}
+            color="primary"
+            sx={{
+              borderRadius: 8,
+            }}
+          >
+            Join
+          </Button>
+        </Link>
       </Box>
       <nav>
         <Drawer
@@ -276,6 +295,7 @@ function Brand({ onClick }: { onClick?: () => void }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          px: 4,
         }}
         onClick={() => {
           if (onClick) onClick();
