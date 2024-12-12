@@ -2911,7 +2911,7 @@ export type RegisterWithPasswordMutationVariables = Exact<{
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   email: Scalars["String"]["input"];
-  username: Scalars["String"]["input"];
+  username?: InputMaybe<Scalars["String"]["input"]>;
   password: Scalars["String"]["input"];
   passwordConfirmation: Scalars["String"]["input"];
 }>;
@@ -4158,7 +4158,7 @@ useNotifyLiveBoutMutation.fetcher = (
   );
 
 export const RegisterWithPasswordDocument = `
-    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $username: String!, $password: String!, $passwordConfirmation: String!) {
+    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $username: String, $password: String!, $passwordConfirmation: String!) {
   registerWithPassword(
     input: {email: $email, username: $username, password: $password, passwordConfirmation: $passwordConfirmation, firstName: $firstName, lastName: $lastName}
   ) {
