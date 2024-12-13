@@ -1,6 +1,12 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { addMinutes, subDays, subMinutes } from "date-fns";
+import {
+  addMinutes,
+  min,
+  roundToNearestMinutes,
+  subDays,
+  subMinutes,
+} from "date-fns";
 import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -18,9 +24,18 @@ import {
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const NewBoutPage: NextPageWithLayout = () => {
+  const now = useMemo(() => new Date(), []);
+
   const targetTime = new Date("2024-12-11 19:55:44.013Z");
-  const targetTimePlus10Minutes = addMinutes(targetTime, 10);
-  const targetTimeMinus10Minutes = subMinutes(targetTime, 10);
+  const timeBuffer = 5; // minutes
+  const targetTimePlusBuffer = roundToNearestMinutes(
+    min([now, addMinutes(targetTime, timeBuffer)]),
+    { roundingMethod: "ceil" },
+  );
+  const targetTimeMinusBuffer = roundToNearestMinutes(
+    subMinutes(targetTime, timeBuffer),
+    { roundingMethod: "floor" },
+  );
   const targetTimeMinusADay = subDays(targetTime, 1);
 
   const params = useParams<{ feedSlug?: string }>();
@@ -34,16 +49,14 @@ const NewBoutPage: NextPageWithLayout = () => {
   );
   const feed = feedQueryResult.data?.feed;
 
-  const now = useMemo(() => new Date(), []);
-
   // If feed is present, and there's no pre-set time,
-  // get latest stream and last 10 minutes of segments.
+  // get latest stream and last <timeBuffer> minutes of segments.
   // Set time to end of last segment
   const feedStreamQueryResult = useListFeedStreamsQuery(
     {
       feedId: feed?.id,
-      fromDateTime: targetTime,
-      toDateTime: targetTimeMinus10Minutes,
+      fromDateTime: targetTimeMinusBuffer,
+      toDateTime: targetTimePlusBuffer,
       dayBeforeFromDateTime: targetTimeMinusADay,
     },
     { enabled: !!feed?.id },
@@ -54,11 +67,18 @@ const NewBoutPage: NextPageWithLayout = () => {
     { enabled: !!feed?.id },
   );
 
+  const feedStreams = useMemo(
+    () => feedStreamQueryResult.data?.feedStreams?.results ?? [],
+    [feedStreamQueryResult],
+  );
+  const feedStream = feedStreams[0];
+  const feedSegments = useMemo(
+    () => feedStreams.flatMap(({ feedSegments }) => feedSegments),
+    [feedStreams],
+  );
+
   if (!feedSlug || feedQueryResult.isLoading) return <LoadingSpinner mt={5} />;
   if (!feed) return <p>Feed not found</p>;
-
-  const feedStreams = feedStreamQueryResult.data?.feedStreams?.results ?? [];
-  const feedStream = feedStreams[0];
 
   return (
     <div>
@@ -84,7 +104,13 @@ const NewBoutPage: NextPageWithLayout = () => {
               onPlayerTimeUpdate={setPlayerTime}
             />
           )}
-          <SpectrogramTimeline playerTime={playerTime} />
+          <SpectrogramTimeline
+            playerTime={playerTime}
+            timelineStartTime={targetTimeMinusBuffer}
+            timelineEndTime={targetTimePlusBuffer}
+            feedSegments={feedSegments}
+            // feedSegments={[]}
+          />
         </Box>
       </main>
     </div>

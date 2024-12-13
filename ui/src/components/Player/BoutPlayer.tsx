@@ -76,7 +76,7 @@ export function BoutPlayer({
         },
       ],
     }),
-    [hlsURI], //, feed?.nodeName],
+    [hlsURI],
   );
 
   const handleReady = useCallback(
@@ -114,11 +114,9 @@ export function BoutPlayer({
 
       player.on("loadedmetadata", () => {
         // On initial load, set target time
-        console.log("offset", targetOffset);
         player.currentTime(targetOffset);
       });
     },
-    // [startOffset, endOffset],
     [onPlayerTimeUpdate, playlistDatetime, targetOffset],
   );
   const handlePlayPauseClick = () => {

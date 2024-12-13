@@ -21,16 +21,7 @@ query listFeedStreams(
   ) {
     count
     results {
-      id
-      startTime
-      endTime
-      duration
-      bucket
-      bucketRegion
-      cloudfrontUrl
-      playlistTimestamp
-      playlistPath
-      playlistM3u8Path
+      ...FeedStreamParts
 
       feedSegments(
         filter: {
@@ -42,17 +33,10 @@ query listFeedStreams(
         }
         sort: { field: START_TIME, order: DESC }
       ) {
-        startTime
-        endTime
-        duration
-        bucket
-        bucketRegion
-        cloudfrontUrl
-        fileName
-        playlistM3u8Path
-        playlistPath
-        playlistTimestamp
-        segmentPath
+        ...FeedSegmentParts
+        audioImages(filter: { status: { eq: "complete" } }) {
+          ...AudioImageParts
+        }
       }
     }
   }

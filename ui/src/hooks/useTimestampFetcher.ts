@@ -4,7 +4,8 @@ if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
   throw new Error("NEXT_PUBLIC_S3_BUCKET is not set");
 }
 
-const getBucketBase = (bucket: string) => `https://${bucket}.s3.amazonaws.com`;
+export const getBucketBase = (bucket: string) =>
+  `https://${bucket}.s3.amazonaws.com`;
 
 const getTimestampURI = (bucket: string, nodeName: string) =>
   `${getBucketBase(bucket)}/${nodeName}/latest.txt`;

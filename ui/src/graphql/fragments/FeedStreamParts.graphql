@@ -1,0 +1,12 @@
+fragment FeedStreamParts on FeedStream {
+  id
+  startTime
+  endTime
+  duration
+  bucket
+  bucketRegion
+  cloudfrontUrl
+  playlistTimestamp
+  playlistPath
+  playlistM3u8Path
+}

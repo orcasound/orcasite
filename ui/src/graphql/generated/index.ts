@@ -2063,6 +2063,50 @@ export type UserFilterUsername = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type AudioImagePartsFragment = {
+  __typename?: "AudioImage";
+  id: string;
+  startTime: Date;
+  endTime: Date;
+  status: string;
+  objectPath?: string | null;
+  bucket?: string | null;
+  bucketRegion?: string | null;
+  feedId: string;
+  imageSize?: number | null;
+  imageType?: ImageType | null;
+};
+
+export type FeedSegmentPartsFragment = {
+  __typename?: "FeedSegment";
+  id: string;
+  startTime?: Date | null;
+  endTime?: Date | null;
+  duration?: number | null;
+  bucket?: string | null;
+  bucketRegion?: string | null;
+  cloudfrontUrl?: string | null;
+  fileName: string;
+  playlistM3u8Path?: string | null;
+  playlistPath?: string | null;
+  playlistTimestamp?: string | null;
+  segmentPath?: string | null;
+};
+
+export type FeedStreamPartsFragment = {
+  __typename?: "FeedStream";
+  id: string;
+  startTime?: Date | null;
+  endTime?: Date | null;
+  duration?: number | null;
+  bucket?: string | null;
+  bucketRegion?: string | null;
+  cloudfrontUrl?: string | null;
+  playlistTimestamp?: string | null;
+  playlistPath?: string | null;
+  playlistM3u8Path?: string | null;
+};
+
 export type CancelCandidateNotificationsMutationVariables = Exact<{
   candidateId: Scalars["ID"]["input"];
 }>;
@@ -2497,6 +2541,7 @@ export type ListFeedStreamsQuery = {
       playlistM3u8Path?: string | null;
       feedSegments: Array<{
         __typename?: "FeedSegment";
+        id: string;
         startTime?: Date | null;
         endTime?: Date | null;
         duration?: number | null;
@@ -2508,6 +2553,19 @@ export type ListFeedStreamsQuery = {
         playlistPath?: string | null;
         playlistTimestamp?: string | null;
         segmentPath?: string | null;
+        audioImages: Array<{
+          __typename?: "AudioImage";
+          id: string;
+          startTime: Date;
+          endTime: Date;
+          status: string;
+          objectPath?: string | null;
+          bucket?: string | null;
+          bucketRegion?: string | null;
+          feedId: string;
+          imageSize?: number | null;
+          imageType?: ImageType | null;
+        }>;
       }>;
     }> | null;
   } | null;
@@ -2536,6 +2594,50 @@ export type FeedsQuery = {
   }>;
 };
 
+export const AudioImagePartsFragmentDoc = `
+    fragment AudioImageParts on AudioImage {
+  id
+  startTime
+  endTime
+  status
+  objectPath
+  bucket
+  bucketRegion
+  feedId
+  imageSize
+  imageType
+}
+    `;
+export const FeedSegmentPartsFragmentDoc = `
+    fragment FeedSegmentParts on FeedSegment {
+  id
+  startTime
+  endTime
+  duration
+  bucket
+  bucketRegion
+  cloudfrontUrl
+  fileName
+  playlistM3u8Path
+  playlistPath
+  playlistTimestamp
+  segmentPath
+}
+    `;
+export const FeedStreamPartsFragmentDoc = `
+    fragment FeedStreamParts on FeedStream {
+  id
+  startTime
+  endTime
+  duration
+  bucket
+  bucketRegion
+  cloudfrontUrl
+  playlistTimestamp
+  playlistPath
+  playlistM3u8Path
+}
+    `;
 export const CancelCandidateNotificationsDocument = `
     mutation cancelCandidateNotifications($candidateId: ID!) {
   cancelCandidateNotifications(id: $candidateId) {
@@ -3460,36 +3562,22 @@ export const ListFeedStreamsDocument = `
   ) {
     count
     results {
-      id
-      startTime
-      endTime
-      duration
-      bucket
-      bucketRegion
-      cloudfrontUrl
-      playlistTimestamp
-      playlistPath
-      playlistM3u8Path
+      ...FeedStreamParts
       feedSegments(
         filter: {and: [{startTime: {lessThanOrEqual: $toDateTime}}, {startTime: {greaterThanOrEqual: $dayBeforeFromDateTime}}], endTime: {greaterThanOrEqual: $fromDateTime}}
         sort: {field: START_TIME, order: DESC}
       ) {
-        startTime
-        endTime
-        duration
-        bucket
-        bucketRegion
-        cloudfrontUrl
-        fileName
-        playlistM3u8Path
-        playlistPath
-        playlistTimestamp
-        segmentPath
+        ...FeedSegmentParts
+        audioImages(filter: {status: {eq: "complete"}}) {
+          ...AudioImageParts
+        }
       }
     }
   }
 }
-    `;
+    ${FeedStreamPartsFragmentDoc}
+${FeedSegmentPartsFragmentDoc}
+${AudioImagePartsFragmentDoc}`;
 
 export const useListFeedStreamsQuery = <
   TData = ListFeedStreamsQuery,
