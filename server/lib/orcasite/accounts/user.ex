@@ -191,11 +191,14 @@ defmodule Orcasite.Accounts.User do
     end
 
     update :update_preferences do
+      argument :live_notifications, :boolean, default: false, allow_nil?: false
       accept [
         :volunteering,
         :user_testing,
         :newsletter
       ]
+
+      # TODO: When live_notifications is true, create a subscription for the user
     end
   end
 

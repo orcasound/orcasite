@@ -2436,6 +2436,7 @@ export type UpdateBoutResult = {
 };
 
 export type UpdateUserPreferencesInput = {
+  liveNotifications?: InputMaybe<Scalars["Boolean"]["input"]>;
   newsletter?: InputMaybe<Scalars["Boolean"]["input"]>;
   userTesting?: InputMaybe<Scalars["Boolean"]["input"]>;
   volunteering?: InputMaybe<Scalars["Boolean"]["input"]>;
