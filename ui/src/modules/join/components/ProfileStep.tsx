@@ -3,39 +3,81 @@ import { Box, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { createFormSubmitHandler, StepFormProps } from "../utils";
+import {
+  useGetCurrentUserQuery,
+  useUpdateUserProfileMutation,
+} from "@/graphql/generated";
+
+import {
+  createFormSubmitHandler,
+  getFieldErrorProps,
+  StepFormProps,
+} from "../utils";
 import { FormActions } from "./FormActions";
 
 const profileSchema = z.object({
   username: z.string().optional(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
-  isMarineScientist: z.boolean().default(false),
+  isScientist: z.boolean().default(false),
   organization: z.string().optional(),
 });
 
 type ProfileFormInputs = z.infer<typeof profileSchema>;
 
 const useProfileForm = (onSuccess: () => void) => {
+  const currentUser = useGetCurrentUserQuery().data?.currentUser;
+
   const form = useForm<ProfileFormInputs>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      isMarineScientist: false,
+      isScientist: false,
+    },
+  });
+
+  const updateProfile = useUpdateUserProfileMutation({
+    onSuccess: ({ updateUserProfile }) => {
+      if (updateUserProfile?.result) {
+        onSuccess();
+      }
     },
   });
 
   const onSubmit = (data: ProfileFormInputs) => {
-    // TODO: Implement profile update mutation
-    onSuccess();
+    if (!currentUser) return;
+
+    updateProfile.mutate({
+      id: currentUser.id,
+      ...data,
+    });
   };
 
-  return { form, onSubmit };
+  return {
+    form,
+    onSubmit,
+    errors: updateProfile.data?.updateUserProfile?.errors,
+  };
 };
 
 export const ProfileStep = ({ onSuccess, onSkip }: StepFormProps) => {
-  const { form, onSubmit } = useProfileForm(onSuccess);
-  const { register, watch } = form;
-  const isMarineScientist = watch("isMarineScientist");
+  const { form, onSubmit, errors } = useProfileForm(onSuccess);
+  const {
+    register,
+    watch,
+    formState: { errors: formErrors },
+  } = form;
+  const isScientist = watch("isScientist");
+
+  const usernameProps = getFieldErrorProps(
+    "username",
+    formErrors.username,
+    errors,
+  );
+  const organizationProps = getFieldErrorProps(
+    "organization",
+    formErrors.organization,
+    errors,
+  );
 
   return (
     <form onSubmit={createFormSubmitHandler(form, onSubmit)} name="profile">
@@ -44,26 +86,41 @@ export const ProfileStep = ({ onSuccess, onSkip }: StepFormProps) => {
           {...register("username")}
           label="Username"
           fullWidth
-          helperText="Choose a unique username for the community"
+          error={usernameProps.error}
+          helperText={
+            usernameProps.helperText ||
+            "Choose a unique username for the community"
+          }
         />
 
-        <TextField {...register("firstName")} label="First name" fullWidth />
+        <TextField
+          {...register("firstName")}
+          label="First name"
+          fullWidth
+          {...getFieldErrorProps("firstName", formErrors.firstName, errors)}
+        />
 
-        <TextField {...register("lastName")} label="Last name" fullWidth />
+        <TextField
+          {...register("lastName")}
+          label="Last name"
+          fullWidth
+          {...getFieldErrorProps("lastName", formErrors.lastName, errors)}
+        />
 
         <FormControlLabel
-          control={
-            <Checkbox {...register("isMarineScientist")} color="primary" />
-          }
+          control={<Checkbox {...register("isScientist")} color="primary" />}
           label="I am a professional marine scientist"
         />
 
-        {isMarineScientist && (
+        {isScientist && (
           <TextField
             {...register("organization")}
             label="Organization"
             fullWidth
-            helperText="Your professional affiliation"
+            error={organizationProps.error}
+            helperText={
+              organizationProps.helperText || "Your professional affiliation"
+            }
           />
         )}
 
