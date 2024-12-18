@@ -244,6 +244,9 @@ export default function SpectrogramTimeline({
           scrollbarWidth: "none",
           cursor: isDragging ? "grabbing" : "grab",
           userSelect: "none",
+          border: "1px solid #ccc",
+          borderRadius: 2,
+          boxShadow: 1,
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -308,7 +311,7 @@ function BaseAudioWidthLayer({
           <Box
             key={idx}
             zIndex={zIndex}
-            bgcolor={"#ddd"}
+            bgcolor={"#fff"}
             display="flex"
             alignItems="center"
             justifyContent="center"
@@ -375,8 +378,8 @@ function FeedSegmentsLayer({
                 backgroundColor: (theme) => theme.palette.accent2.main,
                 ...(audioImageUrl &&
                   rangesOverlap(
-                    subMinutes(startTime, 500 / pixelsPerMinute),
-                    addMinutes(endTime, 500 / pixelsPerMinute),
+                    subMinutes(startTime, 1500 / pixelsPerMinute),
+                    addMinutes(endTime, 1500 / pixelsPerMinute),
                     windowStartTime,
                     windowEndTime,
                   ) && {
