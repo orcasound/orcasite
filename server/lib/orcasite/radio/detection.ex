@@ -51,7 +51,10 @@ defmodule Orcasite.Radio.Detection do
 
   relationships do
     belongs_to :candidate, Candidate, public?: true
-    belongs_to :feed, Feed, public?: true
+    belongs_to :feed, Feed do
+      public? true
+
+    end
 
     belongs_to :user, Orcasite.Accounts.User
   end
@@ -103,6 +106,9 @@ defmodule Orcasite.Radio.Detection do
         default_limit 100
       end
 
+      argument :feed_id, :string
+
+      filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
     end
 

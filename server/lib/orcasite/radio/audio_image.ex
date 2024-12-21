@@ -78,6 +78,18 @@ defmodule Orcasite.Radio.AudioImage do
   actions do
     defaults [:read, :destroy, create: :*, update: :*]
 
+    read :for_feed do
+      argument :feed_id, :string, allow_nil?: false
+
+      pagination do
+        offset? true
+        countable true
+        default_limit 100
+      end
+
+      filter expr(feed_id == ^arg(:feed_id))
+    end
+
     create :for_feed_segment do
       upsert? true
       upsert_identity :unique_audio_image
@@ -201,7 +213,7 @@ defmodule Orcasite.Radio.AudioImage do
                        {:error, error} ->
                          image
                          |> Ash.Changeset.for_update(:update, %{
-                           status: :failed
+                           status: :errored
                          })
                          |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
                          |> Ash.update(authorize?: false)
@@ -215,10 +227,18 @@ defmodule Orcasite.Radio.AudioImage do
                prepend?: true
              )
     end
+
+    update :set_failed do
+      change set_attribute(:status, :failed)
+    end
   end
 
   graphql do
     type :audio_image
-    attribute_types [feed_id: :id]
+    attribute_types feed_id: :id
+
+    queries do
+      list :audio_images, :for_feed
+    end
   end
 end
