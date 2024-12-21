@@ -9,7 +9,7 @@ import {
 } from "date-fns";
 import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 import SpectrogramTimeline from "@/components/Bouts/SpectrogramTimeline";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
@@ -24,9 +24,14 @@ import {
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const NewBoutPage: NextPageWithLayout = () => {
+  const targetTime = new Date("2024-12-11 19:55:44.013Z");
+  const playerTime = useRef<Date>(targetTime);
+  const setPlayerTime = useCallback(
+    (time: Date) => (playerTime.current = time),
+    [],
+  );
   const now = useMemo(() => new Date(), []);
 
-  const targetTime = new Date("2024-12-11 19:55:44.013Z");
   const timeBuffer = 5; // minutes
   const targetTimePlusBuffer = roundToNearestMinutes(
     min([now, addMinutes(targetTime, timeBuffer)]),
@@ -41,7 +46,6 @@ const NewBoutPage: NextPageWithLayout = () => {
   const params = useParams<{ feedSlug?: string }>();
   const feedSlug = params?.feedSlug;
   const searchParams = useSearchParams();
-  const [playerTime, setPlayerTime] = useState<Date>();
   const audioCategory = searchParams.get("category") as AudioCategory;
   const feedQueryResult = useFeedQuery(
     { slug: feedSlug || "" },
@@ -105,7 +109,7 @@ const NewBoutPage: NextPageWithLayout = () => {
             />
           )}
           <SpectrogramTimeline
-            playerTime={playerTime}
+            playerTimeRef={playerTime}
             timelineStartTime={targetTimeMinusBuffer}
             timelineEndTime={targetTimePlusBuffer}
             feedSegments={feedSegments}

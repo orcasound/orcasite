@@ -6,7 +6,15 @@ import {
   format,
   subMinutes,
 } from "date-fns";
-import { useEffect, useRef, useState } from "react";
+import {
+  ForwardedRef,
+  forwardRef,
+  MutableRefObject,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 import { AudioImage, FeedSegment } from "@/graphql/generated";
 
@@ -55,17 +63,19 @@ type SpectrogramFeedSegment = Pick<
   "id" | "startTime" | "endTime" | "duration" | "audioImages"
 >;
 
-export default function SpectrogramTimeline({
-  playerTime,
-  timelineStartTime,
-  timelineEndTime,
-  feedSegments,
-}: {
-  playerTime?: Date;
-  timelineStartTime: Date;
-  timelineEndTime: Date;
-  feedSegments: SpectrogramFeedSegment[];
-}) {
+// TODO: Remove forwardRef with React 19+
+export default forwardRef(function SpectrogramTimeline(
+  {
+    timelineStartTime,
+    timelineEndTime,
+    feedSegments,
+  }: {
+    timelineStartTime: Date;
+    timelineEndTime: Date;
+    feedSegments: SpectrogramFeedSegment[];
+  },
+  playerTimeRef: ForwardedRef<Date>,
+) {
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
   const [spectrogramTime, setSpectrogramTime] = useState<Date>();
@@ -76,6 +86,9 @@ export default function SpectrogramTimeline({
   const minZoom = 5;
   const maxZoom = 100;
 
+  const playerTime = useRef<Date>();
+  useImperativeHandle(playerTimeRef, () => playerTime.current!, []);
+
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
 
@@ -85,9 +98,13 @@ export default function SpectrogramTimeline({
   const pixelsPerMinute = 50 * zoomLevel;
 
   useEffect(() => {
-    if (spectrogramTime === undefined && playerTime !== undefined) {
+    if (
+      spectrogramTime === undefined &&
+      playerTime !== undefined &&
+      playerTime.current !== undefined
+    ) {
       // Set initial spectrogram time
-      setSpectrogramTime(playerTime);
+      setSpectrogramTime(playerTime.current);
     }
     if (
       windowStartTime === undefined &&
@@ -114,7 +131,7 @@ export default function SpectrogramTimeline({
       );
     }
   }, [
-    playerTime,
+    playerTimeRef,
     spectrogramTime,
     spectrogramWindow,
     pixelsPerMinute,
@@ -254,13 +271,15 @@ export default function SpectrogramTimeline({
         onTouchMove={handleTouchMove}
         onWheel={handleWheel}
       >
-        {/* <PlayHeadLayer
-          playerTime={playerTime ?? spectrogramTime}
-          timelineStartTime={timelineStartTime}
-          timelineEndTime={timelineEndTime}
-          spectrogramWindow={spectrogramWindow}
-          zIndex={5}
-        /> */}
+        {spectrogramWindow.current && (
+          <PlayHeadLayer
+            playerTimeRef={playerTime}
+            timelineStartTime={timelineStartTime}
+            pixelsPerMinute={pixelsPerMinute}
+            spectrogramWindow={spectrogramWindow}
+            zIndex={5}
+          />
+        )}
         <TimelineTickerLayer
           startTime={timelineStartTime}
           endTime={timelineEndTime}
@@ -284,10 +303,10 @@ export default function SpectrogramTimeline({
           />
         )}
       </Box>
-      ({JSON.stringify(spectrogramTime)} / {JSON.stringify(playerTime)})
+      ({JSON.stringify(spectrogramTime)} / {JSON.stringify(playerTime.current)})
     </>
   );
-}
+});
 
 function BaseAudioWidthLayer({
   startTime,
@@ -494,31 +513,48 @@ function TimelineTickerLayer({
   );
 }
 
-function PlayHeadLayer({
-  playerTime,
-  timelineStartTime,
-  pixelsPerMinute,
-  zIndex,
-}: {
-  playerTime: Date;
-  // spectrogramWindow: MutableRefObject<HTMLElement | null>;
-  timelineStartTime: Date;
-  pixelsPerMinute: number;
-  zIndex: number;
-}) {
-  const offset = timeToOffset(playerTime, timelineStartTime, pixelsPerMinute);
+const PlayHeadLayer = forwardRef(function PlayHeadLayer(
+  {
+    timelineStartTime,
+    pixelsPerMinute,
+    spectrogramWindow,
+    zIndex,
+  }: {
+    timelineStartTime: Date;
+    spectrogramWindow: MutableRefObject<HTMLElement | null>;
+    pixelsPerMinute: number;
+    zIndex: number;
+  },
+  playerTimeRef: ForwardedRef<Date>,
+) {
+  const playerTime = useRef<Date>();
+  useImperativeHandle(playerTimeRef, () => playerTime.current!, []);
+
+  // const offset = timeToOffset(
+  //   playerTime.current,
+  //   timelineStartTime,
+  //   pixelsPerMinute,
+  // );
 
   return (
     <>
-      <Box
-        borderLeft="2px solid #eee"
-        position="absolute"
-        left={offset}
-        top={TICKER_HEIGHT}
-        height={`calc(100% - ${TICKER_HEIGHT}px)`}
-        width={1}
-        zIndex={zIndex}
-      ></Box>
+      {playerTime.current && (
+        <Box
+          borderRight="2px solid #eee"
+          position="absolute"
+          top={TICKER_HEIGHT}
+          height={`calc(100% - ${TICKER_HEIGHT}px)`}
+          width={
+            timeToOffset(
+              playerTime.current,
+              timelineStartTime,
+              pixelsPerMinute,
+            ) + (spectrogramWindow.current?.offsetWidth ?? 0)
+          }
+          zIndex={zIndex}
+          sx={{ transition: "width 0.1s" }}
+        ></Box>
+      )}
     </>
   );
-}
+});
