@@ -1,8 +1,8 @@
-import { MutableRefObject, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 export function useIsRelativeOverflow(
-  containerRef: MutableRefObject<HTMLElement | undefined>,
-  targetRef: MutableRefObject<HTMLElement | undefined>,
+  containerRef: RefObject<HTMLElement | undefined>,
+  targetRef: RefObject<HTMLElement | undefined>,
   callback?: (isOverflow: boolean) => void,
 ) {
   const [isOverflow, setIsOverflow] = useState<boolean>(false);

@@ -58,8 +58,8 @@ export default function Player({
     ? currentFeed.name
     : "Select a location to start listening live";
 
-  const playerTextContainerRef = useRef<HTMLElement>();
-  const playerTextRef = useRef<HTMLElement>();
+  const playerTextContainerRef = useRef<HTMLElement>(undefined);
+  const playerTextRef = useRef<HTMLElement>(undefined);
   const playerTextOverflowing = useIsRelativeOverflow(
     playerTextContainerRef,
     playerTextRef,
