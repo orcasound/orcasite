@@ -52,6 +52,8 @@ export function BoutPlayer({
     [playlistDatetime, playerOffset],
   );
 
+  const intervalRef = useRef<NodeJS.Timeout>();
+
   const playerOptions = useMemo(
     () => ({
       autoplay: false,
@@ -85,39 +87,39 @@ export function BoutPlayer({
 
       player.on("playing", () => {
         setPlayerStatus("playing");
-        // const currentTime = player.currentTime() ?? 0;
-        // if (currentTime < startOffset || currentTime > endOffset) {
-        //   player.currentTime(startOffset);
-        //   setPlayerOffset(endOffset);
-        // }
+        // 'ontimeupdate' is slow, so we update a ref with a short
+        // interval for faster updates
+        // https://github.com/videojs/video.js/issues/4322
+        clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(() => {
+          const currentTime = player.currentTime() ?? targetOffset ?? 0;
+          const playerDateTime = playerOffsetToDateTime(
+            playlistDatetime,
+            currentTime,
+          );
+          if (onPlayerTimeUpdate !== undefined) {
+            onPlayerTimeUpdate(playerDateTime);
+          }
+        }, 10);
       });
-      player.on("pause", () => setPlayerStatus("paused"));
+      player.on("pause", () => {
+        setPlayerStatus("paused");
+        clearInterval(intervalRef.current);
+      });
       player.on("waiting", () => setPlayerStatus("loading"));
       player.on("error", () => setPlayerStatus("error"));
-      // player.currentTime(startOffset);
 
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? targetOffset ?? 0;
-        // if (currentTime > endOffset) {
-        //   player.currentTime(startOffset);
-        //   setPlayerOffset(startOffset);
-        // } else {
-        //   setPlayerTime(currentTime);
-        // }
         setPlayerOffset(currentTime);
-        if (onPlayerTimeUpdate !== undefined) {
-          onPlayerTimeUpdate(
-            playerOffsetToDateTime(playlistDatetime, currentTime),
-          );
-        }
       });
 
       player.on("loadedmetadata", () => {
-        // On initial load, set target time
+        // On initial load, set player time to target time
         player.currentTime(targetOffset);
       });
     },
-    [onPlayerTimeUpdate, playlistDatetime, targetOffset],
+    [onPlayerTimeUpdate, playlistDatetime, targetOffset, intervalRef],
   );
   const handlePlayPauseClick = () => {
     const player = playerRef.current;

@@ -113,7 +113,6 @@ const NewBoutPage: NextPageWithLayout = () => {
             timelineStartTime={targetTimeMinusBuffer}
             timelineEndTime={targetTimePlusBuffer}
             feedSegments={feedSegments}
-            // feedSegments={[]}
           />
         </Box>
       </main>
