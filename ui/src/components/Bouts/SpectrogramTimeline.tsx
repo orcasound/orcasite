@@ -6,6 +6,7 @@ import {
   format,
   subMinutes,
 } from "date-fns";
+import { throttle } from "lodash";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 
 import { AudioImage, FeedSegment } from "@/graphql/generated";
@@ -77,9 +78,9 @@ export default function SpectrogramTimeline({
 
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
-
   // X position of how far it's scrolled from the beginning
   const windowScrollX = useRef<number>(0);
+  const windowLockInterval = useRef<NodeJS.Timeout>();
 
   const pixelsPerMinute = 50 * zoomLevel;
 
@@ -136,6 +137,47 @@ export default function SpectrogramTimeline({
       ),
     );
   }, [windowScrollX, spectrogramWindow, timelineStartTime, pixelsPerMinute]);
+
+  // Center window on current time
+  useEffect(() => {
+    if (!isDragging) {
+      clearInterval(windowLockInterval.current);
+      windowLockInterval.current = setInterval(() => {
+        if (spectrogramWindow.current) {
+          const offset = timeToOffset(
+            playerTimeRef.current,
+            timelineStartTime,
+            pixelsPerMinute,
+          );
+          const windowStartOffset =
+            offset - spectrogramWindow.current.clientWidth / 2;
+          const windowEndOffset =
+            offset + spectrogramWindow.current.clientWidth / 2;
+
+          spectrogramWindow.current.scrollLeft = windowStartOffset;
+
+          throttle(() => {
+            setWindowStartTime(
+              offsetToTime(
+                windowStartOffset,
+                timelineStartTime,
+                pixelsPerMinute,
+              ),
+            );
+            setWindowEndTime(
+              offsetToTime(windowEndOffset, timelineStartTime, pixelsPerMinute),
+            );
+          }, 500)();
+        }
+      }, 50);
+    }
+  }, [
+    isDragging,
+    playerTimeRef,
+    spectrogramWindow,
+    pixelsPerMinute,
+    timelineStartTime,
+  ]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -259,7 +301,6 @@ export default function SpectrogramTimeline({
           playerTimeRef={playerTimeRef}
           timelineStartTime={timelineStartTime}
           pixelsPerMinute={pixelsPerMinute}
-          spectrogramWindow={spectrogramWindow}
           zIndex={5}
         />
 
@@ -499,12 +540,10 @@ function PlayHeadLayer({
   playerTimeRef,
   timelineStartTime,
   pixelsPerMinute,
-  spectrogramWindow,
   zIndex,
 }: {
   playerTimeRef: MutableRefObject<Date>;
   timelineStartTime: Date;
-  spectrogramWindow: MutableRefObject<HTMLElement | null>;
   pixelsPerMinute: number;
   zIndex: number;
 }) {
@@ -513,7 +552,7 @@ function PlayHeadLayer({
   useEffect(() => {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      if (playHead.current && spectrogramWindow.current) {
+      if (playHead.current) {
         const offset = timeToOffset(
           playerTimeRef.current,
           timelineStartTime,
@@ -523,7 +562,7 @@ function PlayHeadLayer({
         playHead.current.style.width = `${offset}px`;
       }
     }, 10);
-  }, [pixelsPerMinute, spectrogramWindow, timelineStartTime, playerTimeRef]);
+  }, [pixelsPerMinute, timelineStartTime, playerTimeRef]);
 
   return (
     <>
