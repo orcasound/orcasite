@@ -15,15 +15,25 @@ const VideoJS = dynamic(() => import("./VideoJS"));
 const playerOffsetToDateTime = (playlistDatetime: Date, playerOffset: number) =>
   new Date(playlistDatetime.valueOf() + playerOffset * 1000);
 
+export type PlayerControls = {
+  setPlayerTime: (time: Date) => void;
+  play: () => void;
+  pause: () => void;
+  paused: () => boolean;
+  player: VideoJSPlayer;
+};
+
 export function BoutPlayer({
   feed,
   feedStream,
   targetTime,
+  onPlayerInit,
   onPlayerTimeUpdate,
 }: {
   feed: Pick<Feed, "bucket" | "nodeName">;
   feedStream: Pick<FeedStream, "bucket" | "playlistTimestamp">;
   targetTime: Date;
+  onPlayerInit?: (playerControls: PlayerControls) => void;
   onPlayerTimeUpdate?: (time: Date) => void;
 }) {
   const hlsURI = getHlsURI(
@@ -84,6 +94,38 @@ export function BoutPlayer({
   const handleReady = useCallback(
     (player: VideoJSPlayer) => {
       playerRef.current = player;
+      if (onPlayerInit) {
+        onPlayerInit({
+          player: player,
+          play: () => {
+            try {
+              player.play();
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          pause: () => {
+            try {
+              player.pause();
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          paused: () => {
+            try {
+              return player.paused();
+            } catch (e) {
+              console.error(e);
+              return true;
+            }
+          },
+          setPlayerTime: (time: Date) => {
+            const offset = differenceInSeconds(time, playlistDatetime);
+            player.currentTime(offset);
+            setPlayerOffset(offset);
+          },
+        });
+      }
 
       player.on("playing", () => {
         setPlayerStatus("playing");
@@ -112,6 +154,15 @@ export function BoutPlayer({
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? targetOffset ?? 0;
         setPlayerOffset(currentTime);
+        // if (!intervalRef.current) {
+        //   const playerDateTime = playerOffsetToDateTime(
+        //     playlistDatetime,
+        //     currentTime,
+        //   );
+        //   if (onPlayerTimeUpdate !== undefined) {
+        //     onPlayerTimeUpdate(playerDateTime);
+        //   }
+        // }
       });
 
       player.on("loadedmetadata", () => {
@@ -119,7 +170,13 @@ export function BoutPlayer({
         player.currentTime(targetOffset);
       });
     },
-    [onPlayerTimeUpdate, playlistDatetime, targetOffset, intervalRef],
+    [
+      onPlayerTimeUpdate,
+      onPlayerInit,
+      playlistDatetime,
+      targetOffset,
+      intervalRef,
+    ],
   );
   const handlePlayPauseClick = () => {
     const player = playerRef.current;

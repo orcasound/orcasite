@@ -9,12 +9,12 @@ import {
 } from "date-fns";
 import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import SpectrogramTimeline from "@/components/Bouts/SpectrogramTimeline";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { BoutPlayer } from "@/components/Player/BoutPlayer";
+import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
 import {
   AudioCategory,
   useDetectionsQuery,
@@ -31,6 +31,7 @@ const NewBoutPage: NextPageWithLayout = () => {
     [],
   );
   const now = useMemo(() => new Date(), []);
+  const [playerControls, setPlayerControls] = useState<PlayerControls>();
 
   const timeBuffer = 5; // minutes
   const targetTimePlusBuffer = roundToNearestMinutes(
@@ -106,12 +107,14 @@ const NewBoutPage: NextPageWithLayout = () => {
               targetTime={targetTime}
               feedStream={feedStream}
               onPlayerTimeUpdate={setPlayerTime}
+              onPlayerInit={setPlayerControls}
             />
           )}
           <SpectrogramTimeline
             playerTimeRef={playerTime}
             timelineStartTime={targetTimeMinusBuffer}
             timelineEndTime={targetTimePlusBuffer}
+            playerControls={playerControls}
             feedSegments={feedSegments}
           />
         </Box>
