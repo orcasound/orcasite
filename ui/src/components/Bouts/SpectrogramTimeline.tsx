@@ -64,7 +64,7 @@ function centerWindow(
   }
 }
 
-export function timeToOffset(
+function timeToOffset(
   time: Date,
   timelineStartTime: Date,
   pixelsPerMinute: number,
@@ -82,7 +82,7 @@ function offsetToTime(
   return addMinutes(timelineStartTime, offset / pixelsPerMinute);
 }
 
-function rangesOverlap(
+export function rangesOverlap(
   startTime1?: Date,
   endTime1?: Date,
   startTime2?: Date,
@@ -122,19 +122,18 @@ export default function SpectrogramTimeline({
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [wasPlaying, setWasPlaying] = useState<boolean>();
-  const [zoomLevel, setZoomLevel] = useState<number>(10);
+  const [zoomLevel, setZoomLevel] = useState<number>(8);
   const [windowStartTime, setWindowStartTime] = useState<Date>();
   const [windowEndTime, setWindowEndTime] = useState<Date>();
-  const minZoom = 5;
-  const maxZoom = 100;
+
+  const minZoom = 2;
+  const maxZoom = 400;
 
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
   // X position of how far it's scrolled from the beginning
   const windowScrollX = useRef<number>(0);
   const windowLockInterval = useRef<NodeJS.Timeout>();
-  const playHead = useRef<HTMLElement>();
 
   const pixelsPerMinute = PIXEL_ZOOM_FACTOR * zoomLevel;
 
@@ -164,16 +163,6 @@ export default function SpectrogramTimeline({
       clearInterval(windowLockInterval.current);
       windowLockInterval.current = setInterval(() => {
         if (spectrogramWindow.current) {
-          const offset = timeToOffset(
-            playerTimeRef.current,
-            timelineStartTime,
-            pixelsPerMinute,
-          );
-
-          if (playHead.current) {
-            playHead.current.style.width = `${offset}px`;
-          }
-
           centerWindow(
             spectrogramWindow,
             playerTimeRef.current,
@@ -195,7 +184,6 @@ export default function SpectrogramTimeline({
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
-    // setWasPlaying(!playerControls || !playerControls?.paused());
     windowStartX.current =
       e.touches[0].pageX - (spectrogramWindow.current?.offsetLeft ?? 0);
     windowScrollX.current = spectrogramWindow.current?.scrollLeft ?? 0;
@@ -229,9 +217,12 @@ export default function SpectrogramTimeline({
     );
   };
 
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
-    setWasPlaying(!playerControls && !playerControls?.paused());
     windowStartX.current =
       e.pageX - (spectrogramWindow.current?.offsetLeft ?? 0);
     windowScrollX.current = spectrogramWindow.current?.scrollLeft ?? 0;
@@ -240,17 +231,11 @@ export default function SpectrogramTimeline({
 
   const handleMouseLeave = useCallback(() => {
     setIsDragging(false);
-    if (wasPlaying) {
-      playerControls?.play();
-    }
-  }, [wasPlaying, playerControls]);
+  }, []);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-    if (wasPlaying) {
-      playerControls?.play();
-    }
-  }, [wasPlaying, playerControls]);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !spectrogramWindow.current) return;
@@ -281,23 +266,6 @@ export default function SpectrogramTimeline({
     );
   };
 
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    setZoomLevel((zoomLevel) => {
-      const zoomIncrement = zoomLevel * 0.2;
-      const newZoom = Math.min(
-        Math.max(
-          minZoom,
-          zoomLevel + (e.deltaY > 0 ? -zoomIncrement : zoomIncrement),
-        ),
-        maxZoom,
-      );
-      return newZoom;
-    });
-    // if (!spectrogramWindow.current) return;
-    // spectrogramWindow.current.scrollLeft -= e.deltaY;
-  };
-
   useEffect(() => {
     const container = spectrogramWindow.current;
     if (container) {
@@ -312,19 +280,18 @@ export default function SpectrogramTimeline({
 
   return (
     <>
-      <div>Start: {JSON.stringify(timelineStartTime)}</div>
-      <div>End: {JSON.stringify(timelineEndTime)}</div>
-      <div>Window start: {JSON.stringify(windowStartTime)}</div>
-      <div>Window end: {JSON.stringify(windowEndTime)}</div>
-      <div>Zoom {zoomLevel}</div>
       <Box>
         <Button
-          onClick={() => setZoomLevel((zoom) => _.clamp(zoom * 2, 1, 200))}
+          onClick={() =>
+            setZoomLevel((zoom) => _.clamp(zoom * 2, minZoom, maxZoom))
+          }
         >
           Zoom in
         </Button>
         <Button
-          onClick={() => setZoomLevel((zoom) => _.clamp(zoom / 2, 1, 200))}
+          onClick={() =>
+            setZoomLevel((zoom) => _.clamp(zoom / 2, minZoom, maxZoom))
+          }
         >
           Zoom out
         </Button>
@@ -351,15 +318,16 @@ export default function SpectrogramTimeline({
         onMouseMove={handleMouseMove}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
-        onWheel={handleWheel}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
         <Box
-          ref={playHead}
-          borderRight="2px solid #eee"
-          position="absolute"
-          top={TICKER_HEIGHT}
-          height={`calc(100% - ${TICKER_HEIGHT}px)`}
-          zIndex={5}
+          borderLeft="2px solid #eee"
+          position="sticky"
+          left="50%"
+          width={"1px"}
+          zIndex={6}
+          sx={{ transform: `translateY(${TICKER_HEIGHT}px)` }}
         ></Box>
 
         {windowStartTime && windowEndTime && (
@@ -370,7 +338,7 @@ export default function SpectrogramTimeline({
             startTime={timelineStartTime}
             endTime={timelineEndTime}
             pixelsPerMinute={pixelsPerMinute}
-            zIndex={1}
+            zIndex={5}
           />
         )}
         <BaseAudioWidthLayer
@@ -489,7 +457,7 @@ function FeedSegmentsLayer({
                     windowEndTime,
                   ) && {
                     backgroundImage: `url('${audioImageUrl}')`,
-                    backgroundSize: "cover",
+                    backgroundSize: "auto 100%",
                   }),
               }}
               display="flex"

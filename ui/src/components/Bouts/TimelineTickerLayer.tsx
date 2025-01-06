@@ -1,8 +1,15 @@
 import { Box, Typography } from "@mui/material";
-import { addMinutes, addSeconds, differenceInMinutes, format } from "date-fns";
+import {
+  addMinutes,
+  addSeconds,
+  differenceInMinutes,
+  format,
+  subMinutes,
+} from "date-fns";
 import _ from "lodash";
+import { Fragment } from "react";
 
-import { TICKER_HEIGHT, timeToOffset } from "./SpectrogramTimeline";
+import { rangesOverlap, TICKER_HEIGHT } from "./SpectrogramTimeline";
 
 export function TimelineTickerLayer({
   startTime,
@@ -33,31 +40,23 @@ export function TimelineTickerLayer({
 
   const tensLabelThreshold = 600; // pixels per minute
   const fivesTicksThreshold = 600; // pixels per minute
-  const fivesLabelThreshold = 1750; // pixels per minute
+  const fivesLabelThreshold = 1600; // pixels per minute
   const onesTicksThreshold = 750; // pixels per minute
-
-  const windowStartOffset = timeToOffset(
-    windowStartTime,
-    timelineStartTime,
-    pixelsPerMinute,
-  );
-  const windowEndOffset = timeToOffset(
-    windowEndTime,
-    timelineStartTime,
-    pixelsPerMinute,
-  );
+  const onesLabelThreshold = 6400; // pixels per minute
 
   return (
     <>
       {Array(tiles)
         .fill(0)
         .map((_minute, idx) => {
-          const inRange = _.inRange(
-            idx * pixelsPerMinute,
-            windowStartOffset - 1000,
-            windowEndOffset + 1000,
+          const inRange = rangesOverlap(
+            addMinutes(timelineStartTime, idx),
+            addMinutes(timelineStartTime, idx + 1),
+            subMinutes(windowStartTime, 1),
+            addMinutes(windowEndTime, 1),
           );
-          // if (!inRange) return <></>;
+
+          if (!inRange) return <Fragment key={idx}></Fragment>;
           return (
             <Box
               key={idx}
@@ -107,7 +106,17 @@ export function TimelineTickerLayer({
                     <Tick
                       key={fivesTickerIdx}
                       left={`${(100 * number) / 60}%`}
-                      height={"15%"}
+                      height={"20%"}
+                    />
+                  ))}
+
+                {pixelsPerMinute >= onesLabelThreshold &&
+                  onesTicks.map((number, onesLabel) => (
+                    <Label
+                      key={onesLabel}
+                      left={`${(100 * number) / 60}%`}
+                      width={`${100 / 60}%`}
+                      time={addSeconds(addMinutes(startTime, idx), number)}
                     />
                   ))}
 
@@ -116,7 +125,7 @@ export function TimelineTickerLayer({
                     <Tick
                       key={onesTicksIndex}
                       left={`${(100 * number) / 60}%`}
-                      height={"10%"}
+                      height={"15%"}
                     />
                   ))}
                 <Label
