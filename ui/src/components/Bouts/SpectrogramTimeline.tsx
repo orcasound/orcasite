@@ -1,10 +1,5 @@
-import { Box, Button, Typography } from "@mui/material";
-import {
-  addMinutes,
-  differenceInMilliseconds,
-  differenceInMinutes,
-  subMinutes,
-} from "date-fns";
+import { Box, Button } from "@mui/material";
+import { addMinutes, differenceInMilliseconds } from "date-fns";
 import { throttle } from "lodash";
 import _ from "lodash";
 import {
@@ -19,6 +14,8 @@ import {
 import { AudioImage, FeedSegment } from "@/graphql/generated";
 
 import { PlayerControls } from "../Player/BoutPlayer";
+import { BaseAudioWidthLayer } from "./BaseAudioWidthLayer";
+import { FeedSegmentsLayer } from "./FeedSegmentsLayer";
 import { TimelineTickerLayer } from "./TimelineTickerLayer";
 
 export const TICKER_HEIGHT = 30;
@@ -64,7 +61,7 @@ function centerWindow(
   }
 }
 
-function timeToOffset(
+export function timeToOffset(
   time: Date,
   timelineStartTime: Date,
   pixelsPerMinute: number,
@@ -94,14 +91,7 @@ export function rangesOverlap(
   return false;
 }
 
-function audioImageToUrl({
-  bucket,
-  objectPath,
-}: Pick<AudioImage, "bucket" | "objectPath">) {
-  return `https://${bucket}.s3.amazonaws.com${objectPath}`;
-}
-
-type SpectrogramFeedSegment = Pick<
+export type SpectrogramFeedSegment = Pick<
   FeedSegment,
   "id" | "startTime" | "endTime" | "duration"
 > & { audioImages: Pick<AudioImage, "bucket" | "objectPath">[] };
@@ -333,10 +323,9 @@ export default function SpectrogramTimeline({
         {windowStartTime && windowEndTime && (
           <TimelineTickerLayer
             timelineStartTime={timelineStartTime}
+            timelineEndTime={timelineEndTime}
             windowStartTime={windowStartTime}
             windowEndTime={windowEndTime}
-            startTime={timelineStartTime}
-            endTime={timelineEndTime}
             pixelsPerMinute={pixelsPerMinute}
             zIndex={5}
           />
@@ -358,164 +347,6 @@ export default function SpectrogramTimeline({
           />
         )}
       </Box>
-    </>
-  );
-}
-
-function BaseAudioWidthLayer({
-  startTime,
-  endTime,
-  pixelsPerMinute,
-  zIndex,
-}: {
-  startTime: Date;
-  endTime: Date;
-  pixelsPerMinute: number;
-  zIndex: number;
-}) {
-  const minutes = differenceInMinutes(endTime, startTime);
-  const tiles = minutes * 6; // 10 second tiles
-  const pixelsPerTile = pixelsPerMinute / 6;
-  return (
-    <>
-      {Array(tiles)
-        .fill(0)
-        .map((_, idx) => (
-          <Box
-            key={idx}
-            zIndex={zIndex}
-            bgcolor={"#fff"}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderRight="1px solid #eee"
-            sx={{
-              minWidth: pixelsPerTile,
-              minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
-              position: "absolute",
-              left: idx * pixelsPerTile,
-              top: TICKER_HEIGHT,
-            }}
-          ></Box>
-        ))}
-    </>
-  );
-}
-
-function FeedSegmentsLayer({
-  feedSegments,
-  timelineStartTime,
-  pixelsPerMinute,
-  zIndex,
-  windowStartTime,
-  windowEndTime,
-}: {
-  feedSegments: SpectrogramFeedSegment[];
-  timelineStartTime: Date;
-  pixelsPerMinute: number;
-  zIndex: number;
-  windowStartTime: Date;
-  windowEndTime: Date;
-}) {
-  return (
-    <>
-      {feedSegments.flatMap((feedSegment) => {
-        if (
-          feedSegment.startTime !== undefined &&
-          feedSegment.startTime !== null &&
-          feedSegment.endTime !== undefined &&
-          feedSegment.endTime !== null &&
-          typeof feedSegment.duration === "string"
-        ) {
-          const startTime = new Date(feedSegment.startTime);
-          const endTime = new Date(feedSegment.endTime);
-          const offset = timeToOffset(
-            startTime,
-            timelineStartTime,
-            pixelsPerMinute,
-          );
-          const width = (pixelsPerMinute * Number(feedSegment.duration)) / 60;
-          const audioImage = feedSegment.audioImages[0];
-          const audioImageUrl =
-            audioImage !== undefined && audioImageToUrl(audioImage);
-          return [
-            <Box
-              key={feedSegment.id}
-              zIndex={zIndex}
-              sx={{
-                minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
-                position: "absolute",
-                left: offset,
-                top: TICKER_HEIGHT,
-                width: width,
-                backgroundColor: (theme) => theme.palette.accent2.main,
-                ...(audioImageUrl &&
-                  rangesOverlap(
-                    subMinutes(startTime, 1500 / pixelsPerMinute),
-                    addMinutes(endTime, 1500 / pixelsPerMinute),
-                    windowStartTime,
-                    windowEndTime,
-                  ) && {
-                    backgroundImage: `url('${audioImageUrl}')`,
-                    backgroundSize: "auto 100%",
-                  }),
-              }}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              data-starttime={feedSegment.startTime}
-              data-endtime={feedSegment.endTime}
-              data-duration={feedSegment.duration}
-            >
-              <Typography color="white" variant="subtitle1">
-                {!audioImageUrl && startTime?.toLocaleTimeString()}
-              </Typography>
-            </Box>,
-          ];
-        }
-      })}
-    </>
-  );
-}
-
-function PlayHeadLayer({
-  playerTimeRef,
-  timelineStartTime,
-  pixelsPerMinute,
-  zIndex,
-}: {
-  playerTimeRef: MutableRefObject<Date>;
-  timelineStartTime: Date;
-  pixelsPerMinute: number;
-  zIndex: number;
-}) {
-  const playHead = useRef<HTMLElement>();
-  const intervalRef = useRef<NodeJS.Timeout>();
-  useEffect(() => {
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      if (playHead.current) {
-        const offset = timeToOffset(
-          playerTimeRef.current,
-          timelineStartTime,
-          pixelsPerMinute,
-        );
-
-        playHead.current.style.width = `${offset}px`;
-      }
-    }, 10);
-  }, [pixelsPerMinute, timelineStartTime, playerTimeRef]);
-
-  return (
-    <>
-      <Box
-        ref={playHead}
-        borderRight="2px solid #eee"
-        position="absolute"
-        top={TICKER_HEIGHT}
-        height={`calc(100% - ${TICKER_HEIGHT}px)`}
-        zIndex={zIndex}
-      ></Box>
     </>
   );
 }

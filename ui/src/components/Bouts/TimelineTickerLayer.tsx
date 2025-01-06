@@ -12,23 +12,21 @@ import { Fragment } from "react";
 import { rangesOverlap, TICKER_HEIGHT } from "./SpectrogramTimeline";
 
 export function TimelineTickerLayer({
-  startTime,
-  endTime,
-  pixelsPerMinute,
   timelineStartTime,
+  timelineEndTime,
+  pixelsPerMinute,
   windowStartTime,
   windowEndTime,
   zIndex,
 }: {
-  startTime: Date;
-  endTime: Date;
+  timelineEndTime: Date;
   timelineStartTime: Date;
   windowStartTime: Date;
   windowEndTime: Date;
   pixelsPerMinute: number;
   zIndex: number;
 }) {
-  const minutes = differenceInMinutes(endTime, startTime);
+  const minutes = differenceInMinutes(timelineEndTime, timelineStartTime);
   const tiles = minutes; // 1 minute increments
 
   const seconds = _.range(1, 59);
@@ -87,7 +85,10 @@ export function TimelineTickerLayer({
                       key={tensLabelIndex}
                       left={`${(100 * number) / 60}%`}
                       width={`${100 / 6}%`}
-                      time={addSeconds(addMinutes(startTime, idx), number)}
+                      time={addSeconds(
+                        addMinutes(timelineStartTime, idx),
+                        number,
+                      )}
                     />
                   ))}
 
@@ -97,7 +98,10 @@ export function TimelineTickerLayer({
                       key={fivesLabel}
                       left={`${(100 * number) / 60}%`}
                       width={`${100 / 6}%`}
-                      time={addSeconds(addMinutes(startTime, idx), number)}
+                      time={addSeconds(
+                        addMinutes(timelineStartTime, idx),
+                        number,
+                      )}
                     />
                   ))}
 
@@ -116,7 +120,10 @@ export function TimelineTickerLayer({
                       key={onesLabel}
                       left={`${(100 * number) / 60}%`}
                       width={`${100 / 60}%`}
-                      time={addSeconds(addMinutes(startTime, idx), number)}
+                      time={addSeconds(
+                        addMinutes(timelineStartTime, idx),
+                        number,
+                      )}
                     />
                   ))}
 
@@ -129,7 +136,7 @@ export function TimelineTickerLayer({
                     />
                   ))}
                 <Label
-                  time={addMinutes(startTime, idx)}
+                  time={addMinutes(timelineStartTime, idx)}
                   left={0}
                   width={"100%"}
                 />
