@@ -30,9 +30,23 @@ const NewBoutPage: NextPageWithLayout = () => {
     (time: Date) => (playerTime.current = time),
     [],
   );
-  const now = useMemo(() => new Date(), []);
   const [playerControls, setPlayerControls] = useState<PlayerControls>();
 
+  const params = useParams<{ feedSlug?: string }>();
+  const feedSlug = params?.feedSlug;
+  const searchParams = useSearchParams();
+  const audioCategory = searchParams.get("category") as AudioCategory;
+  const [boutStartTime, setBoutStartTime] = useState<Date>();
+  const [boutEndTime, setBoutEndTime] = useState<Date>();
+
+  const feedQueryResult = useFeedQuery(
+    { slug: feedSlug || "" },
+    { enabled: !!feedSlug },
+  );
+  const feed = feedQueryResult.data?.feed;
+
+  // Get feed segments for current time +/- 5 minute buffer
+  const now = useMemo(() => new Date(), []);
   const timeBuffer = 5; // minutes
   const targetTimePlusBuffer = roundToNearestMinutes(
     min([now, addMinutes(targetTime, timeBuffer)]),
@@ -43,17 +57,6 @@ const NewBoutPage: NextPageWithLayout = () => {
     { roundingMethod: "floor" },
   );
   const targetTimeMinusADay = subDays(targetTime, 1);
-
-  const params = useParams<{ feedSlug?: string }>();
-  const feedSlug = params?.feedSlug;
-  const searchParams = useSearchParams();
-  const audioCategory = searchParams.get("category") as AudioCategory;
-  const feedQueryResult = useFeedQuery(
-    { slug: feedSlug || "" },
-    { enabled: !!feedSlug },
-  );
-  const feed = feedQueryResult.data?.feed;
-
   // If feed is present, and there's no pre-set time,
   // get latest stream and last <timeBuffer> minutes of segments.
   // Set time to end of last segment
@@ -107,6 +110,7 @@ const NewBoutPage: NextPageWithLayout = () => {
               targetTime={targetTime}
               feedStream={feedStream}
               onPlayerTimeUpdate={setPlayerTime}
+              setPlayerTimeRef={setPlayerTime}
               onPlayerInit={setPlayerControls}
             />
           )}
@@ -116,6 +120,10 @@ const NewBoutPage: NextPageWithLayout = () => {
             timelineEndTime={targetTimePlusBuffer}
             playerControls={playerControls}
             feedSegments={feedSegments}
+            boutStartTime={boutStartTime}
+            boutEndTime={boutEndTime}
+            setBoutStartTime={setBoutStartTime}
+            setBoutEndTime={setBoutEndTime}
           />
         </Box>
       </main>

@@ -29,12 +29,14 @@ export function BoutPlayer({
   targetTime,
   onPlayerInit,
   onPlayerTimeUpdate,
+  setPlayerTimeRef,
 }: {
   feed: Pick<Feed, "bucket" | "nodeName">;
   feedStream: Pick<FeedStream, "bucket" | "playlistTimestamp">;
   targetTime: Date;
   onPlayerInit?: (playerControls: PlayerControls) => void;
   onPlayerTimeUpdate?: (time: Date) => void;
+  setPlayerTimeRef?: (time: Date) => void;
 }) {
   const hlsURI = getHlsURI(
     feed.bucket,
@@ -123,6 +125,7 @@ export function BoutPlayer({
             const offset = differenceInSeconds(time, playlistDatetime);
             player.currentTime(offset);
             setPlayerOffset(offset);
+            setPlayerTimeRef && setPlayerTimeRef(time);
           },
         });
       }

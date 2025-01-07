@@ -1,8 +1,10 @@
+import { PlayCircleFilled } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
 import { addMinutes, differenceInMilliseconds } from "date-fns";
 import { throttle } from "lodash";
 import _ from "lodash";
 import {
+  Dispatch,
   MutableRefObject,
   SetStateAction,
   useCallback,
@@ -16,6 +18,7 @@ import { AudioImage, FeedSegment } from "@/graphql/generated";
 import { PlayerControls } from "../Player/BoutPlayer";
 import { BaseAudioWidthLayer } from "./BaseAudioWidthLayer";
 import { FeedSegmentsLayer } from "./FeedSegmentsLayer";
+import { TimelineMarker } from "./TimelineMarker";
 import { TimelineTickerLayer } from "./TimelineTickerLayer";
 
 export const TICKER_HEIGHT = 30;
@@ -29,6 +32,7 @@ function centerWindow(
   pixelsPerMinute: number,
   setWindowStartTime: (value: SetStateAction<Date | undefined>) => void,
   setWindowEndTime: (value: SetStateAction<Date | undefined>) => void,
+  playerControls?: PlayerControls,
 ) {
   if (spectrogramWindow.current) {
     const offset = timeToOffset(targetTime, timelineStartTime, pixelsPerMinute);
@@ -58,6 +62,10 @@ function centerWindow(
       500,
       { leading: true, trailing: true },
     )();
+
+    if (playerControls?.setPlayerTime) {
+      playerControls.setPlayerTime(targetTime);
+    }
   }
 }
 
@@ -102,12 +110,20 @@ export default function SpectrogramTimeline({
   feedSegments,
   playerTimeRef,
   playerControls,
+  boutStartTime,
+  boutEndTime,
+  setBoutStartTime,
+  setBoutEndTime,
 }: {
   timelineStartTime: Date;
   timelineEndTime: Date;
   feedSegments: SpectrogramFeedSegment[];
   playerTimeRef: MutableRefObject<Date>;
   playerControls?: PlayerControls;
+  boutStartTime?: Date;
+  boutEndTime?: Date;
+  setBoutStartTime: Dispatch<SetStateAction<Date | undefined>>;
+  setBoutEndTime: Dispatch<SetStateAction<Date | undefined>>;
 }) {
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
@@ -126,6 +142,18 @@ export default function SpectrogramTimeline({
   const windowLockInterval = useRef<NodeJS.Timeout>();
 
   const pixelsPerMinute = PIXEL_ZOOM_FACTOR * zoomLevel;
+
+  const goToTime = (time: Date) => {
+    centerWindow(
+      spectrogramWindow,
+      time,
+      timelineStartTime,
+      pixelsPerMinute,
+      setWindowStartTime,
+      setWindowEndTime,
+      playerControls,
+    );
+  };
 
   useEffect(() => {
     if (spectrogramWindow.current) {
@@ -285,6 +313,30 @@ export default function SpectrogramTimeline({
         >
           Zoom out
         </Button>
+        <Button
+          onClick={() =>
+            (!boutEndTime || playerTimeRef.current < boutEndTime) &&
+            setBoutStartTime(playerTimeRef.current)
+          }
+        >
+          Set bout start
+        </Button>
+        {boutStartTime && (
+          <Button onClick={() => goToTime(boutStartTime)}>
+            Go to bout start
+          </Button>
+        )}
+        <Button
+          onClick={() =>
+            (!boutStartTime || playerTimeRef.current > boutStartTime) &&
+            setBoutEndTime(playerTimeRef.current)
+          }
+        >
+          Set bout end
+        </Button>
+        {boutEndTime && (
+          <Button onClick={() => goToTime(boutEndTime)}>Go to bout end</Button>
+        )}
       </Box>
       <Box
         ref={spectrogramWindow}
@@ -316,9 +368,35 @@ export default function SpectrogramTimeline({
           position="sticky"
           left="50%"
           width={"1px"}
-          zIndex={6}
+          zIndex={4}
           sx={{ transform: `translateY(${TICKER_HEIGHT}px)` }}
         ></Box>
+
+        {boutStartTime && (
+          <TimelineMarker
+            time={boutStartTime}
+            pixelsPerMinute={pixelsPerMinute}
+            timelineStartTime={timelineStartTime}
+            zIndex={4}
+            Icon={PlayCircleFilled}
+            onClick={() => {
+              goToTime(boutStartTime);
+            }}
+          />
+        )}
+        {boutEndTime && (
+          <TimelineMarker
+            time={boutEndTime}
+            pixelsPerMinute={pixelsPerMinute}
+            timelineStartTime={timelineStartTime}
+            zIndex={4}
+            Icon={PlayCircleFilled}
+            iconProps={{ transform: "scaleX(-1)" }}
+            onClick={() => {
+              goToTime(boutEndTime);
+            }}
+          />
+        )}
 
         {windowStartTime && windowEndTime && (
           <TimelineTickerLayer
@@ -327,7 +405,7 @@ export default function SpectrogramTimeline({
             windowStartTime={windowStartTime}
             windowEndTime={windowEndTime}
             pixelsPerMinute={pixelsPerMinute}
-            zIndex={5}
+            zIndex={3}
           />
         )}
         <BaseAudioWidthLayer
