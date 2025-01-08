@@ -231,9 +231,18 @@ defmodule Orcasite.Accounts.User do
     end
 
     mutations do
-      create :register_with_password, :register_with_password
+      create :register_with_password, :register_with_password do
+        modify_resolution {__MODULE__, :after_registration, []}
+      end
       update :update_user_profile, :update_profile
       update :update_user_preferences, :update_preferences
     end
+  end
+
+  def after_registration(resolution, _query, {:ok, user}) do
+    resolution
+    |> Map.update!(:context, fn ctx ->
+      Map.put(ctx, :current_user, user)
+    end)
   end
 end
