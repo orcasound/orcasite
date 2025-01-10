@@ -3,10 +3,8 @@ import { Box, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  useGetCurrentUserQuery,
-  useUpdateUserProfileMutation,
-} from "@/graphql/generated";
+import { useUpdateUserProfileMutation } from "@/graphql/generated";
+import { useAuth } from "@/hooks/useAuth";
 
 import {
   createFormSubmitHandler,
@@ -26,7 +24,7 @@ const profileSchema = z.object({
 type ProfileFormInputs = z.infer<typeof profileSchema>;
 
 const useProfileForm = (onSuccess: () => void) => {
-  const currentUser = useGetCurrentUserQuery().data?.currentUser;
+  const { user } = useAuth();
 
   const form = useForm<ProfileFormInputs>({
     resolver: zodResolver(profileSchema),
@@ -44,10 +42,10 @@ const useProfileForm = (onSuccess: () => void) => {
   });
 
   const onSubmit = (data: ProfileFormInputs) => {
-    if (!currentUser) return;
+    if (!user) return;
 
     updateProfile.mutate({
-      id: currentUser.id,
+      id: user.id,
       ...data,
     });
   };

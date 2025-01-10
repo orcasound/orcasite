@@ -6,4 +6,4 @@ export { StepLayout } from "./components/StepLayout";
 export { SuccessStep } from "./components/SuccessStep";
 
 // Hooks
-export { steps, useSteps } from "./hooks/useSteps";
+export { type Step, useSteps } from "./hooks/useSteps";
