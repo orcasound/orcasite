@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, FormControlLabel, Switch } from "@mui/material";
+import { FormControlLabel, Switch } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useUpdateUserPreferencesMutation } from "@/graphql/generated";
 import { useAuth } from "@/hooks/useAuth";
 
+import { FormContainer } from "../styles";
 import { createFormSubmitHandler, StepFormProps } from "../utils";
 import { FormActions } from "./FormActions";
 
@@ -57,7 +58,7 @@ export const PreferencesStep = ({ onSuccess, onSkip }: StepFormProps) => {
 
   return (
     <form onSubmit={createFormSubmitHandler(form, onSubmit)} name="preferences">
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <FormContainer>
         <FormControlLabel
           control={<Switch {...register("liveNotifications")} />}
           label="Notify me when orcas are detected live"
@@ -79,7 +80,7 @@ export const PreferencesStep = ({ onSuccess, onSkip }: StepFormProps) => {
         />
 
         <FormActions onSkip={onSkip} submitText="Complete setup" />
-      </Box>
+      </FormContainer>
     </form>
   );
 };
