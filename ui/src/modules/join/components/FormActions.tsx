@@ -11,13 +11,19 @@ export const FormActions = ({
   submitText = "Continue",
   skipText = "Skip for now",
 }: FormActionsProps) => (
-  <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+  <Box sx={{ display: "flex", gap: 1 }}>
     {onSkip && (
       <Button variant="outlined" onClick={onSkip} fullWidth>
         {skipText}
       </Button>
     )}
-    <Button type="submit" variant="contained" color="primary" fullWidth>
+    <Button
+      type="submit"
+      variant="contained"
+      color="primary"
+      size="large"
+      fullWidth
+    >
       {submitText}
     </Button>
   </Box>

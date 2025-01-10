@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Checkbox, FormControlLabel, TextField } from "@mui/material";
+import { Checkbox, FormControlLabel, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useUpdateUserProfileMutation } from "@/graphql/generated";
 import { useAuth } from "@/hooks/useAuth";
 
+import { FormContainer } from "../styles";
 import {
   createFormSubmitHandler,
   getFieldErrorProps,
@@ -79,7 +80,7 @@ export const ProfileStep = ({ onSuccess, onSkip }: StepFormProps) => {
 
   return (
     <form onSubmit={createFormSubmitHandler(form, onSubmit)} name="profile">
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <FormContainer>
         <TextField
           {...register("username")}
           label="Username"
@@ -123,7 +124,7 @@ export const ProfileStep = ({ onSuccess, onSkip }: StepFormProps) => {
         )}
 
         <FormActions onSkip={onSkip} />
-      </Box>
+      </FormContainer>
     </form>
   );
 };

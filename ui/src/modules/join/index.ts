@@ -1,5 +1,6 @@
 // Components
 export { AccountStep } from "./components/AccountStep";
+export { LoginStep } from "./components/LoginStep";
 export { PreferencesStep } from "./components/PreferencesStep";
 export { ProfileStep } from "./components/ProfileStep";
 export { StepLayout } from "./components/StepLayout";

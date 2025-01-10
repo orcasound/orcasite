@@ -15,30 +15,26 @@ import {
 } from "../utils";
 import { FormActions } from "./FormActions";
 
-const accountSchema = z.object({
+const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters"),
+  password: z.string().min(1, "Password is required"),
 });
 
-type AccountFormInputs = z.infer<typeof accountSchema>;
+type LoginFormInputs = z.infer<typeof loginSchema>;
 
-const useAccountForm = (onSuccess: () => void) => {
+const useLoginForm = (onSuccess: () => void) => {
   const [errors, setErrors] = useState<MutationError[]>([]);
-  const form = useForm<AccountFormInputs>({
-    resolver: zodResolver(accountSchema),
+  const form = useForm<LoginFormInputs>({
+    resolver: zodResolver(loginSchema),
   });
-  const { register: registerUser } = useAuth();
+  const { signIn } = useAuth();
 
-  const onSubmit = async (data: AccountFormInputs) => {
+  const onSubmit = async (data: LoginFormInputs) => {
     try {
       setErrors([]);
-      await registerUser({
+      await signIn({
         email: data.email,
         password: data.password,
-        passwordConfirmation: data.password,
       });
       onSuccess();
     } catch (errors) {
@@ -47,7 +43,7 @@ const useAccountForm = (onSuccess: () => void) => {
           errors.filter((error): error is MutationError => error !== null),
         );
       } else {
-        console.error("Register error:", errors);
+        console.error("Login error:", errors);
       }
     }
   };
@@ -55,10 +51,10 @@ const useAccountForm = (onSuccess: () => void) => {
   return { form, errors, onSubmit };
 };
 
-type AccountStepProps = Omit<StepFormProps, "onSkip">;
+type LoginStepProps = Omit<StepFormProps, "onSkip">;
 
-export const AccountStep = ({ onSuccess }: AccountStepProps) => {
-  const { form, errors, onSubmit } = useAccountForm(onSuccess);
+export const LoginStep = ({ onSuccess }: LoginStepProps) => {
+  const { form, errors, onSubmit } = useLoginForm(onSuccess);
   const {
     register,
     formState: { errors: formErrors },
@@ -68,7 +64,7 @@ export const AccountStep = ({ onSuccess }: AccountStepProps) => {
     <form
       onSubmit={createFormSubmitHandler(form, onSubmit)}
       noValidate
-      name="account"
+      name="login"
     >
       <FormContainer>
         <TextField
@@ -87,12 +83,13 @@ export const AccountStep = ({ onSuccess }: AccountStepProps) => {
           {...getFieldErrorProps("password", formErrors.password, errors)}
         />
 
-        <FormActions submitText="Create account" />
+        <FormActions submitText="Log in" />
 
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <FormActionLink href="/login">
-            Already have an account?
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <FormActionLink href="/password-reset">
+            Forgot your password?
           </FormActionLink>
+          <FormActionLink href="/join">Need an account?</FormActionLink>
         </Box>
       </FormContainer>
     </form>
