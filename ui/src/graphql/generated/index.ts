@@ -2495,6 +2495,7 @@ export type GetCurrentUserQuery = {
     id: string;
     firstName?: string | null;
     lastName?: string | null;
+    username?: string | null;
     email: string;
     admin: boolean;
     moderator: boolean;
@@ -3399,6 +3400,7 @@ export const GetCurrentUserDocument = `
     id
     firstName
     lastName
+    username
     email
     admin
     moderator

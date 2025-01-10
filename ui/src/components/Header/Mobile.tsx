@@ -2,13 +2,11 @@ import {
   Close,
   Feedback,
   Home,
-  Menu,
+  Menu as MenuIcon,
   Notifications,
-  Person,
 } from "@mui/icons-material";
 import {
   Box,
-  Button,
   Divider,
   Drawer,
   IconButton,
@@ -21,11 +19,11 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 
-import Link from "@/components/Link";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayMobileOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 
+import UserMenu from "./AccountMenu";
 import Brand from "./Brand";
 
 export default function Mobile({
@@ -82,28 +80,10 @@ export default function Mobile({
           color="inherit"
           onClick={handleMenuToggle}
         >
-          {menuIsOpen ? <Close /> : <Menu />}
+          {menuIsOpen ? <Close /> : <MenuIcon />}
         </IconButton>
         <Brand onClick={onBrandClick} />
-        <Link
-          href="/join"
-          title="Join Orcasound"
-          sx={{
-            marginLeft: "auto",
-            paddingLeft: 1,
-          }}
-        >
-          <Button
-            variant="contained"
-            startIcon={<Person />}
-            color="primary"
-            sx={{
-              borderRadius: 8,
-            }}
-          >
-            Join
-          </Button>
-        </Link>
+        <UserMenu sx={{ marginLeft: "auto", paddingLeft: 1 }} />
       </Box>
       <nav>
         <Drawer
