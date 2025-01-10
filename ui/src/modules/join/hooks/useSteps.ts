@@ -1,29 +1,44 @@
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback } from "react";
 
-export const steps = {
-  account: 1,
-  profile: 2,
-  preferences: 3,
-  success: 4,
-} as const;
+const steps = ["account", "profile", "preferences", "success"] as const;
+export type Step = (typeof steps)[number];
 
-type Step = (typeof steps)[keyof typeof steps];
-
+/**
+ * Hook to manage the join steps
+ *
+ * Uses the query parameter `step` to track the current step
+ */
 export const useSteps = () => {
-  const [currentStep, setCurrentStep] = useState<Step>(steps.account);
+  const router = useRouter();
+  const step = router.query.step as Step | undefined;
 
-  const goToNextStep = () => {
-    setCurrentStep((prev) =>
-      prev < steps.success ? ((prev + 1) as Step) : prev,
-    );
-  };
+  const setStep = useCallback(
+    (newStep: Step, usePush = false) => {
+      const routerMethod = usePush ? router.push : router.replace;
+      routerMethod({ query: { step: newStep } }, undefined, {
+        shallow: true,
+      });
+    },
+    [router],
+  );
 
-  const skipToNextStep = () => {
+  const goToNextStep = useCallback(() => {
+    if (!step) return;
+    const currentIndex = steps.indexOf(step);
+    if (currentIndex < steps.length - 1) {
+      const nextStep = steps[currentIndex + 1];
+      setStep(nextStep, true);
+    }
+  }, [step, setStep]);
+
+  const skipToNextStep = useCallback(() => {
     goToNextStep();
-  };
+  }, [goToNextStep]);
 
   return {
-    currentStep,
+    step,
+    setStep,
     goToNextStep,
     skipToNextStep,
   };

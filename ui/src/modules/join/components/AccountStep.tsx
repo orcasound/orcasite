@@ -4,10 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  MutationError,
-  useRegisterWithPasswordMutation,
-} from "@/graphql/generated";
+import { MutationError } from "@/graphql/generated";
+import { useAuth } from "@/hooks/useAuth";
 
 import {
   createFormSubmitHandler,
@@ -31,37 +29,26 @@ const useAccountForm = (onSuccess: () => void) => {
   const form = useForm<AccountFormInputs>({
     resolver: zodResolver(accountSchema),
   });
+  const { register: registerUser } = useAuth();
 
-  const submitRegister = useRegisterWithPasswordMutation({
-    onMutate: () => {
+  const onSubmit = async (data: AccountFormInputs) => {
+    try {
       setErrors([]);
-    },
-    onSuccess: ({ registerWithPassword }) => {
-      if (registerWithPassword) {
-        const { result: user, errors } = registerWithPassword;
-
-        if (errors) {
-          setErrors(
-            errors.filter((error): error is MutationError => error !== null),
-          );
-        }
-
-        if (user) {
-          onSuccess();
-        }
+      await registerUser({
+        email: data.email,
+        password: data.password,
+        passwordConfirmation: data.password,
+      });
+      onSuccess();
+    } catch (errors) {
+      if (Array.isArray(errors)) {
+        setErrors(
+          errors.filter((error): error is MutationError => error !== null),
+        );
+      } else {
+        console.error("Register error:", errors);
       }
-    },
-    onError: (error) => {
-      console.log("Register error", error);
-    },
-  });
-
-  const onSubmit = (data: AccountFormInputs) => {
-    submitRegister.mutate({
-      email: data.email,
-      password: data.password,
-      passwordConfirmation: data.password,
-    });
+    }
   };
 
   return { form, errors, onSubmit };

@@ -3,10 +3,8 @@ import { Box, FormControlLabel, Switch } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  useGetCurrentUserQuery,
-  useUpdateUserPreferencesMutation,
-} from "@/graphql/generated";
+import { useUpdateUserPreferencesMutation } from "@/graphql/generated";
+import { useAuth } from "@/hooks/useAuth";
 
 import { createFormSubmitHandler, StepFormProps } from "../utils";
 import { FormActions } from "./FormActions";
@@ -21,7 +19,7 @@ const preferencesSchema = z.object({
 type PreferencesFormInputs = z.infer<typeof preferencesSchema>;
 
 const usePreferencesForm = (onSuccess: () => void) => {
-  const currentUser = useGetCurrentUserQuery().data?.currentUser;
+  const { user } = useAuth();
 
   const form = useForm<PreferencesFormInputs>({
     resolver: zodResolver(preferencesSchema),
@@ -42,10 +40,10 @@ const usePreferencesForm = (onSuccess: () => void) => {
   });
 
   const onSubmit = (data: PreferencesFormInputs) => {
-    if (!currentUser) return;
+    if (!user) return;
 
     updatePreferences.mutate({
-      id: currentUser.id,
+      id: user.id,
       ...data,
     });
   };

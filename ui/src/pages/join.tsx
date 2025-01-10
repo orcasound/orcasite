@@ -1,10 +1,14 @@
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
 import { getMapLayout } from "@/components/layouts/MapLayout";
+import { useAuth } from "@/hooks/useAuth";
 import {
   AccountStep,
   PreferencesStep,
   ProfileStep,
+  Step,
   StepLayout,
-  steps,
   SuccessStep,
   useSteps,
 } from "@/modules/join";
@@ -16,7 +20,7 @@ type StepConfig = {
   description: string;
 };
 
-const stepConfigs: Record<keyof typeof steps, StepConfig> = {
+const stepConfigs: Record<Step, StepConfig> = {
   account: {
     pageTitle: "Create an Account",
     title: "Create an account",
@@ -43,9 +47,30 @@ const stepConfigs: Record<keyof typeof steps, StepConfig> = {
 };
 
 const JoinPage: NextPageWithLayout = () => {
-  const { currentStep, goToNextStep, skipToNextStep } = useSteps();
-  const currentConfig =
-    stepConfigs[Object.keys(steps)[currentStep - 1] as keyof typeof steps];
+  const router = useRouter();
+  const { step, setStep, goToNextStep, skipToNextStep } = useSteps();
+  const { user, isLoadingUser } = useAuth();
+
+  // Decide which step to show based on the user's state and the desired step
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (isLoadingUser) return;
+
+    // Start the join flow if the user is not logged in
+    if (!user && !step) setStep("account");
+    // Logged in users should not be able to access the join page, so redirect
+    else if (user && !step) router.replace("/");
+    // Unless they're trying to directly access a step (but skip the account creation step)
+    else if (user && step === "account") goToNextStep();
+  }, [user, step, router, goToNextStep, setStep, isLoadingUser]);
+
+  if (isLoadingUser) {
+    return <div>Loading...</div>;
+  }
+
+  if (!step) return null;
+
+  const currentConfig = stepConfigs[step];
 
   return (
     <div>
@@ -55,16 +80,14 @@ const JoinPage: NextPageWithLayout = () => {
           title={currentConfig.title}
           description={currentConfig.description}
         >
-          {currentStep === steps.account && (
-            <AccountStep onSuccess={goToNextStep} />
-          )}
-          {currentStep === steps.profile && (
+          {step === "account" && <AccountStep onSuccess={goToNextStep} />}
+          {step === "profile" && (
             <ProfileStep onSuccess={goToNextStep} onSkip={skipToNextStep} />
           )}
-          {currentStep === steps.preferences && (
+          {step === "preferences" && (
             <PreferencesStep onSuccess={goToNextStep} onSkip={skipToNextStep} />
           )}
-          {currentStep === steps.success && <SuccessStep />}
+          {step === "success" && <SuccessStep />}
         </StepLayout>
       </main>
     </div>
