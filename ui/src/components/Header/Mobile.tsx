@@ -152,7 +152,7 @@ export default function Mobile({
                     <ListItemIcon
                       sx={{
                         color: "base.contrastText",
-                        displa: "flex",
+                        display: "flex",
                         justifyContent: "center",
                         opacity: 0.9,
                       }}
