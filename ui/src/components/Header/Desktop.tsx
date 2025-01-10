@@ -1,10 +1,11 @@
-import { Notifications, Person } from "@mui/icons-material";
+import { Notifications } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
 
 import Link from "@/components/Link";
 import { displayDesktopOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 
+import UserMenu from "./AccountMenu";
 import Brand from "./Brand";
 
 export default function Desktop() {
@@ -71,28 +72,7 @@ export default function Desktop() {
               Get notified
             </Button>
           </Link>
-          <Link
-            href="/join"
-            title="Join Orcasound"
-            sx={{
-              my: 2,
-              mx: 1,
-              textWrap: "nowrap",
-            }}
-            // TODO(@paulcretu): Add analytics event
-            // onClick={() => analytics.nav.joinClicked()}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Person />}
-              sx={{
-                borderRadius: 8,
-              }}
-            >
-              Join
-            </Button>
-          </Link>
+          <UserMenu sx={{ my: 2, mx: 1, textWrap: "nowrap" }} />
         </Box>
       </Box>
     </Box>
