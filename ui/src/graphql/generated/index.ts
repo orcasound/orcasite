@@ -687,6 +687,7 @@ export type DetectionSortInput = {
 export type Feed = {
   __typename?: "Feed";
   audioImages: Array<AudioImage>;
+  bouts: Array<Bout>;
   bucket: Scalars["String"]["output"];
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
   cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
@@ -713,6 +714,13 @@ export type FeedAudioImagesArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<AudioImageSortInput>>>;
+};
+
+export type FeedBoutsArgs = {
+  filter?: InputMaybe<BoutFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<BoutSortInput>>>;
 };
 
 export type FeedFeedSegmentsArgs = {
@@ -801,6 +809,7 @@ export type FeedFilterImageUrl = {
 export type FeedFilterInput = {
   and?: InputMaybe<Array<FeedFilterInput>>;
   audioImages?: InputMaybe<AudioImageFilterInput>;
+  bouts?: InputMaybe<BoutFilterInput>;
   bucket?: InputMaybe<FeedFilterBucket>;
   bucketRegion?: InputMaybe<FeedFilterBucketRegion>;
   cloudfrontUrl?: InputMaybe<FeedFilterCloudfrontUrl>;
@@ -2325,7 +2334,41 @@ export type CandidatesQuery = {
   } | null;
 };
 
-export type FeedsQueryVariables = Exact<{ [key: string]: never }>;
+export type DetectionsQueryVariables = Exact<{
+  filter?: InputMaybe<DetectionFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<
+    Array<InputMaybe<DetectionSortInput>> | InputMaybe<DetectionSortInput>
+  >;
+}>;
+
+export type DetectionsQuery = {
+  __typename?: "RootQueryType";
+  detections?: {
+    __typename?: "PageOfDetection";
+    count?: number | null;
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "Detection";
+      id: string;
+      feedId?: string | null;
+      listenerCount?: number | null;
+      category?: DetectionCategory | null;
+      description?: string | null;
+      playerOffset: number;
+      playlistTimestamp: number;
+      timestamp: Date;
+      candidate?: { __typename?: "Candidate"; id: string } | null;
+    }> | null;
+  } | null;
+};
+
+export type FeedsQueryVariables = Exact<{
+  sort?: InputMaybe<
+    Array<InputMaybe<FeedSortInput>> | InputMaybe<FeedSortInput>
+  >;
+}>;
 
 export type FeedsQuery = {
   __typename?: "RootQueryType";
@@ -3195,9 +3238,66 @@ useCandidatesQuery.fetcher = (
     options,
   );
 
+export const DetectionsDocument = `
+    query detections($filter: DetectionFilterInput, $limit: Int, $offset: Int, $sort: [DetectionSortInput]) {
+  detections(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+    count
+    hasNextPage
+    results {
+      id
+      feedId
+      listenerCount
+      category
+      description
+      playerOffset
+      playlistTimestamp
+      timestamp
+      candidate {
+        id
+      }
+    }
+  }
+}
+    `;
+
+export const useDetectionsQuery = <TData = DetectionsQuery, TError = unknown>(
+  variables?: DetectionsQueryVariables,
+  options?: Omit<
+    UseQueryOptions<DetectionsQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<DetectionsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<DetectionsQuery, TError, TData>({
+    queryKey:
+      variables === undefined ? ["detections"] : ["detections", variables],
+    queryFn: fetcher<DetectionsQuery, DetectionsQueryVariables>(
+      DetectionsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useDetectionsQuery.document = DetectionsDocument;
+
+useDetectionsQuery.getKey = (variables?: DetectionsQueryVariables) =>
+  variables === undefined ? ["detections"] : ["detections", variables];
+
+useDetectionsQuery.fetcher = (
+  variables?: DetectionsQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<DetectionsQuery, DetectionsQueryVariables>(
+    DetectionsDocument,
+    variables,
+    options,
+  );
+
 export const FeedsDocument = `
-    query feeds {
-  feeds {
+    query feeds($sort: [FeedSortInput]) {
+  feeds(sort: $sort) {
     id
     name
     slug

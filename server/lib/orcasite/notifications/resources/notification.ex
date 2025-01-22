@@ -154,7 +154,7 @@ defmodule Orcasite.Notifications.Notification do
                  |> Ash.load!(:feed)
 
                changeset
-               |> Ash.Changeset.change_attribute(:meta, %{
+               |> Ash.Changeset.force_change_attribute(:meta, %{
                  candidate_id: candidate_id,
                  node: candidate.feed.slug,
                  message: Ash.Changeset.get_argument(changeset, :message)

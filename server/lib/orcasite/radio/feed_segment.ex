@@ -212,6 +212,7 @@ defmodule Orcasite.Radio.FeedSegment do
 
   graphql do
     type :feed_segment
+    attribute_types [feed_id: :id, feed_stream_id: :id]
 
     queries do
       list :feed_segments, :index

@@ -73,10 +73,18 @@ defmodule OrcasiteWeb.ModeratorTest do
 
       assert %{
                "data" => %{
-                 "notifyConfirmedCandidate" => %{"result" => %{"id" => _}}
+                 "notifyConfirmedCandidate" => %{"result" => %{"id" => notification_id}}
                }
              } =
                json_response(conn, 200)
+
+      candidate_id = candidate.id
+
+      notification =
+        Orcasite.Notifications.Notification |> Ash.get!(notification_id, authorize?: false)
+
+      assert %{meta: %{"message" => "Test notification", "candidate_id" => ^candidate_id}} =
+               notification
     end
 
     test "can view notificationsForCandidate", %{conn: conn, candidate: candidate} do
