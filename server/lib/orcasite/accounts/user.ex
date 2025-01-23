@@ -30,6 +30,15 @@ defmodule Orcasite.Accounts.User do
       constraints allow_empty?: false, trim?: true
     end
 
+    # Profile fields
+    attribute :is_scientist, :boolean, default: false, allow_nil?: false, public?: true
+    attribute :organization, :string, allow_nil?: true, public?: true
+
+    # Preferences
+    attribute :volunteering, :boolean, default: false, allow_nil?: false, public?: true
+    attribute :user_testing, :boolean, default: false, allow_nil?: false, public?: true
+    attribute :newsletter, :boolean, default: false, allow_nil?: false, public?: true
+
     create_timestamp :inserted_at
     update_timestamp :updated_at
   end
@@ -92,6 +101,14 @@ defmodule Orcasite.Accounts.User do
     bypass action(:password_reset_with_password) do
       authorize_if always()
     end
+
+    policy action(:update_profile) do
+      authorize_if expr(id == ^actor(:id))
+    end
+
+    policy action(:update_preferences) do
+      authorize_if expr(id == ^actor(:id))
+    end
   end
 
   actions do
@@ -105,6 +122,27 @@ defmodule Orcasite.Accounts.User do
       get? true
       manual Orcasite.Accounts.Actions.CurrentUserRead
     end
+
+    update :update_profile do
+      accept [
+        :username,
+        :first_name,
+        :last_name,
+        :is_scientist,
+        :organization
+      ]
+    end
+
+    update :update_preferences do
+      argument :live_notifications, :boolean, default: false, allow_nil?: false
+      accept [
+        :volunteering,
+        :user_testing,
+        :newsletter
+      ]
+
+      # TODO: When live_notifications is true, create a subscription for the user
+    end
   end
 
   code_interface do
@@ -115,6 +153,8 @@ defmodule Orcasite.Accounts.User do
     define :by_email, args: [:email]
     define :request_password_reset_with_password
     define :password_reset_with_password
+    define :update_profile
+    define :update_preferences
   end
 
   admin do
@@ -141,7 +181,18 @@ defmodule Orcasite.Accounts.User do
     end
 
     mutations do
-      create :register_with_password, :register_with_password
+      create :register_with_password, :register_with_password do
+        modify_resolution {__MODULE__, :after_registration, []}
+      end
+      update :update_user_profile, :update_profile
+      update :update_user_preferences, :update_preferences
     end
+  end
+
+  def after_registration(resolution, _query, {:ok, user}) do
+    resolution
+    |> Map.update!(:context, fn ctx ->
+      Map.put(ctx, :current_user, user)
+    end)
   end
 end
