@@ -179,6 +179,7 @@ export function BoutPlayer({
       playlistDatetime,
       targetOffset,
       intervalRef,
+      setPlayerTimeRef,
     ],
   );
   const handlePlayPauseClick = () => {
@@ -213,7 +214,7 @@ export function BoutPlayer({
       <Box display="none">
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      <Box ml={2} mr={6} display="flex" justifyContent="center">
+      <Box mx={2} display="flex" justifyContent="center">
         <Box
           display="flex"
           flexDirection="column"

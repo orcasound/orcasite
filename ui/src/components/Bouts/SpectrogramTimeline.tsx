@@ -1,11 +1,18 @@
-import { PlayCircleFilled } from "@mui/icons-material";
-import { Box, Button } from "@mui/material";
-import { addMinutes, differenceInMilliseconds } from "date-fns";
-import { throttle } from "lodash";
+import {
+  ArrowRight,
+  Clear,
+  PlayCircleFilled,
+  Start,
+  ZoomIn,
+  ZoomOut,
+} from "@mui/icons-material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
+import { addMinutes, differenceInMilliseconds, format } from "date-fns";
 import _ from "lodash";
 import {
   Dispatch,
   MutableRefObject,
+  PropsWithChildren,
   SetStateAction,
   useCallback,
   useEffect,
@@ -18,12 +25,18 @@ import { AudioImage, FeedSegment } from "@/graphql/generated";
 import { PlayerControls } from "../Player/BoutPlayer";
 import { BaseAudioWidthLayer } from "./BaseAudioWidthLayer";
 import { FeedSegmentsLayer } from "./FeedSegmentsLayer";
+import { FrequencyAxisLayer } from "./FrequencyAxisLayer";
 import { TimelineMarker } from "./TimelineMarker";
 import { TimelineTickerLayer } from "./TimelineTickerLayer";
 
 export const TICKER_HEIGHT = 30;
 const SPECTROGRAM_HEIGHT = 300;
 const PIXEL_ZOOM_FACTOR = 50;
+
+type SpectrogramFeedSegment = Pick<
+  FeedSegment,
+  "id" | "startTime" | "endTime" | "duration"
+> & { audioImages: Pick<AudioImage, "bucket" | "objectPath">[] };
 
 function centerWindow(
   spectrogramWindow: MutableRefObject<HTMLDivElement | null>,
@@ -39,30 +52,23 @@ function centerWindow(
     spectrogramWindow.current.scrollLeft =
       offset - spectrogramWindow.current.clientWidth / 2;
 
-    throttle(
-      () => {
-        if (spectrogramWindow.current) {
-          setWindowStartTime(
-            offsetToTime(
-              spectrogramWindow.current.scrollLeft,
-              timelineStartTime,
-              pixelsPerMinute,
-            ),
-          );
-          setWindowEndTime(
-            offsetToTime(
-              spectrogramWindow.current.scrollLeft +
-                spectrogramWindow.current.clientWidth,
-              timelineStartTime,
-              pixelsPerMinute,
-            ),
-          );
-        }
-      },
-      500,
-      { leading: true, trailing: true },
-    )();
-
+    if (spectrogramWindow.current) {
+      setWindowStartTime(
+        offsetToTime(
+          spectrogramWindow.current.scrollLeft,
+          timelineStartTime,
+          pixelsPerMinute,
+        ),
+      );
+      setWindowEndTime(
+        offsetToTime(
+          spectrogramWindow.current.scrollLeft +
+            spectrogramWindow.current.clientWidth,
+          timelineStartTime,
+          pixelsPerMinute,
+        ),
+      );
+    }
     if (playerControls?.setPlayerTime) {
       playerControls.setPlayerTime(targetTime);
     }
@@ -98,12 +104,6 @@ export function rangesOverlap(
   }
   return false;
 }
-
-export type SpectrogramFeedSegment = Pick<
-  FeedSegment,
-  "id" | "startTime" | "endTime" | "duration"
-> & { audioImages: Pick<AudioImage, "bucket" | "objectPath">[] };
-
 export default function SpectrogramTimeline({
   timelineStartTime,
   timelineEndTime,
@@ -114,7 +114,8 @@ export default function SpectrogramTimeline({
   boutEndTime,
   setBoutStartTime,
   setBoutEndTime,
-}: {
+  children,
+}: PropsWithChildren<{
   timelineStartTime: Date;
   timelineEndTime: Date;
   feedSegments: SpectrogramFeedSegment[];
@@ -124,16 +125,29 @@ export default function SpectrogramTimeline({
   boutEndTime?: Date;
   setBoutStartTime: Dispatch<SetStateAction<Date | undefined>>;
   setBoutEndTime: Dispatch<SetStateAction<Date | undefined>>;
-}) {
+}>) {
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState<number>(8);
-  const [windowStartTime, setWindowStartTime] = useState<Date>();
-  const [windowEndTime, setWindowEndTime] = useState<Date>();
+  const [windowStartTime, setWindowStartTimeUnthrottled] = useState<Date>();
+  const [windowEndTime, setWindowEndTimeUnthrottled] = useState<Date>();
+  const setWindowStartTime = useCallback(
+    _.throttle(setWindowStartTimeUnthrottled, 500, { trailing: false }),
+    [],
+  );
+  const setWindowEndTime = useCallback(
+    _.throttle(setWindowEndTimeUnthrottled, 500, { trailing: false }),
+    [],
+  );
+  const setPlayerTime = _.throttle(
+    (time: Date) => playerControls?.setPlayerTime(time),
+    200,
+    { trailing: false },
+  );
 
   const minZoom = 2;
-  const maxZoom = 400;
+  const maxZoom = 1600;
 
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
@@ -142,7 +156,6 @@ export default function SpectrogramTimeline({
   const windowLockInterval = useRef<NodeJS.Timeout>();
 
   const pixelsPerMinute = PIXEL_ZOOM_FACTOR * zoomLevel;
-
   const goToTime = (time: Date) => {
     centerWindow(
       spectrogramWindow,
@@ -173,7 +186,13 @@ export default function SpectrogramTimeline({
         ),
       );
     }
-  }, [spectrogramWindow, timelineStartTime, pixelsPerMinute]);
+  }, [
+    spectrogramWindow,
+    setWindowStartTime,
+    setWindowEndTime,
+    timelineStartTime,
+    pixelsPerMinute,
+  ]);
 
   // Center window on current time
   useEffect(() => {
@@ -190,14 +209,17 @@ export default function SpectrogramTimeline({
             setWindowEndTime,
           );
         }
-      }, 20);
+      }, 100);
     }
+    return () => clearInterval(windowLockInterval.current);
   }, [
     isDragging,
     playerTimeRef,
     spectrogramWindow,
     pixelsPerMinute,
     timelineStartTime,
+    setWindowStartTime,
+    setWindowEndTime,
   ]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -222,7 +244,7 @@ export default function SpectrogramTimeline({
       timelineStartTime,
       pixelsPerMinute,
     );
-    playerControls?.setPlayerTime(targetTime);
+    setPlayerTime(targetTime);
     setWindowStartTime(
       offsetToTime(windowScrollX.current, timelineStartTime, pixelsPerMinute),
     );
@@ -270,7 +292,7 @@ export default function SpectrogramTimeline({
     );
     playerTimeRef.current = targetTime;
 
-    playerControls?.setPlayerTime(targetTime);
+    setPlayerTime(targetTime);
 
     setWindowStartTime(
       offsetToTime(windowScrollX.current, timelineStartTime, pixelsPerMinute),
@@ -298,46 +320,6 @@ export default function SpectrogramTimeline({
 
   return (
     <>
-      <Box>
-        <Button
-          onClick={() =>
-            setZoomLevel((zoom) => _.clamp(zoom * 2, minZoom, maxZoom))
-          }
-        >
-          Zoom in
-        </Button>
-        <Button
-          onClick={() =>
-            setZoomLevel((zoom) => _.clamp(zoom / 2, minZoom, maxZoom))
-          }
-        >
-          Zoom out
-        </Button>
-        <Button
-          onClick={() =>
-            (!boutEndTime || playerTimeRef.current < boutEndTime) &&
-            setBoutStartTime(playerTimeRef.current)
-          }
-        >
-          Set bout start
-        </Button>
-        {boutStartTime && (
-          <Button onClick={() => goToTime(boutStartTime)}>
-            Go to bout start
-          </Button>
-        )}
-        <Button
-          onClick={() =>
-            (!boutStartTime || playerTimeRef.current > boutStartTime) &&
-            setBoutEndTime(playerTimeRef.current)
-          }
-        >
-          Set bout end
-        </Button>
-        {boutEndTime && (
-          <Button onClick={() => goToTime(boutEndTime)}>Go to bout end</Button>
-        )}
-      </Box>
       <Box
         ref={spectrogramWindow}
         position="relative"
@@ -346,7 +328,7 @@ export default function SpectrogramTimeline({
         width={"100%"}
         display="flex"
         sx={{
-          overflowX: "hidden",
+          overflow: "hidden",
           msOverflowStyle: "none",
           "&::-webkit-scrollbar": { display: "none", height: 0 },
           scrollbarWidth: "none",
@@ -398,6 +380,13 @@ export default function SpectrogramTimeline({
           />
         )}
 
+        <FrequencyAxisLayer
+          minFrequency={1}
+          maxFrequency={48000}
+          scaling="logarithmic"
+          zIndex={3}
+        />
+
         {windowStartTime && windowEndTime && (
           <TimelineTickerLayer
             timelineStartTime={timelineStartTime}
@@ -424,6 +413,111 @@ export default function SpectrogramTimeline({
             zIndex={2}
           />
         )}
+      </Box>
+      <Box display="flex" sx={{ gap: 2 }}>
+        <Box minWidth={130}>{children}</Box>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Box>
+            <Typography variant="overline">Zoom</Typography>
+          </Box>
+          <Box>
+            <IconButton
+              onClick={() =>
+                setZoomLevel((zoom) => _.clamp(zoom * 2, minZoom, maxZoom))
+              }
+            >
+              <ZoomIn />
+            </IconButton>
+            <IconButton
+              onClick={() =>
+                setZoomLevel((zoom) => _.clamp(zoom / 2, minZoom, maxZoom))
+              }
+            >
+              <ZoomOut />
+            </IconButton>
+          </Box>
+        </Box>
+
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          minWidth={120}
+        >
+          <Box>
+            <Typography variant="overline">Bout start</Typography>
+          </Box>
+          <Box>
+            <IconButton
+              onClick={() =>
+                (!boutEndTime || playerTimeRef.current < boutEndTime) &&
+                setBoutStartTime(playerTimeRef.current)
+              }
+              title="Set bout start"
+            >
+              <Start />
+            </IconButton>
+          </Box>
+          {boutStartTime && (
+            <Box>
+              <Button
+                startIcon={<ArrowRight />}
+                onClick={() => goToTime(boutStartTime)}
+                color="secondary"
+                title="Go to bout start"
+              >
+                {format(boutStartTime, "hh:mm:ss")}
+              </Button>
+              <IconButton
+                onClick={() => setBoutStartTime(undefined)}
+                title="Clear bout start"
+                size="small"
+              >
+                <Clear fontSize="small" />
+              </IconButton>
+            </Box>
+          )}
+        </Box>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          minWidth={120}
+        >
+          <Box>
+            <Typography variant="overline">Bout end</Typography>
+          </Box>
+          <Box>
+            <IconButton
+              onClick={() =>
+                (!boutStartTime || playerTimeRef.current > boutStartTime) &&
+                setBoutEndTime(playerTimeRef.current)
+              }
+              title="Set bout end"
+            >
+              <Start sx={{ transform: "rotate(180deg)" }} />
+            </IconButton>
+          </Box>
+          {boutEndTime && (
+            <Box>
+              <Button
+                startIcon={<ArrowRight />}
+                onClick={() => goToTime(boutEndTime)}
+                color="secondary"
+                title="Go to bout end"
+              >
+                {format(boutEndTime, "hh:mm:ss")}
+              </Button>
+              <IconButton
+                onClick={() => setBoutEndTime(undefined)}
+                title="Clear bout end"
+                size="small"
+              >
+                <Clear fontSize="small" />
+              </IconButton>
+            </Box>
+          )}
+        </Box>
       </Box>
     </>
   );

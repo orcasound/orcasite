@@ -48,6 +48,7 @@ export function TimelineMarker({
           top: TICKER_HEIGHT,
           position: "absolute",
           height: `calc(100% - ${TICKER_HEIGHT}px)`,
+          zIndex: zIndex - 2,
         }}
       ></Box>
     </Box>

@@ -1,15 +1,19 @@
 import { Box, Typography } from "@mui/material";
 import {
-  addMinutes,
-  addSeconds,
-  differenceInMinutes,
+  addMilliseconds,
+  differenceInMilliseconds,
   format,
-  subMinutes,
+  hoursToMilliseconds,
+  minutesToMilliseconds,
+  secondsToMilliseconds,
+  subMilliseconds,
 } from "date-fns";
-import _ from "lodash";
+import { throttle } from "lodash";
 import { Fragment } from "react";
 
-import { rangesOverlap, TICKER_HEIGHT } from "./SpectrogramTimeline";
+import { TICKER_HEIGHT, timeToOffset } from "./SpectrogramTimeline";
+
+const log = throttle(console.log, 5000);
 
 export function TimelineTickerLayer({
   timelineStartTime,
@@ -19,42 +23,111 @@ export function TimelineTickerLayer({
   windowEndTime,
   zIndex,
 }: {
-  timelineEndTime: Date;
   timelineStartTime: Date;
+  timelineEndTime: Date;
   windowStartTime: Date;
   windowEndTime: Date;
   pixelsPerMinute: number;
   zIndex: number;
 }) {
-  const minutes = differenceInMinutes(timelineEndTime, timelineStartTime);
-  const tiles = minutes; // 1 minute increments
+  const windowRange = differenceInMilliseconds(windowEndTime, windowStartTime);
+  const ticksPerWindow = 20;
+  const labelsPerWindow = 8;
 
-  const seconds = _.range(1, 59);
-  const tens = seconds.filter((second) => second % 10 === 0);
-  const tensTicks = _.without(tens, 30);
-  const fives = seconds.filter((second) => second % 5 === 0);
-  const fivesTicks = _.without(fives, ...tens);
-  const onesTicks = _.without(seconds, ...tens, ...fives);
+  const tickSize = windowRange / ticksPerWindow;
+  const labelSize = windowRange / labelsPerWindow;
+  const tickScales = [
+    hoursToMilliseconds(24),
+    hoursToMilliseconds(6),
+    hoursToMilliseconds(3),
+    hoursToMilliseconds(1),
+    minutesToMilliseconds(10),
+    minutesToMilliseconds(5),
+    minutesToMilliseconds(1),
+    secondsToMilliseconds(30),
+    secondsToMilliseconds(10),
+    secondsToMilliseconds(5),
+    secondsToMilliseconds(1),
+    secondsToMilliseconds(1 / 10),
+    secondsToMilliseconds(1 / 100),
+    1,
+  ];
+  const labelScales = [
+    hoursToMilliseconds(24),
+    hoursToMilliseconds(6),
+    hoursToMilliseconds(3),
+    hoursToMilliseconds(1),
+    minutesToMilliseconds(10),
+    minutesToMilliseconds(5),
+    minutesToMilliseconds(1),
+    secondsToMilliseconds(30),
+    secondsToMilliseconds(10),
+    secondsToMilliseconds(5),
+    secondsToMilliseconds(1),
+    secondsToMilliseconds(1 / 10),
+    secondsToMilliseconds(1 / 100),
+    1,
+  ];
 
-  const tensLabelThreshold = 600; // pixels per minute
-  const fivesTicksThreshold = 600; // pixels per minute
-  const fivesLabelThreshold = 1600; // pixels per minute
-  const onesTicksThreshold = 750; // pixels per minute
-  const onesLabelThreshold = 6400; // pixels per minute
+  // console.log("range", windowRange, "ts", tickSize, "ls", labelSize);
+
+  const minScaleIndex = tickScales.findIndex(
+    (num) => Math.floor(tickSize / num) > 0,
+  );
+  const scale = tickScales[Math.max(0, minScaleIndex - 1)];
+  const pixelsPerTick = pixelsPerMinute * (scale / minutesToMilliseconds(1));
+
+  const minLabelScaleIndex = labelScales.findIndex(
+    (num) => Math.floor(labelSize / num) > 0,
+  );
+  const labelScale = labelScales[Math.max(0, minLabelScaleIndex - 1)];
+  const pixelsPerLabel =
+    pixelsPerMinute * (labelScale / minutesToMilliseconds(1));
+
+  const tickStartTime = new Date(
+    Math.floor(
+      subMilliseconds(windowStartTime, windowRange * 0.2).getTime() / scale,
+    ) * scale,
+  );
+  const tickEndTime = new Date(
+    Math.ceil(
+      addMilliseconds(windowEndTime, windowRange * 0.2).getTime() / scale,
+    ) * scale,
+  );
+  const tickStartOffset = timeToOffset(
+    tickStartTime,
+    timelineStartTime,
+    pixelsPerMinute,
+  );
+
+  const ticks = differenceInMilliseconds(tickEndTime, tickStartTime) / scale;
+
+  const labelStartTime = new Date(
+    Math.floor(
+      subMilliseconds(windowStartTime, windowRange * 0.2).getTime() /
+        labelScale,
+    ) * labelScale,
+  );
+  const labelEndTime = new Date(
+    Math.ceil(
+      addMilliseconds(windowEndTime, windowRange * 0.2).getTime() / labelScale,
+    ) * labelScale,
+  );
+  const labelStartOffset = timeToOffset(
+    labelStartTime,
+    timelineStartTime,
+    pixelsPerMinute,
+  );
+
+  const labels =
+    differenceInMilliseconds(labelEndTime, labelStartTime) / labelScale;
+  // log("scale", scale, "ppt", pixelsPerTick, "ppm", pixelsPerMinute);
 
   return (
     <>
-      {Array(tiles)
+      {Array(ticks)
         .fill(0)
-        .map((_minute, idx) => {
-          const inRange = rangesOverlap(
-            addMinutes(timelineStartTime, idx),
-            addMinutes(timelineStartTime, idx + 1),
-            subMinutes(windowStartTime, 1),
-            addMinutes(windowEndTime, 1),
-          );
-
-          if (!inRange) return <Fragment key={idx}></Fragment>;
+        .map((_tick, idx) => {
           return (
             <Box
               key={idx}
@@ -63,85 +136,30 @@ export function TimelineTickerLayer({
               display="flex"
               borderBottom="1px solid #aaa"
               sx={{
-                minWidth: pixelsPerMinute,
+                minWidth: pixelsPerTick,
                 height: TICKER_HEIGHT,
                 position: "absolute",
-                left: idx * pixelsPerMinute,
+                left: tickStartOffset + idx * pixelsPerTick,
               }}
             >
               <Box position="relative" width="100%">
-                <Tick left="0" height="35%" />
-                <Tick left="50%" height="30%" />
-                {tensTicks.map((number, tensTickerIndex) => (
-                  <Tick
-                    key={tensTickerIndex}
-                    left={`${(100 * number) / 60}%`}
-                    height="20%"
-                  />
-                ))}
-                {pixelsPerMinute >= tensLabelThreshold &&
-                  tens.map((number, tensLabelIndex) => (
-                    <Label
-                      key={tensLabelIndex}
-                      left={`${(100 * number) / 60}%`}
-                      width={`${100 / 6}%`}
-                      time={addSeconds(
-                        addMinutes(timelineStartTime, idx),
-                        number,
-                      )}
-                    />
-                  ))}
-
-                {pixelsPerMinute >= fivesLabelThreshold &&
-                  fivesTicks.map((number, fivesLabel) => (
-                    <Label
-                      key={fivesLabel}
-                      left={`${(100 * number) / 60}%`}
-                      width={`${100 / 6}%`}
-                      time={addSeconds(
-                        addMinutes(timelineStartTime, idx),
-                        number,
-                      )}
-                    />
-                  ))}
-
-                {pixelsPerMinute >= fivesTicksThreshold &&
-                  fivesTicks.map((number, fivesTickerIdx) => (
-                    <Tick
-                      key={fivesTickerIdx}
-                      left={`${(100 * number) / 60}%`}
-                      height={"20%"}
-                    />
-                  ))}
-
-                {pixelsPerMinute >= onesLabelThreshold &&
-                  onesTicks.map((number, onesLabel) => (
-                    <Label
-                      key={onesLabel}
-                      left={`${(100 * number) / 60}%`}
-                      width={`${100 / 60}%`}
-                      time={addSeconds(
-                        addMinutes(timelineStartTime, idx),
-                        number,
-                      )}
-                    />
-                  ))}
-
-                {pixelsPerMinute >= onesTicksThreshold &&
-                  onesTicks.map((number, onesTicksIndex) => (
-                    <Tick
-                      key={onesTicksIndex}
-                      left={`${(100 * number) / 60}%`}
-                      height={"15%"}
-                    />
-                  ))}
-                <Label
-                  time={addMinutes(timelineStartTime, idx)}
-                  left={0}
-                  width={"100%"}
-                />
+                <Tick left="0" height={"35%"} />
               </Box>
             </Box>
+          );
+        })}
+      {Array(labels)
+        .fill(0)
+        .map((_label, idx) => {
+          return (
+            <Label
+              key={idx}
+              zIndex={zIndex + 1}
+              time={addMilliseconds(labelStartTime, idx * labelScale)}
+              width={pixelsPerLabel}
+              left={labelStartOffset + idx * pixelsPerLabel}
+              scale={labelScale}
+            />
           );
         })}
     </>
@@ -171,19 +189,24 @@ function Label({
   time,
   width,
   left,
+  zIndex,
+  scale,
 }: {
   time: Date;
   width: number | string;
   left: number | string;
+  zIndex: number;
+  scale: number;
 }) {
   return (
     <Box
+      zIndex={zIndex}
       position="absolute"
       left={left}
       width={width}
       display="flex"
       justifyContent="center"
-      height="50%"
+      height={TICKER_HEIGHT / 2}
       top={0}
     >
       <Typography
@@ -199,7 +222,7 @@ function Label({
         mb={0}
         mt={"2px"}
       >
-        {format(time, "hh:mm:ss")}
+        {format(time, scale < 1 ? "hh:mm:ss.SS" : "hh:mm:ss")}
       </Typography>
     </Box>
   );
