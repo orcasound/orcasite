@@ -546,6 +546,13 @@ export type CandidateSortInput = {
   order?: InputMaybe<SortOrder>;
 };
 
+export type CreateBoutInput = {
+  category: AudioCategory;
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  feedId: Scalars["String"]["input"];
+  startTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
 /** The result of the :create_bout mutation */
 export type CreateBoutResult = {
   __typename?: "CreateBoutResult";
@@ -1775,6 +1782,10 @@ export type RootMutationTypeCancelCandidateNotificationsArgs = {
 
 export type RootMutationTypeCancelNotificationArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type RootMutationTypeCreateBoutArgs = {
+  input: CreateBoutInput;
 };
 
 export type RootMutationTypeGenerateFeedSpectrogramArgs = {

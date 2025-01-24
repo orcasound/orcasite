@@ -1,18 +1,10 @@
-import {
-  ArrowRight,
-  Clear,
-  PlayCircleFilled,
-  Start,
-  ZoomIn,
-  ZoomOut,
-} from "@mui/icons-material";
-import { Box, Button, IconButton, Typography } from "@mui/material";
-import { addMinutes, differenceInMilliseconds, format } from "date-fns";
+import { PlayCircleFilled } from "@mui/icons-material";
+import { Box } from "@mui/material";
+import { addMinutes, differenceInMilliseconds } from "date-fns";
 import _ from "lodash";
 import {
   Dispatch,
   MutableRefObject,
-  PropsWithChildren,
   SetStateAction,
   useCallback,
   useEffect,
@@ -37,6 +29,12 @@ type SpectrogramFeedSegment = Pick<
   FeedSegment,
   "id" | "startTime" | "endTime" | "duration"
 > & { audioImages: Pick<AudioImage, "bucket" | "objectPath">[] };
+
+export type SpectrogramControls = {
+  goToTime: (time: Date) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+};
 
 function centerWindow(
   spectrogramWindow: MutableRefObject<HTMLDivElement | null>,
@@ -112,10 +110,8 @@ export default function SpectrogramTimeline({
   playerControls,
   boutStartTime,
   boutEndTime,
-  setBoutStartTime,
-  setBoutEndTime,
-  children,
-}: PropsWithChildren<{
+  onSpectrogramInit,
+}: {
   timelineStartTime: Date;
   timelineEndTime: Date;
   feedSegments: SpectrogramFeedSegment[];
@@ -125,7 +121,8 @@ export default function SpectrogramTimeline({
   boutEndTime?: Date;
   setBoutStartTime: Dispatch<SetStateAction<Date | undefined>>;
   setBoutEndTime: Dispatch<SetStateAction<Date | undefined>>;
-}>) {
+  onSpectrogramInit: (playerControls: SpectrogramControls) => void;
+}) {
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -156,17 +153,36 @@ export default function SpectrogramTimeline({
   const windowLockInterval = useRef<NodeJS.Timeout>();
 
   const pixelsPerMinute = PIXEL_ZOOM_FACTOR * zoomLevel;
-  const goToTime = (time: Date) => {
-    centerWindow(
+  const goToTime = useCallback(
+    (time: Date) => {
+      centerWindow(
+        spectrogramWindow,
+        time,
+        timelineStartTime,
+        pixelsPerMinute,
+        setWindowStartTime,
+        setWindowEndTime,
+        playerControls,
+      );
+    },
+    [
       spectrogramWindow,
-      time,
       timelineStartTime,
       pixelsPerMinute,
+      playerControls,
       setWindowStartTime,
       setWindowEndTime,
-      playerControls,
-    );
-  };
+    ],
+  );
+
+  useEffect(() => {
+    onSpectrogramInit({
+      goToTime,
+      zoomIn: () => setZoomLevel((zoom) => _.clamp(zoom * 2, minZoom, maxZoom)),
+      zoomOut: () =>
+        setZoomLevel((zoom) => _.clamp(zoom / 2, minZoom, maxZoom)),
+    });
+  }, [goToTime, onSpectrogramInit]);
 
   useEffect(() => {
     if (spectrogramWindow.current) {
@@ -413,111 +429,6 @@ export default function SpectrogramTimeline({
             zIndex={2}
           />
         )}
-      </Box>
-      <Box display="flex" sx={{ gap: 2 }}>
-        <Box minWidth={130}>{children}</Box>
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <Box>
-            <Typography variant="overline">Zoom</Typography>
-          </Box>
-          <Box>
-            <IconButton
-              onClick={() =>
-                setZoomLevel((zoom) => _.clamp(zoom * 2, minZoom, maxZoom))
-              }
-            >
-              <ZoomIn />
-            </IconButton>
-            <IconButton
-              onClick={() =>
-                setZoomLevel((zoom) => _.clamp(zoom / 2, minZoom, maxZoom))
-              }
-            >
-              <ZoomOut />
-            </IconButton>
-          </Box>
-        </Box>
-
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          minWidth={120}
-        >
-          <Box>
-            <Typography variant="overline">Bout start</Typography>
-          </Box>
-          <Box>
-            <IconButton
-              onClick={() =>
-                (!boutEndTime || playerTimeRef.current < boutEndTime) &&
-                setBoutStartTime(playerTimeRef.current)
-              }
-              title="Set bout start"
-            >
-              <Start />
-            </IconButton>
-          </Box>
-          {boutStartTime && (
-            <Box>
-              <Button
-                startIcon={<ArrowRight />}
-                onClick={() => goToTime(boutStartTime)}
-                color="secondary"
-                title="Go to bout start"
-              >
-                {format(boutStartTime, "hh:mm:ss")}
-              </Button>
-              <IconButton
-                onClick={() => setBoutStartTime(undefined)}
-                title="Clear bout start"
-                size="small"
-              >
-                <Clear fontSize="small" />
-              </IconButton>
-            </Box>
-          )}
-        </Box>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          minWidth={120}
-        >
-          <Box>
-            <Typography variant="overline">Bout end</Typography>
-          </Box>
-          <Box>
-            <IconButton
-              onClick={() =>
-                (!boutStartTime || playerTimeRef.current > boutStartTime) &&
-                setBoutEndTime(playerTimeRef.current)
-              }
-              title="Set bout end"
-            >
-              <Start sx={{ transform: "rotate(180deg)" }} />
-            </IconButton>
-          </Box>
-          {boutEndTime && (
-            <Box>
-              <Button
-                startIcon={<ArrowRight />}
-                onClick={() => goToTime(boutEndTime)}
-                color="secondary"
-                title="Go to bout end"
-              >
-                {format(boutEndTime, "hh:mm:ss")}
-              </Button>
-              <IconButton
-                onClick={() => setBoutEndTime(undefined)}
-                title="Clear bout end"
-                size="small"
-              >
-                <Clear fontSize="small" />
-              </IconButton>
-            </Box>
-          )}
-        </Box>
       </Box>
     </>
   );

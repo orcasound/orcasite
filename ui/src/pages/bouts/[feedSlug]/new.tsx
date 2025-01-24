@@ -1,5 +1,15 @@
-import { GraphicEq, Launch, Notifications } from "@mui/icons-material";
 import {
+  ArrowRight,
+  Clear,
+  GraphicEq,
+  Launch,
+  Notifications,
+  Start,
+  ZoomIn,
+  ZoomOut,
+} from "@mui/icons-material";
+import {
+  Button,
   Chip,
   FormControl,
   IconButton,
@@ -29,7 +39,9 @@ import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import SpectrogramTimeline from "@/components/Bouts/SpectrogramTimeline";
+import SpectrogramTimeline, {
+  SpectrogramControls,
+} from "@/components/Bouts/SpectrogramTimeline";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
@@ -50,6 +62,8 @@ const NewBoutPage: NextPageWithLayout = () => {
     [],
   );
   const [playerControls, setPlayerControls] = useState<PlayerControls>();
+  const [spectrogramControls, setSpectrogramControls] =
+    useState<SpectrogramControls>();
 
   const params = useParams<{ feedSlug?: string }>();
   const feedSlug = params?.feedSlug;
@@ -188,18 +202,117 @@ const NewBoutPage: NextPageWithLayout = () => {
             boutEndTime={boutEndTime}
             setBoutStartTime={setBoutStartTime}
             setBoutEndTime={setBoutEndTime}
-          >
-            {feedStream && (
-              <BoutPlayer
-                feed={feed}
-                targetTime={targetTime}
-                feedStream={feedStream}
-                onPlayerTimeUpdate={setPlayerTime}
-                setPlayerTimeRef={setPlayerTime}
-                onPlayerInit={setPlayerControls}
-              />
-            )}
-          </SpectrogramTimeline>
+            onSpectrogramInit={setSpectrogramControls}
+          ></SpectrogramTimeline>
+
+          <Box display="flex" sx={{ gap: 2 }}>
+            <Box minWidth={130}>
+              {feedStream && (
+                <BoutPlayer
+                  feed={feed}
+                  targetTime={targetTime}
+                  feedStream={feedStream}
+                  onPlayerTimeUpdate={setPlayerTime}
+                  setPlayerTimeRef={setPlayerTime}
+                  onPlayerInit={setPlayerControls}
+                />
+              )}
+            </Box>
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <Box>
+                <Typography variant="overline">Zoom</Typography>
+              </Box>
+              <Box>
+                <IconButton onClick={spectrogramControls?.zoomIn}>
+                  <ZoomIn />
+                </IconButton>
+                <IconButton onClick={spectrogramControls?.zoomOut}>
+                  <ZoomOut />
+                </IconButton>
+              </Box>
+            </Box>
+
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              minWidth={120}
+            >
+              <Box>
+                <Typography variant="overline">Bout start</Typography>
+              </Box>
+              <Box>
+                <IconButton
+                  onClick={() =>
+                    (!boutEndTime || playerTime.current < boutEndTime) &&
+                    setBoutStartTime(playerTime.current)
+                  }
+                  title="Set bout start"
+                >
+                  <Start />
+                </IconButton>
+              </Box>
+              {boutStartTime && (
+                <Box>
+                  <Button
+                    startIcon={<ArrowRight />}
+                    onClick={() => spectrogramControls?.goToTime(boutStartTime)}
+                    color="secondary"
+                    title="Go to bout start"
+                  >
+                    {format(boutStartTime, "hh:mm:ss")}
+                  </Button>
+                  <IconButton
+                    onClick={() => setBoutStartTime(undefined)}
+                    title="Clear bout start"
+                    size="small"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              minWidth={120}
+            >
+              <Box>
+                <Typography variant="overline">Bout end</Typography>
+              </Box>
+              <Box>
+                <IconButton
+                  onClick={() =>
+                    (!boutStartTime || playerTime.current > boutStartTime) &&
+                    setBoutEndTime(playerTime.current)
+                  }
+                  title="Set bout end"
+                >
+                  <Start sx={{ transform: "rotate(180deg)" }} />
+                </IconButton>
+              </Box>
+              {boutEndTime && (
+                <Box>
+                  <Button
+                    startIcon={<ArrowRight />}
+                    onClick={() => spectrogramControls?.goToTime(boutEndTime)}
+                    color="secondary"
+                    title="Go to bout end"
+                  >
+                    {format(boutEndTime, "hh:mm:ss")}
+                  </Button>
+                  <IconButton
+                    onClick={() => setBoutEndTime(undefined)}
+                    title="Clear bout end"
+                    size="small"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
+          </Box>
           <Box>
             <Tabs
               value={currentTab}

@@ -75,11 +75,16 @@ defmodule Orcasite.Radio.Bout do
 
       argument :feed_id, :string
 
-      filter expr(if not is_nil(^arg(:feed_id), do: feed_id == ^arg(:feed_id)), else: true)
+      filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
     end
 
     create :create do
       primary? true
+      accept [:category, :start_time, :end_time]
+
+      argument :feed_id, :string, allow_nil?: false
+      change manage_relationship(:feed_id, :feed, type: :create)
+
 
       change fn
         changeset, %{actor: %Orcasite.Accounts.User{} = actor} ->
