@@ -1,0 +1,27 @@
+mutation updateBout(
+  $id: ID!
+  $startTime: DateTime!
+  $endTime: DateTime
+  $category: AudioCategory!
+) {
+  updateBout(
+    id: $id
+    input: { category: $category, startTime: $startTime, endTime: $endTime }
+  ) {
+    result {
+      id
+      category
+      duration
+      endTime
+      startTime
+      endTime
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}

@@ -1,0 +1,12 @@
+query bout($id: ID!) {
+  bout(id: $id) {
+    id
+    category
+    duration
+    startTime
+    endTime
+    feed {
+      ...FeedParts
+    }
+  }
+}

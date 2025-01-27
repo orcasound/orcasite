@@ -292,8 +292,18 @@ export type Bout = {
   category: AudioCategory;
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  feed?: Maybe<Feed>;
+  feedId?: Maybe<Scalars["ID"]["output"]>;
+  feedStreams: Array<FeedStream>;
   id: Scalars["ID"]["output"];
   startTime: Scalars["DateTime"]["output"];
+};
+
+export type BoutFeedStreamsArgs = {
+  filter?: InputMaybe<FeedStreamFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedStreamSortInput>>>;
 };
 
 /** Join table between Bout and FeedStream */
@@ -360,6 +370,10 @@ export type BoutFilterEndTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type BoutFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type BoutFilterId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
@@ -369,6 +383,9 @@ export type BoutFilterInput = {
   category?: InputMaybe<BoutFilterCategory>;
   duration?: InputMaybe<BoutFilterDuration>;
   endTime?: InputMaybe<BoutFilterEndTime>;
+  feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<BoutFilterFeedId>;
+  feedStreams?: InputMaybe<FeedStreamFilterInput>;
   id?: InputMaybe<BoutFilterId>;
   not?: InputMaybe<Array<BoutFilterInput>>;
   or?: InputMaybe<Array<BoutFilterInput>>;
@@ -390,6 +407,7 @@ export type BoutSortField =
   | "CATEGORY"
   | "DURATION"
   | "END_TIME"
+  | "FEED_ID"
   | "ID"
   | "START_TIME";
 
@@ -1759,6 +1777,7 @@ export type RootMutationType = {
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
   submitDetection: SubmitDetectionResult;
+  updateBout: UpdateBoutResult;
 };
 
 export type RootMutationTypeCancelCandidateNotificationsArgs = {
@@ -1808,9 +1827,15 @@ export type RootMutationTypeSubmitDetectionArgs = {
   input: SubmitDetectionInput;
 };
 
+export type RootMutationTypeUpdateBoutArgs = {
+  id: Scalars["ID"]["input"];
+  input?: InputMaybe<UpdateBoutInput>;
+};
+
 export type RootQueryType = {
   __typename?: "RootQueryType";
   audioImages?: Maybe<PageOfAudioImage>;
+  bout?: Maybe<Bout>;
   bouts?: Maybe<PageOfBout>;
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
@@ -1830,6 +1855,10 @@ export type RootQueryTypeAudioImagesArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<AudioImageSortInput>>>;
+};
+
+export type RootQueryTypeBoutArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 export type RootQueryTypeBoutsArgs = {
@@ -1953,6 +1982,21 @@ export type SubmitDetectionResult = {
   result?: Maybe<Detection>;
 };
 
+export type UpdateBoutInput = {
+  category?: InputMaybe<AudioCategory>;
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  startTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+/** The result of the :update_bout mutation */
+export type UpdateBoutResult = {
+  __typename?: "UpdateBoutResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Bout>;
+};
+
 export type User = {
   __typename?: "User";
   admin: Scalars["Boolean"]["output"];
@@ -2072,6 +2116,20 @@ export type AudioImagePartsFragment = {
   feedId: string;
   imageSize?: number | null;
   imageType?: ImageType | null;
+};
+
+export type FeedPartsFragment = {
+  __typename?: "Feed";
+  id: string;
+  name: string;
+  slug: string;
+  nodeName: string;
+  introHtml?: string | null;
+  thumbUrl?: string | null;
+  imageUrl?: string | null;
+  mapUrl?: string | null;
+  bucket: string;
+  latLng: { __typename?: "LatLng"; lat: number; lng: number };
 };
 
 export type FeedSegmentPartsFragment = {
@@ -2371,6 +2429,65 @@ export type SubmitDetectionMutation = {
   };
 };
 
+export type UpdateBoutMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  category: AudioCategory;
+}>;
+
+export type UpdateBoutMutation = {
+  __typename?: "RootMutationType";
+  updateBout: {
+    __typename?: "UpdateBoutResult";
+    result?: {
+      __typename?: "Bout";
+      id: string;
+      category: AudioCategory;
+      duration?: number | null;
+      endTime?: Date | null;
+      startTime: Date;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type BoutQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type BoutQuery = {
+  __typename?: "RootQueryType";
+  bout?: {
+    __typename?: "Bout";
+    id: string;
+    category: AudioCategory;
+    duration?: number | null;
+    startTime: Date;
+    endTime?: Date | null;
+    feed?: {
+      __typename?: "Feed";
+      id: string;
+      name: string;
+      slug: string;
+      nodeName: string;
+      introHtml?: string | null;
+      thumbUrl?: string | null;
+      imageUrl?: string | null;
+      mapUrl?: string | null;
+      bucket: string;
+      latLng: { __typename?: "LatLng"; lat: number; lng: number };
+    } | null;
+  } | null;
+};
+
 export type CandidateQueryVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
@@ -2633,6 +2750,23 @@ export const AudioImagePartsFragmentDoc = `
   feedId
   imageSize
   imageType
+}
+    `;
+export const FeedPartsFragmentDoc = `
+    fragment FeedParts on Feed {
+  id
+  name
+  slug
+  nodeName
+  latLng {
+    lat
+    lng
+  }
+  introHtml
+  thumbUrl
+  imageUrl
+  mapUrl
+  bucket
 }
     `;
 export const FeedSegmentPartsFragmentDoc = `
@@ -3291,6 +3425,104 @@ useSubmitDetectionMutation.fetcher = (
     options,
   );
 
+export const UpdateBoutDocument = `
+    mutation updateBout($id: ID!, $startTime: DateTime!, $endTime: DateTime, $category: AudioCategory!) {
+  updateBout(
+    id: $id
+    input: {category: $category, startTime: $startTime, endTime: $endTime}
+  ) {
+    result {
+      id
+      category
+      duration
+      endTime
+      startTime
+      endTime
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+
+export const useUpdateBoutMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    UpdateBoutMutation,
+    TError,
+    UpdateBoutMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    UpdateBoutMutation,
+    TError,
+    UpdateBoutMutationVariables,
+    TContext
+  >({
+    mutationKey: ["updateBout"],
+    mutationFn: (variables?: UpdateBoutMutationVariables) =>
+      fetcher<UpdateBoutMutation, UpdateBoutMutationVariables>(
+        UpdateBoutDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useUpdateBoutMutation.getKey = () => ["updateBout"];
+
+useUpdateBoutMutation.fetcher = (
+  variables: UpdateBoutMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<UpdateBoutMutation, UpdateBoutMutationVariables>(
+    UpdateBoutDocument,
+    variables,
+    options,
+  );
+
+export const BoutDocument = `
+    query bout($id: ID!) {
+  bout(id: $id) {
+    id
+    category
+    duration
+    startTime
+    endTime
+    feed {
+      ...FeedParts
+    }
+  }
+}
+    ${FeedPartsFragmentDoc}`;
+
+export const useBoutQuery = <TData = BoutQuery, TError = unknown>(
+  variables: BoutQueryVariables,
+  options?: Omit<UseQueryOptions<BoutQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<BoutQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<BoutQuery, TError, TData>({
+    queryKey: ["bout", variables],
+    queryFn: fetcher<BoutQuery, BoutQueryVariables>(BoutDocument, variables),
+    ...options,
+  });
+};
+
+useBoutQuery.document = BoutDocument;
+
+useBoutQuery.getKey = (variables: BoutQueryVariables) => ["bout", variables];
+
+useBoutQuery.fetcher = (
+  variables: BoutQueryVariables,
+  options?: RequestInit["headers"],
+) => fetcher<BoutQuery, BoutQueryVariables>(BoutDocument, variables, options);
+
 export const CandidateDocument = `
     query candidate($id: ID!) {
   candidate(id: $id) {
@@ -3411,22 +3643,10 @@ useGetCurrentUserQuery.fetcher = (
 export const FeedDocument = `
     query feed($slug: String!) {
   feed(slug: $slug) {
-    id
-    name
-    slug
-    nodeName
-    latLng {
-      lat
-      lng
-    }
-    introHtml
-    thumbUrl
-    imageUrl
-    mapUrl
-    bucket
+    ...FeedParts
   }
 }
-    `;
+    ${FeedPartsFragmentDoc}`;
 
 export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
   variables: FeedQueryVariables,

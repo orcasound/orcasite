@@ -45,11 +45,13 @@ import SpectrogramTimeline, {
 import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
 import {
   AudioCategory,
+  BoutQuery,
   FeedQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
   useGetCurrentUserQuery,
   useListFeedStreamsQuery,
+  useUpdateBoutMutation,
 } from "@/graphql/generated";
 import { formatTimestamp } from "@/utils/time";
 
@@ -64,10 +66,11 @@ export default function BoutPage({
   feed: FeedQuery["feed"];
   targetAudioCategory?: AudioCategory;
   targetTime?: Date;
-  // bout?: BoutQuery["bout"];
+  bout?: BoutQuery["bout"];
 }) {
   const now = useMemo(() => new Date(), []);
-  targetTime = targetTime ?? now;
+  targetTime =
+    targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
   const playerTime = useRef<Date>(targetTime);
@@ -78,15 +81,19 @@ export default function BoutPage({
   const [playerControls, setPlayerControls] = useState<PlayerControls>();
   const spectrogramControls = useRef<SpectrogramControls>();
 
-  const [boutStartTime, setBoutStartTime] = useState<Date>();
-  const [boutEndTime, setBoutEndTime] = useState<Date>();
+  const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
+    bout?.startTime && new Date(bout.startTime),
+  );
+  const [boutEndTime, setBoutEndTime] = useState<Date | undefined>(
+    (bout?.endTime && new Date(bout.endTime)) ?? undefined,
+  );
   const [currentTab, setCurrentTab] = useState(0);
   const audioCategories: AudioCategory[] = useMemo(
     () => ["ANTHROPHONY", "BIOPHONY", "GEOPHONY"],
     [],
   );
   const [audioCategory, setAudioCategory] = useState<AudioCategory | undefined>(
-    targetAudioCategory,
+    targetAudioCategory ?? bout?.category,
   );
 
   const timeBuffer = 5; // minutes
@@ -159,15 +166,40 @@ export default function BoutPage({
       }
     },
   });
+  const updateBoutMutation = useUpdateBoutMutation({
+    onSuccess: ({ updateBout: { errors } }) => {
+      if (errors && errors.length > 0) {
+        console.error(errors);
+        setBoutForm((form) => ({
+          ...form,
+          errors: {
+            ...form.errors,
+            ...Object.fromEntries(
+              errors.map(({ code, message }) => [code, message] as const),
+            ),
+          },
+        }));
+      }
+    },
+  });
   const saveBout = () => {
     setBoutForm((form) => ({ ...form, errors: {} }));
     if (audioCategory && boutStartTime) {
-      createBoutMutation.mutate({
-        feedId: feed.id,
-        startTime: boutStartTime,
-        endTime: boutEndTime,
-        category: audioCategory,
-      });
+      if (isNew) {
+        createBoutMutation.mutate({
+          feedId: feed.id,
+          startTime: boutStartTime,
+          endTime: boutEndTime,
+          category: audioCategory,
+        });
+      } else if (bout) {
+        updateBoutMutation.mutate({
+          id: bout.id,
+          startTime: boutStartTime,
+          endTime: boutEndTime,
+          category: audioCategory,
+        });
+      }
     } else {
       const errors: Record<string, string> = {};
       if (!audioCategory) {
@@ -190,14 +222,14 @@ export default function BoutPage({
       >
         <Box>
           <Typography variant="overline" sx={{ fontSize: 18 }}>
-            New Bout
+            Bout
           </Typography>
           <Typography variant="h4">{feed.name}</Typography>
         </Box>
         <Box ml="auto">
           {currentUser?.moderator && (
             <Button variant="contained" size="large" onClick={saveBout}>
-              Create bout
+              {isNew ? "Create" : "Update"} bout
             </Button>
           )}
         </Box>

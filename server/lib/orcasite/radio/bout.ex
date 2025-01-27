@@ -36,11 +36,15 @@ defmodule Orcasite.Radio.Bout do
   relationships do
     belongs_to :created_by_user, Orcasite.Accounts.User
 
-    belongs_to :feed, Orcasite.Radio.Feed
+    belongs_to :feed, Orcasite.Radio.Feed do
+      public? true
+    end
+
     has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream
 
     many_to_many :feed_streams, Orcasite.Radio.FeedStream do
       through Orcasite.Radio.BoutFeedStream
+      public? true
     end
   end
 
@@ -63,7 +67,7 @@ defmodule Orcasite.Radio.Bout do
   end
 
   actions do
-    defaults [:read, :update, :destroy]
+    defaults [:read, :destroy]
 
     read :index do
       pagination do
@@ -113,17 +117,37 @@ defmodule Orcasite.Radio.Bout do
           changeset
       end
     end
+
+    update :update do
+      primary? true
+      accept [:category, :start_time, :end_time]
+
+      change fn changeset, _ ->
+        end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
+        start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
+
+        if start_time && end_time do
+          changeset
+          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
+        else
+          changeset
+        end
+      end
+    end
   end
 
   graphql do
     type :bout
+    attribute_types [feed_id: :id, feed_stream_id: :id]
 
     queries do
       list :bouts, :index
+      get :bout, :read
     end
 
     mutations do
       create :create_bout, :create
+      update :update_bout, :update
     end
   end
 end
