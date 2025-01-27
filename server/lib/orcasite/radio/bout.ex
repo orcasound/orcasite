@@ -20,10 +20,9 @@ defmodule Orcasite.Radio.Bout do
   attributes do
     uuid_attribute :id, prefix: "bout", public?: true
 
-    attribute :start_time, :utc_datetime_usec, public?: true
+    attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
     attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
-    attribute :ongoing, :boolean, public?: true
 
     attribute :category, Orcasite.Types.AudioCategory do
       public? true
@@ -83,8 +82,27 @@ defmodule Orcasite.Radio.Bout do
       accept [:category, :start_time, :end_time]
 
       argument :feed_id, :string, allow_nil?: false
-      change manage_relationship(:feed_id, :feed, type: :create)
 
+      change fn changeset, _ ->
+        changeset
+        |> Ash.Changeset.manage_relationship(
+          :feed,
+          %{id: Ash.Changeset.get_argument(changeset, :feed_id)},
+          type: :append
+        )
+      end
+
+      change fn changeset, _ ->
+        end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
+        start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
+
+        if start_time && end_time do
+          changeset
+          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
+        else
+          changeset
+        end
+      end
 
       change fn
         changeset, %{actor: %Orcasite.Accounts.User{} = actor} ->

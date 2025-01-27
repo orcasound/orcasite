@@ -9,9 +9,11 @@ import {
   ZoomOut,
 } from "@mui/icons-material";
 import {
+  Alert,
   Button,
   Chip,
   FormControl,
+  FormHelperText,
   IconButton,
   InputLabel,
   MenuItem,
@@ -47,14 +49,18 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
 import {
   AudioCategory,
+  useCreateBoutMutation,
   useDetectionsQuery,
   useFeedQuery,
+  useGetCurrentUserQuery,
   useListFeedStreamsQuery,
 } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { formatTimestamp } from "@/utils/time";
 
 const NewBoutPage: NextPageWithLayout = () => {
+  const { currentUser } = useGetCurrentUserQuery().data ?? {};
+
   const targetTime = new Date("2024-12-11 19:55:44.013Z");
   const playerTime = useRef<Date>(targetTime);
   const setPlayerTime = useCallback(
@@ -62,8 +68,7 @@ const NewBoutPage: NextPageWithLayout = () => {
     [],
   );
   const [playerControls, setPlayerControls] = useState<PlayerControls>();
-  const [spectrogramControls, setSpectrogramControls] =
-    useState<SpectrogramControls>();
+  const spectrogramControls = useRef<SpectrogramControls>();
 
   const params = useParams<{ feedSlug?: string }>();
   const feedSlug = params?.feedSlug;
@@ -145,9 +150,51 @@ const NewBoutPage: NextPageWithLayout = () => {
     [feedStreams],
   );
 
+  const [boutForm, setBoutForm] = useState<{
+    errors: Record<string, string>;
+  }>({
+    errors: {},
+  });
+  const createBoutMutation = useCreateBoutMutation({
+    onSuccess: ({ createBout: { errors } }) => {
+      if (errors && errors.length > 0) {
+        console.error(errors);
+        setBoutForm((form) => ({
+          ...form,
+          errors: {
+            ...form.errors,
+            ...Object.fromEntries(
+              errors.map(({ code, message }) => [code, message] as const),
+            ),
+          },
+        }));
+      }
+    },
+  });
+
   if (!feedSlug || feedQueryResult.isLoading) return <LoadingSpinner mt={5} />;
   if (!feed) return <p>Feed not found</p>;
 
+  const createBout = () => {
+    setBoutForm((form) => ({ ...form, errors: {} }));
+    if (audioCategory && boutStartTime) {
+      createBoutMutation.mutate({
+        feedId: feed.id,
+        startTime: boutStartTime,
+        endTime: boutEndTime,
+        category: audioCategory,
+      });
+    } else {
+      const errors: Record<string, string> = {};
+      if (!audioCategory) {
+        errors["audioCategory"] = "Audio category required";
+      }
+      if (!boutStartTime) {
+        errors["startTime"] = "Bout start time required";
+      }
+      setBoutForm((form) => ({ ...form, errors }));
+    }
+  };
   const detections = detectionQueryResult.data?.detections?.results ?? [];
 
   return (
@@ -169,27 +216,34 @@ const NewBoutPage: NextPageWithLayout = () => {
             </Typography>
             <Typography variant="h4">{feed.name}</Typography>
           </Box>
-          <Box>
-            <FormControl sx={{ width: "100%" }}>
-              <InputLabel sx={{ textTransform: "uppercase", fontSize: 14 }}>
-                Audio category
-              </InputLabel>
-              <Select
-                value={audioCategory ?? ""}
-                onChange={(event) =>
-                  setAudioCategory(event.target.value as AudioCategory)
-                }
-                label="Audio category"
-                sx={{ minWidth: 200 }}
-              >
-                {audioCategories.map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {_.startCase(_.toLower(category))}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <Box ml="auto">
+            {currentUser?.moderator && (
+              <Button variant="contained" size="large" onClick={createBout}>
+                Create bout
+              </Button>
+            )}
           </Box>
+        </Box>
+        <Box display="flex" flexDirection="column">
+          {Object.entries(boutForm.errors).map(([key, msg], idx) => (
+            <Alert
+              key={idx}
+              severity="error"
+              sx={{ mb: 2 }}
+              onClose={() =>
+                setBoutForm((form) => ({
+                  ...form,
+                  errors: Object.fromEntries(
+                    Object.entries(form.errors).filter(
+                      ([errorKey, _msg]) => key !== errorKey,
+                    ),
+                  ),
+                }))
+              }
+            >
+              {msg}
+            </Alert>
+          ))}
         </Box>
         <Box display="flex" flexDirection="column" gap={2}>
           <SpectrogramTimeline
@@ -202,7 +256,7 @@ const NewBoutPage: NextPageWithLayout = () => {
             boutEndTime={boutEndTime}
             setBoutStartTime={setBoutStartTime}
             setBoutEndTime={setBoutEndTime}
-            onSpectrogramInit={setSpectrogramControls}
+            spectrogramControls={spectrogramControls}
           ></SpectrogramTimeline>
 
           <Box display="flex" sx={{ gap: 2 }}>
@@ -223,10 +277,10 @@ const NewBoutPage: NextPageWithLayout = () => {
                 <Typography variant="overline">Zoom</Typography>
               </Box>
               <Box>
-                <IconButton onClick={spectrogramControls?.zoomIn}>
+                <IconButton onClick={spectrogramControls.current?.zoomIn}>
                   <ZoomIn />
                 </IconButton>
-                <IconButton onClick={spectrogramControls?.zoomOut}>
+                <IconButton onClick={spectrogramControls.current?.zoomOut}>
                   <ZoomOut />
                 </IconButton>
               </Box>
@@ -237,6 +291,15 @@ const NewBoutPage: NextPageWithLayout = () => {
               flexDirection="column"
               alignItems="center"
               minWidth={120}
+              sx={
+                boutForm.errors.startTime
+                  ? {
+                      border: (theme) =>
+                        `1px solid ${theme.palette.error.main}`,
+                      borderRadius: 1,
+                    }
+                  : {}
+              }
             >
               <Box>
                 <Typography variant="overline">Bout start</Typography>
@@ -256,7 +319,9 @@ const NewBoutPage: NextPageWithLayout = () => {
                 <Box>
                   <Button
                     startIcon={<ArrowRight />}
-                    onClick={() => spectrogramControls?.goToTime(boutStartTime)}
+                    onClick={() =>
+                      spectrogramControls.current?.goToTime(boutStartTime)
+                    }
                     color="secondary"
                     title="Go to bout start"
                   >
@@ -296,7 +361,9 @@ const NewBoutPage: NextPageWithLayout = () => {
                 <Box>
                   <Button
                     startIcon={<ArrowRight />}
-                    onClick={() => spectrogramControls?.goToTime(boutEndTime)}
+                    onClick={() =>
+                      spectrogramControls.current?.goToTime(boutEndTime)
+                    }
                     color="secondary"
                     title="Go to bout end"
                   >
@@ -312,6 +379,36 @@ const NewBoutPage: NextPageWithLayout = () => {
                 </Box>
               )}
             </Box>
+
+            <Box display="flex" alignItems="center" ml="auto">
+              <FormControl
+                sx={{ width: "100%" }}
+                {...(boutForm.errors.audioCategory ? { error: true } : {})}
+              >
+                <InputLabel sx={{ textTransform: "uppercase", fontSize: 14 }}>
+                  Audio category
+                </InputLabel>
+                <Select
+                  value={audioCategory ?? ""}
+                  onChange={(event) =>
+                    setAudioCategory(event.target.value as AudioCategory)
+                  }
+                  label="Audio category"
+                  sx={{ minWidth: 200 }}
+                  size="small"
+                >
+                  {audioCategories.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {_.startCase(_.toLower(category))}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {boutForm.errors.audioCategory && (
+                  <FormHelperText>Required</FormHelperText>
+                )}
+              </FormControl>
+            </Box>
+            <Box display="flex" alignItems="center"></Box>
           </Box>
           <Box>
             <Tabs

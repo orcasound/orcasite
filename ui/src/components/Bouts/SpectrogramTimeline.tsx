@@ -110,7 +110,7 @@ export default function SpectrogramTimeline({
   playerControls,
   boutStartTime,
   boutEndTime,
-  onSpectrogramInit,
+  spectrogramControls,
 }: {
   timelineStartTime: Date;
   timelineEndTime: Date;
@@ -121,7 +121,7 @@ export default function SpectrogramTimeline({
   boutEndTime?: Date;
   setBoutStartTime: Dispatch<SetStateAction<Date | undefined>>;
   setBoutEndTime: Dispatch<SetStateAction<Date | undefined>>;
-  onSpectrogramInit: (playerControls: SpectrogramControls) => void;
+  spectrogramControls: MutableRefObject<SpectrogramControls | undefined>;
 }) {
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
@@ -175,14 +175,14 @@ export default function SpectrogramTimeline({
     ],
   );
 
-  useEffect(() => {
-    onSpectrogramInit({
+  if (spectrogramControls) {
+    spectrogramControls.current = {
       goToTime,
       zoomIn: () => setZoomLevel((zoom) => _.clamp(zoom * 2, minZoom, maxZoom)),
       zoomOut: () =>
         setZoomLevel((zoom) => _.clamp(zoom / 2, minZoom, maxZoom)),
-    });
-  }, [goToTime, onSpectrogramInit]);
+    };
+  }
 
   useEffect(() => {
     if (spectrogramWindow.current) {

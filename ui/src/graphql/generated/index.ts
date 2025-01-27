@@ -293,8 +293,7 @@ export type Bout = {
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
   id: Scalars["ID"]["output"];
-  ongoing?: Maybe<Scalars["Boolean"]["output"]>;
-  startTime?: Maybe<Scalars["DateTime"]["output"]>;
+  startTime: Scalars["DateTime"]["output"];
 };
 
 /** Join table between Bout and FeedStream */
@@ -372,27 +371,15 @@ export type BoutFilterInput = {
   endTime?: InputMaybe<BoutFilterEndTime>;
   id?: InputMaybe<BoutFilterId>;
   not?: InputMaybe<Array<BoutFilterInput>>;
-  ongoing?: InputMaybe<BoutFilterOngoing>;
   or?: InputMaybe<Array<BoutFilterInput>>;
   startTime?: InputMaybe<BoutFilterStartTime>;
-};
-
-export type BoutFilterOngoing = {
-  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type BoutFilterStartTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -404,7 +391,6 @@ export type BoutSortField =
   | "DURATION"
   | "END_TIME"
   | "ID"
-  | "ONGOING"
   | "START_TIME";
 
 export type BoutSortInput = {
@@ -550,7 +536,7 @@ export type CreateBoutInput = {
   category: AudioCategory;
   endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
   feedId: Scalars["String"]["input"];
-  startTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  startTime: Scalars["DateTime"]["input"];
 };
 
 /** The result of the :create_bout mutation */
@@ -2168,6 +2154,36 @@ export type CancelNotificationMutation = {
   };
 };
 
+export type CreateBoutMutationVariables = Exact<{
+  feedId: Scalars["String"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  category: AudioCategory;
+}>;
+
+export type CreateBoutMutation = {
+  __typename?: "RootMutationType";
+  createBout: {
+    __typename?: "CreateBoutResult";
+    result?: {
+      __typename?: "Bout";
+      id: string;
+      category: AudioCategory;
+      duration?: number | null;
+      endTime?: Date | null;
+      startTime: Date;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
 export type NotifyConfirmedCandidateMutationVariables = Exact<{
   candidateId: Scalars["String"]["input"];
   message: Scalars["String"]["input"];
@@ -2765,6 +2781,66 @@ useCancelNotificationMutation.fetcher = (
 ) =>
   fetcher<CancelNotificationMutation, CancelNotificationMutationVariables>(
     CancelNotificationDocument,
+    variables,
+    options,
+  );
+
+export const CreateBoutDocument = `
+    mutation createBout($feedId: String!, $startTime: DateTime!, $endTime: DateTime, $category: AudioCategory!) {
+  createBout(
+    input: {feedId: $feedId, category: $category, startTime: $startTime, endTime: $endTime}
+  ) {
+    result {
+      id
+      category
+      duration
+      endTime
+      startTime
+      endTime
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+
+export const useCreateBoutMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CreateBoutMutation,
+    TError,
+    CreateBoutMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CreateBoutMutation,
+    TError,
+    CreateBoutMutationVariables,
+    TContext
+  >({
+    mutationKey: ["createBout"],
+    mutationFn: (variables?: CreateBoutMutationVariables) =>
+      fetcher<CreateBoutMutation, CreateBoutMutationVariables>(
+        CreateBoutDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCreateBoutMutation.getKey = () => ["createBout"];
+
+useCreateBoutMutation.fetcher = (
+  variables: CreateBoutMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<CreateBoutMutation, CreateBoutMutationVariables>(
+    CreateBoutDocument,
     variables,
     options,
   );
