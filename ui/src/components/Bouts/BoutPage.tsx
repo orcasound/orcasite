@@ -12,6 +12,7 @@ import {
   Alert,
   Button,
   Chip,
+  Fade,
   FormControl,
   FormHelperText,
   IconButton,
@@ -71,6 +72,8 @@ export default function BoutPage({
   const now = useMemo(() => new Date(), []);
   targetTime =
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
+
+  const [boutSaved, setBoutSaved] = useState(false);
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
   const playerTime = useRef<Date>(targetTime);
@@ -179,6 +182,11 @@ export default function BoutPage({
             ),
           },
         }));
+      } else {
+        setBoutSaved(true);
+        setTimeout(() => {
+          setBoutSaved(false);
+        }, 5000);
       }
     },
   });
@@ -226,7 +234,12 @@ export default function BoutPage({
           </Typography>
           <Typography variant="h4">{feed.name}</Typography>
         </Box>
-        <Box ml="auto">
+        <Box ml="auto" mt="auto" display="flex">
+          <Fade in={boutSaved}>
+            <Alert severity="success" sx={{ mr: 2 }}>
+              Bout saved
+            </Alert>
+          </Fade>
           {currentUser?.moderator && (
             <Button variant="contained" size="large" onClick={saveBout}>
               {isNew ? "Create" : "Update"} bout
@@ -336,13 +349,15 @@ export default function BoutPage({
                 >
                   {format(boutStartTime, "hh:mm:ss")}
                 </Button>
-                <IconButton
-                  onClick={() => setBoutStartTime(undefined)}
-                  title="Clear bout start"
-                  size="small"
-                >
-                  <Clear fontSize="small" />
-                </IconButton>
+                {isNew && (
+                  <IconButton
+                    onClick={() => setBoutStartTime(undefined)}
+                    title="Clear bout start"
+                    size="small"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                )}
               </Box>
             )}
           </Box>
