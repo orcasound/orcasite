@@ -17,6 +17,7 @@ import {
   FormHelperText,
   IconButton,
   InputLabel,
+  ListItemIcon,
   MenuItem,
   Select,
   Tab,
@@ -38,6 +39,7 @@ import {
   subMinutes,
 } from "date-fns";
 import _ from "lodash";
+import Image from "next/legacy/image";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import SpectrogramTimeline, {
@@ -54,6 +56,9 @@ import {
   useListFeedStreamsQuery,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
+import vesselIconImage from "@/public/icons/vessel-purple.svg";
+import wavesIconImage from "@/public/icons/water-waves-blue.svg";
+import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 import { formatTimestamp } from "@/utils/time";
 
 export default function BoutPage({
@@ -404,35 +409,57 @@ export default function BoutPage({
             )}
           </Box>
 
-          <Box display="flex" alignItems="center" ml="auto">
-            <FormControl
-              sx={{ width: "100%" }}
-              {...(boutForm.errors.audioCategory ? { error: true } : {})}
-            >
-              <InputLabel sx={{ textTransform: "uppercase", fontSize: 14 }}>
-                Audio category
-              </InputLabel>
-              <Select
-                value={audioCategory ?? ""}
-                onChange={(event) =>
-                  setAudioCategory(event.target.value as AudioCategory)
-                }
-                label="Audio category"
-                sx={{ minWidth: 200 }}
-                size="small"
+          {currentUser?.moderator && (
+            <Box display="flex" alignItems="center" ml="auto">
+              <FormControl
+                sx={{ width: "100%" }}
+                {...(boutForm.errors.audioCategory ? { error: true } : {})}
               >
-                {audioCategories.map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {_.startCase(_.toLower(category))}
-                  </MenuItem>
-                ))}
-              </Select>
-              {boutForm.errors.audioCategory && (
-                <FormHelperText>Required</FormHelperText>
-              )}
-            </FormControl>
-          </Box>
-          <Box display="flex" alignItems="center"></Box>
+                <InputLabel sx={{ textTransform: "uppercase", fontSize: 14 }}>
+                  Category
+                </InputLabel>
+                <Select
+                  value={audioCategory ?? ""}
+                  onChange={(event) =>
+                    setAudioCategory(event.target.value as AudioCategory)
+                  }
+                  label="Audio category"
+                  sx={{ minWidth: 200 }}
+                  size="small"
+                >
+                  {audioCategories.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      <ListItemIcon
+                        sx={{
+                          "&": {
+                            minWidth: "auto",
+                            marginRight: 1,
+                          },
+                        }}
+                      >
+                        <CategoryIcon audioCategory={category} />
+                      </ListItemIcon>
+                      {_.startCase(_.toLower(category))}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {boutForm.errors.audioCategory && (
+                  <FormHelperText>Required</FormHelperText>
+                )}
+              </FormControl>
+            </Box>
+          )}
+          {!currentUser?.moderator && bout?.category && (
+            <Box display="flex" ml="auto" flexDirection="column">
+              <Typography variant="overline" textAlign="center">
+                Category
+              </Typography>
+              <Box display="flex" gap={1}>
+                <CategoryIcon audioCategory={bout.category} size={25} />
+                <Typography>{_.startCase(_.toLower(bout.category))}</Typography>
+              </Box>
+            </Box>
+          )}
         </Box>
         <Box>
           <Tabs
@@ -440,7 +467,9 @@ export default function BoutPage({
             onChange={(_event, value) => setCurrentTab(value)}
           >
             <Tab icon={<GraphicEq />} label="Detections" />
-            <Tab icon={<Notifications />} label="Notifications" />
+            {currentUser?.moderator && (
+              <Tab icon={<Notifications />} label="Notifications" />
+            )}
           </Tabs>
           <TabPanel value={currentTab} index={0}>
             <Box sx={{ overflowX: "auto" }}>
@@ -501,6 +530,43 @@ export default function BoutPage({
       </Box>
     </>
   );
+}
+
+function CategoryIcon({
+  audioCategory,
+  size,
+}: {
+  audioCategory: AudioCategory;
+  size?: number;
+}) {
+  size = size ?? 15;
+  if (audioCategory === "BIOPHONY")
+    return (
+      <Image
+        src={whaleFlukeIconImage.src}
+        width={size}
+        height={size}
+        alt="Whale fluke icon"
+      />
+    );
+  if (audioCategory === "ANTHROPHONY")
+    return (
+      <Image
+        src={vesselIconImage.src}
+        width={size}
+        height={size}
+        alt="Vessel icon"
+      />
+    );
+  if (audioCategory === "GEOPHONY")
+    return (
+      <Image
+        src={wavesIconImage.src}
+        width={size}
+        height={size}
+        alt="Waves icon"
+      />
+    );
 }
 
 function TabPanel(props: {
