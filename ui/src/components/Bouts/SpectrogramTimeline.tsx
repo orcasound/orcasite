@@ -25,7 +25,7 @@ export const TICKER_HEIGHT = 30;
 const SPECTROGRAM_HEIGHT = 300;
 const PIXEL_ZOOM_FACTOR = 50;
 
-type SpectrogramFeedSegment = Pick<
+export type SpectrogramFeedSegment = Pick<
   FeedSegment,
   "id" | "startTime" | "endTime" | "duration"
 > & { audioImages: Pick<AudioImage, "bucket" | "objectPath">[] };

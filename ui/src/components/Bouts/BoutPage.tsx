@@ -104,7 +104,7 @@ export default function BoutPage({
     targetAudioCategory ?? bout?.category,
   );
 
-  const timeBuffer = 5; // minutes
+  const timeBuffer = 15; // minutes
   const targetTimePlusBuffer = roundToNearestMinutes(
     min([targetTime, addMinutes(targetTime, timeBuffer)]),
     { roundingMethod: "ceil" },
@@ -415,7 +415,13 @@ export default function BoutPage({
                 sx={{ width: "100%" }}
                 {...(boutForm.errors.audioCategory ? { error: true } : {})}
               >
-                <InputLabel sx={{ textTransform: "uppercase", fontSize: 14 }}>
+                <InputLabel
+                  sx={{
+                    textTransform: "uppercase",
+                    fontSize: 14,
+                    "&[data-shrink=false]": { top: "-6px" },
+                  }}
+                >
                   Category
                 </InputLabel>
                 <Select

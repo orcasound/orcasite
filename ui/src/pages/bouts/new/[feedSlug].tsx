@@ -10,7 +10,7 @@ import { AudioCategory, useFeedQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const NewBoutPage: NextPageWithLayout = () => {
-  const targetTime = new Date("2024-12-11 19:55:44.013Z");
+  const targetTime = new Date("2024-12-11 19:52:44.013Z");
 
   const params = useParams<{ feedSlug?: string }>();
   const feedSlug = params?.feedSlug;
@@ -47,8 +47,8 @@ const NewBoutPage: NextPageWithLayout = () => {
 
       <main>
         <BoutPage
-          feed={feed}
           isNew={true}
+          feed={feed}
           targetTime={targetTime}
           targetAudioCategory={targetAudioCategory}
         />
