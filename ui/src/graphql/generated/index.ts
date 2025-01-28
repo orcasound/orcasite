@@ -2118,6 +2118,15 @@ export type AudioImagePartsFragment = {
   imageType?: ImageType | null;
 };
 
+export type BoutPartsFragment = {
+  __typename?: "Bout";
+  id: string;
+  category: AudioCategory;
+  duration?: number | null;
+  endTime?: Date | null;
+  startTime: Date;
+};
+
 export type FeedPartsFragment = {
   __typename?: "Feed";
   id: string;
@@ -2470,8 +2479,8 @@ export type BoutQuery = {
     id: string;
     category: AudioCategory;
     duration?: number | null;
-    startTime: Date;
     endTime?: Date | null;
+    startTime: Date;
     feed?: {
       __typename?: "Feed";
       id: string;
@@ -2752,6 +2761,16 @@ export const AudioImagePartsFragmentDoc = `
   imageType
 }
     `;
+export const BoutPartsFragmentDoc = `
+    fragment BoutParts on Bout {
+  id
+  category
+  duration
+  endTime
+  startTime
+  endTime
+}
+    `;
 export const FeedPartsFragmentDoc = `
     fragment FeedParts on Feed {
   id
@@ -2925,12 +2944,7 @@ export const CreateBoutDocument = `
     input: {feedId: $feedId, category: $category, startTime: $startTime, endTime: $endTime}
   ) {
     result {
-      id
-      category
-      duration
-      endTime
-      startTime
-      endTime
+      ...BoutParts
     }
     errors {
       code
@@ -2941,7 +2955,7 @@ export const CreateBoutDocument = `
     }
   }
 }
-    `;
+    ${BoutPartsFragmentDoc}`;
 
 export const useCreateBoutMutation = <TError = unknown, TContext = unknown>(
   options?: UseMutationOptions<
@@ -3432,12 +3446,7 @@ export const UpdateBoutDocument = `
     input: {category: $category, startTime: $startTime, endTime: $endTime}
   ) {
     result {
-      id
-      category
-      duration
-      endTime
-      startTime
-      endTime
+      ...BoutParts
     }
     errors {
       code
@@ -3448,7 +3457,7 @@ export const UpdateBoutDocument = `
     }
   }
 }
-    `;
+    ${BoutPartsFragmentDoc}`;
 
 export const useUpdateBoutMutation = <TError = unknown, TContext = unknown>(
   options?: UseMutationOptions<
@@ -3489,17 +3498,14 @@ useUpdateBoutMutation.fetcher = (
 export const BoutDocument = `
     query bout($id: ID!) {
   bout(id: $id) {
-    id
-    category
-    duration
-    startTime
-    endTime
+    ...BoutParts
     feed {
       ...FeedParts
     }
   }
 }
-    ${FeedPartsFragmentDoc}`;
+    ${BoutPartsFragmentDoc}
+${FeedPartsFragmentDoc}`;
 
 export const useBoutQuery = <TData = BoutQuery, TError = unknown>(
   variables: BoutQueryVariables,

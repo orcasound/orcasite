@@ -13,12 +13,7 @@ mutation createBout(
     }
   ) {
     result {
-      id
-      category
-      duration
-      endTime
-      startTime
-      endTime
+      ...BoutParts
     }
     errors {
       code
