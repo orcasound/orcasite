@@ -53,7 +53,7 @@ export function FrequencyAxisLayer({
         left: "0%",
         bottom: "0",
         width: "50px",
-        backgroundColor: "#ccc",
+        backgroundColor: "#efefef",
       }}
     >
       <Box

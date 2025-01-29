@@ -25,11 +25,11 @@ export function BaseAudioWidthLayer({
           <Box
             key={idx}
             zIndex={zIndex}
-            bgcolor={"#fff"}
+            bgcolor={"#bbb"}
             display="flex"
             alignItems="center"
             justifyContent="center"
-            borderRight="1px solid #eee"
+            borderRight="1px solid #999"
             sx={{
               minWidth: pixelsPerTile,
               minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,

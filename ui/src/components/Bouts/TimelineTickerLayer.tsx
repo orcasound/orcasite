@@ -84,14 +84,21 @@ export function TimelineTickerLayer({
   const pixelsPerLabel =
     pixelsPerMinute * (labelScale / minutesToMilliseconds(1));
 
+  const windowRangeBufferFactor = 0.5;
   const tickStartTime = new Date(
     Math.floor(
-      subMilliseconds(windowStartTime, windowRange * 0.2).getTime() / scale,
+      subMilliseconds(
+        windowStartTime,
+        windowRange * windowRangeBufferFactor,
+      ).getTime() / scale,
     ) * scale,
   );
   const tickEndTime = new Date(
     Math.ceil(
-      addMilliseconds(windowEndTime, windowRange * 0.2).getTime() / scale,
+      addMilliseconds(
+        windowEndTime,
+        windowRange * windowRangeBufferFactor,
+      ).getTime() / scale,
     ) * scale,
   );
   const tickStartOffset = timeToOffset(
@@ -132,7 +139,7 @@ export function TimelineTickerLayer({
             <Box
               key={idx}
               zIndex={zIndex}
-              bgcolor={"#ddd"}
+              bgcolor={"#efefef"}
               display="flex"
               borderBottom="1px solid #aaa"
               sx={{

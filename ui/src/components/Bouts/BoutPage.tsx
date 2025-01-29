@@ -531,7 +531,7 @@ export default function BoutPage({
                     <TableRow>
                       <TableCell colSpan={5}>
                         <Typography textAlign="center">
-                          No detections submitted for{" "}
+                          No detections submitted from{" "}
                           {format(minDetectionsTime, "hh:mm")} to{" "}
                           {format(maxDetectionsTime, "hh:mm")}
                         </Typography>
