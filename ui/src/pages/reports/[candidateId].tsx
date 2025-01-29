@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 import DetectionsTable from "@/components/DetectionsTable";
-import { getReportsLayout } from "@/components/layouts/ReportsLayout";
+import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import { useCandidateQuery, useGetCurrentUserQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
@@ -69,6 +69,6 @@ const CandidatePage: NextPageWithLayout = () => {
   );
 };
 
-CandidatePage.getLayout = getReportsLayout;
+CandidatePage.getLayout = getSimpleLayout;
 
 export default CandidatePage;

@@ -1,0 +1,14 @@
+fragment FeedSegmentParts on FeedSegment {
+  id
+  startTime
+  endTime
+  duration
+  bucket
+  bucketRegion
+  cloudfrontUrl
+  fileName
+  playlistM3u8Path
+  playlistPath
+  playlistTimestamp
+  segmentPath
+}

@@ -91,7 +91,7 @@ config :orcasite, Oban,
   repo: Orcasite.Repo,
   # 7 day job retention
   plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}],
-  queues: [default: 10, email: 10, feeds: 10]
+  queues: [default: 10, email: 10, feeds: 10, audio_images: 5]
 
 config :spark, :formatter,
   remove_parens?: true,
