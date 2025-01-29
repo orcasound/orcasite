@@ -33,6 +33,7 @@ import Typography from "@mui/material/Typography";
 import {
   addMinutes,
   format,
+  max,
   min,
   roundToNearestMinutes,
   subDays,
@@ -40,6 +41,7 @@ import {
 } from "date-fns";
 import _ from "lodash";
 import Image from "next/legacy/image";
+import { useRouter } from "next/router";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import SpectrogramTimeline, {
@@ -61,6 +63,8 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 import { formatTimestamp } from "@/utils/time";
 
+const log = _.throttle(console.log, 5000);
+
 export default function BoutPage({
   isNew,
   feed,
@@ -74,6 +78,7 @@ export default function BoutPage({
   targetTime?: Date;
   bout?: BoutQuery["bout"];
 }) {
+  const router = useRouter();
   const now = useMemo(() => new Date(), []);
   targetTime =
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
@@ -106,7 +111,7 @@ export default function BoutPage({
 
   const timeBuffer = 15; // minutes
   const targetTimePlusBuffer = roundToNearestMinutes(
-    min([targetTime, addMinutes(targetTime, timeBuffer)]),
+    min([now, max([targetTime, addMinutes(targetTime, timeBuffer)])]),
     { roundingMethod: "ceil" },
   );
   const targetTimeMinusBuffer = roundToNearestMinutes(
@@ -152,6 +157,7 @@ export default function BoutPage({
     () => feedStreams.flatMap(({ feedSegments }) => feedSegments),
     [feedStreams],
   );
+
   const detections = detectionQueryResult.data?.detections?.results ?? [];
   const [boutForm, setBoutForm] = useState<{
     errors: Record<string, string>;
@@ -159,7 +165,7 @@ export default function BoutPage({
     errors: {},
   });
   const createBoutMutation = useCreateBoutMutation({
-    onSuccess: ({ createBout: { errors } }) => {
+    onSuccess: ({ createBout: { errors, result } }) => {
       if (errors && errors.length > 0) {
         console.error(errors);
         setBoutForm((form) => ({
@@ -171,9 +177,12 @@ export default function BoutPage({
             ),
           },
         }));
+      } else if (result) {
+        router.push(`/bouts/${result.id}`);
       }
     },
   });
+
   const updateBoutMutation = useUpdateBoutMutation({
     onSuccess: ({ updateBout: { errors } }) => {
       if (errors && errors.length > 0) {
@@ -195,6 +204,7 @@ export default function BoutPage({
       }
     },
   });
+
   const saveBout = () => {
     setBoutForm((form) => ({ ...form, errors: {} }));
     if (audioCategory && boutStartTime) {
@@ -429,7 +439,7 @@ export default function BoutPage({
                   onChange={(event) =>
                     setAudioCategory(event.target.value as AudioCategory)
                   }
-                  label="Audio category"
+                  label="Category"
                   sx={{ minWidth: 200 }}
                   size="small"
                 >

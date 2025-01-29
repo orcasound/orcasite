@@ -31,7 +31,7 @@ query listFeedStreams(
           ]
           endTime: { greaterThanOrEqual: $fromDateTime }
         }
-        sort: { field: START_TIME, order: DESC }
+        sort: { field: START_TIME, order: ASC }
       ) {
         ...FeedSegmentParts
         audioImages(filter: { status: { eq: "complete" } }) {
