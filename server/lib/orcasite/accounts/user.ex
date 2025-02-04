@@ -85,6 +85,10 @@ defmodule Orcasite.Accounts.User do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
       authorize_if always()
     end
+    
+    policy action_type(:read) do
+      authorize_if expr(id == ^actor(:id))
+    end
 
     policy action(:current_user) do
       authorize_if always()

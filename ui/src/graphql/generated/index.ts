@@ -3040,11 +3040,17 @@ export type RegisterWithPasswordMutation = {
     result?: {
       __typename?: "User";
       id: string;
-      email?: string | null;
-      username?: string | null;
-      admin?: boolean | null;
       firstName?: string | null;
       lastName?: string | null;
+      username?: string | null;
+      email?: string | null;
+      admin?: boolean | null;
+      moderator?: boolean | null;
+      isScientist: boolean;
+      organization?: string | null;
+      newsletter: boolean;
+      volunteering: boolean;
+      userTesting: boolean;
     } | null;
     errors: Array<{
       __typename?: "MutationError";
@@ -3132,10 +3138,17 @@ export type SignInWithPasswordMutation = {
     user?: {
       __typename?: "User";
       id: string;
-      email?: string | null;
-      admin?: boolean | null;
       firstName?: string | null;
       lastName?: string | null;
+      username?: string | null;
+      email?: string | null;
+      admin?: boolean | null;
+      moderator?: boolean | null;
+      isScientist: boolean;
+      organization?: string | null;
+      newsletter: boolean;
+      volunteering: boolean;
+      userTesting: boolean;
     } | null;
     errors: Array<{
       __typename?: "MutationError";
@@ -3351,6 +3364,11 @@ export type GetCurrentUserQuery = {
     admin?: boolean | null;
     moderator?: boolean | null;
     token?: string | null;
+    isScientist: boolean;
+    organization?: string | null;
+    newsletter: boolean;
+    volunteering: boolean;
+    userTesting: boolean;
   } | null;
 };
 
@@ -4339,11 +4357,17 @@ export const RegisterWithPasswordDocument = `
   ) {
     result {
       id
-      email
-      username
-      admin
       firstName
       lastName
+      username
+      email
+      admin
+      moderator
+      isScientist
+      organization
+      newsletter
+      volunteering
+      userTesting
     }
     errors {
       message
@@ -4561,10 +4585,17 @@ export const SignInWithPasswordDocument = `
   signInWithPassword(input: {email: $email, password: $password}) {
     user {
       id
-      email
-      admin
       firstName
       lastName
+      username
+      email
+      admin
+      moderator
+      isScientist
+      organization
+      newsletter
+      volunteering
+      userTesting
     }
     errors {
       message
@@ -5002,6 +5033,11 @@ export const GetCurrentUserDocument = `
     admin
     moderator
     token
+    isScientist
+    organization
+    newsletter
+    volunteering
+    userTesting
   }
 }
     `;
