@@ -1,11 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
+  GetCurrentUserQuery,
   MutationError,
+  useGetCurrentUserQuery,
   useUpdateUserProfileMutation,
 } from "@/graphql/generated";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,6 +34,7 @@ type ProfileFormInputs = z.infer<typeof profileSchema>;
 const useProfileForm = (onSuccess: () => void) => {
   const [errors, setErrors] = useState<MutationError[]>([]);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const form = useForm<ProfileFormInputs>({
     resolver: zodResolver(profileSchema),
@@ -54,6 +58,15 @@ const useProfileForm = (onSuccess: () => void) => {
         onSuccess: (data) => {
           const { updateUserProfile } = data;
           if (updateUserProfile?.result) {
+            queryClient.setQueryData<GetCurrentUserQuery>(
+              useGetCurrentUserQuery.getKey(),
+              {
+                currentUser: {
+                  ...user,
+                  ...updateUserProfile.result,
+                },
+              },
+            );
             onSuccess();
           } else if (updateUserProfile?.errors?.length) {
             setErrors(updateUserProfile.errors);

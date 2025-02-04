@@ -1,11 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, FormControlLabel, Switch } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
+  GetCurrentUserQuery,
   MutationError,
+  useGetCurrentUserQuery,
   useUpdateUserPreferencesMutation,
 } from "@/graphql/generated";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +29,7 @@ type PreferencesFormInputs = z.infer<typeof preferencesSchema>;
 const usePreferencesForm = (onSuccess: () => void) => {
   const [errors, setErrors] = useState<MutationError[]>([]);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const form = useForm<PreferencesFormInputs>({
     resolver: zodResolver(preferencesSchema),
@@ -52,6 +56,15 @@ const usePreferencesForm = (onSuccess: () => void) => {
         onSuccess: (data) => {
           const { updateUserPreferences } = data;
           if (updateUserPreferences?.result) {
+            queryClient.setQueryData<GetCurrentUserQuery>(
+              useGetCurrentUserQuery.getKey(),
+              {
+                currentUser: {
+                  ...user,
+                  ...updateUserPreferences.result,
+                },
+              },
+            );
             onSuccess();
           } else if (updateUserPreferences?.errors?.length) {
             setErrors(updateUserPreferences.errors);

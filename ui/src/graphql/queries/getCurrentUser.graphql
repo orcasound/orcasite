@@ -7,5 +7,10 @@ query getCurrentUser {
     email
     admin
     moderator
+    isScientist
+    organization
+    newsletter
+    volunteering
+    userTesting
   }
 }

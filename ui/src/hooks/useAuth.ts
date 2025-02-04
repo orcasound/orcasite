@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 
 import {
+  GetCurrentUserQuery,
   useGetCurrentUserQuery,
   useRegisterWithPasswordMutation,
   useSignInWithPasswordMutation,
@@ -12,23 +13,32 @@ export function useAuth() {
 
   const { data: { currentUser } = {}, isLoading: isLoadingUser } =
     useGetCurrentUserQuery();
+
   const { mutate: signIn } = useSignInWithPasswordMutation({
     onSuccess: ({ signInWithPassword }) => {
-      queryClient.setQueryData(useGetCurrentUserQuery.getKey(), {
-        currentUser: signInWithPassword?.user,
-      });
+      queryClient.setQueryData<GetCurrentUserQuery>(
+        useGetCurrentUserQuery.getKey(),
+        {
+          currentUser: signInWithPassword?.user,
+        },
+      );
     },
   });
+
   const { mutate: signOut } = useSignOutMutation({
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: useGetCurrentUserQuery.getKey() });
     },
   });
+
   const { mutate: register } = useRegisterWithPasswordMutation({
     onSuccess: ({ registerWithPassword }) => {
-      queryClient.setQueryData(useGetCurrentUserQuery.getKey(), {
-        currentUser: registerWithPassword?.result,
-      });
+      queryClient.setQueryData<GetCurrentUserQuery>(
+        useGetCurrentUserQuery.getKey(),
+        {
+          currentUser: registerWithPassword?.result,
+        },
+      );
     },
   });
 
