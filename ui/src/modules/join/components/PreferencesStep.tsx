@@ -1,9 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormControlLabel, Switch } from "@mui/material";
+import { Alert, FormControlLabel, Switch } from "@mui/material";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useUpdateUserPreferencesMutation } from "@/graphql/generated";
+import {
+  MutationError,
+  useUpdateUserPreferencesMutation,
+} from "@/graphql/generated";
 import { useAuth } from "@/hooks/useAuth";
 
 import { FormContainer } from "../styles";
@@ -20,6 +24,7 @@ const preferencesSchema = z.object({
 type PreferencesFormInputs = z.infer<typeof preferencesSchema>;
 
 const usePreferencesForm = (onSuccess: () => void) => {
+  const [errors, setErrors] = useState<MutationError[]>([]);
   const { user } = useAuth();
 
   const form = useForm<PreferencesFormInputs>({
@@ -32,33 +37,51 @@ const usePreferencesForm = (onSuccess: () => void) => {
     },
   });
 
-  const updatePreferences = useUpdateUserPreferencesMutation({
-    onSuccess: ({ updateUserPreferences }) => {
-      if (updateUserPreferences?.result) {
-        onSuccess();
-      }
-    },
-  });
+  const updatePreferences = useUpdateUserPreferencesMutation();
 
   const onSubmit = (data: PreferencesFormInputs) => {
     if (!user) return;
+    setErrors([]);
 
-    updatePreferences.mutate({
-      id: user.id,
-      ...data,
-    });
+    updatePreferences.mutate(
+      {
+        id: user.id,
+        ...data,
+      },
+      {
+        onSuccess: (data) => {
+          const { updateUserPreferences } = data;
+          if (updateUserPreferences?.result) {
+            onSuccess();
+          } else if (updateUserPreferences?.errors?.length) {
+            setErrors(updateUserPreferences.errors);
+          } else {
+            setErrors([{ message: "An unknown error occurred" }]);
+          }
+        },
+        onError: (error) => {
+          console.error("updatePreferences error:", error);
+          setErrors([{ message: "An unknown error occurred" }]);
+        },
+      },
+    );
   };
 
-  return { form, onSubmit };
+  return { form, onSubmit, errors };
 };
 
 export const PreferencesStep = ({ onSuccess, onSkip }: StepFormProps) => {
-  const { form, onSubmit } = usePreferencesForm(onSuccess);
+  const { form, onSubmit, errors } = usePreferencesForm(onSuccess);
   const { register } = form;
 
   return (
     <form onSubmit={createFormSubmitHandler(form, onSubmit)} name="preferences">
       <FormContainer>
+        {errors?.length > 0 && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {errors[0].message}
+          </Alert>
+        )}
         <FormControlLabel
           control={<Switch {...register("liveNotifications")} />}
           label="Notify me when orcas are detected live"

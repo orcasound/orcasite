@@ -10,6 +10,7 @@ import {
   Theme,
   Typography,
 } from "@mui/material";
+import router from "next/router";
 import { useState } from "react";
 
 import Link from "@/components/Link";
@@ -30,7 +31,8 @@ export default function AccountMenu({ sx }: { sx?: SxProps<Theme> }) {
 
   const handleSignOut = () => {
     handleClose();
-    signOut();
+    signOut({});
+    router.push("/");
   };
 
   if (!user) {
