@@ -1986,7 +1986,7 @@ export type PasswordResetInput = {
 
 export type PasswordResetResult = {
   __typename?: "PasswordResetResult";
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors: Array<MutationError>;
   user?: Maybe<User>;
 };
 
@@ -2304,7 +2304,7 @@ export type SignInWithPasswordInput = {
 
 export type SignInWithPasswordResult = {
   __typename?: "SignInWithPasswordResult";
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors: Array<MutationError>;
   user?: Maybe<User>;
 };
 
@@ -3076,14 +3076,14 @@ export type ResetPasswordMutation = {
   __typename?: "RootMutationType";
   resetPassword?: {
     __typename?: "PasswordResetResult";
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       code?: string | null;
       fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
+    }>;
     user?: {
       __typename?: "User";
       id: string;
@@ -3137,14 +3137,14 @@ export type SignInWithPasswordMutation = {
       firstName?: string | null;
       lastName?: string | null;
     } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
       fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
+    }>;
   } | null;
 };
 

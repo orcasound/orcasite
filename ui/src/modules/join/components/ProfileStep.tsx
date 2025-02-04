@@ -1,9 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useUpdateUserProfileMutation } from "@/graphql/generated";
+import {
+  MutationError,
+  useUpdateUserProfileMutation,
+} from "@/graphql/generated";
 import { useAuth } from "@/hooks/useAuth";
 
 import { FormContainer } from "../styles";
@@ -25,6 +29,7 @@ const profileSchema = z.object({
 type ProfileFormInputs = z.infer<typeof profileSchema>;
 
 const useProfileForm = (onSuccess: () => void) => {
+  const [errors, setErrors] = useState<MutationError[]>([]);
   const { user } = useAuth();
 
   const form = useForm<ProfileFormInputs>({
@@ -34,27 +39,40 @@ const useProfileForm = (onSuccess: () => void) => {
     },
   });
 
-  const updateProfile = useUpdateUserProfileMutation({
-    onSuccess: ({ updateUserProfile }) => {
-      if (updateUserProfile?.result) {
-        onSuccess();
-      }
-    },
-  });
+  const updateProfile = useUpdateUserProfileMutation();
 
   const onSubmit = (data: ProfileFormInputs) => {
     if (!user) return;
+    setErrors([]);
 
-    updateProfile.mutate({
-      id: user.id,
-      ...data,
-    });
+    updateProfile.mutate(
+      {
+        id: user.id,
+        ...data,
+      },
+      {
+        onSuccess: (data) => {
+          const { updateUserProfile } = data;
+          if (updateUserProfile?.result) {
+            onSuccess();
+          } else if (updateUserProfile?.errors?.length) {
+            setErrors(updateUserProfile.errors);
+          } else {
+            setErrors([{ message: "An unknown error occurred" }]);
+          }
+        },
+        onError: (error) => {
+          console.error("updateProfile error:", error);
+          setErrors([{ message: "An unknown error occurred" }]);
+        },
+      },
+    );
   };
 
   return {
     form,
     onSubmit,
-    errors: updateProfile.data?.updateUserProfile?.errors,
+    errors,
   };
 };
 

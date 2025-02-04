@@ -239,10 +239,16 @@ defmodule Orcasite.Accounts.User do
     end
   end
 
-  def after_registration(resolution, _query, {:ok, user}) do
-    resolution
-    |> Map.update!(:context, fn ctx ->
-      Map.put(ctx, :current_user, user)
-    end)
+  def after_registration(resolution, _query, result) do
+    result
+    |> case do
+      {:ok, user} ->
+        resolution
+        |> Map.update!(:context, fn ctx ->
+          Map.put(ctx, :current_user, user)
+        end)
+      _ ->
+        resolution
+    end
   end
 end

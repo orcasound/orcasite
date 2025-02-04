@@ -1,6 +1,4 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
 
 import {
   useGetCurrentUserQuery,
@@ -9,59 +7,30 @@ import {
   useSignOutMutation,
 } from "@/graphql/generated";
 
-type SignInParams = {
-  email: string;
-  password: string;
-};
-
-type RegisterParams = {
-  email: string;
-  password: string;
-  passwordConfirmation: string;
-  firstName?: string;
-  lastName?: string;
-};
-
 export function useAuth() {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data: { currentUser } = {}, isLoading: isLoadingUser } =
     useGetCurrentUserQuery();
-  const { mutateAsync: signInMutation } = useSignInWithPasswordMutation();
-  const { mutateAsync: signOutMutation } = useSignOutMutation();
-  const { mutateAsync: registerMutation } = useRegisterWithPasswordMutation();
-
-  const refreshSession = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["getCurrentUser"] });
-  }, [queryClient]);
-
-  const signIn = useCallback(
-    async (params: SignInParams) => {
-      const { signInWithPassword } = await signInMutation(params);
-      if (signInWithPassword?.errors) throw signInWithPassword.errors;
-      refreshSession();
-      return signInWithPassword?.user;
+  const { mutate: signIn } = useSignInWithPasswordMutation({
+    onSuccess: ({ signInWithPassword }) => {
+      queryClient.setQueryData(useGetCurrentUserQuery.getKey(), {
+        currentUser: signInWithPassword?.user,
+      });
     },
-    [signInMutation, refreshSession],
-  );
-
-  const signOut = useCallback(async () => {
-    await signOutMutation({});
-    queryClient.removeQueries();
-    router.push("/");
-  }, [signOutMutation, queryClient, router]);
-
-  const register = useCallback(
-    async (params: RegisterParams) => {
-      const { registerWithPassword } = await registerMutation(params);
-      if (registerWithPassword.errors.length > 0)
-        throw registerWithPassword.errors;
-      refreshSession();
-      return registerWithPassword.result;
+  });
+  const { mutate: signOut } = useSignOutMutation({
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: useGetCurrentUserQuery.getKey() });
     },
-    [registerMutation, refreshSession],
-  );
+  });
+  const { mutate: register } = useRegisterWithPasswordMutation({
+    onSuccess: ({ registerWithPassword }) => {
+      queryClient.setQueryData(useGetCurrentUserQuery.getKey(), {
+        currentUser: registerWithPassword?.result,
+      });
+    },
+  });
 
   return {
     user: currentUser,

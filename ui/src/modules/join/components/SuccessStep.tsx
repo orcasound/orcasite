@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
 export const SuccessStep = () => {
   const router = useRouter();

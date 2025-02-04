@@ -32,24 +32,31 @@ const useAccountForm = (onSuccess: () => void) => {
   });
   const { register: registerUser } = useAuth();
 
-  const onSubmit = async (data: AccountFormInputs) => {
-    try {
-      setErrors([]);
-      await registerUser({
+  const onSubmit = (data: AccountFormInputs) => {
+    setErrors([]);
+    registerUser(
+      {
         email: data.email,
         password: data.password,
         passwordConfirmation: data.password,
-      });
-      onSuccess();
-    } catch (errors) {
-      if (Array.isArray(errors)) {
-        setErrors(
-          errors.filter((error): error is MutationError => error !== null),
-        );
-      } else {
-        console.error("Register error:", errors);
-      }
-    }
+      },
+      {
+        onSuccess: (data) => {
+          const { registerWithPassword } = data;
+          if (registerWithPassword?.result) {
+            onSuccess();
+          } else if (registerWithPassword?.errors?.length) {
+            setErrors(registerWithPassword.errors);
+          } else {
+            setErrors([{ message: "An unknown error occurred" }]);
+          }
+        },
+        onError: (error) => {
+          console.error("register error:", error);
+          setErrors([{ message: "An unknown error occurred" }]);
+        },
+      },
+    );
   };
 
   return { form, errors, onSubmit };

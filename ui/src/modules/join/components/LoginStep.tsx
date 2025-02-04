@@ -29,23 +29,30 @@ const useLoginForm = (onSuccess: () => void) => {
   });
   const { signIn } = useAuth();
 
-  const onSubmit = async (data: LoginFormInputs) => {
-    try {
-      setErrors([]);
-      await signIn({
+  const onSubmit = (data: LoginFormInputs) => {
+    setErrors([]);
+    signIn(
+      {
         email: data.email,
         password: data.password,
-      });
-      onSuccess();
-    } catch (errors) {
-      if (Array.isArray(errors)) {
-        setErrors(
-          errors.filter((error): error is MutationError => error !== null),
-        );
-      } else {
-        console.error("Login error:", errors);
-      }
-    }
+      },
+      {
+        onSuccess: (data) => {
+          const { signInWithPassword } = data;
+          if (signInWithPassword?.user) {
+            onSuccess();
+          } else if (signInWithPassword?.errors?.length) {
+            setErrors(signInWithPassword.errors);
+          } else {
+            setErrors([{ message: "An unknown error occurred" }]);
+          }
+        },
+        onError: (error) => {
+          console.error("login error:", error);
+          setErrors([{ message: "An unknown error occurred" }]);
+        },
+      },
+    );
   };
 
   return { form, errors, onSubmit };

@@ -56,8 +56,8 @@ const JoinPage: NextPageWithLayout = () => {
     if (!router.isReady) return;
     if (isLoadingUser) return;
 
-    // Start the join flow if the user is not logged in
-    if (!user && !step) setStep("account");
+    // Start the join flow if the user is not logged in & the flow hasn't been started
+    if (!user && step !== "account") setStep("account");
     // Logged in users should not be able to access the join page, so redirect
     else if (user && !step) router.replace("/");
     // Unless they're trying to directly access a step (but skip the account creation step)
