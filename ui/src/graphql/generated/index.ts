@@ -297,6 +297,37 @@ export type Bout = {
   startTime?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
+/** Join table between Bout and FeedStream */
+export type BoutFeedStream = {
+  __typename?: "BoutFeedStream";
+  id: Scalars["ID"]["output"];
+};
+
+export type BoutFeedStreamFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type BoutFeedStreamFilterInput = {
+  and?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
+  id?: InputMaybe<BoutFeedStreamFilterId>;
+  not?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
+  or?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
+};
+
+export type BoutFeedStreamSortField = "ID";
+
+export type BoutFeedStreamSortInput = {
+  field: BoutFeedStreamSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
 export type BoutFilterCategory = {
   eq?: InputMaybe<AudioCategory>;
   greaterThan?: InputMaybe<AudioCategory>;
@@ -1184,19 +1215,49 @@ export type FeedSortInput = {
 
 export type FeedStream = {
   __typename?: "FeedStream";
+  boutFeedStreams: Array<BoutFeedStream>;
+  bouts: Array<Bout>;
   bucket?: Maybe<Scalars["String"]["output"]>;
   bucketRegion?: Maybe<Scalars["String"]["output"]>;
   cloudfrontUrl?: Maybe<Scalars["String"]["output"]>;
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  feed?: Maybe<Feed>;
+  feedId?: Maybe<Scalars["String"]["output"]>;
+  feedSegments: Array<FeedSegment>;
   id: Scalars["ID"]["output"];
+  nextFeedStream?: Maybe<FeedStream>;
+  nextFeedStreamId?: Maybe<Scalars["String"]["output"]>;
   /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
   playlistM3u8Path?: Maybe<Scalars["String"]["output"]>;
   /** S3 object path for playlist dir (e.g. /rpi_orcasound_lab/hls/1541027406/) */
   playlistPath?: Maybe<Scalars["String"]["output"]>;
   /** UTC Unix epoch for playlist start (e.g. 1541027406) */
   playlistTimestamp?: Maybe<Scalars["String"]["output"]>;
+  prevFeedStream?: Maybe<FeedStream>;
+  prevFeedStreamId?: Maybe<Scalars["String"]["output"]>;
   startTime?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type FeedStreamBoutFeedStreamsArgs = {
+  filter?: InputMaybe<BoutFeedStreamFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<BoutFeedStreamSortInput>>>;
+};
+
+export type FeedStreamBoutsArgs = {
+  filter?: InputMaybe<BoutFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<BoutSortInput>>>;
+};
+
+export type FeedStreamFeedSegmentsArgs = {
+  filter?: InputMaybe<FeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedSegmentSortInput>>>;
 };
 
 export type FeedStreamFilterBucket = {
@@ -1260,18 +1321,29 @@ export type FeedStreamFilterEndTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type FeedStreamFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type FeedStreamFilterId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type FeedStreamFilterInput = {
   and?: InputMaybe<Array<FeedStreamFilterInput>>;
+  boutFeedStreams?: InputMaybe<BoutFeedStreamFilterInput>;
+  bouts?: InputMaybe<BoutFilterInput>;
   bucket?: InputMaybe<FeedStreamFilterBucket>;
   bucketRegion?: InputMaybe<FeedStreamFilterBucketRegion>;
   cloudfrontUrl?: InputMaybe<FeedStreamFilterCloudfrontUrl>;
   duration?: InputMaybe<FeedStreamFilterDuration>;
   endTime?: InputMaybe<FeedStreamFilterEndTime>;
+  feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<FeedStreamFilterFeedId>;
+  feedSegments?: InputMaybe<FeedSegmentFilterInput>;
   id?: InputMaybe<FeedStreamFilterId>;
+  nextFeedStream?: InputMaybe<FeedStreamFilterInput>;
+  nextFeedStreamId?: InputMaybe<FeedStreamFilterNextFeedStreamId>;
   not?: InputMaybe<Array<FeedStreamFilterInput>>;
   or?: InputMaybe<Array<FeedStreamFilterInput>>;
   /** S3 object path for playlist file (e.g. /rpi_orcasound_lab/hls/1541027406/live.m3u8) */
@@ -1280,7 +1352,13 @@ export type FeedStreamFilterInput = {
   playlistPath?: InputMaybe<FeedStreamFilterPlaylistPath>;
   /** UTC Unix epoch for playlist start (e.g. 1541027406) */
   playlistTimestamp?: InputMaybe<FeedStreamFilterPlaylistTimestamp>;
+  prevFeedStream?: InputMaybe<FeedStreamFilterInput>;
+  prevFeedStreamId?: InputMaybe<FeedStreamFilterPrevFeedStreamId>;
   startTime?: InputMaybe<FeedStreamFilterStartTime>;
+};
+
+export type FeedStreamFilterNextFeedStreamId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type FeedStreamFilterPlaylistM3u8Path = {
@@ -1322,6 +1400,10 @@ export type FeedStreamFilterPlaylistTimestamp = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type FeedStreamFilterPrevFeedStreamId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type FeedStreamFilterStartTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -1339,10 +1421,13 @@ export type FeedStreamSortField =
   | "CLOUDFRONT_URL"
   | "DURATION"
   | "END_TIME"
+  | "FEED_ID"
   | "ID"
+  | "NEXT_FEED_STREAM_ID"
   | "PLAYLIST_M3U8_PATH"
   | "PLAYLIST_PATH"
   | "PLAYLIST_TIMESTAMP"
+  | "PREV_FEED_STREAM_ID"
   | "START_TIME";
 
 export type FeedStreamSortInput = {
@@ -1618,7 +1703,7 @@ export type PasswordResetInput = {
 
 export type PasswordResetResult = {
   __typename?: "PasswordResetResult";
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors: Array<MutationError>;
   user?: Maybe<User>;
 };
 
@@ -1670,6 +1755,8 @@ export type RootMutationType = {
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
   submitDetection: SubmitDetectionResult;
+  updateUserPreferences: UpdateUserPreferencesResult;
+  updateUserProfile: UpdateUserProfileResult;
 };
 
 export type RootMutationTypeCancelCandidateNotificationsArgs = {
@@ -1713,6 +1800,16 @@ export type RootMutationTypeSignInWithPasswordArgs = {
 
 export type RootMutationTypeSubmitDetectionArgs = {
   input: SubmitDetectionInput;
+};
+
+export type RootMutationTypeUpdateUserPreferencesArgs = {
+  id: Scalars["ID"]["input"];
+  input?: InputMaybe<UpdateUserPreferencesInput>;
+};
+
+export type RootMutationTypeUpdateUserProfileArgs = {
+  id: Scalars["ID"]["input"];
+  input?: InputMaybe<UpdateUserProfileInput>;
 };
 
 export type RootQueryType = {
@@ -1819,7 +1916,7 @@ export type SignInWithPasswordInput = {
 
 export type SignInWithPasswordResult = {
   __typename?: "SignInWithPasswordResult";
-  errors?: Maybe<Array<Maybe<MutationError>>>;
+  errors: Array<MutationError>;
   user?: Maybe<User>;
 };
 
@@ -1850,15 +1947,53 @@ export type SubmitDetectionResult = {
   result?: Maybe<Detection>;
 };
 
+export type UpdateUserPreferencesInput = {
+  liveNotifications?: InputMaybe<Scalars["Boolean"]["input"]>;
+  newsletter?: InputMaybe<Scalars["Boolean"]["input"]>;
+  userTesting?: InputMaybe<Scalars["Boolean"]["input"]>;
+  volunteering?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** The result of the :update_user_preferences mutation */
+export type UpdateUserPreferencesResult = {
+  __typename?: "UpdateUserPreferencesResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<User>;
+};
+
+export type UpdateUserProfileInput = {
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  isScientist?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  organization?: InputMaybe<Scalars["String"]["input"]>;
+  username?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** The result of the :update_user_profile mutation */
+export type UpdateUserProfileResult = {
+  __typename?: "UpdateUserProfileResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<User>;
+};
+
 export type User = {
   __typename?: "User";
   admin: Scalars["Boolean"]["output"];
   email: Scalars["String"]["output"];
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
+  isScientist: Scalars["Boolean"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
   moderator: Scalars["Boolean"]["output"];
+  newsletter: Scalars["Boolean"]["output"];
+  organization?: Maybe<Scalars["String"]["output"]>;
+  userTesting: Scalars["Boolean"]["output"];
   username?: Maybe<Scalars["String"]["output"]>;
+  volunteering: Scalars["Boolean"]["output"];
 };
 
 export type UserFilterAdmin = {
@@ -1913,11 +2048,27 @@ export type UserFilterInput = {
   email?: InputMaybe<UserFilterEmail>;
   firstName?: InputMaybe<UserFilterFirstName>;
   id?: InputMaybe<UserFilterId>;
+  isScientist?: InputMaybe<UserFilterIsScientist>;
   lastName?: InputMaybe<UserFilterLastName>;
   moderator?: InputMaybe<UserFilterModerator>;
+  newsletter?: InputMaybe<UserFilterNewsletter>;
   not?: InputMaybe<Array<UserFilterInput>>;
   or?: InputMaybe<Array<UserFilterInput>>;
+  organization?: InputMaybe<UserFilterOrganization>;
+  userTesting?: InputMaybe<UserFilterUserTesting>;
   username?: InputMaybe<UserFilterUsername>;
+  volunteering?: InputMaybe<UserFilterVolunteering>;
+};
+
+export type UserFilterIsScientist = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type UserFilterLastName = {
@@ -1944,6 +2095,41 @@ export type UserFilterModerator = {
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+export type UserFilterNewsletter = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type UserFilterOrganization = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterUserTesting = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type UserFilterUsername = {
   eq?: InputMaybe<Scalars["String"]["input"]>;
   greaterThan?: InputMaybe<Scalars["String"]["input"]>;
@@ -1955,6 +2141,17 @@ export type UserFilterUsername = {
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
   like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterVolunteering = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type CancelCandidateNotificationsMutationVariables = Exact<{
@@ -2042,7 +2239,7 @@ export type RegisterWithPasswordMutationVariables = Exact<{
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   email: Scalars["String"]["input"];
-  username: Scalars["String"]["input"];
+  username?: InputMaybe<Scalars["String"]["input"]>;
   password: Scalars["String"]["input"];
   passwordConfirmation: Scalars["String"]["input"];
 }>;
@@ -2054,11 +2251,17 @@ export type RegisterWithPasswordMutation = {
     result?: {
       __typename?: "User";
       id: string;
-      email: string;
-      username?: string | null;
-      admin: boolean;
       firstName?: string | null;
       lastName?: string | null;
+      username?: string | null;
+      email: string;
+      admin: boolean;
+      moderator: boolean;
+      isScientist: boolean;
+      organization?: string | null;
+      newsletter: boolean;
+      volunteering: boolean;
+      userTesting: boolean;
     } | null;
     errors: Array<{
       __typename?: "MutationError";
@@ -2090,14 +2293,14 @@ export type ResetPasswordMutation = {
   __typename?: "RootMutationType";
   resetPassword?: {
     __typename?: "PasswordResetResult";
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       code?: string | null;
       fields?: Array<string> | null;
       message?: string | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
+    }>;
     user?: {
       __typename?: "User";
       id: string;
@@ -2146,19 +2349,26 @@ export type SignInWithPasswordMutation = {
     user?: {
       __typename?: "User";
       id: string;
-      email: string;
-      admin: boolean;
       firstName?: string | null;
       lastName?: string | null;
+      username?: string | null;
+      email: string;
+      admin: boolean;
+      moderator: boolean;
+      isScientist: boolean;
+      organization?: string | null;
+      newsletter: boolean;
+      volunteering: boolean;
+      userTesting: boolean;
     } | null;
-    errors?: Array<{
+    errors: Array<{
       __typename?: "MutationError";
       message?: string | null;
       code?: string | null;
       fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
-    } | null> | null;
+    }>;
   } | null;
 };
 
@@ -2190,6 +2400,64 @@ export type SubmitDetectionMutation = {
       fields?: Array<string> | null;
       shortMessage?: string | null;
       vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type UpdateUserPreferencesMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  volunteering?: InputMaybe<Scalars["Boolean"]["input"]>;
+  userTesting?: InputMaybe<Scalars["Boolean"]["input"]>;
+  newsletter?: InputMaybe<Scalars["Boolean"]["input"]>;
+}>;
+
+export type UpdateUserPreferencesMutation = {
+  __typename?: "RootMutationType";
+  updateUserPreferences: {
+    __typename?: "UpdateUserPreferencesResult";
+    result?: {
+      __typename?: "User";
+      id: string;
+      volunteering: boolean;
+      userTesting: boolean;
+      newsletter: boolean;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      message?: string | null;
+      code?: string | null;
+      fields?: Array<string> | null;
+    }>;
+  };
+};
+
+export type UpdateUserProfileMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  username?: InputMaybe<Scalars["String"]["input"]>;
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  isScientist?: InputMaybe<Scalars["Boolean"]["input"]>;
+  organization?: InputMaybe<Scalars["String"]["input"]>;
+}>;
+
+export type UpdateUserProfileMutation = {
+  __typename?: "RootMutationType";
+  updateUserProfile: {
+    __typename?: "UpdateUserProfileResult";
+    result?: {
+      __typename?: "User";
+      id: string;
+      username?: string | null;
+      firstName?: string | null;
+      lastName?: string | null;
+      isScientist: boolean;
+      organization?: string | null;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      message?: string | null;
+      code?: string | null;
+      fields?: Array<string> | null;
     }>;
   };
 };
@@ -2240,9 +2508,15 @@ export type GetCurrentUserQuery = {
     id: string;
     firstName?: string | null;
     lastName?: string | null;
+    username?: string | null;
     email: string;
     admin: boolean;
     moderator: boolean;
+    isScientist: boolean;
+    organization?: string | null;
+    newsletter: boolean;
+    volunteering: boolean;
+    userTesting: boolean;
   } | null;
 };
 
@@ -2570,17 +2844,23 @@ useNotifyConfirmedCandidateMutation.fetcher = (
   >(NotifyConfirmedCandidateDocument, variables, options);
 
 export const RegisterWithPasswordDocument = `
-    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $username: String!, $password: String!, $passwordConfirmation: String!) {
+    mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $username: String, $password: String!, $passwordConfirmation: String!) {
   registerWithPassword(
     input: {email: $email, username: $username, password: $password, passwordConfirmation: $passwordConfirmation, firstName: $firstName, lastName: $lastName}
   ) {
     result {
       id
-      email
-      username
-      admin
       firstName
       lastName
+      username
+      email
+      admin
+      moderator
+      isScientist
+      organization
+      newsletter
+      volunteering
+      userTesting
     }
     errors {
       message
@@ -2798,10 +3078,17 @@ export const SignInWithPasswordDocument = `
   signInWithPassword(input: {email: $email, password: $password}) {
     user {
       id
-      email
-      admin
       firstName
       lastName
+      username
+      email
+      admin
+      moderator
+      isScientist
+      organization
+      newsletter
+      volunteering
+      userTesting
     }
     errors {
       message
@@ -2953,6 +3240,127 @@ useSubmitDetectionMutation.fetcher = (
     options,
   );
 
+export const UpdateUserPreferencesDocument = `
+    mutation updateUserPreferences($id: ID!, $volunteering: Boolean, $userTesting: Boolean, $newsletter: Boolean) {
+  updateUserPreferences(
+    id: $id
+    input: {volunteering: $volunteering, userTesting: $userTesting, newsletter: $newsletter}
+  ) {
+    result {
+      id
+      volunteering
+      userTesting
+      newsletter
+    }
+    errors {
+      message
+      code
+      fields
+    }
+  }
+}
+    `;
+
+export const useUpdateUserPreferencesMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    UpdateUserPreferencesMutation,
+    TError,
+    UpdateUserPreferencesMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    UpdateUserPreferencesMutation,
+    TError,
+    UpdateUserPreferencesMutationVariables,
+    TContext
+  >({
+    mutationKey: ["updateUserPreferences"],
+    mutationFn: (variables?: UpdateUserPreferencesMutationVariables) =>
+      fetcher<
+        UpdateUserPreferencesMutation,
+        UpdateUserPreferencesMutationVariables
+      >(UpdateUserPreferencesDocument, variables)(),
+    ...options,
+  });
+};
+
+useUpdateUserPreferencesMutation.getKey = () => ["updateUserPreferences"];
+
+useUpdateUserPreferencesMutation.fetcher = (
+  variables: UpdateUserPreferencesMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    UpdateUserPreferencesMutation,
+    UpdateUserPreferencesMutationVariables
+  >(UpdateUserPreferencesDocument, variables, options);
+
+export const UpdateUserProfileDocument = `
+    mutation updateUserProfile($id: ID!, $username: String, $firstName: String, $lastName: String, $isScientist: Boolean, $organization: String) {
+  updateUserProfile(
+    id: $id
+    input: {username: $username, firstName: $firstName, lastName: $lastName, isScientist: $isScientist, organization: $organization}
+  ) {
+    result {
+      id
+      username
+      firstName
+      lastName
+      isScientist
+      organization
+    }
+    errors {
+      message
+      code
+      fields
+    }
+  }
+}
+    `;
+
+export const useUpdateUserProfileMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    UpdateUserProfileMutation,
+    TError,
+    UpdateUserProfileMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    UpdateUserProfileMutation,
+    TError,
+    UpdateUserProfileMutationVariables,
+    TContext
+  >({
+    mutationKey: ["updateUserProfile"],
+    mutationFn: (variables?: UpdateUserProfileMutationVariables) =>
+      fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(
+        UpdateUserProfileDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useUpdateUserProfileMutation.getKey = () => ["updateUserProfile"];
+
+useUpdateUserProfileMutation.fetcher = (
+  variables: UpdateUserProfileMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<UpdateUserProfileMutation, UpdateUserProfileMutationVariables>(
+    UpdateUserProfileDocument,
+    variables,
+    options,
+  );
+
 export const CandidateDocument = `
     query candidate($id: ID!) {
   candidate(id: $id) {
@@ -3023,9 +3431,15 @@ export const GetCurrentUserDocument = `
     id
     firstName
     lastName
+    username
     email
     admin
     moderator
+    isScientist
+    organization
+    newsletter
+    volunteering
+    userTesting
   }
 }
     `;

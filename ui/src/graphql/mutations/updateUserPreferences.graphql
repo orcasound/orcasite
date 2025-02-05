@@ -1,0 +1,27 @@
+mutation updateUserPreferences(
+  $id: ID!
+  $volunteering: Boolean
+  $userTesting: Boolean
+  $newsletter: Boolean
+) {
+  updateUserPreferences(
+    id: $id
+    input: {
+      volunteering: $volunteering
+      userTesting: $userTesting
+      newsletter: $newsletter
+    }
+  ) {
+    result {
+      id
+      volunteering
+      userTesting
+      newsletter
+    }
+    errors {
+      message
+      code
+      fields
+    }
+  }
+}
