@@ -125,7 +125,7 @@ function Mobile({
               boxSizing: "border-box",
               width: drawerWidth,
               backgroundColor: "base.main",
-              marginTop: "60px",
+              marginTop: (theme) => `${theme.mixins.toolbar.minHeight}px`,
             },
             zIndex: (theme) => theme.zIndex.drawer + 1,
           }}
