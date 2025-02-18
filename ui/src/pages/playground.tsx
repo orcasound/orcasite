@@ -1,5 +1,6 @@
 import Head from "next/head";
 
+import { getDashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useDetectionsQuery, useFeeds2Query } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
@@ -26,6 +27,6 @@ recentDetections[0] = reformatted.toLocaleDateString(); DONT DO THIS
   );
 };
 
-//FeedsPage.getLayout = getMapLayout;
+FeedsPage.getLayout = getDashboardLayout;
 
 export default FeedsPage;
