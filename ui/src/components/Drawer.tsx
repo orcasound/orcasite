@@ -119,7 +119,6 @@ function Desktop({ children, open }: DrawerProps) {
         keepMounted: true,
       }}
     >
-      <ToolbarSpacer />
       {children}
     </SideDrawer>
   );

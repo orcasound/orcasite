@@ -8,7 +8,6 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { NextAppProvider } from "@toolpad/core/nextjs";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -84,9 +83,7 @@ export default function OrcasiteApp(props: AppPropsWithLayout) {
           </Head>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <NextAppProvider>
-              {getLayout(<Component {...pageProps} />)}
-            </NextAppProvider>
+            {getLayout(<Component {...pageProps} />)}
           </ThemeProvider>
         </AppCacheProvider>
       </HydrationBoundary>

@@ -2,6 +2,7 @@
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import type { Navigation } from "@toolpad/core/AppProvider";
 import { DashboardLayout as ToolpadDashboardLayout } from "@toolpad/core/DashboardLayout";
+import { NextAppProvider } from "@toolpad/core/nextjs";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import * as React from "react";
 import { ReactElement } from "react";
@@ -22,14 +23,16 @@ const BRANDING = {
   title: "My Toolpad Core App",
 };
 
-const DashboardLayout = ({ children }: ReactElement) => {
+const ToolpadLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ToolpadDashboardLayout navigation={NAVIGATION} branding={BRANDING}>
-      <PageContainer>{children}</PageContainer>
-    </ToolpadDashboardLayout>
+    <NextAppProvider>
+      <ToolpadDashboardLayout navigation={NAVIGATION} branding={BRANDING}>
+        <PageContainer>{children}</PageContainer>
+      </ToolpadDashboardLayout>
+    </NextAppProvider>
   );
 };
 
-export function getDashboardLayout(page: ReactElement) {
-  return <DashboardLayout>{page}</DashboardLayout>;
+export function getToolpadLayout(page: ReactElement) {
+  return <ToolpadLayout>{page}</ToolpadLayout>;
 }
