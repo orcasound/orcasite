@@ -9,7 +9,7 @@ defmodule Orcasite.Radio.Workers.GenerateSpectrogram do
     max_attempts: 3
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"audio_image_id" => audio_image_id, attempt: attempt}}) do
+  def perform(%Oban.Job{args: %{"audio_image_id" => audio_image_id}, attempt: attempt}) do
     # 900/min equivalent in a second
     :ok = Orcasite.RateLimiter.continue?(:generate_spectrogram, 1_000, 15)
 

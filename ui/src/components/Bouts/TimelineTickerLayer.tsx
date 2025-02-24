@@ -8,23 +8,20 @@ import {
   secondsToMilliseconds,
   subMilliseconds,
 } from "date-fns";
-import { throttle } from "lodash";
 import { Fragment } from "react";
+
+import { roundToNearest } from "@/utils/time";
 
 import { TICKER_HEIGHT, timeToOffset } from "./SpectrogramTimeline";
 
-const log = throttle(console.log, 5000);
-
 export function TimelineTickerLayer({
   timelineStartTime,
-  timelineEndTime,
   pixelsPerMinute,
   windowStartTime,
   windowEndTime,
   zIndex,
 }: {
   timelineStartTime: Date;
-  timelineEndTime: Date;
   windowStartTime: Date;
   windowEndTime: Date;
   pixelsPerMinute: number;
@@ -69,8 +66,6 @@ export function TimelineTickerLayer({
     1,
   ];
 
-  // console.log("range", windowRange, "ts", tickSize, "ls", labelSize);
-
   const minScaleIndex = tickScales.findIndex(
     (num) => Math.floor(tickSize / num) > 0,
   );
@@ -84,22 +79,16 @@ export function TimelineTickerLayer({
   const pixelsPerLabel =
     pixelsPerMinute * (labelScale / minutesToMilliseconds(1));
 
-  const windowRangeBufferFactor = 0.5;
-  const tickStartTime = new Date(
-    Math.floor(
-      subMilliseconds(
-        windowStartTime,
-        windowRange * windowRangeBufferFactor,
-      ).getTime() / scale,
-    ) * scale,
+  const windowRangeBufferFactor = 0.2;
+  const tickStartTime = roundToNearest(
+    subMilliseconds(windowStartTime, windowRange * windowRangeBufferFactor),
+    scale,
+    "ceil",
   );
-  const tickEndTime = new Date(
-    Math.ceil(
-      addMilliseconds(
-        windowEndTime,
-        windowRange * windowRangeBufferFactor,
-      ).getTime() / scale,
-    ) * scale,
+  const tickEndTime = roundToNearest(
+    addMilliseconds(windowEndTime, windowRange * windowRangeBufferFactor),
+    scale,
+    "ceil",
   );
   const tickStartOffset = timeToOffset(
     tickStartTime,
@@ -109,16 +98,15 @@ export function TimelineTickerLayer({
 
   const ticks = differenceInMilliseconds(tickEndTime, tickStartTime) / scale;
 
-  const labelStartTime = new Date(
-    Math.floor(
-      subMilliseconds(windowStartTime, windowRange * 0.2).getTime() /
-        labelScale,
-    ) * labelScale,
+  const labelStartTime = roundToNearest(
+    subMilliseconds(windowStartTime, windowRange * windowRangeBufferFactor),
+    labelScale,
+    "floor",
   );
-  const labelEndTime = new Date(
-    Math.ceil(
-      addMilliseconds(windowEndTime, windowRange * 0.2).getTime() / labelScale,
-    ) * labelScale,
+  const labelEndTime = roundToNearest(
+    addMilliseconds(windowEndTime, windowRange * windowRangeBufferFactor),
+    labelScale,
+    "ceil",
   );
   const labelStartOffset = timeToOffset(
     labelStartTime,
@@ -128,7 +116,6 @@ export function TimelineTickerLayer({
 
   const labels =
     differenceInMilliseconds(labelEndTime, labelStartTime) / labelScale;
-  // log("scale", scale, "ppt", pixelsPerTick, "ppm", pixelsPerMinute);
 
   return (
     <>

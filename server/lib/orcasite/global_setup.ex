@@ -37,6 +37,12 @@ defmodule Orcasite.GlobalSetup do
   end
 
   def populate_latest_feed_streams(feed, minutes_ago \\ 10) do
+    now = DateTime.utc_now()
+    from_time = now |> DateTime.add(-minutes_ago, :minute)
+    populate_feed_streams_range(feed, from_time, now)
+  end
+
+  def populate_feed_streams_range(feed, from_time, to_time) do
     if Application.get_env(:orcasite, :env) != :prod do
       # Get prod feed id for feed
       {:ok, feed_resp} = Orcasite.Radio.GraphqlClient.get_feed(feed.slug)
@@ -48,15 +54,12 @@ defmodule Orcasite.GlobalSetup do
           {:error, :feed_not_found}
 
         feed_id ->
-          now = DateTime.utc_now()
-          minutes_ago_datetime = now |> DateTime.add(-minutes_ago, :minute)
-
           # Get stream for the last `minutes` minutes
           {:ok, feed_streams_response} =
             Orcasite.Radio.GraphqlClient.get_feed_streams_with_segments(
               feed_id,
-              minutes_ago_datetime,
-              now
+              from_time,
+              to_time
             )
 
           feed_streams = get_in(feed_streams_response, ["data", "feedStreams", "results"])

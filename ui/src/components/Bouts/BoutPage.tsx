@@ -27,6 +27,8 @@ import {
   TableHead,
   TableRow,
   Tabs,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -78,6 +80,8 @@ export default function BoutPage({
   targetTime?: Date;
   bout?: BoutQuery["bout"];
 }) {
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const router = useRouter();
   const now = useMemo(() => new Date(), []);
   targetTime =
@@ -110,10 +114,13 @@ export default function BoutPage({
   );
 
   const timeBuffer = 15; // minutes
-  const targetTimePlusBuffer = roundToNearestMinutes(
-    min([now, max([targetTime, addMinutes(targetTime, timeBuffer)])]),
-    { roundingMethod: "ceil" },
-  );
+  const targetTimePlusBuffer = min([
+    now,
+    roundToNearestMinutes(
+      max([targetTime, addMinutes(targetTime, timeBuffer)]),
+      { roundingMethod: "ceil" },
+    ),
+  ]);
   const targetTimeMinusBuffer = roundToNearestMinutes(
     subMinutes(targetTime, timeBuffer),
     { roundingMethod: "floor" },
@@ -249,14 +256,26 @@ export default function BoutPage({
           </Typography>
           <Typography variant="h4">{feed.name}</Typography>
         </Box>
-        <Box ml="auto" mt="auto" display="flex">
+        <Box
+          display="flex"
+          sx={{
+            flexDirection: isDesktop ? "row" : "column",
+            marginTop: "auto",
+            marginLeft: "auto",
+          }}
+        >
           <Fade in={boutSaved}>
             <Alert severity="success" sx={{ mr: 2 }}>
               Bout saved
             </Alert>
           </Fade>
           {currentUser?.moderator && (
-            <Button variant="contained" size="large" onClick={saveBout}>
+            <Button
+              variant="contained"
+              size={isDesktop ? "large" : "small"}
+              onClick={saveBout}
+              sx={{ whiteSpace: "nowrap" }}
+            >
               {isNew ? "Create" : "Update"} bout
             </Button>
           )}
@@ -297,7 +316,14 @@ export default function BoutPage({
           spectrogramControls={spectrogramControls}
         ></SpectrogramTimeline>
 
-        <Box display="flex" sx={{ gap: 2 }}>
+        <Box
+          display="flex"
+          sx={{
+            gap: 2,
+            justifyContent: "center",
+          }}
+          flexWrap="wrap"
+        >
           <Box minWidth={130}>
             {feedStream && (
               <BoutPlayer
@@ -420,7 +446,7 @@ export default function BoutPage({
           </Box>
 
           {currentUser?.moderator && (
-            <Box display="flex" alignItems="center" ml="auto">
+            <Box display="flex" alignItems="center" ml={{ sm: 0, md: "auto" }}>
               <FormControl
                 sx={{ width: "100%" }}
                 {...(boutForm.errors.audioCategory ? { error: true } : {})}
@@ -466,7 +492,11 @@ export default function BoutPage({
             </Box>
           )}
           {!currentUser?.moderator && bout?.category && (
-            <Box display="flex" ml="auto" flexDirection="column">
+            <Box
+              display="flex"
+              ml={{ sm: 0, md: "auto" }}
+              flexDirection="column"
+            >
               <Typography variant="overline" textAlign="center">
                 Category
               </Typography>
