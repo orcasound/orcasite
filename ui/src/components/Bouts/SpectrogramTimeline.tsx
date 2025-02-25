@@ -155,6 +155,10 @@ export default function SpectrogramTimeline({
   const windowLockInterval = useRef<NodeJS.Timeout>();
 
   const pixelsPerMinute = PIXEL_ZOOM_FACTOR * zoomLevel;
+  const timelineWidth =
+    (differenceInMilliseconds(timelineEndTime, timelineStartTime) *
+      pixelsPerMinute) /
+    (60 * 1000);
   const goToTime = useCallback(
     (time: Date) => {
       centerWindow(
@@ -255,8 +259,10 @@ export default function SpectrogramTimeline({
       e.touches[0].pageX - spectrogramWindow.current.offsetLeft;
     const move = containerCursorX - windowStartX.current;
     const offset = windowScrollX.current - move;
-    spectrogramWindow.current.scrollLeft = offset;
     const windowWidth = spectrogramWindow.current.offsetWidth;
+    if (offset < 0) return;
+    if (offset + windowWidth > timelineWidth) return;
+    spectrogramWindow.current.scrollLeft = offset;
     const targetTime = offsetToTime(
       offset + windowWidth / 2,
       timelineStartTime,
@@ -301,8 +307,11 @@ export default function SpectrogramTimeline({
     const containerCursorX = e.pageX - spectrogramWindow.current.offsetLeft;
     const move = containerCursorX - windowStartX.current;
     const offset = windowScrollX.current - move;
-    spectrogramWindow.current.scrollLeft = offset;
     const windowWidth = spectrogramWindow.current.offsetWidth;
+    if (offset < 0) return;
+    if (offset + windowWidth > timelineWidth) return;
+
+    spectrogramWindow.current.scrollLeft = offset;
     const targetTime = offsetToTime(
       offset + windowWidth / 2,
       timelineStartTime,

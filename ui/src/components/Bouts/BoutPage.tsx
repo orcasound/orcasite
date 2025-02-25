@@ -102,9 +102,9 @@ export default function BoutPage({
     targetAudioCategory ?? bout?.category,
   );
 
-  const timeBuffer = 15; // minutes
+  const timeBuffer = 5; // minutes
   // Snap to nearest 15 minutes
-  const nearestMinutes = 15;
+  const nearestMinutes = 5;
   const [timelineStartTime, setTimelineStartTime] = useState<Date>(
     roundToNearest(
       subMinutes(targetTime, timeBuffer),
@@ -340,10 +340,10 @@ export default function BoutPage({
             >
               -{nearestMinutes} min
             </Button>
-            {format(timelineStartTime, "hh:mm:ss")}
+            {format(timelineStartTime, "hh:mm:ss a")}
           </Box>
           <Box>
-            {format(timelineEndTime, "hh:mm:ss")}
+            {format(timelineEndTime, "hh:mm:ss a")}
             <Button
               endIcon={<KeyboardDoubleArrowRight />}
               variant="outlined"
