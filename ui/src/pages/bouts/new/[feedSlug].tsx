@@ -14,11 +14,7 @@ const NewBoutPage: NextPageWithLayout = () => {
   const params = useParams<{ feedSlug?: string }>();
   const feedSlug = params?.feedSlug;
   const searchParams = useSearchParams();
-  const audioCategories: AudioCategory[] = [
-    "ANTHROPHONY",
-    "BIOPHONY",
-    "GEOPHONY",
-  ] as const;
+  const audioCategories = Object.values(AudioCategory);
   const categoryParam = searchParams.get("category");
   let targetAudioCategory;
   if (
