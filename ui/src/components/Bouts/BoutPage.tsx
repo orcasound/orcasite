@@ -97,10 +97,11 @@ export default function BoutPage({
     (bout?.endTime && new Date(bout.endTime)) ?? undefined,
   );
   const [currentTab, setCurrentTab] = useState(0);
-  const audioCategories: AudioCategory[] = useMemo(
-    () => ["ANTHROPHONY", "BIOPHONY", "GEOPHONY"],
-    [],
-  );
+  const audioCategories: AudioCategory[] = [
+    "ANTHROPHONY",
+    "BIOPHONY",
+    "GEOPHONY",
+  ] as const;
   const [audioCategory, setAudioCategory] = useState<AudioCategory | undefined>(
     targetAudioCategory ?? bout?.category,
   );

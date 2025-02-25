@@ -1,7 +1,6 @@
 import _ from "lodash";
 import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
 
 import BoutPage from "@/components/Bouts/BoutPage";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
@@ -15,10 +14,11 @@ const NewBoutPage: NextPageWithLayout = () => {
   const params = useParams<{ feedSlug?: string }>();
   const feedSlug = params?.feedSlug;
   const searchParams = useSearchParams();
-  const audioCategories: AudioCategory[] = useMemo(
-    () => ["ANTHROPHONY", "BIOPHONY", "GEOPHONY"],
-    [],
-  );
+  const audioCategories: AudioCategory[] = [
+    "ANTHROPHONY",
+    "BIOPHONY",
+    "GEOPHONY",
+  ] as const;
   const categoryParam = searchParams.get("category");
   let targetAudioCategory;
   if (
