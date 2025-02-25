@@ -345,13 +345,6 @@ export default function SpectrogramTimeline({
     }
   }, [handleMouseUp, handleMouseLeave]);
 
-  const imageTimes = feedSegments.flatMap(({ audioImages, startTime }) =>
-    (audioImages ?? []).length > 0 && startTime
-      ? [new Date(startTime).valueOf()]
-      : [],
-  );
-  const minAudioTime = new Date(Math.min(...imageTimes));
-  const maxAudioTime = new Date(Math.max(...imageTimes));
   return (
     <>
       <Box
