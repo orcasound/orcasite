@@ -37,8 +37,13 @@ export type Scalars = {
   Json: { input: { [key: string]: any }; output: { [key: string]: any } };
 };
 
-export type AudioCategory = "ANTHROPHONY" | "BIOPHONY" | "GEOPHONY";
+export const AudioCategory = {
+  Anthrophony: "ANTHROPHONY",
+  Biophony: "BIOPHONY",
+  Geophony: "GEOPHONY",
+} as const;
 
+export type AudioCategory = (typeof AudioCategory)[keyof typeof AudioCategory];
 export type AudioImage = {
   __typename?: "AudioImage";
   audioImageFeedSegments: Array<AudioImageFeedSegment>;
@@ -118,11 +123,14 @@ export type AudioImageFeedSegmentFilterInput = {
   or?: InputMaybe<Array<AudioImageFeedSegmentFilterInput>>;
 };
 
-export type AudioImageFeedSegmentSortField =
-  | "AUDIO_IMAGE_ID"
-  | "FEED_SEGMENT_ID"
-  | "ID";
+export const AudioImageFeedSegmentSortField = {
+  AudioImageId: "AUDIO_IMAGE_ID",
+  FeedSegmentId: "FEED_SEGMENT_ID",
+  Id: "ID",
+} as const;
 
+export type AudioImageFeedSegmentSortField =
+  (typeof AudioImageFeedSegmentSortField)[keyof typeof AudioImageFeedSegmentSortField];
 export type AudioImageFeedSegmentSortInput = {
   field: AudioImageFeedSegmentSortField;
   order?: InputMaybe<SortOrder>;
@@ -269,19 +277,22 @@ export type AudioImageFilterStatus = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-export type AudioImageSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "END_TIME"
-  | "FEED_ID"
-  | "ID"
-  | "IMAGE_SIZE"
-  | "IMAGE_TYPE"
-  | "OBJECT_PATH"
-  | "PARAMETERS"
-  | "START_TIME"
-  | "STATUS";
+export const AudioImageSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  ImageSize: "IMAGE_SIZE",
+  ImageType: "IMAGE_TYPE",
+  ObjectPath: "OBJECT_PATH",
+  Parameters: "PARAMETERS",
+  StartTime: "START_TIME",
+  Status: "STATUS",
+} as const;
 
+export type AudioImageSortField =
+  (typeof AudioImageSortField)[keyof typeof AudioImageSortField];
 export type AudioImageSortInput = {
   field: AudioImageSortField;
   order?: InputMaybe<SortOrder>;
@@ -330,8 +341,12 @@ export type BoutFeedStreamFilterInput = {
   or?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
 };
 
-export type BoutFeedStreamSortField = "ID";
+export const BoutFeedStreamSortField = {
+  Id: "ID",
+} as const;
 
+export type BoutFeedStreamSortField =
+  (typeof BoutFeedStreamSortField)[keyof typeof BoutFeedStreamSortField];
 export type BoutFeedStreamSortInput = {
   field: BoutFeedStreamSortField;
   order?: InputMaybe<SortOrder>;
@@ -403,14 +418,16 @@ export type BoutFilterStartTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export type BoutSortField =
-  | "CATEGORY"
-  | "DURATION"
-  | "END_TIME"
-  | "FEED_ID"
-  | "ID"
-  | "START_TIME";
+export const BoutSortField = {
+  Category: "CATEGORY",
+  Duration: "DURATION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  StartTime: "START_TIME",
+} as const;
 
+export type BoutSortField = (typeof BoutSortField)[keyof typeof BoutSortField];
 export type BoutSortInput = {
   field: BoutSortField;
   order?: InputMaybe<SortOrder>;
@@ -536,15 +553,18 @@ export type CandidateFilterVisible = {
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-export type CandidateSortField =
-  | "CATEGORY"
-  | "DETECTION_COUNT"
-  | "FEED_ID"
-  | "ID"
-  | "MAX_TIME"
-  | "MIN_TIME"
-  | "VISIBLE";
+export const CandidateSortField = {
+  Category: "CATEGORY",
+  DetectionCount: "DETECTION_COUNT",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  MaxTime: "MAX_TIME",
+  MinTime: "MIN_TIME",
+  Visible: "VISIBLE",
+} as const;
 
+export type CandidateSortField =
+  (typeof CandidateSortField)[keyof typeof CandidateSortField];
 export type CandidateSortInput = {
   field: CandidateSortField;
   order?: InputMaybe<SortOrder>;
@@ -583,8 +603,14 @@ export type Detection = {
   visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
-export type DetectionCategory = "OTHER" | "VESSEL" | "WHALE";
+export const DetectionCategory = {
+  Other: "OTHER",
+  Vessel: "VESSEL",
+  Whale: "WHALE",
+} as const;
 
+export type DetectionCategory =
+  (typeof DetectionCategory)[keyof typeof DetectionCategory];
 export type DetectionFilterCandidateId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
@@ -708,19 +734,22 @@ export type DetectionFilterVisible = {
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-export type DetectionSortField =
-  | "CANDIDATE_ID"
-  | "CATEGORY"
-  | "DESCRIPTION"
-  | "FEED_ID"
-  | "ID"
-  | "LISTENER_COUNT"
-  | "PLAYER_OFFSET"
-  | "PLAYLIST_TIMESTAMP"
-  | "SOURCE_IP"
-  | "TIMESTAMP"
-  | "VISIBLE";
+export const DetectionSortField = {
+  CandidateId: "CANDIDATE_ID",
+  Category: "CATEGORY",
+  Description: "DESCRIPTION",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  ListenerCount: "LISTENER_COUNT",
+  PlayerOffset: "PLAYER_OFFSET",
+  PlaylistTimestamp: "PLAYLIST_TIMESTAMP",
+  SourceIp: "SOURCE_IP",
+  Timestamp: "TIMESTAMP",
+  Visible: "VISIBLE",
+} as const;
 
+export type DetectionSortField =
+  (typeof DetectionSortField)[keyof typeof DetectionSortField];
 export type DetectionSortInput = {
   field: DetectionSortField;
   order?: InputMaybe<SortOrder>;
@@ -1182,43 +1211,48 @@ export type FeedSegmentFilterStartTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export type FeedSegmentSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "CLOUDFRONT_URL"
-  | "DURATION"
-  | "END_TIME"
-  | "FEED_ID"
-  | "FEED_STREAM_ID"
-  | "FILE_NAME"
-  | "ID"
-  | "PLAYLIST_M3U8_PATH"
-  | "PLAYLIST_PATH"
-  | "PLAYLIST_TIMESTAMP"
-  | "SEGMENT_PATH"
-  | "START_TIME";
+export const FeedSegmentSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  CloudfrontUrl: "CLOUDFRONT_URL",
+  Duration: "DURATION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  FeedStreamId: "FEED_STREAM_ID",
+  FileName: "FILE_NAME",
+  Id: "ID",
+  PlaylistM3U8Path: "PLAYLIST_M3U8_PATH",
+  PlaylistPath: "PLAYLIST_PATH",
+  PlaylistTimestamp: "PLAYLIST_TIMESTAMP",
+  SegmentPath: "SEGMENT_PATH",
+  StartTime: "START_TIME",
+} as const;
 
+export type FeedSegmentSortField =
+  (typeof FeedSegmentSortField)[keyof typeof FeedSegmentSortField];
 export type FeedSegmentSortInput = {
   field: FeedSegmentSortField;
   order?: InputMaybe<SortOrder>;
 };
 
-export type FeedSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "CLOUDFRONT_URL"
-  | "DATAPLICITY_ID"
-  | "ID"
-  | "IMAGE_URL"
-  | "INTRO_HTML"
-  | "LOCATION_POINT"
-  | "NAME"
-  | "NODE_NAME"
-  | "ONLINE"
-  | "ORCAHELLO_ID"
-  | "SLUG"
-  | "VISIBLE";
+export const FeedSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  CloudfrontUrl: "CLOUDFRONT_URL",
+  DataplicityId: "DATAPLICITY_ID",
+  Id: "ID",
+  ImageUrl: "IMAGE_URL",
+  IntroHtml: "INTRO_HTML",
+  LocationPoint: "LOCATION_POINT",
+  Name: "NAME",
+  NodeName: "NODE_NAME",
+  Online: "ONLINE",
+  OrcahelloId: "ORCAHELLO_ID",
+  Slug: "SLUG",
+  Visible: "VISIBLE",
+} as const;
 
+export type FeedSortField = (typeof FeedSortField)[keyof typeof FeedSortField];
 export type FeedSortInput = {
   field: FeedSortField;
   order?: InputMaybe<SortOrder>;
@@ -1426,21 +1460,24 @@ export type FeedStreamFilterStartTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export type FeedStreamSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "CLOUDFRONT_URL"
-  | "DURATION"
-  | "END_TIME"
-  | "FEED_ID"
-  | "ID"
-  | "NEXT_FEED_STREAM_ID"
-  | "PLAYLIST_M3U8_PATH"
-  | "PLAYLIST_PATH"
-  | "PLAYLIST_TIMESTAMP"
-  | "PREV_FEED_STREAM_ID"
-  | "START_TIME";
+export const FeedStreamSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  CloudfrontUrl: "CLOUDFRONT_URL",
+  Duration: "DURATION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  NextFeedStreamId: "NEXT_FEED_STREAM_ID",
+  PlaylistM3U8Path: "PLAYLIST_M3U8_PATH",
+  PlaylistPath: "PLAYLIST_PATH",
+  PlaylistTimestamp: "PLAYLIST_TIMESTAMP",
+  PrevFeedStreamId: "PREV_FEED_STREAM_ID",
+  StartTime: "START_TIME",
+} as const;
 
+export type FeedStreamSortField =
+  (typeof FeedStreamSortField)[keyof typeof FeedStreamSortField];
 export type FeedStreamSortInput = {
   field: FeedStreamSortField;
   order?: InputMaybe<SortOrder>;
@@ -1460,8 +1497,11 @@ export type GenerateFeedSpectrogramResult = {
   result?: Maybe<Feed>;
 };
 
-export type ImageType = "SPECTROGRAM";
+export const ImageType = {
+  Spectrogram: "SPECTROGRAM",
+} as const;
 
+export type ImageType = (typeof ImageType)[keyof typeof ImageType];
 export type LatLng = {
   __typename?: "LatLng";
   lat: Scalars["Float"]["output"];
@@ -1501,8 +1541,13 @@ export type Notification = {
   targetCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
-export type NotificationEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
+export const NotificationEventType = {
+  ConfirmedCandidate: "CONFIRMED_CANDIDATE",
+  NewDetection: "NEW_DETECTION",
+} as const;
 
+export type NotificationEventType =
+  (typeof NotificationEventType)[keyof typeof NotificationEventType];
 export type NotificationFilterActive = {
   eq?: InputMaybe<Scalars["Boolean"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
@@ -1617,17 +1662,20 @@ export type NotificationFilterTargetCount = {
   notEq?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type NotificationSortField =
-  | "ACTIVE"
-  | "EVENT_TYPE"
-  | "FINISHED"
-  | "ID"
-  | "INSERTED_AT"
-  | "NOTIFIED_COUNT"
-  | "NOTIFIED_COUNT_UPDATED_AT"
-  | "PROGRESS"
-  | "TARGET_COUNT";
+export const NotificationSortField = {
+  Active: "ACTIVE",
+  EventType: "EVENT_TYPE",
+  Finished: "FINISHED",
+  Id: "ID",
+  InsertedAt: "INSERTED_AT",
+  NotifiedCount: "NOTIFIED_COUNT",
+  NotifiedCountUpdatedAt: "NOTIFIED_COUNT_UPDATED_AT",
+  Progress: "PROGRESS",
+  TargetCount: "TARGET_COUNT",
+} as const;
 
+export type NotificationSortField =
+  (typeof NotificationSortField)[keyof typeof NotificationSortField];
 export type NotificationSortInput = {
   field: NotificationSortField;
   order?: InputMaybe<SortOrder>;
@@ -1955,14 +2003,16 @@ export type SignInWithPasswordResult = {
   user?: Maybe<User>;
 };
 
-export type SortOrder =
-  | "ASC"
-  | "ASC_NULLS_FIRST"
-  | "ASC_NULLS_LAST"
-  | "DESC"
-  | "DESC_NULLS_FIRST"
-  | "DESC_NULLS_LAST";
+export const SortOrder = {
+  Asc: "ASC",
+  AscNullsFirst: "ASC_NULLS_FIRST",
+  AscNullsLast: "ASC_NULLS_LAST",
+  Desc: "DESC",
+  DescNullsFirst: "DESC_NULLS_FIRST",
+  DescNullsLast: "DESC_NULLS_LAST",
+} as const;
 
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 export type SubmitDetectionInput = {
   category: DetectionCategory;
   description?: InputMaybe<Scalars["String"]["input"]>;
@@ -3878,7 +3928,7 @@ export const ListFeedStreamsDocument = `
       ...FeedStreamParts
       feedSegments(
         filter: {and: [{startTime: {lessThanOrEqual: $toDateTime}}, {startTime: {greaterThanOrEqual: $dayBeforeFromDateTime}}], endTime: {greaterThanOrEqual: $fromDateTime}}
-        sort: {field: START_TIME, order: DESC}
+        sort: {field: START_TIME, order: ASC}
       ) {
         ...FeedSegmentParts
         audioImages(filter: {status: {eq: "complete"}}) {
