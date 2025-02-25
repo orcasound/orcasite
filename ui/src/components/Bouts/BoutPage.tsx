@@ -2,6 +2,8 @@ import {
   ArrowRight,
   Clear,
   GraphicEq,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
   Launch,
   Notifications,
   Start,
@@ -32,15 +34,7 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import {
-  addMinutes,
-  format,
-  max,
-  min,
-  roundToNearestMinutes,
-  subDays,
-  subMinutes,
-} from "date-fns";
+import { addMinutes, format, max, min, subDays, subMinutes } from "date-fns";
 import _ from "lodash";
 import Image from "next/legacy/image";
 import { useRouter } from "next/router";
@@ -63,9 +57,7 @@ import {
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
-import { formatTimestamp } from "@/utils/time";
-
-const log = _.throttle(console.log, 5000);
+import { formatTimestamp, roundToNearest } from "@/utils/time";
 
 export default function BoutPage({
   isNew,
@@ -114,27 +106,62 @@ export default function BoutPage({
   );
 
   const timeBuffer = 15; // minutes
-  const targetTimePlusBuffer = min([
-    now,
-    roundToNearestMinutes(
-      max([targetTime, addMinutes(targetTime, timeBuffer)]),
-      { roundingMethod: "ceil" },
+  // Snap to nearest 15 minutes
+  const nearestMinutes = 15;
+  const [timelineStartTime, setTimelineStartTime] = useState<Date>(
+    roundToNearest(
+      subMinutes(targetTime, timeBuffer),
+      nearestMinutes * 60 * 1000,
+      "floor",
     ),
-  ]);
-  const targetTimeMinusBuffer = roundToNearestMinutes(
-    subMinutes(targetTime, timeBuffer),
-    { roundingMethod: "floor" },
   );
-  const targetTimeMinusADay = subDays(targetTime, 1);
+  const [timelineEndTime, setTimelineEndTime] = useState<Date>(
+    min([
+      now,
+      roundToNearest(
+        max([targetTime, addMinutes(targetTime, timeBuffer)]),
+        nearestMinutes * 60 * 1000,
+        "ceil",
+      ),
+    ]),
+  );
+
+  const expandTimelineStart = useCallback(() => {
+    setTimelineStartTime((timelineStartTime) =>
+      roundToNearest(
+        subMinutes(timelineStartTime, timeBuffer),
+        nearestMinutes,
+        "floor",
+      ),
+    );
+  }, [nearestMinutes]);
+
+  const expandTimelineEnd = useCallback(
+    (currentTime: Date) => {
+      setTimelineEndTime((timelineEndTime) =>
+        min([
+          currentTime,
+          roundToNearest(
+            addMinutes(timelineEndTime, timeBuffer),
+            nearestMinutes,
+            "ceil",
+          ),
+        ]),
+      );
+    },
+    [nearestMinutes],
+  );
+
+  const timelineStartTimeMinusADay = subDays(timelineStartTime, 1);
   // If feed is present, and there's no pre-set time,
   // get latest stream and last <timeBuffer> minutes of segments.
   // Set time to end of last segment
   const feedStreamQueryResult = useListFeedStreamsQuery(
     {
       feedId: feed?.id,
-      fromDateTime: targetTimeMinusBuffer,
-      toDateTime: targetTimePlusBuffer,
-      dayBeforeFromDateTime: targetTimeMinusADay,
+      fromDateTime: timelineStartTime,
+      toDateTime: timelineEndTime,
+      dayBeforeFromDateTime: timelineStartTimeMinusADay,
     },
     { enabled: !!feed?.id },
   );
@@ -248,7 +275,7 @@ export default function BoutPage({
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        m={2}
+        my={2}
       >
         <Box>
           <Typography variant="overline" sx={{ fontSize: 18 }}>
@@ -303,10 +330,40 @@ export default function BoutPage({
         ))}
       </Box>
       <Box display="flex" flexDirection="column" gap={2}>
+        <Box display="flex" justifyContent="space-between">
+          <Box>
+            <Button
+              startIcon={<KeyboardDoubleArrowLeft />}
+              variant="outlined"
+              onClick={() => expandTimelineStart()}
+              color="secondary"
+              title="Expand start time"
+              size="small"
+              sx={{ mr: 1 }}
+            >
+              -{nearestMinutes} min
+            </Button>
+            {format(timelineStartTime, "hh:mm:ss")}
+          </Box>
+          <Box>
+            {format(timelineEndTime, "hh:mm:ss")}
+            <Button
+              endIcon={<KeyboardDoubleArrowRight />}
+              variant="outlined"
+              onClick={() => expandTimelineEnd(new Date())}
+              color="secondary"
+              title="Expand end time"
+              size="small"
+              sx={{ ml: 1 }}
+            >
+              +{nearestMinutes} min
+            </Button>
+          </Box>
+        </Box>
         <SpectrogramTimeline
           playerTimeRef={playerTime}
-          timelineStartTime={targetTimeMinusBuffer}
-          timelineEndTime={targetTimePlusBuffer}
+          timelineStartTime={timelineStartTime}
+          timelineEndTime={timelineEndTime}
           playerControls={playerControls}
           feedSegments={feedSegments}
           boutStartTime={boutStartTime}
@@ -341,11 +398,11 @@ export default function BoutPage({
               <Typography variant="overline">Zoom</Typography>
             </Box>
             <Box>
-              <IconButton onClick={spectrogramControls.current?.zoomIn}>
-                <ZoomIn />
-              </IconButton>
               <IconButton onClick={spectrogramControls.current?.zoomOut}>
                 <ZoomOut />
+              </IconButton>
+              <IconButton onClick={spectrogramControls.current?.zoomIn}>
+                <ZoomIn />
               </IconButton>
             </Box>
           </Box>

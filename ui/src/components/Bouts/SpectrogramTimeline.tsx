@@ -129,10 +129,12 @@ export default function SpectrogramTimeline({
   const [zoomLevel, setZoomLevel] = useState<number>(8);
   const [windowStartTime, setWindowStartTimeUnthrottled] = useState<Date>();
   const [windowEndTime, setWindowEndTimeUnthrottled] = useState<Date>();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const setWindowStartTime = useCallback(
     _.throttle(setWindowStartTimeUnthrottled, 500, { trailing: false }),
     [],
   );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const setWindowEndTime = useCallback(
     _.throttle(setWindowEndTimeUnthrottled, 500, { trailing: false }),
     [],
@@ -334,6 +336,13 @@ export default function SpectrogramTimeline({
     }
   }, [handleMouseUp, handleMouseLeave]);
 
+  const imageTimes = feedSegments.flatMap(({ audioImages, startTime }) =>
+    (audioImages ?? []).length > 0 && startTime
+      ? [new Date(startTime).valueOf()]
+      : [],
+  );
+  const minAudioTime = new Date(Math.min(...imageTimes));
+  const maxAudioTime = new Date(Math.max(...imageTimes));
   return (
     <>
       <Box
@@ -406,7 +415,6 @@ export default function SpectrogramTimeline({
         {windowStartTime && windowEndTime && (
           <TimelineTickerLayer
             timelineStartTime={timelineStartTime}
-            timelineEndTime={timelineEndTime}
             windowStartTime={windowStartTime}
             windowEndTime={windowEndTime}
             pixelsPerMinute={pixelsPerMinute}
