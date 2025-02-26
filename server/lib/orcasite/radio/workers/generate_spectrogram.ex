@@ -17,7 +17,7 @@ defmodule Orcasite.Radio.Workers.GenerateSpectrogram do
 
     audio_image
     |> Ash.Changeset.for_update(:generate_spectrogram)
-    |> Ash.update(authorize?: false)
+    |> Ash.update(authorize?: false, timeout: :timer.minutes(3))
     |> case do
       {:ok, %{status: :complete}} -> :ok
       {:ok, %{last_error: error}} -> {:error, {:not_complete, error}}

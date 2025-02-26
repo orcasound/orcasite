@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { differenceInSeconds } from "date-fns";
+import { differenceInSeconds, format } from "date-fns";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useRef, useState } from "react";
 
@@ -230,7 +230,7 @@ export function BoutPlayer({
           </Box>
           <Typography variant="body1" fontWeight={"bold"}>
             {playerDateTime !== undefined &&
-              playerDateTime.toLocaleTimeString()}
+              format(playerDateTime, "h:mm:ss a O")}
           </Typography>
           <Typography variant="subtitle2">
             {playerDateTime !== undefined &&

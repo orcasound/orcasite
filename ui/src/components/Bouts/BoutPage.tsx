@@ -103,7 +103,7 @@ export default function BoutPage({
   );
 
   const timeBuffer = 5; // minutes
-  // Snap to nearest 15 minutes
+  // Snap to nearest 5 minutes
   const nearestMinutes = 5;
   const [timelineStartTime, setTimelineStartTime] = useState<Date>(
     roundToNearest(
@@ -340,10 +340,10 @@ export default function BoutPage({
             >
               -{nearestMinutes} min
             </Button>
-            {format(timelineStartTime, "hh:mm:ss a")}
+            {format(timelineStartTime, "h:mm:ss a")}
           </Box>
           <Box>
-            {format(timelineEndTime, "hh:mm:ss a")}
+            {format(timelineEndTime, "h:mm:ss a")}
             <Button
               endIcon={<KeyboardDoubleArrowRight />}
               variant="outlined"
@@ -442,7 +442,7 @@ export default function BoutPage({
                   color="secondary"
                   title="Go to bout start"
                 >
-                  {format(boutStartTime, "hh:mm:ss")}
+                  {format(boutStartTime, "h:mm:ss")}
                 </Button>
                 {isNew && (
                   <IconButton
@@ -486,7 +486,7 @@ export default function BoutPage({
                   color="secondary"
                   title="Go to bout end"
                 >
-                  {format(boutEndTime, "hh:mm:ss")}
+                  {format(boutEndTime, "h:mm:ss")}
                 </Button>
                 <IconButton
                   onClick={() => setBoutEndTime(undefined)}
@@ -616,8 +616,8 @@ export default function BoutPage({
                       <TableCell colSpan={5}>
                         <Typography textAlign="center">
                           No detections submitted from{" "}
-                          {format(minDetectionsTime, "hh:mm")} to{" "}
-                          {format(maxDetectionsTime, "hh:mm")}
+                          {format(minDetectionsTime, "h:mm a")} to{" "}
+                          {format(maxDetectionsTime, "h:mm a")}
                         </Typography>
                       </TableCell>
                     </TableRow>
