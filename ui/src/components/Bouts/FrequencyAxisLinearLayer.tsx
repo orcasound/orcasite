@@ -4,46 +4,35 @@ import { Fragment } from "react";
 
 import { TICKER_HEIGHT } from "./SpectrogramTimeline";
 
-type Scaling = "linear" | "logarithmic";
-
 const MAX_TICK_WIDTH = 0.3;
 
-export function FrequencyAxisLayer({
-  scaling,
+export function FrequencyAxisLinearLayer({
   minFrequency,
   maxFrequency,
   zIndex,
 }: {
-  scaling: Scaling;
   minFrequency: number;
   maxFrequency: number;
   zIndex: number;
 }) {
-  const adjustedMinFrequency = Math.max(1, minFrequency);
   const maxScale = Math.ceil(Math.log10(maxFrequency));
-  const minScale = Math.floor(Math.log10(adjustedMinFrequency));
-  const ticks = _.range(minScale, maxScale).flatMap((scale) => {
-    return _.range(
-      Math.pow(10, scale),
-      Math.pow(10, scale + 1),
-      Math.pow(10, scale),
-    )
-      .map((frequency) => {
-        const bottom = `${(100 * (Math.log10(frequency) - Math.log10(adjustedMinFrequency))) / (Math.log10(maxFrequency) - Math.log10(adjustedMinFrequency))}%`;
-        const minWidth = 0.2;
-        const isMajor = frequency === Math.pow(10, scale);
-        const widthFactor = isMajor
-          ? 1
-          : (1 - minWidth) * (frequency / Math.pow(10, scale + 1)) + minWidth;
+  const minScale = maxScale - 2;
 
-        return { frequency, bottom, widthFactor, isMajor };
-      })
-      .filter(
-        ({ frequency }) =>
-          frequency >= adjustedMinFrequency && frequency <= maxFrequency,
-      );
-  });
+  const minTick =
+    Math.floor(minFrequency / Math.pow(10, minScale)) * Math.pow(10, minScale);
+  const maxTick =
+    Math.ceil(maxFrequency / Math.pow(10, minScale)) * Math.pow(10, minScale);
 
+  const ticks = _.range(minTick, maxTick, Math.pow(10, minScale))
+    .map((frequency) => {
+      const bottom = `${(100 * frequency) / maxTick}%`;
+      const minWidth = 0.2;
+      const isMajor = frequency % Math.pow(10, minScale) === 0;
+      const widthFactor = isMajor ? 1 : 1 - minWidth;
+
+      return { frequency, bottom, widthFactor, isMajor };
+    })
+    .filter(({ frequency }) => frequency > minTick && frequency <= maxTick);
   return (
     <Box
       data-component="freq"
@@ -65,7 +54,7 @@ export function FrequencyAxisLayer({
       >
         <Typography
           fontSize={10}
-          sx={{ marginLeft: "5px", position: "absolute", top: 0 }}
+          sx={{ position: "absolute", top: 0, right: "3px" }}
         >
           Hz
         </Typography>

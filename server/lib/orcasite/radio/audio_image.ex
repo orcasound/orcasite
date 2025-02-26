@@ -195,11 +195,12 @@ defmodule Orcasite.Radio.AudioImage do
                }
                |> Orcasite.Radio.AwsClient.generate_spectrogram()
                |> case do
-                 {:ok, %{file_size: image_size}} ->
+                 {:ok, %{file_size: image_size} = resp} ->
                    image
                    |> Ash.Changeset.for_update(:update, %{
                      status: :complete,
-                     image_size: image_size
+                     image_size: image_size,
+                     parameters: Map.get(resp, :parameters, %{})
                    })
                    |> Ash.Changeset.force_change_attribute(:last_error, nil)
                    |> Ash.update(authorize?: false)

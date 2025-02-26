@@ -17,7 +17,7 @@ import { AudioImage, FeedSegment } from "@/graphql/generated";
 import { PlayerControls } from "../Player/BoutPlayer";
 import { BaseAudioWidthLayer } from "./BaseAudioWidthLayer";
 import { FeedSegmentsLayer } from "./FeedSegmentsLayer";
-import { FrequencyAxisLayer } from "./FrequencyAxisLayer";
+import { FrequencyAxisLinearLayer } from "./FrequencyAxisLinearLayer";
 import { TimelineMarker } from "./TimelineMarker";
 import { TimelineTickerLayer } from "./TimelineTickerLayer";
 
@@ -407,10 +407,9 @@ export default function SpectrogramTimeline({
           />
         )}
 
-        <FrequencyAxisLayer
+        <FrequencyAxisLinearLayer
           minFrequency={1}
-          maxFrequency={48000}
-          scaling="logarithmic"
+          maxFrequency={15000}
           zIndex={3}
         />
 
