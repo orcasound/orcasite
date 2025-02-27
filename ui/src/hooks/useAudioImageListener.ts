@@ -1,5 +1,5 @@
 import { Channel } from "phoenix";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { AudioImage } from "@/graphql/generated";
 import socket from "@/utils/socket";
@@ -7,11 +7,10 @@ import socket from "@/utils/socket";
 /**
  * Listens for audio image updates for a given feed (e.g. spectrogram generation)
  */
-export default function useAudioImageListener(feedSlug?: string) {
-  const [audioImages, setAudioImages] = useState<Record<string, AudioImage>>(
-    {},
-  );
-
+function useAudioImageListener(
+  feedSlug: string,
+  callback: (audioImage: AudioImage) => void,
+) {
   useEffect(() => {
     let channel: Channel | undefined;
 
@@ -19,8 +18,8 @@ export default function useAudioImageListener(feedSlug?: string) {
       const newChannel = socket.channel(`audio_images:${feedSlug}`, {});
       channel = newChannel;
 
-      channel.on("audio_image_update", (payload) => {
-        setAudioImages({ ...audioImages, [payload.id]: payload });
+      channel.on("audio_image_update", (payload: AudioImage) => {
+        callback(payload);
       });
 
       newChannel.join();
@@ -29,7 +28,7 @@ export default function useAudioImageListener(feedSlug?: string) {
     return () => {
       channel?.leave();
     };
-  }, [feedSlug]);
+  }, [feedSlug, callback]);
 
-  return audioImages;
+  return;
 }

@@ -1,0 +1,23 @@
+query audioImages(
+  $feedId: String!
+  $startTime: DateTime!
+  $endTime: DateTime!
+  $limit: Int = 1000
+  $offset: Int = 0
+) {
+  audioImages(
+    feedId: $feedId
+    filter: {
+      startTime: { lessThanOrEqual: $endTime }
+      endTime: { greaterThanOrEqual: $startTime }
+      status: { notEq: "FAILED" }
+    }
+    limit: $limit
+    offset: $offset
+  ) {
+    hasNextPage
+    results {
+      ...AudioImageParts
+    }
+  }
+}

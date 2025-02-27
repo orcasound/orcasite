@@ -1483,14 +1483,14 @@ export type FeedStreamSortInput = {
   order?: InputMaybe<SortOrder>;
 };
 
-export type GenerateFeedSpectrogramInput = {
+export type GenerateFeedSpectrogramsInput = {
   endTime: Scalars["DateTime"]["input"];
   startTime: Scalars["DateTime"]["input"];
 };
 
-/** The result of the :generate_feed_spectrogram mutation */
-export type GenerateFeedSpectrogramResult = {
-  __typename?: "GenerateFeedSpectrogramResult";
+/** The result of the :generate_feed_spectrograms mutation */
+export type GenerateFeedSpectrogramsResult = {
+  __typename?: "GenerateFeedSpectrogramsResult";
   /** Any errors generated, if the mutation failed */
   errors: Array<MutationError>;
   /** The successful result of the mutation */
@@ -1814,7 +1814,7 @@ export type RootMutationType = {
   cancelCandidateNotifications: CancelCandidateNotificationsResult;
   cancelNotification: CancelNotificationResult;
   createBout: CreateBoutResult;
-  generateFeedSpectrogram: GenerateFeedSpectrogramResult;
+  generateFeedSpectrograms: GenerateFeedSpectrogramsResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
   notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
   /** Register a new user with a username and password. */
@@ -1841,9 +1841,9 @@ export type RootMutationTypeCreateBoutArgs = {
   input: CreateBoutInput;
 };
 
-export type RootMutationTypeGenerateFeedSpectrogramArgs = {
+export type RootMutationTypeGenerateFeedSpectrogramsArgs = {
   id: Scalars["ID"]["input"];
-  input: GenerateFeedSpectrogramInput;
+  input: GenerateFeedSpectrogramsInput;
 };
 
 export type RootMutationTypeNotifyConfirmedCandidateArgs = {
@@ -2177,6 +2177,15 @@ export type BoutPartsFragment = {
   startTime: Date;
 };
 
+export type ErrorPartsFragment = {
+  __typename?: "MutationError";
+  code?: string | null;
+  fields?: Array<string> | null;
+  message?: string | null;
+  shortMessage?: string | null;
+  vars?: { [key: string]: any } | null;
+};
+
 export type FeedPartsFragment = {
   __typename?: "Feed";
   id: string;
@@ -2289,6 +2298,40 @@ export type CreateBoutMutation = {
       duration?: number | null;
       endTime?: Date | null;
       startTime: Date;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type GenerateFeedSpectrogramsMutationVariables = Exact<{
+  feedId: Scalars["ID"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime: Scalars["DateTime"]["input"];
+}>;
+
+export type GenerateFeedSpectrogramsMutation = {
+  __typename?: "RootMutationType";
+  generateFeedSpectrograms: {
+    __typename?: "GenerateFeedSpectrogramsResult";
+    result?: {
+      __typename?: "Feed";
+      id: string;
+      name: string;
+      slug: string;
+      nodeName: string;
+      introHtml?: string | null;
+      thumbUrl?: string | null;
+      imageUrl?: string | null;
+      mapUrl?: string | null;
+      bucket: string;
+      latLng: { __typename?: "LatLng"; lat: number; lng: number };
     } | null;
     errors: Array<{
       __typename?: "MutationError";
@@ -2641,6 +2684,35 @@ export type NotificationsForCandidateQuery = {
   }>;
 };
 
+export type AudioImagesQueryVariables = Exact<{
+  feedId: Scalars["String"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime: Scalars["DateTime"]["input"];
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
+
+export type AudioImagesQuery = {
+  __typename?: "RootQueryType";
+  audioImages?: {
+    __typename?: "PageOfAudioImage";
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "AudioImage";
+      id: string;
+      startTime: Date;
+      endTime: Date;
+      status: string;
+      objectPath?: string | null;
+      bucket?: string | null;
+      bucketRegion?: string | null;
+      feedId: string;
+      imageSize?: number | null;
+      imageType?: ImageType | null;
+    }> | null;
+  } | null;
+};
+
 export type CandidatesQueryVariables = Exact<{
   filter?: InputMaybe<CandidateFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -2819,6 +2891,15 @@ export const BoutPartsFragmentDoc = `
   endTime
   startTime
   endTime
+}
+    `;
+export const ErrorPartsFragmentDoc = `
+    fragment ErrorParts on MutationError {
+  code
+  fields
+  message
+  shortMessage
+  vars
 }
     `;
 export const FeedPartsFragmentDoc = `
@@ -3042,6 +3123,61 @@ useCreateBoutMutation.fetcher = (
     variables,
     options,
   );
+
+export const GenerateFeedSpectrogramsDocument = `
+    mutation generateFeedSpectrograms($feedId: ID!, $startTime: DateTime!, $endTime: DateTime!) {
+  generateFeedSpectrograms(
+    id: $feedId
+    input: {startTime: $startTime, endTime: $endTime}
+  ) {
+    result {
+      ...FeedParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
+    ${FeedPartsFragmentDoc}
+${ErrorPartsFragmentDoc}`;
+
+export const useGenerateFeedSpectrogramsMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    GenerateFeedSpectrogramsMutation,
+    TError,
+    GenerateFeedSpectrogramsMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    GenerateFeedSpectrogramsMutation,
+    TError,
+    GenerateFeedSpectrogramsMutationVariables,
+    TContext
+  >({
+    mutationKey: ["generateFeedSpectrograms"],
+    mutationFn: (variables?: GenerateFeedSpectrogramsMutationVariables) =>
+      fetcher<
+        GenerateFeedSpectrogramsMutation,
+        GenerateFeedSpectrogramsMutationVariables
+      >(GenerateFeedSpectrogramsDocument, variables)(),
+    ...options,
+  });
+};
+
+useGenerateFeedSpectrogramsMutation.getKey = () => ["generateFeedSpectrograms"];
+
+useGenerateFeedSpectrogramsMutation.fetcher = (
+  variables: GenerateFeedSpectrogramsMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    GenerateFeedSpectrogramsMutation,
+    GenerateFeedSpectrogramsMutationVariables
+  >(GenerateFeedSpectrogramsDocument, variables, options);
 
 export const NotifyConfirmedCandidateDocument = `
     mutation notifyConfirmedCandidate($candidateId: String!, $message: String!) {
@@ -3782,6 +3918,58 @@ useNotificationsForCandidateQuery.fetcher = (
     NotificationsForCandidateQuery,
     NotificationsForCandidateQueryVariables
   >(NotificationsForCandidateDocument, variables, options);
+
+export const AudioImagesDocument = `
+    query audioImages($feedId: String!, $startTime: DateTime!, $endTime: DateTime!, $limit: Int = 1000, $offset: Int = 0) {
+  audioImages(
+    feedId: $feedId
+    filter: {startTime: {lessThanOrEqual: $endTime}, endTime: {greaterThanOrEqual: $startTime}, status: {notEq: "FAILED"}}
+    limit: $limit
+    offset: $offset
+  ) {
+    hasNextPage
+    results {
+      ...AudioImageParts
+    }
+  }
+}
+    ${AudioImagePartsFragmentDoc}`;
+
+export const useAudioImagesQuery = <TData = AudioImagesQuery, TError = unknown>(
+  variables: AudioImagesQueryVariables,
+  options?: Omit<
+    UseQueryOptions<AudioImagesQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<AudioImagesQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<AudioImagesQuery, TError, TData>({
+    queryKey: ["audioImages", variables],
+    queryFn: fetcher<AudioImagesQuery, AudioImagesQueryVariables>(
+      AudioImagesDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useAudioImagesQuery.document = AudioImagesDocument;
+
+useAudioImagesQuery.getKey = (variables: AudioImagesQueryVariables) => [
+  "audioImages",
+  variables,
+];
+
+useAudioImagesQuery.fetcher = (
+  variables: AudioImagesQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<AudioImagesQuery, AudioImagesQueryVariables>(
+    AudioImagesDocument,
+    variables,
+    options,
+  );
 
 export const CandidatesDocument = `
     query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {

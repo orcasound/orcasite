@@ -252,7 +252,7 @@ defmodule Orcasite.Radio.Feed do
     end
 
     mutations do
-      update :generate_feed_spectrogram, :generate_spectrogram
+      update :generate_feed_spectrograms, :generate_spectrogram
     end
   end
 
