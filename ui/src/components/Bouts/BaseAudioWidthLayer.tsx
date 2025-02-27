@@ -4,16 +4,19 @@ import { differenceInMinutes, isAfter } from "date-fns";
 import { TICKER_HEIGHT } from "./SpectrogramTimeline";
 
 export function BaseAudioWidthLayer({
-  startTime,
-  endTime,
+  startTimeNum,
+  endTimeNum,
   pixelsPerMinute,
   zIndex,
 }: {
-  startTime: Date;
-  endTime: Date;
+  startTimeNum: number;
+  endTimeNum: number;
   pixelsPerMinute: number;
   zIndex: number;
 }) {
+  const startTime = new Date(startTimeNum);
+  const endTime = new Date(endTimeNum);
+
   if (!isAfter(endTime, startTime)) {
     console.warn("endTime must be after startTime");
     return null;

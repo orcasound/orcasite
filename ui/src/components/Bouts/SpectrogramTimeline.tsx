@@ -102,6 +102,7 @@ export function rangesOverlap(
   }
   return false;
 }
+
 export default function SpectrogramTimeline({
   timelineStartTime,
   timelineEndTime,
@@ -385,7 +386,7 @@ export default function SpectrogramTimeline({
           <TimelineMarker
             time={boutStartTime}
             pixelsPerMinute={pixelsPerMinute}
-            timelineStartTime={timelineStartTime}
+            timelineStartTimeNum={timelineStartTime.valueOf()}
             zIndex={4}
             Icon={PlayCircleFilled}
             onClick={() => {
@@ -397,7 +398,7 @@ export default function SpectrogramTimeline({
           <TimelineMarker
             time={boutEndTime}
             pixelsPerMinute={pixelsPerMinute}
-            timelineStartTime={timelineStartTime}
+            timelineStartTimeNum={timelineStartTime.valueOf()}
             zIndex={4}
             Icon={PlayCircleFilled}
             iconProps={{ transform: "scaleX(-1)" }}
@@ -416,26 +417,26 @@ export default function SpectrogramTimeline({
 
         {windowStartTime && windowEndTime && (
           <TimelineTickerLayer
-            timelineStartTime={timelineStartTime}
-            windowStartTime={windowStartTime}
-            windowEndTime={windowEndTime}
+            timelineStartTimeNum={timelineStartTime.valueOf()}
+            windowStartTimeNum={windowStartTime.valueOf()}
+            windowEndTimeNum={windowEndTime.valueOf()}
             pixelsPerMinute={pixelsPerMinute}
             zIndex={3}
           />
         )}
         <BaseAudioWidthLayer
-          startTime={timelineStartTime}
-          endTime={timelineEndTime}
+          startTimeNum={timelineStartTime.valueOf()}
+          endTimeNum={timelineEndTime.valueOf()}
           pixelsPerMinute={pixelsPerMinute}
           zIndex={1}
         />
         {windowStartTime && windowEndTime && (
           <FeedSegmentsLayer
             feedSegments={feedSegments}
-            timelineStartTime={timelineStartTime}
+            timelineStartTimeNum={timelineStartTime.valueOf()}
             pixelsPerMinute={pixelsPerMinute}
-            windowStartTime={windowStartTime}
-            windowEndTime={windowEndTime}
+            windowStartTimeNum={windowStartTime.valueOf()}
+            windowEndTimeNum={windowEndTime.valueOf()}
             zIndex={2}
           />
         )}

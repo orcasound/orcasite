@@ -19,19 +19,23 @@ function audioImageToUrl({
 
 export function FeedSegmentsLayer({
   feedSegments,
-  timelineStartTime,
+  timelineStartTimeNum,
   pixelsPerMinute,
   zIndex,
-  windowStartTime,
-  windowEndTime,
+  windowStartTimeNum,
+  windowEndTimeNum,
 }: {
   feedSegments: SpectrogramFeedSegment[];
-  timelineStartTime: Date;
+  timelineStartTimeNum: number;
   pixelsPerMinute: number;
   zIndex: number;
-  windowStartTime: Date;
-  windowEndTime: Date;
+  windowStartTimeNum: number;
+  windowEndTimeNum: number;
 }) {
+  const timelineStartTime = new Date(timelineStartTimeNum);
+  const windowStartTime = new Date(windowStartTimeNum);
+  const windowEndTime = new Date(windowEndTimeNum);
+
   return (
     <>
       {feedSegments.flatMap((feedSegment) => {

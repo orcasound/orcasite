@@ -5,7 +5,7 @@ import { TICKER_HEIGHT, timeToOffset } from "./SpectrogramTimeline";
 
 export function TimelineMarker({
   time,
-  timelineStartTime,
+  timelineStartTimeNum,
   pixelsPerMinute,
   zIndex,
   Icon,
@@ -13,13 +13,15 @@ export function TimelineMarker({
   onClick,
 }: {
   time: Date;
-  timelineStartTime: Date;
+  timelineStartTimeNum: number;
   pixelsPerMinute: number;
   zIndex: number;
   Icon: SvgIconComponent;
   iconProps?: { [key: string]: string };
   onClick?: () => void;
 }) {
+  // Optimize rerenders
+  const timelineStartTime = new Date(timelineStartTimeNum);
   const offset = timeToOffset(time, timelineStartTime, pixelsPerMinute);
   return (
     <Box
