@@ -59,6 +59,8 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 import { formatTimestamp, roundToNearest } from "@/utils/time";
 
+import LoadingSpinner from "../LoadingSpinner";
+
 export default function BoutPage({
   isNew,
   feed,
@@ -192,8 +194,10 @@ export default function BoutPage({
   const detections = detectionQueryResult.data?.detections?.results ?? [];
   const [boutForm, setBoutForm] = useState<{
     errors: Record<string, string>;
+    isSaving: boolean;
   }>({
     errors: {},
+    isSaving: false,
   });
   const createBoutMutation = useCreateBoutMutation({
     onSuccess: ({ createBout: { errors, result } }) => {
@@ -237,7 +241,7 @@ export default function BoutPage({
   });
 
   const saveBout = () => {
-    setBoutForm((form) => ({ ...form, errors: {} }));
+    setBoutForm((form) => ({ ...form, errors: {}, isSaving: true }));
     if (audioCategory && boutStartTime) {
       if (isNew) {
         createBoutMutation.mutate({
@@ -254,6 +258,7 @@ export default function BoutPage({
           category: audioCategory,
         });
       }
+      setBoutForm((form) => ({ ...form, isSaving: false }));
     } else {
       const errors: Record<string, string> = {};
       if (!audioCategory) {
@@ -262,7 +267,7 @@ export default function BoutPage({
       if (!boutStartTime) {
         errors["startTime"] = "Bout start time required";
       }
-      setBoutForm((form) => ({ ...form, errors }));
+      setBoutForm((form) => ({ ...form, isSaving: false, errors }));
     }
   };
 
@@ -298,7 +303,9 @@ export default function BoutPage({
               variant="contained"
               size={isDesktop ? "large" : "small"}
               onClick={saveBout}
+              disabled={boutForm.isSaving}
               sx={{ whiteSpace: "nowrap" }}
+              {...(boutForm.isSaving ? { startIcon: <LoadingSpinner /> } : {})}
             >
               {isNew ? "Create" : "Update"} bout
             </Button>

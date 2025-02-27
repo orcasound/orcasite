@@ -8,8 +8,6 @@ import { useBoutQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const BoutShowPage: NextPageWithLayout = () => {
-  const targetTime = new Date("2024-12-11 19:55:44.013Z");
-
   const params = useParams<{ boutId?: string }>();
   const boutId = params?.boutId;
 
