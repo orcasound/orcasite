@@ -4,5 +4,4 @@ fragment BoutParts on Bout {
   duration
   endTime
   startTime
-  endTime
 }

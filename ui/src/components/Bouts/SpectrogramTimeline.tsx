@@ -132,12 +132,12 @@ export default function SpectrogramTimeline({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const setWindowStartTime = useCallback(
     _.throttle(setWindowStartTimeUnthrottled, 500, { trailing: false }),
-    [],
+    [setWindowStartTimeUnthrottled],
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const setWindowEndTime = useCallback(
     _.throttle(setWindowEndTimeUnthrottled, 500, { trailing: false }),
-    [],
+    [setWindowEndTimeUnthrottled],
   );
   const setPlayerTime = _.throttle(
     (time: Date) => playerControls?.setPlayerTime(time),

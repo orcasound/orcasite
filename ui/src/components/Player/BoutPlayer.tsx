@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { differenceInSeconds, format } from "date-fns";
 import dynamic from "next/dynamic";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Feed, FeedStream } from "@/graphql/generated";
 import { getHlsURI } from "@/hooks/useTimestampFetcher";
@@ -65,6 +65,11 @@ export function BoutPlayer({
   );
 
   const intervalRef = useRef<NodeJS.Timeout>();
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const playerOptions = useMemo(
     () => ({

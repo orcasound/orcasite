@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { differenceInMinutes } from "date-fns";
+import { differenceInMinutes, isAfter } from "date-fns";
 
 import { TICKER_HEIGHT } from "./SpectrogramTimeline";
 
@@ -14,9 +14,16 @@ export function BaseAudioWidthLayer({
   pixelsPerMinute: number;
   zIndex: number;
 }) {
+  if (!isAfter(endTime, startTime)) {
+    console.warn("endTime must be after startTime");
+    return null;
+  }
   const minutes = differenceInMinutes(endTime, startTime);
   const tiles = minutes * 6; // 10 second tiles
   const pixelsPerTile = pixelsPerMinute / 6;
+  if (minutes <= 0) {
+    return null;
+  }
   return (
     <>
       {Array(tiles)
