@@ -236,9 +236,9 @@ export function BoutPlayer({
           <Typography variant="body1" fontWeight={"bold"}>
             {playerDateTime !== undefined &&
               format(playerDateTime, "h:mm:ss a")}
-            <Typography variant="subtitle2" textAlign="center">
-              {playerDateTime !== undefined && format(playerDateTime, "O")}
-            </Typography>
+          </Typography>
+          <Typography variant="subtitle2" textAlign="center">
+            {playerDateTime !== undefined && format(playerDateTime, "O")}
           </Typography>
           <Typography variant="subtitle1">
             {playerDateTime !== undefined &&

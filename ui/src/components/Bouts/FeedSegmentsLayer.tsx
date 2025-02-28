@@ -1,10 +1,8 @@
 import { Box, Typography } from "@mui/material";
-import { addMinutes, subMinutes } from "date-fns";
 
 import { AudioImage } from "@/graphql/generated";
 
 import {
-  rangesOverlap,
   SpectrogramFeedSegment,
   TICKER_HEIGHT,
   timeToOffset,
@@ -22,19 +20,13 @@ export function FeedSegmentsLayer({
   timelineStartTimeNum,
   pixelsPerMinute,
   zIndex,
-  windowStartTimeNum,
-  windowEndTimeNum,
 }: {
   feedSegments: SpectrogramFeedSegment[];
   timelineStartTimeNum: number;
   pixelsPerMinute: number;
   zIndex: number;
-  windowStartTimeNum: number;
-  windowEndTimeNum: number;
 }) {
   const timelineStartTime = new Date(timelineStartTimeNum);
-  const windowStartTime = new Date(windowStartTimeNum);
-  const windowEndTime = new Date(windowEndTimeNum);
 
   return (
     <>
@@ -42,21 +34,19 @@ export function FeedSegmentsLayer({
         if (
           feedSegment.startTime !== undefined &&
           feedSegment.startTime !== null &&
-          feedSegment.endTime !== undefined &&
-          feedSegment.endTime !== null &&
-          typeof feedSegment.duration === "string"
+          feedSegment.endTime !== undefined
         ) {
+          if (feedSegment.audioImages[0]) {
+            return [];
+          }
+
           const startTime = new Date(feedSegment.startTime);
-          const endTime = new Date(feedSegment.endTime);
           const offset = timeToOffset(
             startTime,
             timelineStartTime,
             pixelsPerMinute,
           );
           const width = (pixelsPerMinute * Number(feedSegment.duration)) / 60;
-          const audioImage = feedSegment.audioImages[0];
-          const audioImageUrl =
-            audioImage !== undefined && audioImageToUrl(audioImage);
           return [
             <Box
               key={feedSegment.id}
@@ -68,16 +58,6 @@ export function FeedSegmentsLayer({
                 top: TICKER_HEIGHT,
                 width: width,
                 backgroundColor: (theme) => theme.palette.accent2.main,
-                ...(audioImageUrl &&
-                  rangesOverlap(
-                    subMinutes(startTime, 1500 / pixelsPerMinute),
-                    addMinutes(endTime, 1500 / pixelsPerMinute),
-                    windowStartTime,
-                    windowEndTime,
-                  ) && {
-                    backgroundImage: `url('${audioImageUrl}')`,
-                    backgroundSize: "auto 100%",
-                  }),
               }}
               display="flex"
               alignItems="center"
@@ -86,8 +66,18 @@ export function FeedSegmentsLayer({
               data-endtime={feedSegment.endTime}
               data-duration={feedSegment.duration}
             >
-              <Typography color="white" variant="subtitle1">
-                {!audioImageUrl && startTime?.toLocaleTimeString()}
+              <Typography
+                color="white"
+                variant={"subtitle2"}
+                whiteSpace="nowrap"
+                sx={{
+                  ...(pixelsPerMinute < 450 && {
+                    transform: "rotate(-90deg)",
+                    zoom: 1.505,
+                  }),
+                }}
+              >
+                {startTime?.toLocaleTimeString()}
               </Typography>
             </Box>,
           ];

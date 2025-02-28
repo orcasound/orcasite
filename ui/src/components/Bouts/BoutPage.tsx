@@ -48,6 +48,7 @@ import {
   AudioCategory,
   BoutQuery,
   FeedQuery,
+  useAudioImagesQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
   useGetCurrentUserQuery,
@@ -155,31 +156,25 @@ export default function BoutPage({
   // If feed is present, and there's no pre-set time,
   // get latest stream and last <timeBuffer> minutes of segments.
   // Set time to end of last segment
-  const feedStreamQueryResult = useListFeedStreamsQuery(
-    {
-      feedId: feed?.id,
-      fromDateTime: timelineStartTime,
-      toDateTime: timelineEndTime,
-      dayBeforeFromDateTime: timelineStartTimeMinusADay,
-    },
-    { enabled: !!feed?.id },
-  );
+  const feedStreamQueryResult = useListFeedStreamsQuery({
+    feedId: feed.id,
+    fromDateTime: timelineStartTime,
+    toDateTime: timelineEndTime,
+    dayBeforeFromDateTime: timelineStartTimeMinusADay,
+  });
 
   // Get detections at current time plus or minus 1 hour
   const minDetectionsTime = subMinutes(targetTime, 60);
   const maxDetectionsTime = addMinutes(targetTime, 60);
-  const detectionQueryResult = useDetectionsQuery(
-    {
-      feedId: feed?.id,
-      filter: {
-        timestamp: {
-          greaterThanOrEqual: minDetectionsTime,
-          lessThanOrEqual: maxDetectionsTime,
-        },
+  const detectionQueryResult = useDetectionsQuery({
+    feedId: feed.id,
+    filter: {
+      timestamp: {
+        greaterThanOrEqual: minDetectionsTime,
+        lessThanOrEqual: maxDetectionsTime,
       },
     },
-    { enabled: !!feed?.id },
-  );
+  });
 
   const feedStreams = useMemo(
     () => feedStreamQueryResult.data?.feedStreams?.results ?? [],
@@ -192,6 +187,14 @@ export default function BoutPage({
   );
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
+
+  const audioImagesQueryResult = useAudioImagesQuery({
+    feedId: feed.id,
+    startTime: timelineStartTime,
+    endTime: timelineEndTime,
+  });
+  const audioImages = audioImagesQueryResult.data?.audioImages?.results ?? [];
+
   const [boutForm, setBoutForm] = useState<{
     errors: Record<string, string>;
     isSaving: boolean;
@@ -375,6 +378,7 @@ export default function BoutPage({
           setBoutStartTime={setBoutStartTime}
           setBoutEndTime={setBoutEndTime}
           spectrogramControls={spectrogramControls}
+          audioImages={audioImages}
         ></SpectrogramTimeline>
 
         <Box

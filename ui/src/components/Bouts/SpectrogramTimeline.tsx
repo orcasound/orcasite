@@ -12,11 +12,11 @@ import {
   useState,
 } from "react";
 
-import { AudioImage, FeedSegment } from "@/graphql/generated";
+import { AudioImage, AudioImagesQuery, FeedSegment } from "@/graphql/generated";
 
 import { PlayerControls } from "../Player/BoutPlayer";
+import { AudioImagesLayer } from "./AudioImagesLayer";
 import { BaseAudioWidthLayer } from "./BaseAudioWidthLayer";
-import { FeedSegmentsLayer } from "./FeedSegmentsLayer";
 import { FrequencyAxisLayer } from "./FrequencyAxisLayer";
 import { TimelineMarker } from "./TimelineMarker";
 import { TimelineTickerLayer } from "./TimelineTickerLayer";
@@ -107,6 +107,7 @@ export default function SpectrogramTimeline({
   timelineStartTime,
   timelineEndTime,
   feedSegments,
+  audioImages,
   playerTimeRef,
   playerControls,
   boutStartTime,
@@ -116,6 +117,9 @@ export default function SpectrogramTimeline({
   timelineStartTime: Date;
   timelineEndTime: Date;
   feedSegments: SpectrogramFeedSegment[];
+  audioImages: NonNullable<
+    NonNullable<AudioImagesQuery["audioImages"]>["results"]
+  >;
   playerTimeRef: MutableRefObject<Date>;
   playerControls?: PlayerControls;
   boutStartTime?: Date;
@@ -378,7 +382,7 @@ export default function SpectrogramTimeline({
           position="sticky"
           left="50%"
           width={"1px"}
-          zIndex={4}
+          zIndex={5}
           sx={{ transform: `translateY(${TICKER_HEIGHT}px)` }}
         ></Box>
 
@@ -387,7 +391,7 @@ export default function SpectrogramTimeline({
             time={boutStartTime}
             pixelsPerMinute={pixelsPerMinute}
             timelineStartTimeNum={timelineStartTime.valueOf()}
-            zIndex={4}
+            zIndex={5}
             Icon={PlayCircleFilled}
             onClick={() => {
               goToTime(boutStartTime);
@@ -399,7 +403,7 @@ export default function SpectrogramTimeline({
             time={boutEndTime}
             pixelsPerMinute={pixelsPerMinute}
             timelineStartTimeNum={timelineStartTime.valueOf()}
-            zIndex={4}
+            zIndex={5}
             Icon={PlayCircleFilled}
             iconProps={{ transform: "scaleX(-1)" }}
             onClick={() => {
@@ -412,7 +416,7 @@ export default function SpectrogramTimeline({
           scaling="linear"
           minFrequency={1}
           maxFrequency={15000}
-          zIndex={3}
+          zIndex={4}
         />
 
         {windowStartTime && windowEndTime && (
@@ -421,7 +425,7 @@ export default function SpectrogramTimeline({
             windowStartTimeNum={windowStartTime.valueOf()}
             windowEndTimeNum={windowEndTime.valueOf()}
             pixelsPerMinute={pixelsPerMinute}
-            zIndex={3}
+            zIndex={4}
           />
         )}
         <BaseAudioWidthLayer
@@ -430,14 +434,20 @@ export default function SpectrogramTimeline({
           pixelsPerMinute={pixelsPerMinute}
           zIndex={1}
         />
+        {/* <FeedSegmentsLayer
+          feedSegments={feedSegments}
+          timelineStartTimeNum={timelineStartTime.valueOf()}
+          pixelsPerMinute={pixelsPerMinute}
+          zIndex={2}
+        /> */}
         {windowStartTime && windowEndTime && (
-          <FeedSegmentsLayer
-            feedSegments={feedSegments}
+          <AudioImagesLayer
+            audioImages={audioImages}
             timelineStartTimeNum={timelineStartTime.valueOf()}
             pixelsPerMinute={pixelsPerMinute}
             windowStartTimeNum={windowStartTime.valueOf()}
             windowEndTimeNum={windowEndTime.valueOf()}
-            zIndex={2}
+            zIndex={3}
           />
         )}
       </Box>
