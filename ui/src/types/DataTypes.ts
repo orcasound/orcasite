@@ -1,11 +1,14 @@
-import { Detection, Feed, Scalars } from "@/graphql/generated";
+import { Dispatch, SetStateAction } from "react";
+
+import { Detection, Scalars } from "@/graphql/generated";
+import { Candidate } from "@/pages/moderator/candidates";
 
 export interface HumanData extends Omit<Detection, "candidate"> {
   type: string;
   hydrophone: string;
   comments: string | null | undefined;
   newCategory: string;
-  dateString: string;
+  timestampString: string;
 }
 
 export interface AIDetection {
@@ -27,7 +30,7 @@ export interface AIData extends AIDetection {
   type: string;
   hydrophone: string;
   newCategory: string;
-  dateString: string;
+  timestampString: string;
 }
 export interface CombinedData extends HumanData, AIData {}
 
@@ -35,7 +38,9 @@ export interface Dataset {
   human: HumanData[];
   ai: AIData[];
   combined: CombinedData[];
-  feeds: Feed[];
+  // feeds: Feed[];
+  isSuccess: boolean;
+  setNowPlaying?: Dispatch<SetStateAction<Candidate>>;
 }
 
 export interface Location {
@@ -47,4 +52,3 @@ export interface Annotation {
   endTime: number;
   confidence: number;
 }
-export interface Feed {}

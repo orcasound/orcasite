@@ -1,19 +1,13 @@
-import {
-  Box,
-  Card,
-  CardActionArea,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 
+import CandidateCard from "@/components/CandidateCard";
 import ChartSelect from "@/components/ChartSelect";
 import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
 import ReportsBarChart from "@/components/ReportsBarChart";
 import { useData } from "@/context/DataContext";
-import { Feed } from "@/graphql/generated";
+import { useFeedsQuery } from "@/graphql/generated";
 import { CombinedData } from "@/types/DataTypes";
 
 const sevenDays = 7 * 24 * 60 * 60 * 1000;
@@ -77,23 +71,25 @@ const categorySelect = [
   },
 ];
 
-interface Data {
-  category: string;
-  description: string;
-  id: string;
-  timestamp: string;
-  comments: string;
-  listenerCount: number;
-  feed: FeedName;
+export interface Candidate {
+  array: CombinedData[];
+  whale: number;
+  vessel: number;
+  other: number;
+  "whale (AI)": number;
   hydrophone: string;
-}
-interface FeedName {
-  name: string;
+  descriptions: string;
 }
 
-const createCandidates = (dataset: CombinedData[], interval: number) => {
+const createCandidates = (
+  dataset: CombinedData[],
+  interval: number,
+): Candidate[] => {
   const candidates: Array<Array<CombinedData>> = [];
-  dataset.forEach((el: CombinedData) => {
+  const sort = dataset.sort(
+    (a, b) => Date.parse(b.timestampString) - Date.parse(a.timestampString),
+  );
+  sort.forEach((el: CombinedData) => {
     if (!candidates.length) {
       const firstArray = [];
       firstArray.push(el);
@@ -110,10 +106,10 @@ const createCandidates = (dataset: CombinedData[], interval: number) => {
       const lastMatchingArray = findLastMatchingArray();
       const lastTimestamp =
         lastMatchingArray &&
-        lastMatchingArray[lastMatchingArray.length - 1].dateString;
+        lastMatchingArray[lastMatchingArray.length - 1].timestampString;
       if (
         lastTimestamp &&
-        Math.abs(Date.parse(lastTimestamp) - Date.parse(el.dateString)) /
+        Math.abs(Date.parse(lastTimestamp) - Date.parse(el.timestampString)) /
           (1000 * 60) <=
           interval
       ) {
@@ -145,35 +141,60 @@ const createCandidates = (dataset: CombinedData[], interval: number) => {
   return candidatesMap;
 };
 
-interface Candidate {
-  array: Array<CombinedData>;
-  whale: number;
-  vessel: number;
-  other: number;
-  "whale (AI)": number;
-  hydrophone: string;
-  descriptions: string;
-}
-
 export default function Candidates() {
+  // replace this with a direct react-query...
   const {
     combined,
-    feeds,
-  }: { combined: CombinedData[] | undefined; feeds: Feed[] } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
-  const [filters, setFilters] = React.useState({
+    isSuccess,
+  }: { combined: CombinedData[] | undefined; isSuccess: boolean } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
+
+  // get hydrophone feed list
+  const feedsQueryResult = useFeedsQuery();
+  const feeds = feedsQueryResult.data?.feeds ?? [];
+
+  const [filters, setFilters] = useState({
     timeRange: threeDays,
     timeIncrement: 15,
     hydrophone: "All hydrophones",
     category: "All categories",
   });
 
-  const handleChange = (event: SelectChangeEvent<HTMLSelectElement>) => {
+  const [timeRange, setTimeRange] = useState(threeDays);
+  const [timeIncrement, setTimeIncrement] = useState(15);
+  const [hydrophone, setHydrophone] = useState("All hydrophones");
+  const [category, setCategory] = useState("All categories");
+
+  const handleChange = (event: SelectChangeEvent<unknown>) => {
     const { name, value } = event.target;
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value,
     }));
   };
+
+  const initChartSelect = (name: string, value: string | number) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  // const [playing, setPlaying] = useState({
+  //   index: -1,
+  //   status: "ready",
+  // });
+
+  // const changeListState = (index: number, status: string) => {
+  //   setPlaying((prevState) => ({
+  //     ...prevState,
+  //     index: index,
+  //     status: status,
+  //   }));
+  // };
+
+  const [playNext, setPlayNext] = useState(true);
+
+  const players = useRef({});
 
   const feedList = feeds.map((el) => ({
     label: el.name,
@@ -183,6 +204,7 @@ export default function Candidates() {
 
   const filteredData = combined.filter((el: CombinedData) => {
     return (
+      el.type === "human" &&
       // Disabling timerange filter for now because seed data is all from 2023
       //            (Date.parse(el.timestamp) >= min)
       //            &&
@@ -193,117 +215,153 @@ export default function Candidates() {
     );
   });
 
-  const candidates = createCandidates(filteredData, filters.timeIncrement);
+  const handledGetTime = (date?: Date) => {
+    return date != null ? new Date(date).getTime() : 0;
+  };
+
+  const sortDescending = (array: Candidate[]) => {
+    const sort = array.sort(
+      (a, b) =>
+        handledGetTime(b.array[0].timestamp) -
+        handledGetTime(a.array[0].timestamp),
+    );
+    return sort;
+  };
+
+  const sortAscending = (array: Candidate[]) => {
+    const sort = array.sort(
+      (a, b) =>
+        handledGetTime(a.array[0].timestamp) -
+        handledGetTime(b.array[0].timestamp),
+    );
+    return sort;
+  };
+
+  const candidates = sortDescending(
+    createCandidates(filteredData, filters.timeIncrement),
+  );
+  const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
+
+  const handleSortAscending = (array: Candidate[]) => {
+    setSortedCandidates((v) => [...sortAscending(array)]);
+  };
+
+  const handleSortDescending = (array: Candidate[]) => {
+    setSortedCandidates((v) => [...sortDescending(array)]);
+  };
+
+  useEffect(() => {
+    setSortedCandidates((v) => [...candidates]);
+    if (isSuccess) {
+      setSortedCandidates((v) => [...candidates]);
+    }
+  }, [isSuccess]);
+
+  // render these first because it seems to take a while for candidates to populate from state, could just be the dev environment
+  const candidateCards = candidates.map(
+    (candidate: Candidate, index: number) => (
+      <CandidateCard
+        candidate={candidate}
+        key={index}
+        index={index}
+        // changeListState={changeListState}
+        // command={playing.index === index ? "play" : "pause"}
+        players={players}
+        playNext={playNext}
+      />
+    ),
+  );
+
+  // these render from state after delay, then re-render after another delay when AI candidates come through
+  const sortedCandidateCards = sortedCandidates.map(
+    (candidate: Candidate, index: number) => (
+      <CandidateCard
+        candidate={candidate}
+        key={index}
+        index={index}
+        // changeListState={changeListState}
+        // command={playing.index === index ? "play" : "pause"}
+        players={players}
+        playNext={playNext}
+      />
+    ),
+  );
 
   return (
-    <Stack>
-      <ReportsBarChart
-        dataset={filteredData}
-        timeRange={filters.timeRange}
-        feedList={feeds}
-      />
-      <Box
-        style={{
-          display: "flex",
-          margin: "24px 0",
-          gap: "1rem",
-          flexWrap: "wrap",
-        }}
-      >
-        <ChartSelect
-          name={"timeRange"}
-          value={filters.timeRange}
-          list={timeRangeSelect}
-          onChange={handleChange}
-        />
-        <ChartSelect
-          name={"hydrophone"}
-          value={filters.hydrophone}
-          list={feedList}
-          onChange={handleChange}
-        />
-        <ChartSelect
-          name={"category"}
-          value={filters.category}
-          list={categorySelect}
-          onChange={handleChange}
-        />
-        <ChartSelect
-          name={"timeIncrement"}
-          value={filters.timeIncrement}
-          list={timeIncrementSelect}
-          onChange={handleChange}
-        />
-      </Box>
-      <Stack spacing={3}>
-        {/*<pre>{JSON.stringify(candidates, null, 2)}</pre>*/}
-
-        {candidates.map((candidate: Candidate) => (
-          <Card key={candidate.array[0].dateString}>
-            <CardActionArea>
-              <CardContent>
-                <Typography variant="h6" component="div">
-                  {new Date(
-                    candidate.array[candidate.array.length - 1].timestamp,
-                  ).toLocaleString()}
-                </Typography>
-                <Typography variant="body1">
-                  {candidate.hydrophone}
-                  {" • "}
-                  {!Math.round(
-                    (Date.parse(candidate.array[0].dateString) -
-                      Date.parse(
-                        candidate.array[candidate.array.length - 1].dateString,
-                      )) /
-                      (1000 * 60),
-                  )
-                    ? "30 seconds"
-                    : Math.round(
-                          (Date.parse(candidate.array[0].dateString) -
-                            Date.parse(
-                              candidate.array[candidate.array.length - 1]
-                                .dateString,
-                            )) /
-                            (1000 * 60),
-                        ) >= 1
-                      ? Math.round(
-                          (Date.parse(candidate.array[0].dateString) -
-                            Date.parse(
-                              candidate.array[candidate.array.length - 1]
-                                .dateString,
-                            )) /
-                            (1000 * 60),
-                        ) + " minutes"
-                      : Math.round(
-                          (Date.parse(candidate.array[0].dateString) -
-                            Date.parse(
-                              candidate.array[candidate.array.length - 1]
-                                .dateString,
-                            )) /
-                            (1000 * 60 * 60),
-                        ) + " seconds"}
-                  <br />
-                  {["whale", "vessel", "other", "whale (AI)"]
-                    .map((item) =>
-                      candidate[item as keyof Candidate]
-                        ? candidate[item as keyof Candidate] + "  " + item
-                        : null,
-                    )
-                    .filter((candidate) => candidate !== null)
-                    .join(" • ")}
-                  <br />
-                  {candidate.descriptions ? (
-                    <span>{"Descriptions: " + candidate.descriptions}</span>
-                  ) : (
-                    <br />
-                  )}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        ))}
+    <Container sx={{ paddingTop: "4rem" }}>
+      <Stack>
+        <ReportsBarChart dataset={filteredData} timeRange={filters.timeRange} />
+        <Box
+          style={{
+            display: "flex",
+            margin: "24px 0",
+            gap: "1rem",
+            flexWrap: "wrap",
+          }}
+        >
+          <ChartSelect
+            name={"timeRange"}
+            value={filters.timeRange}
+            list={timeRangeSelect}
+            onChange={handleChange}
+          />
+          <ChartSelect
+            name={"hydrophone"}
+            value={filters.hydrophone}
+            list={feedList}
+            onChange={handleChange}
+          />
+          <ChartSelect
+            name={"category"}
+            value={filters.category}
+            list={categorySelect}
+            onChange={handleChange}
+          />
+          <ChartSelect
+            name={"timeIncrement"}
+            value={filters.timeIncrement}
+            list={timeIncrementSelect}
+            onChange={handleChange}
+          />
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography>
+            Showing{" "}
+            {sortedCandidates.length
+              ? sortedCandidates.length
+              : candidates.length}{" "}
+            {!isSuccess
+              ? "results from Orcasound, loading Orcahello..."
+              : "results"}
+          </Typography>
+          <Box>
+            <Button
+              variant="outlined"
+              onClick={() =>
+                handleSortAscending(
+                  sortedCandidates.length ? sortedCandidates : candidates,
+                )
+              }
+            >
+              Sort ascending
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() =>
+                handleSortDescending(
+                  sortedCandidates.length ? sortedCandidates : candidates,
+                )
+              }
+            >
+              Sort descending
+            </Button>
+          </Box>
+        </Box>
+        <Stack spacing={3}>
+          {sortedCandidates.length ? sortedCandidateCards : candidateCards}
+        </Stack>
       </Stack>
-    </Stack>
+    </Container>
   );
 }
 

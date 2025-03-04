@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import React from "react";
 
-import { Feed } from "@/graphql/generated";
+import { useFeedsQuery } from "@/graphql/generated";
 import { CombinedData } from "@/types/DataTypes";
 
 const chartSetting = {
@@ -29,12 +29,14 @@ type ChartData = {
 export default function ReportsBarChart({
   dataset,
   timeRange,
-  feedList,
 }: {
   dataset: CombinedData[];
   timeRange: number;
-  feedList: Feed[];
 }) {
+  // get hydrophone feed list
+  const feedsQueryResult = useFeedsQuery();
+  const feeds = feedsQueryResult.data?.feeds ?? [];
+
   const [legend, setLegend] = React.useState(true);
 
   const max = Date.now();
@@ -43,18 +45,7 @@ export default function ReportsBarChart({
   const endHour = new Date(max).setMinutes(0, 0, 0);
   const timeDifferenceHours = (endHour - startHour) / (1000 * 60 * 60);
 
-  const chartData: ChartData[] = [
-    {
-      tick: 0,
-      milliseconds: 0,
-      label: "",
-      detections: 0,
-      whale: 0,
-      vessel: 0,
-      other: 0,
-      "whale (ai)": 0,
-    },
-  ];
+  const chartData: ChartData[] = [];
 
   for (let i = 0; i < timeDifferenceHours; i++) {
     chartData.push({
@@ -76,13 +67,13 @@ export default function ReportsBarChart({
     { dataKey: "whale (ai)", label: "Whale (AI)" },
   ];
 
-  const hydrophoneSeries = feedList.map((el: Feed) => ({
+  const hydrophoneSeries = feeds.map((el) => ({
     dataKey: el.name.toLowerCase(),
     label: el.name,
   }));
   hydrophoneSeries.shift(); // remove the "all hydrophones" from legend
 
-  const hydrophoneCounts = feedList.map((el) => ({
+  const hydrophoneCounts = feeds.map((el) => ({
     [el.name.toLowerCase()]: 0,
   }));
 
@@ -94,17 +85,31 @@ export default function ReportsBarChart({
 
   const countData = () => {
     for (let i = 0; i < dataset.length; i++) {
-      const timestamp = Date.parse(dataset[i].dateString);
+      const timestamp = Date.parse(dataset[i].timestampString);
       const tick = Math.round((timestamp - min) / (1000 * 60 * 60));
       for (let j = 0; j < chartData.length; j++) {
         if (chartData[j].tick === tick) {
-          chartData[j].detections += 1;
-          chartData[j][
-            dataset[i].newCategory.toLowerCase() as keyof ChartData
-          ] += 1;
-          chartData[j][
-            dataset[i].hydrophone.toLowerCase() as keyof ChartData
-          ] += 1;
+          const chartItem = chartData[j];
+          chartItem.detections += 1;
+          if (dataset[i].newCategory.toLowerCase() === "whale") {
+            chartItem.whale += 1;
+          }
+          switch (dataset[i].newCategory.toLowerCase()) {
+            case "whale":
+              chartItem.whale += 1;
+              break;
+            case "vessel":
+              chartItem.vessel += 1;
+              break;
+            case "other":
+              chartItem.other += 1;
+              break;
+            case "whale (ai)":
+              chartItem["whale (ai)"] += 1;
+              break;
+            default:
+              null;
+          }
         }
       }
     }

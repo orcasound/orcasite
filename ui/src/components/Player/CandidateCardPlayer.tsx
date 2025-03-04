@@ -4,8 +4,10 @@ import { Box, Slider, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
 import { getHlsURI } from "@/hooks/useTimestampFetcher";
+import { Candidate } from "@/pages/moderator/candidates";
 import { mobileOnly } from "@/styles/responsive";
 
 import { type PlayerStatus } from "./Player";
@@ -16,24 +18,39 @@ import { type VideoJSPlayer } from "./VideoJS";
 
 const VideoJS = dynamic(() => import("./VideoJS"));
 
-export function DetectionsPlayer({
+export function CandidateCardPlayer({
   feed,
   marks,
   timestamp,
   startOffset,
   endOffset,
   onAudioPlay,
+  changeListState,
+  index,
+  command,
+  onPlayerInit,
+  onPlay,
+  onPlayerEnd,
+  candidate,
 }: {
   feed: Pick<Feed, "nodeName" | "bucket">;
-  marks: { label: string; value: number }[];
+  marks?: { label: string; value: number }[];
   timestamp: number;
   startOffset: number;
   endOffset: number;
   onAudioPlay?: () => void;
+  changeListState?: (value: number, status: string) => void;
+  index?: number;
+  command?: string;
+  onPlayerInit?: (player: VideoJSPlayer) => void;
+  onPlay?: () => void;
+  onPlayerEnd?: () => void;
+  candidate?: Candidate;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
+  const { setNowPlaying } = useData();
 
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
@@ -70,23 +87,22 @@ export function DetectionsPlayer({
   const handleReady = useCallback(
     (player: VideoJSPlayer) => {
       playerRef.current = player;
-
+      onPlayerInit && onPlayerInit(player);
       player.on("playing", () => {
         setPlayerStatus("playing");
         const currentTime = player.currentTime() ?? 0;
         if (currentTime < startOffset || currentTime > endOffset) {
           player.currentTime(startOffset);
-          setPlayerTime(endOffset);
         }
-        console.log('player.on "playing"');
+        onPlay && onPlay();
+        setNowPlaying && candidate && setNowPlaying(candidate);
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
-        console.log("player.on pause");
+        console.log(`index ${index} player.on("pause") triggered`);
       });
       player.on("waiting", () => setPlayerStatus("loading"));
       player.on("error", () => setPlayerStatus("error"));
-      // player.currentTime(startOffset);
 
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? 0;
@@ -94,9 +110,7 @@ export function DetectionsPlayer({
           player.currentTime(startOffset);
           setPlayerTime(startOffset);
           player.pause();
-          console.log(
-            `currentTime: ${currentTime} is greater than endOffset: ${endOffset}`,
-          );
+          onPlayerEnd && onPlayerEnd();
         } else {
           setPlayerTime(currentTime);
         }
@@ -114,25 +128,19 @@ export function DetectionsPlayer({
 
     if (playerStatus === "error") {
       setPlayerStatus("idle");
-      console.log("player status error, set status to idle");
       return;
     }
 
     if (!player) {
       setPlayerStatus("error");
-      console.log("no player, status error");
       return;
     }
 
     try {
       if (playerStatus === "loading" || playerStatus === "playing") {
         player.pause();
-        console.log("player status loading or playing, pausing player");
       } else {
         player.play();
-        console.log(
-          "player status neither loading nor playing, starting player",
-        );
         onAudioPlay?.();
       }
     } catch (e) {
@@ -148,7 +156,6 @@ export function DetectionsPlayer({
     if (process.env.NODE_ENV === "development" && hlsURI) {
       console.log(`New stream instance: ${hlsURI}`);
     }
-
     return () => {
       setPlayerStatus("idle");
     };
@@ -202,7 +209,7 @@ export function DetectionsPlayer({
           disabled={!feed}
         />
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", width: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", width: "90px" }}>
         <Box width={"100%"} id="slider">
           <Slider
             valueLabelDisplay="auto"
@@ -213,6 +220,7 @@ export function DetectionsPlayer({
             marks={marks}
             onChange={handleSliderChange}
             onChangeCommitted={handleSliderChangeCommitted}
+            size="small"
           />
         </Box>
 
@@ -220,11 +228,12 @@ export function DetectionsPlayer({
           id="formatted-seconds"
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
-          <Typography>
+          <Typography component="p" variant="subtitle2">
             {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
           </Typography>
-          <Typography>
-            {formattedSeconds(Number((endOffset - startOffset).toFixed(0)))}
+          <Typography component="p" variant="subtitle2">
+            {"-" +
+              formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
           </Typography>
         </Box>
       </Box>

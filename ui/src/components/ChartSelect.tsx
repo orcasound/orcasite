@@ -1,38 +1,37 @@
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { SelectChangeEvent } from "@mui/material/Select";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import * as React from "react";
-import { useState } from "react";
 
-interface SelectProps {
+type SelectProps = {
   name: string;
   value: string | number;
-  onChange: (event: SelectChangeEvent<HTMLSelectElement>) => void;
-  list?: { label: string; value: string | number }[];
-  size?: string;
-}
+  list: { label: string; value: string | number }[];
+  size?: "small" | "medium";
+  onChange: (event: SelectChangeEvent<unknown>) => void;
+};
 
-const ChartSelect: React.FC<SelectProps> = ({
-  onChange,
+export default function ChartSelect({
   name,
   value,
   list,
-  size = "small",
-}) => {
-  const [selectedValue, setSelectedValue] = useState<string | number>(value);
+  size,
+  onChange,
+}: SelectProps) {
+  // const [selectedValue, setSelectedValue] = useState(value);
+  // const handleChange = (event: SelectChangeEvent<unknown>) => {
+  //   setSelectedValue(event.target.value as string | number)
+  // }
 
   return (
-    <Box sx={{ flex: 1, minWidth: "200px" }}>
+    <Box sx={{ minWidth: 120, flex: 1 }}>
       <FormControl fullWidth>
         <Select
-          labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={selectedValue}
-          onChange={onChange}
-          name={name}
+          value={value}
           size={size}
+          onChange={onChange}
         >
           {list?.map((el) => (
             <MenuItem key={el.label} value={el.value}>
@@ -43,6 +42,4 @@ const ChartSelect: React.FC<SelectProps> = ({
       </FormControl>
     </Box>
   );
-};
-
-export default ChartSelect;
+}

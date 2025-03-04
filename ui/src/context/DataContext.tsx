@@ -3,22 +3,11 @@ import React, { createContext, useContext } from "react";
 import { Dataset } from "@/types/DataTypes";
 
 const DataContext = createContext<Dataset>({
-  human: [
-    {
-      type: "",
-      hydrophone: "",
-      comments: "",
-      newCategory: "",
-      id: "",
-      playerOffset: 0,
-      playlistTimestamp: 0,
-      timestamp: new Date(),
-      dateString: "",
-    },
-  ],
+  human: [],
   ai: [],
   combined: [],
-  feeds: [],
+  isSuccess: false,
+  setNowPlaying: undefined,
 });
 
 export const useData = () => useContext(DataContext);

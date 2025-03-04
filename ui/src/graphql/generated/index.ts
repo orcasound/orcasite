@@ -2472,6 +2472,34 @@ export type DetectionsQuery = {
   } | null;
 };
 
+export type Detections2QueryVariables = Exact<{
+  filter?: InputMaybe<DetectionFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<
+    Array<InputMaybe<DetectionSortInput>> | InputMaybe<DetectionSortInput>
+  >;
+}>;
+
+export type Detections2Query = {
+  __typename?: "RootQueryType";
+  detections?: {
+    __typename?: "PageOfDetection";
+    count?: number | null;
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "Detection";
+      id: string;
+      timestamp: Date;
+      category?: DetectionCategory | null;
+      description?: string | null;
+      listenerCount?: number | null;
+      feed?: { __typename?: "Feed"; name: string } | null;
+      candidate?: { __typename?: "Candidate"; id: string } | null;
+    }> | null;
+  } | null;
+};
+
 export type FeedsQueryVariables = Exact<{
   sort?: InputMaybe<
     Array<InputMaybe<FeedSortInput>> | InputMaybe<FeedSortInput>
@@ -2488,6 +2516,7 @@ export type FeedsQuery = {
     nodeName: string;
     imageUrl?: string | null;
     thumbUrl?: string | null;
+    mapUrl?: string | null;
     bucket: string;
     online?: boolean | null;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
@@ -3453,6 +3482,63 @@ useDetectionsQuery.fetcher = (
     options,
   );
 
+export const Detections2Document = `
+    query detections2($filter: DetectionFilterInput, $limit: Int, $offset: Int, $sort: [DetectionSortInput]) {
+  detections(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+    count
+    hasNextPage
+    results {
+      id
+      timestamp
+      category
+      description
+      listenerCount
+      feed {
+        name
+      }
+      candidate {
+        id
+      }
+    }
+  }
+}
+    `;
+
+export const useDetections2Query = <TData = Detections2Query, TError = unknown>(
+  variables?: Detections2QueryVariables,
+  options?: Omit<
+    UseQueryOptions<Detections2Query, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<Detections2Query, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<Detections2Query, TError, TData>({
+    queryKey:
+      variables === undefined ? ["detections2"] : ["detections2", variables],
+    queryFn: fetcher<Detections2Query, Detections2QueryVariables>(
+      Detections2Document,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useDetections2Query.document = Detections2Document;
+
+useDetections2Query.getKey = (variables?: Detections2QueryVariables) =>
+  variables === undefined ? ["detections2"] : ["detections2", variables];
+
+useDetections2Query.fetcher = (
+  variables?: Detections2QueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<Detections2Query, Detections2QueryVariables>(
+    Detections2Document,
+    variables,
+    options,
+  );
+
 export const FeedsDocument = `
     query feeds($sort: [FeedSortInput]) {
   feeds(sort: $sort) {
@@ -3466,6 +3552,7 @@ export const FeedsDocument = `
     }
     imageUrl
     thumbUrl
+    mapUrl
     bucket
     online
   }

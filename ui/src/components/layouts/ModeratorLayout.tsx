@@ -2,8 +2,9 @@ import { PlayLessonOutlined } from "@mui/icons-material";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import EarbudsIcon from "@mui/icons-material/Earbuds";
-import GraphicEqIcon from "@mui/icons-material/GraphicEq";
-import { Box, Container } from "@mui/material";
+import MicIcon from "@mui/icons-material/Mic";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import { Box } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -15,13 +16,16 @@ import ListSubheader from "@mui/material/ListSubheader";
 import Toolbar from "@mui/material/Toolbar";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
-import { ReactElement } from "react";
+import { ReactElement, useMemo, useState } from "react";
 
 import Header from "@/components/Header";
 import Link from "@/components/Link";
 import { DataProvider } from "@/context/DataContext";
 import { useDetectionsQuery, useFeedsQuery } from "@/graphql/generated";
+import { Candidate } from "@/pages/moderator/candidates";
 import { AIData } from "@/types/DataTypes";
+
+import PlayBar from "../PlayBar";
 
 const drawerWidth = 240;
 
@@ -31,14 +35,14 @@ const navigation = [
     title: "",
     children: [
       {
-        title: "Reports",
+        title: "Recordings",
         path: "/moderator/candidates",
-        icon: <BarChartIcon />,
+        icon: <PlayCircleOutlineIcon />,
       },
       {
         title: "Hydrophones",
         path: "/moderator/hydrophones/",
-        icon: <GraphicEqIcon />,
+        icon: <MicIcon />,
       },
       {
         title: "Bouts",
@@ -49,6 +53,11 @@ const navigation = [
         title: "Learn",
         path: "/moderator/learn/",
         icon: <PlayLessonOutlined />,
+      },
+      {
+        title: "Reports",
+        path: "/moderator/reports",
+        icon: <BarChartIcon />,
       },
       {
         title: "JSON",
@@ -70,8 +79,8 @@ const paramsOrcahello = {
   timeframe: "all",
   dateFrom: new Date(new Date().setDate(new Date().getDate() - daysAgo))
     .toLocaleDateString()
-    .replace(/\//, "%2F"),
-  dateTo: new Date().toLocaleDateString().replace(/\//, "%2F"),
+    .replaceAll(/\//g, "%2F"),
+  dateTo: new Date().toLocaleDateString().replaceAll(/\//g, "%2F"),
   location: "all",
   recordsPerPage: 100,
 };
@@ -114,6 +123,10 @@ const lookupFeedName = (
 };
 
 function ModeratorLayout({ children }: { children: React.ReactNode }) {
+  //// DATA
+
+  const [nowPlaying, setNowPlaying] = useState({} as Candidate);
+
   // get data on hydrophones
   const feedsQueryResult = useFeedsQuery();
   const feedsData = feedsQueryResult.data?.feeds ?? [];
@@ -133,14 +146,11 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
     return response.json();
   };
 
-  interface ErrorMessage {
-    message: string;
-  }
-
-  const aiDetections = useQuery({
+  const { data, isSuccess } = useQuery({
     queryKey: ["ai-detections"],
     queryFn: fetchOrcahelloData,
   });
+  const aiDetections = data;
 
   // deduplicate data on human detections
   const dedupeHuman = detectionsData.filter(
@@ -158,25 +168,31 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
     hydrophone: lookupFeedName(el.feedId!, feedsData),
     comments: el.description,
     newCategory: el!.category!,
-    dateString: el.timestamp.toString(),
+    timestampString: el.timestamp.toString(),
   }));
 
-  const datasetAI =
-    aiDetections.data?.map((el: AIData) => ({
-      ...el,
-      type: "ai",
-      hydrophone: standardizeFeedName(el.location.name),
-      newCategory: "WHALE (AI)",
-      dateString: el.timestamp.toString(),
-    })) ?? [];
+  // combine global data into one object, to be passed into Data Provider for all child pages
+  const dataset = useMemo(() => {
+    const datasetAI =
+      aiDetections?.map((el: AIData) => ({
+        ...el,
+        type: "ai",
+        hydrophone: standardizeFeedName(el.location.name),
+        newCategory: "WHALE (AI)",
+        timestampString: el.timestamp.toString(),
+      })) ?? [];
+    return {
+      human: datasetHuman,
+      ai: datasetAI,
+      combined: [...datasetHuman, ...datasetAI],
+      feeds: feedsData,
+      isSuccess: isSuccess,
+      nowPlaying: nowPlaying,
+      setNowPlaying: setNowPlaying,
+    };
+  }, [datasetHuman, aiDetections, feedsData, isSuccess]);
 
-  // combine human and AI detections into one object
-  const dataset = {
-    human: datasetHuman,
-    ai: datasetAI,
-    combined: [...datasetHuman, ...datasetAI],
-    feeds: feedsData,
-  };
+  //// COMPONENTS
 
   const listItem = (title: string, path: string, icon: ReactElement) => (
     <Link
@@ -243,6 +259,8 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
     </Box>
   );
 
+  //// RENDER
+
   return (
     <Box
       sx={{
@@ -277,9 +295,14 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
           </Drawer>
         </div>
 
-        <Container maxWidth="xl" sx={{ paddingTop: "1rem" }}>
+        <Box
+          // maxWidth="xl"
+          sx={{ width: "100%", padding: 0, paddingLeft: 4, margin: 0 }}
+        >
           <DataProvider data={dataset}>{children}</DataProvider>
-        </Container>
+        </Box>
+
+        <PlayBar candidate={nowPlaying} />
       </Box>
     </Box>
   );

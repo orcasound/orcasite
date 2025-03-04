@@ -21,18 +21,63 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Link from "@/components/Link";
+import { useFeedsQuery } from "@/graphql/generated";
+import { Candidate } from "@/pages/moderator/candidates";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 
-export default function Header({
-  onBrandClick,
-}: {
-  onBrandClick?: () => void;
-}) {
+import { CandidateCardPlayer } from "./Player/CandidateCardPlayer";
+
+export default function PlayBar({ candidate }: { candidate: Candidate }) {
+  // get hydrophone feed list
+  const feedsQueryResult = useFeedsQuery();
+  const feedsData = feedsQueryResult.data?.feeds ?? [];
+
+  const [playerProps, setPlayerProps] = useState({
+    feed: feedsData[0],
+    timestamp: 0,
+    startOffset: 0,
+    endOffset: 0,
+  });
+
+  useEffect(() => {
+    const candidateArray = candidate.array;
+    if (candidateArray) {
+      const firstCandidate = candidateArray[candidateArray.length - 1];
+      const lastCandidate = candidateArray[0];
+      const feed = feedsData.find((feed) => feed.id === firstCandidate.feedId);
+
+      const startTimestamp = Math.min(
+        ...candidateArray.map((d) => +d.playlistTimestamp),
+      );
+
+      const offsetPadding = 15;
+      const minOffset = Math.min(...candidateArray.map((d) => +d.playerOffset));
+
+      // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
+      // instead, ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
+      const firstPlaylist = candidateArray.filter(
+        (d) => +d.playlistTimestamp === startTimestamp,
+      );
+
+      const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
+      const startOffset = Math.max(0, minOffset - offsetPadding);
+      const endOffset = maxOffset + offsetPadding;
+
+      feed &&
+        setPlayerProps({
+          feed: feed ? feed : feedsData[0],
+          timestamp: startTimestamp,
+          startOffset: startOffset,
+          endOffset: endOffset,
+        });
+    }
+  }, [candidate]);
+
   return (
     <AppBar
       // position="static"
@@ -40,11 +85,23 @@ export default function Header({
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,
+        bottom: 0,
+        top: "auto",
+        height: "100px",
       }}
     >
       <Toolbar>
-        <Mobile onBrandClick={onBrandClick} />
-        <Desktop />
+        {/* <pre style={{color: "white"}}>{JSON.stringify(candidate)}</pre> */}
+        {candidate.array && playerProps.feed ? (
+          <CandidateCardPlayer
+            feed={playerProps.feed}
+            timestamp={playerProps.timestamp}
+            startOffset={playerProps.startOffset}
+            endOffset={playerProps.endOffset}
+          />
+        ) : (
+          "No recordings loaded"
+        )}
       </Toolbar>
     </AppBar>
   );
