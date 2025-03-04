@@ -78,32 +78,20 @@ export function DetectionsPlayer({
           player.currentTime(startOffset);
           setPlayerTime(endOffset);
         }
-        console.log('player.on "playing"');
       });
-      player.on("pause", () => {
-        setPlayerStatus("paused");
-        console.log("player.on pause");
-      });
+      player.on("pause", () => setPlayerStatus("paused"));
       player.on("waiting", () => setPlayerStatus("loading"));
       player.on("error", () => setPlayerStatus("error"));
-      // player.currentTime(startOffset);
+      player.currentTime(startOffset);
 
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? 0;
         if (currentTime > endOffset) {
           player.currentTime(startOffset);
           setPlayerTime(startOffset);
-          player.pause();
-          console.log(
-            `currentTime: ${currentTime} is greater than endOffset: ${endOffset}`,
-          );
         } else {
           setPlayerTime(currentTime);
         }
-      });
-      player.on("loadedmetadata", () => {
-        // On initial load, set player time to startOffset
-        player.currentTime(startOffset);
       });
     },
     [startOffset, endOffset],
@@ -114,25 +102,19 @@ export function DetectionsPlayer({
 
     if (playerStatus === "error") {
       setPlayerStatus("idle");
-      console.log("player status error, set status to idle");
       return;
     }
 
     if (!player) {
       setPlayerStatus("error");
-      console.log("no player, status error");
       return;
     }
 
     try {
       if (playerStatus === "loading" || playerStatus === "playing") {
         player.pause();
-        console.log("player status loading or playing, pausing player");
       } else {
         player.play();
-        console.log(
-          "player status neither loading nor playing, starting player",
-        );
         onAudioPlay?.();
       }
     } catch (e) {
@@ -192,10 +174,10 @@ export function DetectionsPlayer({
         zIndex: theme.zIndex.drawer + 1,
       })}
     >
-      <Box display="none" id="video-js">
+      <Box display="none">
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      <Box ml={2} mr={6} id="play-pause-button">
+      <Box ml={2} mr={6}>
         <PlayPauseButton
           playerStatus={playerStatus}
           onClick={handlePlayPauseClick}
@@ -203,7 +185,7 @@ export function DetectionsPlayer({
         />
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", width: 1 }}>
-        <Box width={"100%"} id="slider">
+        <Box width={"100%"}>
           <Slider
             valueLabelDisplay="auto"
             valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
@@ -216,10 +198,7 @@ export function DetectionsPlayer({
           />
         </Box>
 
-        <Box
-          id="formatted-seconds"
-          sx={{ display: "flex", justifyContent: "space-between" }}
-        >
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography>
             {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
           </Typography>
