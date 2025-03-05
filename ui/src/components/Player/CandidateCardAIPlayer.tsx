@@ -2,8 +2,10 @@ import "videojs-offset";
 
 import { Box, Slider, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
+import { useData } from "@/context/DataContext";
+import { Candidate } from "@/pages/moderator/candidates";
 import { mobileOnly } from "@/styles/responsive";
 
 import { type PlayerStatus } from "./Player";
@@ -28,6 +30,7 @@ export function CandidateCardAIPlayer({
   onPlayerInit,
   onPlay,
   onPlayerEnd,
+  candidate,
 }: {
   // feed: Pick<Feed, "nodeName" | "bucket">;
   marks?: { label: string; value: number }[];
@@ -42,6 +45,7 @@ export function CandidateCardAIPlayer({
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
   onPlayerEnd?: () => void;
+  candidate?: Candidate;
 }) {
   // special to the AI player
   const startOffset = 0;
@@ -49,6 +53,7 @@ export function CandidateCardAIPlayer({
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
+  const { setNowPlaying } = useData();
 
   // special to the AI player
   const [endOffset, setEndOffset] = useState(58);
@@ -99,6 +104,8 @@ export function CandidateCardAIPlayer({
       // }
       // (changeListState && index) && changeListState(index, "playing");
       onPlay && onPlay();
+      candidate && console.log("aiplayer");
+      setNowPlaying && candidate && setNowPlaying(candidate);
     });
     player.on("pause", () => {
       setPlayerStatus("paused");
@@ -114,9 +121,6 @@ export function CandidateCardAIPlayer({
         setPlayerTime(startOffset);
         player.pause();
         onPlayerEnd && onPlayerEnd();
-        console.log(
-          `player ${index} just ended and should have triggered onPlayerEnd`,
-        );
       } else {
         setPlayerTime(currentTime);
       }
@@ -130,19 +134,11 @@ export function CandidateCardAIPlayer({
     });
   }, []);
 
-  useEffect(() => {
-    console.log(`endOffset for player is: ${endOffset}`);
-    console.log(`playerStatus is ${playerStatus}`);
-  }, [endOffset, playerStatus]);
-
   const handlePlayPauseClick = () => {
     const player = playerRef.current;
 
     if (playerStatus === "error") {
       setPlayerStatus("idle");
-      console.log(
-        `index ${index} player status: ${playerStatus}, set status to idle`,
-      );
       return;
     }
 
@@ -176,16 +172,6 @@ export function CandidateCardAIPlayer({
   //   };
   // }, [hlsURI, feed.nodeName]);
 
-  // useEffect(() => {
-  //   const player = playerRef.current;
-
-  //   if (player && command === "pause") {
-  //     player.pause();
-  //   } else if (player && command === "play") {
-  //     player.play();
-  //   }
-  // }, [command]);
-
   const handleSliderChange = (
     _e: Event,
     v: number | number[],
@@ -193,10 +179,7 @@ export function CandidateCardAIPlayer({
   ) => {
     playerRef?.current?.pause();
     if (typeof v !== "number") return;
-    playerRef?.current?.currentTime(
-      v,
-      // + startOffset
-    );
+    playerRef?.current?.currentTime(v + startOffset);
   };
 
   const handleSliderChangeCommitted = (
@@ -204,10 +187,7 @@ export function CandidateCardAIPlayer({
     v: number | number[],
   ) => {
     if (typeof v !== "number") return;
-    playerRef?.current?.currentTime(
-      v,
-      // + startOffset
-    );
+    playerRef?.current?.currentTime(v + startOffset);
     playerRef?.current?.play();
   };
 

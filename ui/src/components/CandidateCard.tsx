@@ -91,6 +91,7 @@ export default function CandidateCard(props: {
         ) : candidate.array[0].audioUri ? (
           <>
             <CandidateCardAIPlayer
+              candidate={candidate}
               audioUri={candidate.array[0].audioUri}
               index={props.index}
               onPlayerInit={(player) => {

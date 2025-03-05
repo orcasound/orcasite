@@ -30,6 +30,7 @@ import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 
+import { CandidateCardAIPlayer } from "./Player/CandidateCardAIPlayer";
 import { CandidateCardPlayer } from "./Player/CandidateCardPlayer";
 
 export default function PlayBar({ candidate }: { candidate: Candidate }) {
@@ -42,14 +43,15 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
     timestamp: 0,
     startOffset: 0,
     endOffset: 0,
+    audioUri: "",
   });
 
   useEffect(() => {
     const candidateArray = candidate.array;
     if (candidateArray) {
-      const firstCandidate = candidateArray[candidateArray.length - 1];
-      const lastCandidate = candidateArray[0];
-      const feed = feedsData.find((feed) => feed.id === firstCandidate.feedId);
+      const firstDetection = candidateArray[candidateArray.length - 1];
+      const lastDetection = candidateArray[0];
+      const feed = feedsData.find((feed) => feed.id === firstDetection.feedId);
 
       const startTimestamp = Math.min(
         ...candidateArray.map((d) => +d.playlistTimestamp),
@@ -74,6 +76,14 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
           timestamp: startTimestamp,
           startOffset: startOffset,
           endOffset: endOffset,
+          audioUri: "",
+        });
+
+      lastDetection.audioUri &&
+        setPlayerProps({
+          ...playerProps,
+          timestamp: startTimestamp,
+          audioUri: lastDetection.audioUri,
         });
     }
   }, [candidate]);
@@ -93,12 +103,17 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
       <Toolbar>
         {/* <pre style={{color: "white"}}>{JSON.stringify(candidate)}</pre> */}
         {candidate.array && playerProps.feed ? (
-          <CandidateCardPlayer
-            feed={playerProps.feed}
-            timestamp={playerProps.timestamp}
-            startOffset={playerProps.startOffset}
-            endOffset={playerProps.endOffset}
-          />
+          <>
+            <Typography>{`${playerProps.timestamp}`}</Typography>
+            <CandidateCardPlayer
+              feed={playerProps.feed}
+              timestamp={playerProps.timestamp}
+              startOffset={playerProps.startOffset}
+              endOffset={playerProps.endOffset}
+            />
+          </>
+        ) : candidate.array && playerProps.audioUri.length ? (
+          <CandidateCardAIPlayer audioUri={playerProps.audioUri} />
         ) : (
           "No recordings loaded"
         )}

@@ -204,10 +204,12 @@ export default function Candidates() {
 
   const filteredData = combined.filter((el: CombinedData) => {
     return (
-      el.type === "human" &&
+      // uncomment this to block Orcahello data
+      // el.type === "human" &&
+
       // Disabling timerange filter for now because seed data is all from 2023
-      //            (Date.parse(el.timestamp) >= min)
-      //            &&
+      //            (Date.parse(el.timestamp) >= min) &&
+
       (filters.hydrophone === "All hydrophones" ||
         el.hydrophone === filters.hydrophone) &&
       (filters.category === "All categories" ||

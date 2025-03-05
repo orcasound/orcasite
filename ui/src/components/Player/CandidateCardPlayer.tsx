@@ -99,7 +99,6 @@ export function CandidateCardPlayer({
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
-        console.log(`index ${index} player.on("pause") triggered`);
       });
       player.on("waiting", () => setPlayerStatus("loading"));
       player.on("error", () => setPlayerStatus("error"));
