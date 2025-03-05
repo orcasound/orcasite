@@ -3,7 +3,8 @@ defmodule Orcasite.Radio.AudioImage do
     otp_app: :orcasite,
     domain: Orcasite.Radio,
     extensions: [AshGraphql.Resource, AshUUID],
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    notifiers: [Ash.Notifier.PubSub]
 
   postgres do
     table "audio_images"
@@ -228,5 +229,15 @@ defmodule Orcasite.Radio.AudioImage do
     queries do
       list :audio_images, :for_feed
     end
+  end
+
+  pub_sub do
+    module OrcasiteWeb.Endpoint
+
+    broadcast_type :phoenix_broadcast
+
+    prefix "audio_image"
+    publish :for_feed_segment, ["created", :feed_id], event: "created"
+    publish :update, ["updated", :feed_id]
   end
 end

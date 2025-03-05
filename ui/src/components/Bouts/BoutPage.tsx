@@ -55,6 +55,7 @@ import {
   useListFeedStreamsQuery,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
+import { useAudioImageListener } from "@/hooks/useAudioImageListener";
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
@@ -187,6 +188,10 @@ export default function BoutPage({
   );
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
+
+  useAudioImageListener(feed.id, (audioImage) => {
+    console.log("audio_image", audioImage);
+  });
 
   const audioImagesQueryResult = useAudioImagesQuery({
     feedId: feed.id,
