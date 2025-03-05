@@ -37,8 +37,13 @@ export type Scalars = {
   Json: { input: { [key: string]: any }; output: { [key: string]: any } };
 };
 
-export type AudioCategory = "ANTHROPHONY" | "BIOPHONY" | "GEOPHONY";
+export const AudioCategory = {
+  Anthrophony: "ANTHROPHONY",
+  Biophony: "BIOPHONY",
+  Geophony: "GEOPHONY",
+} as const;
 
+export type AudioCategory = (typeof AudioCategory)[keyof typeof AudioCategory];
 export type AudioImage = {
   __typename?: "AudioImage";
   audioImageFeedSegments: Array<AudioImageFeedSegment>;
@@ -118,11 +123,14 @@ export type AudioImageFeedSegmentFilterInput = {
   or?: InputMaybe<Array<AudioImageFeedSegmentFilterInput>>;
 };
 
-export type AudioImageFeedSegmentSortField =
-  | "AUDIO_IMAGE_ID"
-  | "FEED_SEGMENT_ID"
-  | "ID";
+export const AudioImageFeedSegmentSortField = {
+  AudioImageId: "AUDIO_IMAGE_ID",
+  FeedSegmentId: "FEED_SEGMENT_ID",
+  Id: "ID",
+} as const;
 
+export type AudioImageFeedSegmentSortField =
+  (typeof AudioImageFeedSegmentSortField)[keyof typeof AudioImageFeedSegmentSortField];
 export type AudioImageFeedSegmentSortInput = {
   field: AudioImageFeedSegmentSortField;
   order?: InputMaybe<SortOrder>;
@@ -269,19 +277,22 @@ export type AudioImageFilterStatus = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-export type AudioImageSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "END_TIME"
-  | "FEED_ID"
-  | "ID"
-  | "IMAGE_SIZE"
-  | "IMAGE_TYPE"
-  | "OBJECT_PATH"
-  | "PARAMETERS"
-  | "START_TIME"
-  | "STATUS";
+export const AudioImageSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  ImageSize: "IMAGE_SIZE",
+  ImageType: "IMAGE_TYPE",
+  ObjectPath: "OBJECT_PATH",
+  Parameters: "PARAMETERS",
+  StartTime: "START_TIME",
+  Status: "STATUS",
+} as const;
 
+export type AudioImageSortField =
+  (typeof AudioImageSortField)[keyof typeof AudioImageSortField];
 export type AudioImageSortInput = {
   field: AudioImageSortField;
   order?: InputMaybe<SortOrder>;
@@ -289,12 +300,21 @@ export type AudioImageSortInput = {
 
 export type Bout = {
   __typename?: "Bout";
-  category?: Maybe<AudioCategory>;
+  category: AudioCategory;
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  feed?: Maybe<Feed>;
+  feedId?: Maybe<Scalars["ID"]["output"]>;
+  feedStreams: Array<FeedStream>;
   id: Scalars["ID"]["output"];
-  ongoing?: Maybe<Scalars["Boolean"]["output"]>;
-  startTime?: Maybe<Scalars["DateTime"]["output"]>;
+  startTime: Scalars["DateTime"]["output"];
+};
+
+export type BoutFeedStreamsArgs = {
+  filter?: InputMaybe<FeedStreamFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedStreamSortInput>>>;
 };
 
 /** Join table between Bout and FeedStream */
@@ -321,8 +341,12 @@ export type BoutFeedStreamFilterInput = {
   or?: InputMaybe<Array<BoutFeedStreamFilterInput>>;
 };
 
-export type BoutFeedStreamSortField = "ID";
+export const BoutFeedStreamSortField = {
+  Id: "ID",
+} as const;
 
+export type BoutFeedStreamSortField =
+  (typeof BoutFeedStreamSortField)[keyof typeof BoutFeedStreamSortField];
 export type BoutFeedStreamSortInput = {
   field: BoutFeedStreamSortField;
   order?: InputMaybe<SortOrder>;
@@ -332,7 +356,7 @@ export type BoutFilterCategory = {
   eq?: InputMaybe<AudioCategory>;
   greaterThan?: InputMaybe<AudioCategory>;
   greaterThanOrEqual?: InputMaybe<AudioCategory>;
-  in?: InputMaybe<Array<InputMaybe<AudioCategory>>>;
+  in?: InputMaybe<Array<AudioCategory>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<AudioCategory>;
   lessThanOrEqual?: InputMaybe<AudioCategory>;
@@ -361,6 +385,10 @@ export type BoutFilterEndTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type BoutFilterFeedId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
 export type BoutFilterId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
@@ -370,43 +398,36 @@ export type BoutFilterInput = {
   category?: InputMaybe<BoutFilterCategory>;
   duration?: InputMaybe<BoutFilterDuration>;
   endTime?: InputMaybe<BoutFilterEndTime>;
+  feed?: InputMaybe<FeedFilterInput>;
+  feedId?: InputMaybe<BoutFilterFeedId>;
+  feedStreams?: InputMaybe<FeedStreamFilterInput>;
   id?: InputMaybe<BoutFilterId>;
   not?: InputMaybe<Array<BoutFilterInput>>;
-  ongoing?: InputMaybe<BoutFilterOngoing>;
   or?: InputMaybe<Array<BoutFilterInput>>;
   startTime?: InputMaybe<BoutFilterStartTime>;
-};
-
-export type BoutFilterOngoing = {
-  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]["input"]>>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type BoutFilterStartTime = {
   eq?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]["input"]>>>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
   lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export type BoutSortField =
-  | "CATEGORY"
-  | "DURATION"
-  | "END_TIME"
-  | "ID"
-  | "ONGOING"
-  | "START_TIME";
+export const BoutSortField = {
+  Category: "CATEGORY",
+  Duration: "DURATION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  StartTime: "START_TIME",
+} as const;
 
+export type BoutSortField = (typeof BoutSortField)[keyof typeof BoutSortField];
 export type BoutSortInput = {
   field: BoutSortField;
   order?: InputMaybe<SortOrder>;
@@ -532,18 +553,28 @@ export type CandidateFilterVisible = {
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-export type CandidateSortField =
-  | "CATEGORY"
-  | "DETECTION_COUNT"
-  | "FEED_ID"
-  | "ID"
-  | "MAX_TIME"
-  | "MIN_TIME"
-  | "VISIBLE";
+export const CandidateSortField = {
+  Category: "CATEGORY",
+  DetectionCount: "DETECTION_COUNT",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  MaxTime: "MAX_TIME",
+  MinTime: "MIN_TIME",
+  Visible: "VISIBLE",
+} as const;
 
+export type CandidateSortField =
+  (typeof CandidateSortField)[keyof typeof CandidateSortField];
 export type CandidateSortInput = {
   field: CandidateSortField;
   order?: InputMaybe<SortOrder>;
+};
+
+export type CreateBoutInput = {
+  category: AudioCategory;
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  feedId: Scalars["String"]["input"];
+  startTime: Scalars["DateTime"]["input"];
 };
 
 /** The result of the :create_bout mutation */
@@ -572,8 +603,14 @@ export type Detection = {
   visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
-export type DetectionCategory = "OTHER" | "VESSEL" | "WHALE";
+export const DetectionCategory = {
+  Other: "OTHER",
+  Vessel: "VESSEL",
+  Whale: "WHALE",
+} as const;
 
+export type DetectionCategory =
+  (typeof DetectionCategory)[keyof typeof DetectionCategory];
 export type DetectionFilterCandidateId = {
   isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
@@ -697,19 +734,22 @@ export type DetectionFilterVisible = {
   notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-export type DetectionSortField =
-  | "CANDIDATE_ID"
-  | "CATEGORY"
-  | "DESCRIPTION"
-  | "FEED_ID"
-  | "ID"
-  | "LISTENER_COUNT"
-  | "PLAYER_OFFSET"
-  | "PLAYLIST_TIMESTAMP"
-  | "SOURCE_IP"
-  | "TIMESTAMP"
-  | "VISIBLE";
+export const DetectionSortField = {
+  CandidateId: "CANDIDATE_ID",
+  Category: "CATEGORY",
+  Description: "DESCRIPTION",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  ListenerCount: "LISTENER_COUNT",
+  PlayerOffset: "PLAYER_OFFSET",
+  PlaylistTimestamp: "PLAYLIST_TIMESTAMP",
+  SourceIp: "SOURCE_IP",
+  Timestamp: "TIMESTAMP",
+  Visible: "VISIBLE",
+} as const;
 
+export type DetectionSortField =
+  (typeof DetectionSortField)[keyof typeof DetectionSortField];
 export type DetectionSortInput = {
   field: DetectionSortField;
   order?: InputMaybe<SortOrder>;
@@ -1171,43 +1211,48 @@ export type FeedSegmentFilterStartTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export type FeedSegmentSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "CLOUDFRONT_URL"
-  | "DURATION"
-  | "END_TIME"
-  | "FEED_ID"
-  | "FEED_STREAM_ID"
-  | "FILE_NAME"
-  | "ID"
-  | "PLAYLIST_M3U8_PATH"
-  | "PLAYLIST_PATH"
-  | "PLAYLIST_TIMESTAMP"
-  | "SEGMENT_PATH"
-  | "START_TIME";
+export const FeedSegmentSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  CloudfrontUrl: "CLOUDFRONT_URL",
+  Duration: "DURATION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  FeedStreamId: "FEED_STREAM_ID",
+  FileName: "FILE_NAME",
+  Id: "ID",
+  PlaylistM3U8Path: "PLAYLIST_M3U8_PATH",
+  PlaylistPath: "PLAYLIST_PATH",
+  PlaylistTimestamp: "PLAYLIST_TIMESTAMP",
+  SegmentPath: "SEGMENT_PATH",
+  StartTime: "START_TIME",
+} as const;
 
+export type FeedSegmentSortField =
+  (typeof FeedSegmentSortField)[keyof typeof FeedSegmentSortField];
 export type FeedSegmentSortInput = {
   field: FeedSegmentSortField;
   order?: InputMaybe<SortOrder>;
 };
 
-export type FeedSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "CLOUDFRONT_URL"
-  | "DATAPLICITY_ID"
-  | "ID"
-  | "IMAGE_URL"
-  | "INTRO_HTML"
-  | "LOCATION_POINT"
-  | "NAME"
-  | "NODE_NAME"
-  | "ONLINE"
-  | "ORCAHELLO_ID"
-  | "SLUG"
-  | "VISIBLE";
+export const FeedSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  CloudfrontUrl: "CLOUDFRONT_URL",
+  DataplicityId: "DATAPLICITY_ID",
+  Id: "ID",
+  ImageUrl: "IMAGE_URL",
+  IntroHtml: "INTRO_HTML",
+  LocationPoint: "LOCATION_POINT",
+  Name: "NAME",
+  NodeName: "NODE_NAME",
+  Online: "ONLINE",
+  OrcahelloId: "ORCAHELLO_ID",
+  Slug: "SLUG",
+  Visible: "VISIBLE",
+} as const;
 
+export type FeedSortField = (typeof FeedSortField)[keyof typeof FeedSortField];
 export type FeedSortInput = {
   field: FeedSortField;
   order?: InputMaybe<SortOrder>;
@@ -1415,21 +1460,24 @@ export type FeedStreamFilterStartTime = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
-export type FeedStreamSortField =
-  | "BUCKET"
-  | "BUCKET_REGION"
-  | "CLOUDFRONT_URL"
-  | "DURATION"
-  | "END_TIME"
-  | "FEED_ID"
-  | "ID"
-  | "NEXT_FEED_STREAM_ID"
-  | "PLAYLIST_M3U8_PATH"
-  | "PLAYLIST_PATH"
-  | "PLAYLIST_TIMESTAMP"
-  | "PREV_FEED_STREAM_ID"
-  | "START_TIME";
+export const FeedStreamSortField = {
+  Bucket: "BUCKET",
+  BucketRegion: "BUCKET_REGION",
+  CloudfrontUrl: "CLOUDFRONT_URL",
+  Duration: "DURATION",
+  EndTime: "END_TIME",
+  FeedId: "FEED_ID",
+  Id: "ID",
+  NextFeedStreamId: "NEXT_FEED_STREAM_ID",
+  PlaylistM3U8Path: "PLAYLIST_M3U8_PATH",
+  PlaylistPath: "PLAYLIST_PATH",
+  PlaylistTimestamp: "PLAYLIST_TIMESTAMP",
+  PrevFeedStreamId: "PREV_FEED_STREAM_ID",
+  StartTime: "START_TIME",
+} as const;
 
+export type FeedStreamSortField =
+  (typeof FeedStreamSortField)[keyof typeof FeedStreamSortField];
 export type FeedStreamSortInput = {
   field: FeedStreamSortField;
   order?: InputMaybe<SortOrder>;
@@ -1449,8 +1497,11 @@ export type GenerateFeedSpectrogramResult = {
   result?: Maybe<Feed>;
 };
 
-export type ImageType = "SPECTROGRAM";
+export const ImageType = {
+  Spectrogram: "SPECTROGRAM",
+} as const;
 
+export type ImageType = (typeof ImageType)[keyof typeof ImageType];
 export type LatLng = {
   __typename?: "LatLng";
   lat: Scalars["Float"]["output"];
@@ -1490,8 +1541,13 @@ export type Notification = {
   targetCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
-export type NotificationEventType = "CONFIRMED_CANDIDATE" | "NEW_DETECTION";
+export const NotificationEventType = {
+  ConfirmedCandidate: "CONFIRMED_CANDIDATE",
+  NewDetection: "NEW_DETECTION",
+} as const;
 
+export type NotificationEventType =
+  (typeof NotificationEventType)[keyof typeof NotificationEventType];
 export type NotificationFilterActive = {
   eq?: InputMaybe<Scalars["Boolean"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
@@ -1606,17 +1662,20 @@ export type NotificationFilterTargetCount = {
   notEq?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type NotificationSortField =
-  | "ACTIVE"
-  | "EVENT_TYPE"
-  | "FINISHED"
-  | "ID"
-  | "INSERTED_AT"
-  | "NOTIFIED_COUNT"
-  | "NOTIFIED_COUNT_UPDATED_AT"
-  | "PROGRESS"
-  | "TARGET_COUNT";
+export const NotificationSortField = {
+  Active: "ACTIVE",
+  EventType: "EVENT_TYPE",
+  Finished: "FINISHED",
+  Id: "ID",
+  InsertedAt: "INSERTED_AT",
+  NotifiedCount: "NOTIFIED_COUNT",
+  NotifiedCountUpdatedAt: "NOTIFIED_COUNT_UPDATED_AT",
+  Progress: "PROGRESS",
+  TargetCount: "TARGET_COUNT",
+} as const;
 
+export type NotificationSortField =
+  (typeof NotificationSortField)[keyof typeof NotificationSortField];
 export type NotificationSortInput = {
   field: NotificationSortField;
   order?: InputMaybe<SortOrder>;
@@ -1638,6 +1697,17 @@ export type NotifyConfirmedCandidateResult = {
   errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Notification>;
+};
+
+/** A page of :audio_image */
+export type PageOfAudioImage = {
+  __typename?: "PageOfAudioImage";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<AudioImage>>;
 };
 
 /** A page of :bout */
@@ -1755,6 +1825,7 @@ export type RootMutationType = {
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
   submitDetection: SubmitDetectionResult;
+  updateBout: UpdateBoutResult;
 };
 
 export type RootMutationTypeCancelCandidateNotificationsArgs = {
@@ -1764,6 +1835,10 @@ export type RootMutationTypeCancelCandidateNotificationsArgs = {
 
 export type RootMutationTypeCancelNotificationArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type RootMutationTypeCreateBoutArgs = {
+  input: CreateBoutInput;
 };
 
 export type RootMutationTypeGenerateFeedSpectrogramArgs = {
@@ -1800,8 +1875,15 @@ export type RootMutationTypeSubmitDetectionArgs = {
   input: SubmitDetectionInput;
 };
 
+export type RootMutationTypeUpdateBoutArgs = {
+  id: Scalars["ID"]["input"];
+  input?: InputMaybe<UpdateBoutInput>;
+};
+
 export type RootQueryType = {
   __typename?: "RootQueryType";
+  audioImages?: Maybe<PageOfAudioImage>;
+  bout?: Maybe<Bout>;
   bouts?: Maybe<PageOfBout>;
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
@@ -1813,6 +1895,18 @@ export type RootQueryType = {
   feedStreams?: Maybe<PageOfFeedStream>;
   feeds: Array<Feed>;
   notificationsForCandidate: Array<Notification>;
+};
+
+export type RootQueryTypeAudioImagesArgs = {
+  feedId: Scalars["String"]["input"];
+  filter?: InputMaybe<AudioImageFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<AudioImageSortInput>>>;
+};
+
+export type RootQueryTypeBoutArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 export type RootQueryTypeBoutsArgs = {
@@ -1843,6 +1937,7 @@ export type RootQueryTypeDetectionArgs = {
 };
 
 export type RootQueryTypeDetectionsArgs = {
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
   filter?: InputMaybe<DetectionFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
@@ -1908,14 +2003,16 @@ export type SignInWithPasswordResult = {
   user?: Maybe<User>;
 };
 
-export type SortOrder =
-  | "ASC"
-  | "ASC_NULLS_FIRST"
-  | "ASC_NULLS_LAST"
-  | "DESC"
-  | "DESC_NULLS_FIRST"
-  | "DESC_NULLS_LAST";
+export const SortOrder = {
+  Asc: "ASC",
+  AscNullsFirst: "ASC_NULLS_FIRST",
+  AscNullsLast: "ASC_NULLS_LAST",
+  Desc: "DESC",
+  DescNullsFirst: "DESC_NULLS_FIRST",
+  DescNullsLast: "DESC_NULLS_LAST",
+} as const;
 
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 export type SubmitDetectionInput = {
   category: DetectionCategory;
   description?: InputMaybe<Scalars["String"]["input"]>;
@@ -1933,6 +2030,21 @@ export type SubmitDetectionResult = {
   errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Detection>;
+};
+
+export type UpdateBoutInput = {
+  category?: InputMaybe<AudioCategory>;
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  startTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+/** The result of the :update_bout mutation */
+export type UpdateBoutResult = {
+  __typename?: "UpdateBoutResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Bout>;
 };
 
 export type User = {
@@ -2042,6 +2154,73 @@ export type UserFilterUsername = {
   notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type AudioImagePartsFragment = {
+  __typename?: "AudioImage";
+  id: string;
+  startTime: Date;
+  endTime: Date;
+  status: string;
+  objectPath?: string | null;
+  bucket?: string | null;
+  bucketRegion?: string | null;
+  feedId: string;
+  imageSize?: number | null;
+  imageType?: ImageType | null;
+};
+
+export type BoutPartsFragment = {
+  __typename?: "Bout";
+  id: string;
+  category: AudioCategory;
+  duration?: number | null;
+  endTime?: Date | null;
+  startTime: Date;
+};
+
+export type FeedPartsFragment = {
+  __typename?: "Feed";
+  id: string;
+  name: string;
+  slug: string;
+  nodeName: string;
+  introHtml?: string | null;
+  thumbUrl?: string | null;
+  imageUrl?: string | null;
+  mapUrl?: string | null;
+  bucket: string;
+  latLng: { __typename?: "LatLng"; lat: number; lng: number };
+};
+
+export type FeedSegmentPartsFragment = {
+  __typename?: "FeedSegment";
+  id: string;
+  startTime?: Date | null;
+  endTime?: Date | null;
+  duration?: number | null;
+  bucket?: string | null;
+  bucketRegion?: string | null;
+  cloudfrontUrl?: string | null;
+  fileName: string;
+  playlistM3u8Path?: string | null;
+  playlistPath?: string | null;
+  playlistTimestamp?: string | null;
+  segmentPath?: string | null;
+};
+
+export type FeedStreamPartsFragment = {
+  __typename?: "FeedStream";
+  id: string;
+  startTime?: Date | null;
+  endTime?: Date | null;
+  duration?: number | null;
+  bucket?: string | null;
+  bucketRegion?: string | null;
+  cloudfrontUrl?: string | null;
+  playlistTimestamp?: string | null;
+  playlistPath?: string | null;
+  playlistM3u8Path?: string | null;
+};
+
 export type CancelCandidateNotificationsMutationVariables = Exact<{
   candidateId: Scalars["ID"]["input"];
 }>;
@@ -2080,6 +2259,36 @@ export type CancelNotificationMutation = {
       notifiedCountUpdatedAt?: Date | null;
       progress?: number | null;
       finished?: boolean | null;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type CreateBoutMutationVariables = Exact<{
+  feedId: Scalars["String"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  category: AudioCategory;
+}>;
+
+export type CreateBoutMutation = {
+  __typename?: "RootMutationType";
+  createBout: {
+    __typename?: "CreateBoutResult";
+    result?: {
+      __typename?: "Bout";
+      id: string;
+      category: AudioCategory;
+      duration?: number | null;
+      endTime?: Date | null;
+      startTime: Date;
     } | null;
     errors: Array<{
       __typename?: "MutationError";
@@ -2279,6 +2488,65 @@ export type SubmitDetectionMutation = {
   };
 };
 
+export type UpdateBoutMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  category: AudioCategory;
+}>;
+
+export type UpdateBoutMutation = {
+  __typename?: "RootMutationType";
+  updateBout: {
+    __typename?: "UpdateBoutResult";
+    result?: {
+      __typename?: "Bout";
+      id: string;
+      category: AudioCategory;
+      duration?: number | null;
+      endTime?: Date | null;
+      startTime: Date;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type BoutQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type BoutQuery = {
+  __typename?: "RootQueryType";
+  bout?: {
+    __typename?: "Bout";
+    id: string;
+    category: AudioCategory;
+    duration?: number | null;
+    endTime?: Date | null;
+    startTime: Date;
+    feed?: {
+      __typename?: "Feed";
+      id: string;
+      name: string;
+      slug: string;
+      nodeName: string;
+      introHtml?: string | null;
+      thumbUrl?: string | null;
+      imageUrl?: string | null;
+      mapUrl?: string | null;
+      bucket: string;
+      latLng: { __typename?: "LatLng"; lat: number; lng: number };
+    } | null;
+  } | null;
+};
+
 export type CandidateQueryVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
@@ -2443,6 +2711,7 @@ export type CandidatesQuery = {
 };
 
 export type DetectionsQueryVariables = Exact<{
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
   filter?: InputMaybe<DetectionFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
@@ -2472,30 +2741,58 @@ export type DetectionsQuery = {
   } | null;
 };
 
-export type Detections2QueryVariables = Exact<{
-  filter?: InputMaybe<DetectionFilterInput>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  sort?: InputMaybe<
-    Array<InputMaybe<DetectionSortInput>> | InputMaybe<DetectionSortInput>
-  >;
+export type ListFeedStreamsQueryVariables = Exact<{
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
+  fromDateTime: Scalars["DateTime"]["input"];
+  toDateTime: Scalars["DateTime"]["input"];
+  dayBeforeFromDateTime: Scalars["DateTime"]["input"];
 }>;
 
-export type Detections2Query = {
+export type ListFeedStreamsQuery = {
   __typename?: "RootQueryType";
-  detections?: {
-    __typename?: "PageOfDetection";
+  feedStreams?: {
+    __typename?: "PageOfFeedStream";
     count?: number | null;
-    hasNextPage: boolean;
     results?: Array<{
-      __typename?: "Detection";
+      __typename?: "FeedStream";
       id: string;
-      timestamp: Date;
-      category?: DetectionCategory | null;
-      description?: string | null;
-      listenerCount?: number | null;
-      feed?: { __typename?: "Feed"; name: string } | null;
-      candidate?: { __typename?: "Candidate"; id: string } | null;
+      startTime?: Date | null;
+      endTime?: Date | null;
+      duration?: number | null;
+      bucket?: string | null;
+      bucketRegion?: string | null;
+      cloudfrontUrl?: string | null;
+      playlistTimestamp?: string | null;
+      playlistPath?: string | null;
+      playlistM3u8Path?: string | null;
+      feedSegments: Array<{
+        __typename?: "FeedSegment";
+        id: string;
+        startTime?: Date | null;
+        endTime?: Date | null;
+        duration?: number | null;
+        bucket?: string | null;
+        bucketRegion?: string | null;
+        cloudfrontUrl?: string | null;
+        fileName: string;
+        playlistM3u8Path?: string | null;
+        playlistPath?: string | null;
+        playlistTimestamp?: string | null;
+        segmentPath?: string | null;
+        audioImages: Array<{
+          __typename?: "AudioImage";
+          id: string;
+          startTime: Date;
+          endTime: Date;
+          status: string;
+          objectPath?: string | null;
+          bucket?: string | null;
+          bucketRegion?: string | null;
+          feedId: string;
+          imageSize?: number | null;
+          imageType?: ImageType | null;
+        }>;
+      }>;
     }> | null;
   } | null;
 };
@@ -2523,6 +2820,77 @@ export type FeedsQuery = {
   }>;
 };
 
+export const AudioImagePartsFragmentDoc = `
+    fragment AudioImageParts on AudioImage {
+  id
+  startTime
+  endTime
+  status
+  objectPath
+  bucket
+  bucketRegion
+  feedId
+  imageSize
+  imageType
+}
+    `;
+export const BoutPartsFragmentDoc = `
+    fragment BoutParts on Bout {
+  id
+  category
+  duration
+  endTime
+  startTime
+  endTime
+}
+    `;
+export const FeedPartsFragmentDoc = `
+    fragment FeedParts on Feed {
+  id
+  name
+  slug
+  nodeName
+  latLng {
+    lat
+    lng
+  }
+  introHtml
+  thumbUrl
+  imageUrl
+  mapUrl
+  bucket
+}
+    `;
+export const FeedSegmentPartsFragmentDoc = `
+    fragment FeedSegmentParts on FeedSegment {
+  id
+  startTime
+  endTime
+  duration
+  bucket
+  bucketRegion
+  cloudfrontUrl
+  fileName
+  playlistM3u8Path
+  playlistPath
+  playlistTimestamp
+  segmentPath
+}
+    `;
+export const FeedStreamPartsFragmentDoc = `
+    fragment FeedStreamParts on FeedStream {
+  id
+  startTime
+  endTime
+  duration
+  bucket
+  bucketRegion
+  cloudfrontUrl
+  playlistTimestamp
+  playlistPath
+  playlistM3u8Path
+}
+    `;
 export const CancelCandidateNotificationsDocument = `
     mutation cancelCandidateNotifications($candidateId: ID!) {
   cancelCandidateNotifications(id: $candidateId) {
@@ -2639,6 +3007,61 @@ useCancelNotificationMutation.fetcher = (
 ) =>
   fetcher<CancelNotificationMutation, CancelNotificationMutationVariables>(
     CancelNotificationDocument,
+    variables,
+    options,
+  );
+
+export const CreateBoutDocument = `
+    mutation createBout($feedId: String!, $startTime: DateTime!, $endTime: DateTime, $category: AudioCategory!) {
+  createBout(
+    input: {feedId: $feedId, category: $category, startTime: $startTime, endTime: $endTime}
+  ) {
+    result {
+      ...BoutParts
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    ${BoutPartsFragmentDoc}`;
+
+export const useCreateBoutMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CreateBoutMutation,
+    TError,
+    CreateBoutMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CreateBoutMutation,
+    TError,
+    CreateBoutMutationVariables,
+    TContext
+  >({
+    mutationKey: ["createBout"],
+    mutationFn: (variables?: CreateBoutMutationVariables) =>
+      fetcher<CreateBoutMutation, CreateBoutMutationVariables>(
+        CreateBoutDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCreateBoutMutation.getKey = () => ["createBout"];
+
+useCreateBoutMutation.fetcher = (
+  variables: CreateBoutMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<CreateBoutMutation, CreateBoutMutationVariables>(
+    CreateBoutDocument,
     variables,
     options,
   );
@@ -3089,6 +3512,96 @@ useSubmitDetectionMutation.fetcher = (
     options,
   );
 
+export const UpdateBoutDocument = `
+    mutation updateBout($id: ID!, $startTime: DateTime!, $endTime: DateTime, $category: AudioCategory!) {
+  updateBout(
+    id: $id
+    input: {category: $category, startTime: $startTime, endTime: $endTime}
+  ) {
+    result {
+      ...BoutParts
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    ${BoutPartsFragmentDoc}`;
+
+export const useUpdateBoutMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    UpdateBoutMutation,
+    TError,
+    UpdateBoutMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    UpdateBoutMutation,
+    TError,
+    UpdateBoutMutationVariables,
+    TContext
+  >({
+    mutationKey: ["updateBout"],
+    mutationFn: (variables?: UpdateBoutMutationVariables) =>
+      fetcher<UpdateBoutMutation, UpdateBoutMutationVariables>(
+        UpdateBoutDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useUpdateBoutMutation.getKey = () => ["updateBout"];
+
+useUpdateBoutMutation.fetcher = (
+  variables: UpdateBoutMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<UpdateBoutMutation, UpdateBoutMutationVariables>(
+    UpdateBoutDocument,
+    variables,
+    options,
+  );
+
+export const BoutDocument = `
+    query bout($id: ID!) {
+  bout(id: $id) {
+    ...BoutParts
+    feed {
+      ...FeedParts
+    }
+  }
+}
+    ${BoutPartsFragmentDoc}
+${FeedPartsFragmentDoc}`;
+
+export const useBoutQuery = <TData = BoutQuery, TError = unknown>(
+  variables: BoutQueryVariables,
+  options?: Omit<UseQueryOptions<BoutQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<BoutQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<BoutQuery, TError, TData>({
+    queryKey: ["bout", variables],
+    queryFn: fetcher<BoutQuery, BoutQueryVariables>(BoutDocument, variables),
+    ...options,
+  });
+};
+
+useBoutQuery.document = BoutDocument;
+
+useBoutQuery.getKey = (variables: BoutQueryVariables) => ["bout", variables];
+
+useBoutQuery.fetcher = (
+  variables: BoutQueryVariables,
+  options?: RequestInit["headers"],
+) => fetcher<BoutQuery, BoutQueryVariables>(BoutDocument, variables, options);
+
 export const CandidateDocument = `
     query candidate($id: ID!) {
   candidate(id: $id) {
@@ -3209,22 +3722,10 @@ useGetCurrentUserQuery.fetcher = (
 export const FeedDocument = `
     query feed($slug: String!) {
   feed(slug: $slug) {
-    id
-    name
-    slug
-    nodeName
-    latLng {
-      lat
-      lng
-    }
-    introHtml
-    thumbUrl
-    imageUrl
-    mapUrl
-    bucket
+    ...FeedParts
   }
 }
-    `;
+    ${FeedPartsFragmentDoc}`;
 
 export const useFeedQuery = <TData = FeedQuery, TError = unknown>(
   variables: FeedQueryVariables,
@@ -3426,8 +3927,14 @@ useCandidatesQuery.fetcher = (
   );
 
 export const DetectionsDocument = `
-    query detections($filter: DetectionFilterInput, $limit: Int, $offset: Int, $sort: [DetectionSortInput]) {
-  detections(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+    query detections($feedId: String, $filter: DetectionFilterInput, $limit: Int, $offset: Int, $sort: [DetectionSortInput]) {
+  detections(
+    feedId: $feedId
+    filter: $filter
+    limit: $limit
+    offset: $offset
+    sort: $sort
+  ) {
     count
     hasNextPage
     results {
@@ -3482,59 +3989,68 @@ useDetectionsQuery.fetcher = (
     options,
   );
 
-export const Detections2Document = `
-    query detections2($filter: DetectionFilterInput, $limit: Int, $offset: Int, $sort: [DetectionSortInput]) {
-  detections(filter: $filter, limit: $limit, offset: $offset, sort: $sort) {
+export const ListFeedStreamsDocument = `
+    query listFeedStreams($feedId: String, $fromDateTime: DateTime!, $toDateTime: DateTime!, $dayBeforeFromDateTime: DateTime!) {
+  feedStreams(
+    feedId: $feedId
+    filter: {and: [{startTime: {lessThanOrEqual: $toDateTime}}, {startTime: {greaterThanOrEqual: $dayBeforeFromDateTime}}], or: [{endTime: {isNil: true}}, {endTime: {greaterThanOrEqual: $fromDateTime}}]}
+    sort: {field: START_TIME, order: DESC}
+    limit: 2
+  ) {
     count
-    hasNextPage
     results {
-      id
-      timestamp
-      category
-      description
-      listenerCount
-      feed {
-        name
-      }
-      candidate {
-        id
+      ...FeedStreamParts
+      feedSegments(
+        filter: {and: [{startTime: {lessThanOrEqual: $toDateTime}}, {startTime: {greaterThanOrEqual: $dayBeforeFromDateTime}}], endTime: {greaterThanOrEqual: $fromDateTime}}
+        sort: {field: START_TIME, order: ASC}
+      ) {
+        ...FeedSegmentParts
+        audioImages(filter: {status: {eq: "complete"}}) {
+          ...AudioImageParts
+        }
       }
     }
   }
 }
-    `;
+    ${FeedStreamPartsFragmentDoc}
+${FeedSegmentPartsFragmentDoc}
+${AudioImagePartsFragmentDoc}`;
 
-export const useDetections2Query = <TData = Detections2Query, TError = unknown>(
-  variables?: Detections2QueryVariables,
+export const useListFeedStreamsQuery = <
+  TData = ListFeedStreamsQuery,
+  TError = unknown,
+>(
+  variables: ListFeedStreamsQueryVariables,
   options?: Omit<
-    UseQueryOptions<Detections2Query, TError, TData>,
+    UseQueryOptions<ListFeedStreamsQuery, TError, TData>,
     "queryKey"
   > & {
-    queryKey?: UseQueryOptions<Detections2Query, TError, TData>["queryKey"];
+    queryKey?: UseQueryOptions<ListFeedStreamsQuery, TError, TData>["queryKey"];
   },
 ) => {
-  return useQuery<Detections2Query, TError, TData>({
-    queryKey:
-      variables === undefined ? ["detections2"] : ["detections2", variables],
-    queryFn: fetcher<Detections2Query, Detections2QueryVariables>(
-      Detections2Document,
+  return useQuery<ListFeedStreamsQuery, TError, TData>({
+    queryKey: ["listFeedStreams", variables],
+    queryFn: fetcher<ListFeedStreamsQuery, ListFeedStreamsQueryVariables>(
+      ListFeedStreamsDocument,
       variables,
     ),
     ...options,
   });
 };
 
-useDetections2Query.document = Detections2Document;
+useListFeedStreamsQuery.document = ListFeedStreamsDocument;
 
-useDetections2Query.getKey = (variables?: Detections2QueryVariables) =>
-  variables === undefined ? ["detections2"] : ["detections2", variables];
+useListFeedStreamsQuery.getKey = (variables: ListFeedStreamsQueryVariables) => [
+  "listFeedStreams",
+  variables,
+];
 
-useDetections2Query.fetcher = (
-  variables?: Detections2QueryVariables,
+useListFeedStreamsQuery.fetcher = (
+  variables: ListFeedStreamsQueryVariables,
   options?: RequestInit["headers"],
 ) =>
-  fetcher<Detections2Query, Detections2QueryVariables>(
-    Detections2Document,
+  fetcher<ListFeedStreamsQuery, ListFeedStreamsQueryVariables>(
+    ListFeedStreamsDocument,
     variables,
     options,
   );

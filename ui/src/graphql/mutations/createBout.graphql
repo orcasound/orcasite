@@ -1,0 +1,26 @@
+mutation createBout(
+  $feedId: String!
+  $startTime: DateTime!
+  $endTime: DateTime
+  $category: AudioCategory!
+) {
+  createBout(
+    input: {
+      feedId: $feedId
+      category: $category
+      startTime: $startTime
+      endTime: $endTime
+    }
+  ) {
+    result {
+      ...BoutParts
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}

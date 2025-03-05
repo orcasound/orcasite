@@ -51,3 +51,5 @@ config :ex_aws,
     :instance_role
   ],
   region: "us-west-2"
+
+config :orcasite, :env, :test
