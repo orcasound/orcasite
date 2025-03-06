@@ -21,7 +21,11 @@ import { ReactElement, useMemo, useState } from "react";
 import Header from "@/components/Header";
 import Link from "@/components/Link";
 import { DataProvider } from "@/context/DataContext";
-import { useDetectionsQuery, useFeedsQuery } from "@/graphql/generated";
+import {
+  DetectionCategory,
+  useDetectionsQuery,
+  useFeedsQuery,
+} from "@/graphql/generated";
 import { Candidate } from "@/pages/moderator/candidates";
 import { AIData } from "@/types/DataTypes";
 
@@ -131,8 +135,16 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
   const feedsQueryResult = useFeedsQuery();
   const feedsData = feedsQueryResult.data?.feeds ?? [];
 
+  type CategoryOptions = "WHALE" | "WHALE (AI)" | "VESSEL" | "OTHER" | "ALL";
+  const [category, setCategory] = useState<CategoryOptions>("ALL");
+
   // get data on human detections
-  const detectionQueryResult = useDetectionsQuery();
+  const detectionQueryResult = useDetectionsQuery(
+    ["WHALE", "VESSEL", "OTHER"].includes(category)
+      ? { filter: { category: { eq: category as DetectionCategory } } }
+      : {},
+    { enabled: ["WHALE", "VESSEL", "OTHER", "ALL"].includes(category || "") },
+  );
   const detectionsData = detectionQueryResult.data?.detections?.results ?? [];
 
   // get data on AI detections

@@ -13,14 +13,14 @@
 require Ash.Query
 
 feeds = [
-  # %{
-  #   lat_lng_string: "48.5583362, -123.1735774",
-  #   name: "Orcasound Lab (Haro Strait)",
-  #   node_name: "rpi_orcasound_lab",
-  #   slug: "orcasound-lab",
-  #   bucket: "audio-orcasound-net",
-  #   bucket_region: "us-west-2",
-  # },
+  %{
+    lat_lng_string: "48.5583362, -123.1735774",
+    name: "Orcasound Lab (Haro Strait)",
+    node_name: "rpi_orcasound_lab",
+    slug: "orcasound-lab",
+    bucket: "audio-orcasound-net",
+    bucket_region: "us-west-2",
+  },
   %{
     lat_lng_string: "47.34922, -122.32512",
     name: "MaST Center Aquarium",
