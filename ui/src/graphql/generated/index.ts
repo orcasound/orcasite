@@ -2641,29 +2641,6 @@ export type NotificationsForCandidateQuery = {
   }>;
 };
 
-export type Feeds2QueryVariables = Exact<{
-  sort?: InputMaybe<
-    Array<InputMaybe<FeedSortInput>> | InputMaybe<FeedSortInput>
-  >;
-}>;
-
-export type Feeds2Query = {
-  __typename?: "RootQueryType";
-  feeds: Array<{
-    __typename?: "Feed";
-    id: string;
-    name: string;
-    slug: string;
-    nodeName: string;
-    imageUrl?: string | null;
-    mapUrl?: string | null;
-    thumbUrl?: string | null;
-    bucket: string;
-    online?: boolean | null;
-    latLng: { __typename?: "LatLng"; lat: number; lng: number };
-  }>;
-};
-
 export type CandidatesQueryVariables = Exact<{
   filter?: InputMaybe<CandidateFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -3805,57 +3782,6 @@ useNotificationsForCandidateQuery.fetcher = (
     NotificationsForCandidateQuery,
     NotificationsForCandidateQueryVariables
   >(NotificationsForCandidateDocument, variables, options);
-
-export const Feeds2Document = `
-    query feeds2($sort: [FeedSortInput]) {
-  feeds(sort: $sort) {
-    id
-    name
-    slug
-    nodeName
-    latLng {
-      lat
-      lng
-    }
-    imageUrl
-    mapUrl
-    thumbUrl
-    bucket
-    online
-  }
-}
-    `;
-
-export const useFeeds2Query = <TData = Feeds2Query, TError = unknown>(
-  variables?: Feeds2QueryVariables,
-  options?: Omit<UseQueryOptions<Feeds2Query, TError, TData>, "queryKey"> & {
-    queryKey?: UseQueryOptions<Feeds2Query, TError, TData>["queryKey"];
-  },
-) => {
-  return useQuery<Feeds2Query, TError, TData>({
-    queryKey: variables === undefined ? ["feeds2"] : ["feeds2", variables],
-    queryFn: fetcher<Feeds2Query, Feeds2QueryVariables>(
-      Feeds2Document,
-      variables,
-    ),
-    ...options,
-  });
-};
-
-useFeeds2Query.document = Feeds2Document;
-
-useFeeds2Query.getKey = (variables?: Feeds2QueryVariables) =>
-  variables === undefined ? ["feeds2"] : ["feeds2", variables];
-
-useFeeds2Query.fetcher = (
-  variables?: Feeds2QueryVariables,
-  options?: RequestInit["headers"],
-) =>
-  fetcher<Feeds2Query, Feeds2QueryVariables>(
-    Feeds2Document,
-    variables,
-    options,
-  );
 
 export const CandidatesDocument = `
     query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {

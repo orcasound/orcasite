@@ -35,8 +35,7 @@ export default function Header({
 }) {
   return (
     <AppBar
-      // position="static"
-      position="sticky"
+      position="static"
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,

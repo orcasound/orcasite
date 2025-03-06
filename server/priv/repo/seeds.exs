@@ -13,20 +13,20 @@
 require Ash.Query
 
 feeds = [
-  %{
-    lat_lng_string: "48.5583362, -123.1735774",
-    name: "Orcasound Lab (Haro Strait)",
-    node_name: "rpi_orcasound_lab",
-    slug: "orcasound-lab",
-    bucket: "audio-orcasound-net",
-    bucket_region: "us-west-2",
-  },
+  # %{
+  #   lat_lng_string: "48.5583362, -123.1735774",
+  #   name: "Orcasound Lab (Haro Strait)",
+  #   node_name: "rpi_orcasound_lab",
+  #   slug: "orcasound-lab",
+  #   bucket: "dev-streaming-orcasound-net",
+  #   bucket_region: "us-west-2",
+  # },
   %{
     lat_lng_string: "47.34922, -122.32512",
     name: "MaST Center Aquarium",
     node_name: "rpi_mast_center",
     slug: "mast-center",
-    bucket: "audio-orcasound-net",
+    bucket: "dev-streaming-orcasound-net",
     bucket_region: "us-west-2"
   },
   # %{
@@ -34,7 +34,7 @@ feeds = [
   #   name: "Bush Point",
   #   node_name: "rpi_bush_point",
   #   slug: "bush-point",
-  #   bucket: "audio-orcasound-net",
+  #   bucket: "dev-streaming-orcasound-net",
   #   bucket_region: "us-west-2",
   # },
   # %{
@@ -42,7 +42,7 @@ feeds = [
   #   name: "Port Townsend",
   #   node_name: "rpi_port_townsend",
   #   slug: "port-townsend",
-  #   bucket: "audio-orcasound-net",
+  #   bucket: "dev-streaming-orcasound-net",
   #   bucket_region: "us-west-2",
   # },
   %{
@@ -50,7 +50,7 @@ feeds = [
     name: "Sunset Bay",
     node_name: "rpi_sunset_bay",
     slug: "sunset-bay",
-    bucket: "audio-orcasound-net",
+    bucket: "dev-streaming-orcasound-net",
     bucket_region: "us-west-2"
   },
   %{
@@ -58,7 +58,7 @@ feeds = [
     name: "North San Juan Channel",
     node_name: "rpi_north_sjc",
     slug: "north-sjc",
-    bucket: "audio-orcasound-net",
+    bucket: "dev-streaming-orcasound-net",
     bucket_region: "us-west-2"
   }
 ]
