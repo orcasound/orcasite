@@ -21,6 +21,7 @@ defmodule Orcasite.GlobalSetup do
     |> case do
       {:ok, %{timestamps: [_ | _] = timestamps}} ->
         timestamp = List.last(timestamps)
+
         {:ok, feed_stream} =
           Orcasite.Radio.FeedStream
           |> Ash.Changeset.for_create(:create, %{feed: feed, playlist_timestamp: timestamp})
@@ -32,6 +33,64 @@ defmodule Orcasite.GlobalSetup do
 
       _ ->
         :ok
+    end
+  end
+
+  def populate_latest_feed_streams(feed, minutes_ago \\ 10) do
+    now = DateTime.utc_now()
+    from_time = now |> DateTime.add(-minutes_ago, :minute)
+    populate_feed_streams_range(feed, from_time, now)
+  end
+
+  def populate_feed_streams_range(feed, from_time, to_time) do
+    if Application.get_env(:orcasite, :env) != :prod do
+      # Get prod feed id for feed
+      {:ok, feed_resp} = Orcasite.Radio.GraphqlClient.get_feed(feed.slug)
+
+      feed_resp
+      |> get_in(["data", "feed", "id"])
+      |> case do
+        nil ->
+          {:error, :feed_not_found}
+
+        feed_id ->
+          # Get stream for the last `minutes` minutes
+          {:ok, feed_streams_response} =
+            Orcasite.Radio.GraphqlClient.get_feed_streams_with_segments(
+              feed_id,
+              from_time,
+              to_time
+            )
+
+          feed_streams = get_in(feed_streams_response, ["data", "feedStreams", "results"])
+
+          feed_streams
+          |> Recase.Enumerable.convert_keys(&Recase.to_snake/1)
+          |> Enum.map(fn feed_stream ->
+            feed_stream
+            |> Map.drop(["id"])
+            |> Map.put("feed", feed)
+            |> Map.update(
+              "feed_segments",
+              [],
+              &Enum.map(&1, fn seg ->
+                seg
+                |> Map.drop(["id"])
+                |> Map.put("feed", feed)
+                |> Recase.Enumerable.atomize_keys()
+              end)
+            )
+            |> Recase.Enumerable.atomize_keys()
+          end)
+          |> Ash.bulk_create(
+            Orcasite.Radio.FeedStream,
+            :populate_with_segments,
+            return_errors?: true,
+            stop_on_error?: true,
+            upsert?: true,
+            upsert_identity: :playlist_m3u8_path
+          )
+      end
     end
   end
 end
