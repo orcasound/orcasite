@@ -7,11 +7,9 @@ query audioImages(
 ) {
   audioImages(
     feedId: $feedId
-    filter: {
-      startTime: { lessThanOrEqual: $endTime }
-      endTime: { greaterThanOrEqual: $startTime }
-      status: { notEq: "FAILED" }
-    }
+    startTime: $startTime
+    endTime: $endTime
+    filter: { status: { notEq: "FAILED" } }
     limit: $limit
     offset: $offset
   ) {

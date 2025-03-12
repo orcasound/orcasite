@@ -92,7 +92,8 @@ defmodule OrcasiteWeb.Router do
       schema: Module.concat(["OrcasiteWeb.Schema"]),
       interface: :playground,
       json_codec: Jason,
-      before_send: {__MODULE__, :absinthe_before_send}
+      before_send: {__MODULE__, :absinthe_before_send},
+      socket: OrcasiteWeb.UserSocket
     )
   end
 

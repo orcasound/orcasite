@@ -1,5 +1,6 @@
 defmodule OrcasiteWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket, schema: OrcasiteWeb.Schema
 
   ## Channels
   channel("feed:*", OrcasiteWeb.FeedChannel)

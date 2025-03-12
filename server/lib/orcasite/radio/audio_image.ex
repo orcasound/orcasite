@@ -81,6 +81,8 @@ defmodule Orcasite.Radio.AudioImage do
 
     read :for_feed do
       argument :feed_id, :string, allow_nil?: false
+      argument :start_time, :utc_datetime_usec, allow_nil?: false
+      argument :end_time, :utc_datetime_usec, allow_nil?: false
 
       pagination do
         offset? true
@@ -88,7 +90,21 @@ defmodule Orcasite.Radio.AudioImage do
         default_limit 100
       end
 
-      filter expr(feed_id == ^arg(:feed_id))
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 (fragment(
+                    "(?) between (?) and (?)",
+                    start_time,
+                    ^arg(:start_time),
+                    ^arg(:end_time)
+                  ) or
+                    fragment(
+                      "(?) between (?) and (?)",
+                      end_time,
+                      ^arg(:start_time),
+                      ^arg(:end_time)
+                    ))
+             )
     end
 
     create :for_feed_segment do
@@ -229,15 +245,24 @@ defmodule Orcasite.Radio.AudioImage do
     queries do
       list :audio_images, :for_feed
     end
+
+    subscriptions do
+      pubsub OrcasiteWeb.Endpoint
+
+      subscribe :audio_image_updated do
+        read_action :for_feed
+        actions [:for_feed_segment, :update]
+      end
+    end
   end
 
-  pub_sub do
-    module OrcasiteWeb.Endpoint
+  # pub_sub do
+  #   module OrcasiteWeb.Endpoint
 
-    broadcast_type :phoenix_broadcast
+  #   broadcast_type :broadcast
 
-    prefix "audio_image"
-    publish :for_feed_segment, ["created", :feed_id], event: "created"
-    publish :update, ["updated", :feed_id]
-  end
+  #   prefix "audio_image"
+  #   publish :for_feed_segment, ["feed", :feed_id], event: "created"
+  #   publish :update, ["feed", :feed_id], event: "updated"
+  # end
 end

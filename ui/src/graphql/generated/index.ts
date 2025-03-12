@@ -1898,11 +1898,13 @@ export type RootQueryType = {
 };
 
 export type RootQueryTypeAudioImagesArgs = {
+  endTime: Scalars["DateTime"]["input"];
   feedId: Scalars["String"]["input"];
   filter?: InputMaybe<AudioImageFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<AudioImageSortInput>>>;
+  startTime: Scalars["DateTime"]["input"];
 };
 
 export type RootQueryTypeBoutArgs = {
@@ -1977,6 +1979,18 @@ export type RootQueryTypeNotificationsForCandidateArgs = {
   eventType?: InputMaybe<NotificationEventType>;
   filter?: InputMaybe<NotificationFilterInput>;
   sort?: InputMaybe<Array<InputMaybe<NotificationSortInput>>>;
+};
+
+export type RootSubscriptionType = {
+  __typename?: "RootSubscriptionType";
+  audioImageUpdated?: Maybe<Audio_Image_Updated_Result>;
+};
+
+export type RootSubscriptionTypeAudioImageUpdatedArgs = {
+  endTime: Scalars["DateTime"]["input"];
+  feedId: Scalars["String"]["input"];
+  filter?: InputMaybe<AudioImageFilterInput>;
+  startTime: Scalars["DateTime"]["input"];
 };
 
 export type SetDetectionVisibleInput = {
@@ -2152,6 +2166,12 @@ export type UserFilterUsername = {
   lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
   like?: InputMaybe<Scalars["String"]["input"]>;
   notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type Audio_Image_Updated_Result = {
+  __typename?: "audio_image_updated_result";
+  created?: Maybe<AudioImage>;
+  updated?: Maybe<AudioImage>;
 };
 
 export type AudioImagePartsFragment = {
@@ -2869,6 +2889,45 @@ export type FeedsQuery = {
   }>;
 };
 
+export type AudioImageUpdatedSubscriptionVariables = Exact<{
+  feedId: Scalars["String"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime: Scalars["DateTime"]["input"];
+}>;
+
+export type AudioImageUpdatedSubscription = {
+  __typename?: "RootSubscriptionType";
+  audioImageUpdated?: {
+    __typename?: "audio_image_updated_result";
+    created?: {
+      __typename?: "AudioImage";
+      id: string;
+      startTime: Date;
+      endTime: Date;
+      status: string;
+      objectPath?: string | null;
+      bucket?: string | null;
+      bucketRegion?: string | null;
+      feedId: string;
+      imageSize?: number | null;
+      imageType?: ImageType | null;
+    } | null;
+    updated?: {
+      __typename?: "AudioImage";
+      id: string;
+      startTime: Date;
+      endTime: Date;
+      status: string;
+      objectPath?: string | null;
+      bucket?: string | null;
+      bucketRegion?: string | null;
+      feedId: string;
+      imageSize?: number | null;
+      imageType?: ImageType | null;
+    } | null;
+  } | null;
+};
+
 export const AudioImagePartsFragmentDoc = `
     fragment AudioImageParts on AudioImage {
   id
@@ -2890,7 +2949,6 @@ export const BoutPartsFragmentDoc = `
   duration
   endTime
   startTime
-  endTime
 }
     `;
 export const ErrorPartsFragmentDoc = `
@@ -3923,7 +3981,9 @@ export const AudioImagesDocument = `
     query audioImages($feedId: String!, $startTime: DateTime!, $endTime: DateTime!, $limit: Int = 1000, $offset: Int = 0) {
   audioImages(
     feedId: $feedId
-    filter: {startTime: {lessThanOrEqual: $endTime}, endTime: {greaterThanOrEqual: $startTime}, status: {notEq: "FAILED"}}
+    startTime: $startTime
+    endTime: $endTime
+    filter: {status: {notEq: "FAILED"}}
     limit: $limit
     offset: $offset
   ) {
@@ -4212,3 +4272,16 @@ useFeedsQuery.fetcher = (
   options?: RequestInit["headers"],
 ) =>
   fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables, options);
+
+export const AudioImageUpdatedDocument = `
+    subscription audioImageUpdated($feedId: String!, $startTime: DateTime!, $endTime: DateTime!) {
+  audioImageUpdated(feedId: $feedId, startTime: $startTime, endTime: $endTime) {
+    created {
+      ...AudioImageParts
+    }
+    updated {
+      ...AudioImageParts
+    }
+  }
+}
+    ${AudioImagePartsFragmentDoc}`;

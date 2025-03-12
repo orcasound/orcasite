@@ -20,7 +20,7 @@ export function useAudioImageListener(
       const newChannel = socket.channel(`audio_image:${feedId}`, {});
       channel = newChannel;
 
-      channel.on("update", (payload: AudioImage) => {
+      channel.on("updated", (payload: AudioImage) => {
         callback(payload);
       });
 

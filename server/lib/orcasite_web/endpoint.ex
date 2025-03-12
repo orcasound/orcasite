@@ -1,5 +1,6 @@
 defmodule OrcasiteWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :orcasite
+  use Absinthe.Phoenix.Endpoint
 
   @session_options [
     store: :cookie,

@@ -61,6 +61,7 @@ defmodule Orcasite.Mixfile do
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},
+      {:absinthe_phoenix, "~> 2.0"},
       # Provides helper functions for easy batching of Ecto associations
       {:dataloader, "~> 2.0"},
       # Algorithm used by Comeonin to hash password
@@ -89,7 +90,7 @@ defmodule Orcasite.Mixfile do
       {:mjml, "~> 4.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
       {:ash_uuid, "~> 1.1.2"},
-      {:ash_graphql, "~> 1.4.7"},
+      {:ash_graphql, "~> 1.7.3"},
       {:ash_json_api, "~> 1.2"},
       {:open_api_spex, "~> 3.16"},
       {:redoc_ui_plug, "~> 0.2.1"},
