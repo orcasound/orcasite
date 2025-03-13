@@ -32,9 +32,8 @@ const CandidatePage: NextPageWithLayout = () => {
     typeof candidateId === "string" ? candidateId?.split("_") : [];
   const startTime = new Date(startEnd[0]).getTime();
   const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
-  console.log("startTime: " + startTime + ", endTime: " + endTime);
 
-  // replace this with a direct react-query...
+  // replace this with a direct react-query?
   const {
     combined,
     isSuccess,
@@ -61,9 +60,6 @@ const CandidatePage: NextPageWithLayout = () => {
     combined?.forEach((d) => {
       const time = new Date(d.timestamp).getTime();
       if (time >= startTime && time <= endTime) {
-        console.log("both true");
-      }
-      if (time >= startTime && time <= endTime) {
         arr.push(d);
       }
     });
@@ -72,12 +68,10 @@ const CandidatePage: NextPageWithLayout = () => {
       human: arr.filter((d) => d.newCategory !== "WHALE (AI)"),
       ai: arr.filter((d) => d.newCategory === "WHALE (AI)"),
     });
-    console.log("combined length is " + combined.length);
-  }, [combined]);
+  }, [combined, startTime, endTime]);
 
   const userName = "UserProfile123";
   const aiName = "Orcahello AI";
-  const communityName = "Community";
 
   const feed = feeds.filter((f) => f.id === detections?.human[0]?.feedId)[0];
   const startTimestamp = detections.human.length

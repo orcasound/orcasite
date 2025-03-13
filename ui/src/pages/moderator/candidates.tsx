@@ -159,11 +159,6 @@ export default function Candidates() {
     category: "All categories",
   });
 
-  const [timeRange, setTimeRange] = useState(threeDays);
-  const [timeIncrement, setTimeIncrement] = useState(15);
-  const [hydrophone, setHydrophone] = useState("All hydrophones");
-  const [category, setCategory] = useState("All categories");
-
   const handleChange = (event: SelectChangeEvent<unknown>) => {
     const { name, value } = event.target;
     setFilters((prevFilters) => ({
@@ -172,27 +167,7 @@ export default function Candidates() {
     }));
   };
 
-  const initChartSelect = (name: string, value: string | number) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value,
-    }));
-  };
-
-  // const [playing, setPlaying] = useState({
-  //   index: -1,
-  //   status: "ready",
-  // });
-
-  // const changeListState = (index: number, status: string) => {
-  //   setPlaying((prevState) => ({
-  //     ...prevState,
-  //     index: index,
-  //     status: status,
-  //   }));
-  // };
-
-  const [playNext, setPlayNext] = useState(true);
+  const [playNext, _setPlayNext] = useState(true);
 
   const players = useRef({});
 
@@ -245,19 +220,19 @@ export default function Candidates() {
   const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
 
   const handleSortAscending = (array: Candidate[]) => {
-    setSortedCandidates((v) => [...sortAscending(array)]);
+    setSortedCandidates(() => [...sortAscending(array)]);
   };
 
   const handleSortDescending = (array: Candidate[]) => {
-    setSortedCandidates((v) => [...sortDescending(array)]);
+    setSortedCandidates(() => [...sortDescending(array)]);
   };
 
   useEffect(() => {
-    setSortedCandidates((v) => [...candidates]);
+    setSortedCandidates(() => [...candidates]);
     if (isSuccess) {
-      setSortedCandidates((v) => [...candidates]);
+      setSortedCandidates(() => [...candidates]);
     }
-  }, [isSuccess]);
+  }, [isSuccess, candidates]);
 
   // render these first because it seems to take a while for candidates to populate from state, could just be the dev environment
   const candidateCards = candidates.map(
