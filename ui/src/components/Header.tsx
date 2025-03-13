@@ -35,7 +35,6 @@ export default function Header({
 }) {
   return (
     <AppBar
-      // position="static"
       position="sticky"
       sx={{
         // Keep header above the side drawer

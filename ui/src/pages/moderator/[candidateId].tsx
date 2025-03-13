@@ -79,45 +79,30 @@ const CandidatePage: NextPageWithLayout = () => {
     : 0;
 
   const offsetPadding = 15;
-  const minOffset = Math.min(...detections.human.map((d) => +d.playerOffset));
-  // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
+  const minOffset =
+    detections.human.length > 0
+      ? Math.min(...detections.human.map((d) => +d.playerOffset))
+      : 0;
 
   // ensures that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
   const firstPlaylist = detections.human.filter(
     (d) => +d.playlistTimestamp === startTimestamp,
   );
 
-  const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
+  const maxOffset =
+    firstPlaylist.length > 0
+      ? Math.max(...firstPlaylist.map((d) => +d.playerOffset))
+      : 0;
 
   const startOffset = Math.max(0, minOffset - offsetPadding);
   const endOffset = maxOffset + offsetPadding;
-
-  // const [breadcrumb, setBreadcrumb] = useState<string>("")
-  // useEffect(() => {
-  //   const breadcrumbName: string[] = [];
-  //   detections.human.length && breadcrumbName.push(communityName);
-  //   detections.ai.length && breadcrumbName.push(aiName);
-  //   setBreadcrumb(breadcrumbName.join(" + "));
-  // }, [detections])
 
   return (
     <div>
       <Head>Report {candidateId} | Orcasound </Head>
       <Grid container spacing={4} height={"100vh"}>
         <Grid size={8}>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            {/* <Breadcrumbs sx={{ paddingTop: 4, width: "50%" }}>
-          <Link underline="hover" color="inherit" href={"/candidates"}>
-            Recordings
-          </Link>
-          <Typography>
-            {breadcrumb}
-          </Typography>
-        </Breadcrumbs> */}
-            {/* <Breadcrumbs sx={{ paddingTop: 4, justifyContent: "flex-end" }}>
-          <Typography>&nbsp;{!isSuccess && "Waiting for Orcahello request..."}</Typography>
-        </Breadcrumbs> */}
-          </Box>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}></Box>
 
           <Box sx={{ marginTop: 4 }}>
             <Box>

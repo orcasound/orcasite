@@ -35,7 +35,7 @@ const navigation = [
     title: "",
     children: [
       {
-        title: "Recordings",
+        title: "Candidates",
         path: "/moderator/candidates",
         icon: <PlayCircleOutlineIcon />,
       },
@@ -97,29 +97,20 @@ const standardizeFeedName = (name: string) => {
   switch (name) {
     case "Beach Camp at Sunset Bay":
       return "Sunset Bay";
-      break;
     case "North SJC":
       return "North San Juan Channel";
-      break;
     case "Haro Strait":
       return "Orcasound Lab";
-      break;
     default:
       return name;
-      break;
   }
 };
 const lookupFeedName = (
   id: string,
   feedList: { id: string; name: string }[],
 ) => {
-  let name = "feed not found";
-  feedList.forEach((feed) => {
-    if (id === feed.id) {
-      name = feed.name;
-    }
-  });
-  return standardizeFeedName(name);
+  const feed = feedList.find((feed) => id === feed.id);
+  return standardizeFeedName(feed ? feed.name : "feed not found");
 };
 
 function ModeratorLayout({ children }: { children: React.ReactNode }) {
@@ -197,7 +188,7 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     console.log("nowPlaying: " + JSON.stringify(nowPlaying));
-  });
+  }, [nowPlaying]);
 
   //// COMPONENTS
 
@@ -250,10 +241,9 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
             aria-labelledby="nested-list-subheader"
             subheader={div.title && subheader(div.title)}
           >
-            {div.children &&
-              div.children.map((item) =>
-                listItem(item.title, item.path, item.icon),
-              )}
+            {div.children?.map((item) =>
+              listItem(item.title, item.path, item.icon),
+            )}
           </List>
         );
     }

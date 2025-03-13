@@ -105,8 +105,7 @@ const createCandidates = (
       };
       const lastMatchingArray = findLastMatchingArray();
       const lastTimestamp =
-        lastMatchingArray &&
-        lastMatchingArray[lastMatchingArray.length - 1].timestampString;
+        lastMatchingArray?.[lastMatchingArray.length - 1].timestampString;
       if (
         lastTimestamp &&
         Math.abs(Date.parse(lastTimestamp) - Date.parse(el.timestampString)) /

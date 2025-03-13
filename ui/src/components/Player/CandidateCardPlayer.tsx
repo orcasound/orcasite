@@ -87,14 +87,14 @@ export function CandidateCardPlayer({
   const handleReady = useCallback(
     (player: VideoJSPlayer) => {
       playerRef.current = player;
-      onPlayerInit && onPlayerInit(player);
+      onPlayerInit?.(player);
       player.on("playing", () => {
         setPlayerStatus("playing");
         const currentTime = player.currentTime() ?? 0;
         if (currentTime < startOffset || currentTime > endOffset) {
           player.currentTime(startOffset);
         }
-        onPlay && onPlay();
+        onPlay?.();
         setNowPlaying && candidate && setNowPlaying(candidate);
       });
       player.on("pause", () => {
@@ -109,7 +109,7 @@ export function CandidateCardPlayer({
           player.currentTime(startOffset);
           setPlayerTime(startOffset);
           player.pause();
-          onPlayerEnd && onPlayerEnd();
+          onPlayerEnd?.();
         } else {
           setPlayerTime(currentTime);
         }

@@ -117,14 +117,14 @@ export default function CandidateCard(props: {
             />
           </>
         ) : (
-          "no player found"
+          "Please select a recording"
         )}
       </Box>
       <Link
         href={
           firstTimestamp === lastTimestamp
-            ? `${firstTimestamp}`
-            : `${firstTimestamp}_${lastTimestamp}`
+            ? `moderator/${firstTimestamp}`
+            : `moderator/${firstTimestamp}_${lastTimestamp}`
         }
         sx={{ width: "100%", color: "inherit", textDecoration: "inherit" }}
       >
@@ -153,7 +153,7 @@ export default function CandidateCard(props: {
                   : Math.round(
                       (Date.parse(lastTimestampString) -
                         Date.parse(firstTimestampString)) /
-                        (1000 * 60 * 60),
+                        1000,
                     ) + " seconds"}
               <br />
               {["whale", "vessel", "other", "whale (AI)"]

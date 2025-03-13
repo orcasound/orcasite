@@ -1,3 +1,4 @@
+import { InputLabel } from "@mui/material";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,17 +20,18 @@ export default function ChartSelect({
   size,
   onChange,
 }: SelectProps) {
-  // const [selectedValue, setSelectedValue] = useState(value);
-  // const handleChange = (event: SelectChangeEvent<unknown>) => {
-  //   setSelectedValue(event.target.value as string | number)
-  // }
-  console.log(name);
   return (
     <Box sx={{ minWidth: 120, flex: 1 }}>
       <FormControl fullWidth>
         {/* removing the InputLabel to make Select appearance match designs, will revist for accessibility */}
+        <InputLabel
+          style={{ display: "none" }}
+          id={`chart-select-${name}-label`}
+        >
+          {name}
+        </InputLabel>
         <Select
-          id="demo-simple-select"
+          id={`${name}-select`}
           value={value}
           size={size}
           onChange={onChange}

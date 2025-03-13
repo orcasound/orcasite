@@ -16,7 +16,7 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
   }, [feedsQueryResult.data?.feeds]);
 
   const [playerProps, setPlayerProps] = useState({
-    feed: feedsData[0],
+    feed: feedsData.length > 0 ? feedsData[0] : null,
     timestamp: 0,
     startOffset: 0,
     endOffset: 0,
@@ -37,8 +37,7 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
       const offsetPadding = 15;
       const minOffset = Math.min(...candidateArray.map((d) => +d.playerOffset));
 
-      // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
-      // instead, ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
+      // ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
       const firstPlaylist = candidateArray.filter(
         (d) => +d.playlistTimestamp === startTimestamp,
       );
@@ -57,17 +56,16 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
         });
 
       lastDetection.audioUri &&
-        setPlayerProps({
-          ...playerProps,
+        setPlayerProps((p) => ({
+          ...p,
           timestamp: startTimestamp,
           audioUri: lastDetection.audioUri,
-        });
+        }));
     }
-  }, [candidate, feedsData, playerProps]);
+  }, [candidate, feedsData]);
 
   return (
     <AppBar
-      // position="static"
       position="fixed"
       sx={{
         // Keep header above the side drawer
@@ -75,10 +73,15 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
         bottom: 0,
         top: "auto",
         height: "100px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <Toolbar>
-        {/* <pre style={{color: "white"}}>{JSON.stringify(candidate)}</pre> */}
+        <pre style={{ color: "white", display: "none" }}>
+          {JSON.stringify(candidate)}
+        </pre>
         {candidate.array && playerProps.feed ? (
           <>
             <Typography>{`${playerProps.timestamp}`}</Typography>
@@ -92,7 +95,7 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
         ) : candidate.array && playerProps.audioUri.length ? (
           <CandidateCardAIPlayer audioUri={playerProps.audioUri} />
         ) : (
-          "No recordings loaded"
+          "Press play on any candidate to activate Play bar"
         )}
       </Toolbar>
     </AppBar>
