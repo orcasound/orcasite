@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import CandidateCard from "@/components/CandidateCard";
 import ChartSelect from "@/components/ChartSelect";
-import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
-import ReportsBarChart from "@/components/ReportsBarChart";
+import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout";
 import { useData } from "@/context/DataContext";
 import { useFeedsQuery } from "@/graphql/generated";
 import { CombinedData } from "@/types/DataTypes";
@@ -292,7 +291,11 @@ export default function Candidates() {
   return (
     <Container>
       <Stack>
-        <ReportsBarChart dataset={filteredData} timeRange={filters.timeRange} />
+        <Box sx={{ paddingTop: 2 }}>
+          <Typography variant="h5">Recordings</Typography>
+        </Box>
+
+        {/* <ReportsBarChart dataset={filteredData} timeRange={filters.timeRange} /> */}
         <Box
           style={{
             display: "flex",
@@ -367,4 +370,4 @@ export default function Candidates() {
   );
 }
 
-Candidates.getLayout = getModeratorLayout;
+Candidates.getLayout = getHalfMapLayout;

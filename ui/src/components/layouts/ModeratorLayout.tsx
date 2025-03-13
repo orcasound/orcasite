@@ -1,24 +1,16 @@
-import { PlayLessonOutlined } from "@mui/icons-material";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import DataObjectIcon from "@mui/icons-material/DataObject";
-import EarbudsIcon from "@mui/icons-material/Earbuds";
-import MicIcon from "@mui/icons-material/Mic";
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
-import { Box } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
-import Toolbar from "@mui/material/Toolbar";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import * as React from "react";
 import { ReactElement, useMemo, useState } from "react";
 
-import Header from "@/components/Header";
 import Link from "@/components/Link";
 import { DataProvider } from "@/context/DataContext";
 import {
@@ -27,51 +19,46 @@ import {
   useFeedsQuery,
 } from "@/graphql/generated";
 import { Candidate } from "@/pages/moderator/candidates";
+import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { AIData } from "@/types/DataTypes";
+import { analytics } from "@/utils/analytics";
 
 import PlayBar from "../PlayBar";
+import { TopNav } from "./Devias-dashboard/vertical-layout/top-nav";
+import navigationHalfMap from "./navigationHalfMap";
 
-const drawerWidth = 240;
+// const drawerWidth = 240;
+const drawerWidth = "280px";
 
-const navigation = [
-  {
-    kind: "subheader",
-    title: "",
-    children: [
-      {
-        title: "Recordings",
-        path: "/moderator/candidates",
-        icon: <PlayCircleOutlineIcon />,
-      },
-      {
-        title: "Hydrophones",
-        path: "/moderator/hydrophones/",
-        icon: <MicIcon />,
-      },
-      {
-        title: "Bouts",
-        path: "/moderator/bouts/",
-        icon: <EarbudsIcon />,
-      },
-      {
-        title: "Learn",
-        path: "/moderator/learn/",
-        icon: <PlayLessonOutlined />,
-      },
-      {
-        title: "Reports",
-        path: "/moderator/reports",
-        icon: <BarChartIcon />,
-      },
-      {
-        title: "JSON",
-        path: "/moderator/json",
-        icon: <DataObjectIcon />,
-      },
-    ],
-  },
-  //  {    kind: "divider",  },
-];
+function Brand({ onClick }: { onClick?: () => void }) {
+  return (
+    <Typography variant="h6" noWrap overflow="visible">
+      <Link
+        href="/"
+        color="inherit"
+        underline="none"
+        sx={{
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onClick={() => {
+          if (onClick) onClick();
+          analytics.nav.logoClicked();
+        }}
+      >
+        <Image
+          src={wordmark.src}
+          alt="Orcasound"
+          width={140}
+          height={60}
+          priority={true}
+        />
+      </Link>
+    </Typography>
+  );
+}
 
 const endpointOrcahello =
   "https://aifororcasdetections.azurewebsites.net/api/detections?";
@@ -126,14 +113,16 @@ const lookupFeedName = (
   return standardizeFeedName(name);
 };
 
-function ModeratorLayout({ children }: { children: React.ReactNode }) {
+export function ModeratorLayout({ children }: { children: React.ReactNode }) {
   //// DATA
 
   const [nowPlaying, setNowPlaying] = useState({} as Candidate);
 
   // get data on hydrophones
   const feedsQueryResult = useFeedsQuery();
-  const feedsData = feedsQueryResult.data?.feeds ?? [];
+  const feedsData = useMemo(() => {
+    return feedsQueryResult.data?.feeds ?? [];
+  }, [feedsQueryResult.data?.feeds]);
 
   type CategoryOptions = "WHALE" | "WHALE (AI)" | "VESSEL" | "OTHER" | "ALL";
   const [category, setCategory] = useState<CategoryOptions>("ALL");
@@ -202,7 +191,7 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
       nowPlaying: nowPlaying,
       setNowPlaying: setNowPlaying,
     };
-  }, [datasetHuman, aiDetections, feedsData, isSuccess]);
+  }, [datasetHuman, aiDetections, feedsData, isSuccess, nowPlaying]);
 
   //// COMPONENTS
 
@@ -212,19 +201,66 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
       href={path}
       underline="none"
       width={0.9}
-      sx={{ color: "rgba(0,0,0,0.6)" }}
+      sx={{
+        color: "inherit",
+        opacity: ".75",
+        ["&.active"]: {
+          background: "rgba(255,255,255,.15)",
+          opacity: "1",
+          // background: "#258DAD",
+        },
+      }}
     >
-      <ListItem disablePadding>
-        <ListItemButton>
-          <ListItemIcon>{icon}</ListItemIcon>
-          <ListItemText primary={title} />
+      <ListItem
+        disablePadding
+        sx={{
+          background: "inherit",
+          // marginBottom: "8px",
+          borderRadius: "8px",
+        }}
+      >
+        <ListItemButton style={{ padding: "14px 20px" }}>
+          <ListItemIcon
+            style={{
+              color: "inherit",
+              minWidth: "48px",
+              fontSize: "27px",
+              opacity: ".75",
+            }}
+          >
+            {icon}
+          </ListItemIcon>
+          <Typography
+            sx={{
+              margin: 0,
+              fontWeight: "inherit",
+              fontFamily: "inherit",
+              fontSize: "inherit",
+            }}
+          >
+            {title}
+          </Typography>
+          {/* <ListItemText primary={title} style={{margin: 0, fontWeight: "inherit"}} /> */}
         </ListItemButton>
       </ListItem>
     </Link>
   );
 
   const subheader = (content: string) => (
-    <ListSubheader component="div" id={content.replace(" ", "-").toLowerCase()}>
+    <ListSubheader
+      component="div"
+      id={content.replace(" ", "-").toLowerCase()}
+      sx={{
+        background: "transparent",
+        color: "inherit",
+        textTransform: "uppercase",
+        fontWeight: "bold",
+        opacity: ".75",
+        lineHeight: 2.5,
+        marginTop: "1.2rem",
+        fontSize: "14px",
+      }}
+    >
       {content}
     </ListSubheader>
   );
@@ -254,6 +290,13 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
             component="nav"
             aria-labelledby="nested-list-subheader"
             subheader={div.title && subheader(div.title)}
+            sx={{
+              background: "transparent",
+              color: "inherit",
+              fontFamily: "Mukta, Montserrat, sans-serif",
+              fontWeight: "bold",
+              fontSize: "18px",
+            }}
           >
             {div.children &&
               div.children.map((item) =>
@@ -267,7 +310,7 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
 
   const DrawerList = (
     <Box sx={{ overflow: "auto", marginTop: "5px" }}>
-      {navigation.map((item, index) => navDiv(item, index))}
+      {navigationHalfMap.map((item, index) => navDiv(item, index))}
     </Box>
   );
 
@@ -287,33 +330,84 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
         flexDirection: "column",
       }}
     >
-      <Header />
+      {/* <Header /> */}
+      <TopNav />
+      <Box sx={{ flexGrow: 1, display: "flex", width: "100vw" }}>
+        <Drawer
+          anchor="left"
+          open
+          sx={{ width: drawerWidth }}
+          PaperProps={{
+            sx: {
+              width: drawerWidth,
+              backgroundColor: "base.main",
+              color: "base.contrastText",
+            },
+          }}
+          variant="permanent"
+        >
+          <Stack sx={{ height: "100%" }}>
+            <Stack
+              alignItems="center"
+              direction="row"
+              spacing={2}
+              sx={{ padding: "4px 36px" }}
+            >
+              <Brand />
+            </Stack>
+            <Stack
+              component="nav"
+              spacing={2}
+              sx={{
+                flexGrow: 1,
+                px: 2,
+              }}
+            >
+              {DrawerList}
+            </Stack>
+          </Stack>
+        </Drawer>
 
-      <Box sx={{ flexGrow: 1, display: "flex" }}>
-        <div key={"right"}>
+        {/* <div key={"left"} className="drawer-div">
           <Drawer
+            PaperProps={{
+              sx: {
+                backgroundColor: "base.main",
+                color: "base.contrastText",
+              }
+            }}
             variant="permanent"
             sx={{
-              width: drawerWidth,
               flexShrink: 0,
+              width: drawerWidth,
               [`& .MuiDrawer-paper`]: {
                 width: drawerWidth,
                 boxSizing: "border-box",
               },
             }}
           >
+          <Box 
+            sx={{
+              backgroundColor: "base.main",
+              color: "base.contrastText",
+              height: "100vh",
+              // overflow: "scroll",
+              padding: "0px 16px",
+              fontWeight: "700"
+            }}
+          >
+            <div style={{height: ".5rem"}} />
             <Toolbar />
             {DrawerList}
+          </Box>
           </Drawer>
-        </div>
-
+          </div> */}
         <Box
           // maxWidth="xl"
-          sx={{ width: "100%", padding: 0, paddingLeft: 4, margin: 0 }}
+          sx={{ width: "100%", padding: 0, margin: 0 }}
         >
           <DataProvider data={dataset}>{children}</DataProvider>
         </Box>
-
         <PlayBar candidate={nowPlaying} />
       </Box>
     </Box>

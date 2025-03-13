@@ -216,6 +216,7 @@ function Desktop() {
                 mx: 1,
                 color: "base.contrastText",
                 display: "block",
+                lineHeight: 1,
               }}
             >
               {page.label}
@@ -241,6 +242,7 @@ function Desktop() {
               // color="info"
               startIcon={<Notifications />}
               sx={{
+                lineHeight: 1,
                 borderRadius: 8,
                 backgroundColor: "white",
                 "&:hover": {

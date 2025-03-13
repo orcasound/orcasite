@@ -97,7 +97,8 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
         zIndex: (theme) => theme.zIndex.drawer + 1,
         bottom: 0,
         top: "auto",
-        height: "100px",
+        height: "160px",
+        backgroundColor: "#062834",
       }}
     >
       <Toolbar>
