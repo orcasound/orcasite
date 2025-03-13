@@ -79,12 +79,9 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
       }}
     >
       <Toolbar>
-        <pre style={{ color: "white", display: "none" }}>
-          {JSON.stringify(candidate)}
-        </pre>
-        {candidate.array && playerProps.feed ? (
+        {candidate.array && playerProps.feed && (
           <>
-            <Typography>{`${playerProps.timestamp}`}</Typography>
+            <Typography component="h2">{`${playerProps.timestamp}`}</Typography>
             <CandidateCardPlayer
               feed={playerProps.feed}
               timestamp={playerProps.timestamp}
@@ -92,11 +89,15 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
               endOffset={playerProps.endOffset}
             />
           </>
-        ) : candidate.array && playerProps.audioUri.length ? (
-          <CandidateCardAIPlayer audioUri={playerProps.audioUri} />
-        ) : (
-          "Press play on any candidate to activate Play bar"
         )}
+        {candidate.array && playerProps.audioUri.length > 0 && (
+          <CandidateCardAIPlayer audioUri={playerProps.audioUri} />
+        )}
+        {(!candidate.array ||
+          (candidate.array &&
+            !playerProps.feed &&
+            !playerProps.audioUri.length)) &&
+          "Press play on any candidate to activate Play bar"}
       </Toolbar>
     </AppBar>
   );

@@ -52,7 +52,7 @@ export function CandidateCardPlayer({
   const [playerTime, setPlayerTime] = useState(startOffset);
   const { setNowPlaying } = useData();
 
-  const sliderMax = endOffset - startOffset;
+  const sliderMax = Math.max(endOffset - startOffset, 0);
   const sliderValue = playerTime - startOffset;
 
   const hlsURI = getHlsURI(feed.bucket, feed.nodeName, timestamp);

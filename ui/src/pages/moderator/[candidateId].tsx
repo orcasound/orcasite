@@ -30,8 +30,9 @@ const CandidatePage: NextPageWithLayout = () => {
   const { candidateId } = router.query;
   const startEnd =
     typeof candidateId === "string" ? candidateId?.split("_") : [];
-  const startTime = new Date(startEnd[0]).getTime();
-  const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
+  const startTime = startEnd.length > 0 ? new Date(startEnd[0]).getTime() : 0;
+  const endTime =
+    startEnd.length > 0 ? new Date(startEnd[startEnd.length - 1]).getTime() : 0;
 
   // replace this with a direct react-query?
   const {
@@ -99,7 +100,16 @@ const CandidatePage: NextPageWithLayout = () => {
 
   return (
     <div>
-      <Head>Report {candidateId} | Orcasound </Head>
+      <Head>
+        <title>
+          Candidate Report {candidateId && `#${candidateId}`} | Orcasound
+          Moderator
+        </title>
+        <meta
+          name="description"
+          content={`Details for acoustic detection candidate ${candidateId}`}
+        />
+      </Head>
       <Grid container spacing={4} height={"100vh"}>
         <Grid size={8}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}></Box>
@@ -120,7 +130,9 @@ const CandidatePage: NextPageWithLayout = () => {
               display: "flex",
               overflow: "scroll",
               width: "100%",
-              height: 382,
+              height: "min(382px, 50vh)",
+              maxHeight: "450px",
+              overflowY: "hidden",
             }}
           >
             {detections?.ai?.map((d) => (
@@ -164,11 +176,17 @@ const CandidatePage: NextPageWithLayout = () => {
             )}
           </Box>
           <Box className="main">
-            <List>
+            <List aria-label="Detection comments and annotations">
               {detections.combined?.map((el, index) => (
-                <ListItemButton key={index}>
+                <ListItemButton
+                  key={index}
+                  aria-label={`Comment by ${el.newCategory !== "WHALE (AI)" ? userName : aiName} at ${new Date(el.timestamp).toLocaleTimeString()}`}
+                >
                   <ListItemAvatar>
-                    <AccountCircle style={{ fontSize: 40, opacity: 0.9 }} />
+                    <AccountCircle
+                      style={{ fontSize: 40, opacity: 0.9 }}
+                      aria-hidden="true"
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     className="list-item-text"
@@ -184,11 +202,11 @@ const CandidatePage: NextPageWithLayout = () => {
                     }
                   />
                   <ListItemAvatar sx={{ display: "flex", opacity: "0.9" }}>
-                    <Edit />
+                    <Edit aria-label="Edit comment" />
                     <Box sx={{ padding: "0 8px" }} />
-                    <ThumbUpOffAlt />
+                    <ThumbUpOffAlt aria-label="Approve" />
                     <Box sx={{ padding: "0 8px" }} />
-                    <ThumbDownOffAlt />
+                    <ThumbDownOffAlt aria-label="Reject" />
                   </ListItemAvatar>
                 </ListItemButton>
               ))}

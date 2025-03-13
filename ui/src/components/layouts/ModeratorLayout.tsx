@@ -16,7 +16,7 @@ import ListSubheader from "@mui/material/ListSubheader";
 import Toolbar from "@mui/material/Toolbar";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import { ReactElement, useMemo, useState } from "react";
 
 import Header from "@/components/Header";
 import Link from "@/components/Link";
@@ -70,7 +70,8 @@ const navigation = [
 ];
 
 const endpointOrcahello =
-  "https://aifororcasdetections.azurewebsites.net/api/detections?";
+  process.env.NEXT_PUBLIC_ORCAHELLO_API_URL ||
+  "https://aifororcasdetections.azurewebsites.net/api/detections";
 const daysAgo = 7;
 const paramsOrcahello = {
   page: 1,
@@ -91,7 +92,7 @@ function constructUrl(endpoint: string, paramsObj: object) {
     const str = [key, value].join("=") + "&";
     params += str;
   }
-  return endpoint + params;
+  return endpoint + "?" + params;
 }
 const standardizeFeedName = (name: string) => {
   switch (name) {
@@ -166,7 +167,7 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
   }));
 
   // combine global data into one object, to be passed into Data Provider for all child pages
-  const dataset = useMemo(() => {
+  const baseDataset = useMemo(() => {
     const datasetAI =
       aiDetections?.map((el: AIData) => ({
         ...el,
@@ -181,14 +182,16 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
       combined: [...datasetHuman, ...datasetAI],
       feeds: feedsData,
       isSuccess: isSuccess,
-      nowPlaying: nowPlaying,
-      setNowPlaying: setNowPlaying,
     };
-  }, [datasetHuman, aiDetections, feedsData, isSuccess, nowPlaying]);
+  }, [datasetHuman, aiDetections, feedsData, isSuccess]);
 
-  useEffect(() => {
-    console.log("nowPlaying: " + JSON.stringify(nowPlaying));
-  }, [nowPlaying]);
+  const dataset = useMemo(() => {
+    return {
+      ...baseDataset,
+      nowPlaying,
+      setNowPlaying,
+    };
+  }, [baseDataset, nowPlaying]);
 
   //// COMPONENTS
 
