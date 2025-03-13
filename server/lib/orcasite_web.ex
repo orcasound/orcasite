@@ -42,7 +42,7 @@ defmodule OrcasiteWeb do
         layouts: [html: OrcasiteWeb.Layouts]
 
       import Plug.Conn
-      import OrcasiteWeb.Gettext
+      use Gettext, backend: OrcasiteWeb.Gettext
       unquote(verified_routes())
     end
   end
@@ -83,7 +83,7 @@ defmodule OrcasiteWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import OrcasiteWeb.CoreComponents
-      import OrcasiteWeb.Gettext
+      use Gettext, backend: OrcasiteWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

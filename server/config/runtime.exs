@@ -21,6 +21,8 @@ if System.get_env("PHX_SERVER") do
   config :orcasite, OrcasiteWeb.Endpoint, server: true
 end
 
+config :orcasite, :prod_host, System.get_env("HOST_URL", "live.orcasound.net")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
@@ -49,7 +51,7 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("HOST_URL") || "live.orcasite.com"
+  host = System.get_env("HOST_URL") || "live.orcasound.net"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   if System.get_env("FEED_STREAM_QUEUE_URL", "") != "" do

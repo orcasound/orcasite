@@ -1,17 +1,5 @@
 query feed($slug: String!) {
   feed(slug: $slug) {
-    id
-    name
-    slug
-    nodeName
-    latLng {
-      lat
-      lng
-    }
-    introHtml
-    thumbUrl
-    imageUrl
-    mapUrl
-    bucket
+    ...FeedParts
   }
 }

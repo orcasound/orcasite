@@ -1,0 +1,43 @@
+query listFeedStreams(
+  $feedId: String
+  $fromDateTime: DateTime!
+  $toDateTime: DateTime!
+  $dayBeforeFromDateTime: DateTime!
+) {
+  feedStreams(
+    feedId: $feedId
+    filter: {
+      and: [
+        { startTime: { lessThanOrEqual: $toDateTime } }
+        { startTime: { greaterThanOrEqual: $dayBeforeFromDateTime } }
+      ]
+      or: [
+        { endTime: { isNil: true } }
+        { endTime: { greaterThanOrEqual: $fromDateTime } }
+      ]
+    }
+    sort: { field: START_TIME, order: DESC }
+    limit: 2
+  ) {
+    count
+    results {
+      ...FeedStreamParts
+
+      feedSegments(
+        filter: {
+          and: [
+            { startTime: { lessThanOrEqual: $toDateTime } }
+            { startTime: { greaterThanOrEqual: $dayBeforeFromDateTime } }
+          ]
+          endTime: { greaterThanOrEqual: $fromDateTime }
+        }
+        sort: { field: START_TIME, order: ASC }
+      ) {
+        ...FeedSegmentParts
+        audioImages(filter: { status: { eq: "complete" } }) {
+          ...AudioImageParts
+        }
+      }
+    }
+  }
+}
