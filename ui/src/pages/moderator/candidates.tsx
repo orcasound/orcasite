@@ -217,6 +217,7 @@ export default function Candidates() {
   const candidates = sortDescending(
     createCandidates(filteredData, filters.timeIncrement),
   );
+
   const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
 
   const handleSortAscending = (array: Candidate[]) => {
@@ -232,7 +233,8 @@ export default function Candidates() {
     if (isSuccess) {
       setSortedCandidates(() => [...candidates]);
     }
-  }, [isSuccess, candidates]);
+  }, [isSuccess]);
+  // eslint issue: adding missing dependency 'candidates' throws a console error that maximum callback depth reached
 
   // render these first because it seems to take a while for candidates to populate from state, could just be the dev environment
   const candidateCards = candidates.map(

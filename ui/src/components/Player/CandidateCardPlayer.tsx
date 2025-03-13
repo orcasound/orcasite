@@ -25,9 +25,9 @@ export function CandidateCardPlayer({
   startOffset,
   endOffset,
   onAudioPlay,
-  changeListState,
-  index,
-  command,
+  // changeListState,
+  // index,
+  // command,
   onPlayerInit,
   onPlay,
   onPlayerEnd,
@@ -121,6 +121,7 @@ export function CandidateCardPlayer({
     },
     [startOffset, endOffset],
   );
+  // eslint issue: adding all missing dependencies to the useCallback creates player issues
 
   const handlePlayPauseClick = () => {
     const player = playerRef.current;

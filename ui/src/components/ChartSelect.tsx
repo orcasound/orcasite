@@ -23,10 +23,11 @@ export default function ChartSelect({
   // const handleChange = (event: SelectChangeEvent<unknown>) => {
   //   setSelectedValue(event.target.value as string | number)
   // }
-
+  console.log(name);
   return (
     <Box sx={{ minWidth: 120, flex: 1 }}>
       <FormControl fullWidth>
+        {/* removing the InputLabel to make Select appearance match designs, will revist for accessibility */}
         <Select
           id="demo-simple-select"
           value={value}

@@ -6,7 +6,8 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import { MutableRefObject } from "react";
+import { MutableRefObject, useCallback } from "react";
+import Player from "video.js/dist/types/player";
 
 import { useFeedsQuery } from "@/graphql/generated";
 import { type Candidate } from "@/pages/moderator/candidates";
@@ -54,6 +55,13 @@ export default function CandidateCard(props: {
   const startOffset = Math.max(0, minOffset - offsetPadding);
   const endOffset = maxOffset + offsetPadding;
 
+  const onPlayerInit = useCallback(
+    (player: Player) => {
+      props.players.current[props.index] = player;
+    },
+    [props.index, props.players],
+  );
+
   return (
     <Card key={firstTimestampString} sx={{ display: "flex" }}>
       <Box
@@ -73,9 +81,7 @@ export default function CandidateCard(props: {
             startOffset={startOffset}
             endOffset={endOffset}
             index={props.index}
-            onPlayerInit={(player) => {
-              props.players.current[props.index] = player;
-            }}
+            onPlayerInit={onPlayerInit}
             onPlay={() => {
               Object.entries(props.players.current).forEach(([key, player]) => {
                 if (+key !== props.index) {
@@ -94,9 +100,7 @@ export default function CandidateCard(props: {
               candidate={candidate}
               audioUri={candidate.array[0].audioUri}
               index={props.index}
-              onPlayerInit={(player) => {
-                props.players.current[props.index] = player;
-              }}
+              onPlayerInit={onPlayerInit}
               onPlay={() => {
                 Object.entries(props.players.current).forEach(
                   ([key, player]) => {

@@ -16,7 +16,7 @@ import ListSubheader from "@mui/material/ListSubheader";
 import Toolbar from "@mui/material/Toolbar";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
-import { ReactElement, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 
 import Header from "@/components/Header";
 import Link from "@/components/Link";
@@ -129,7 +129,10 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
 
   // get data on hydrophones
   const feedsQueryResult = useFeedsQuery();
-  const feedsData = feedsQueryResult.data?.feeds ?? [];
+  const feedsData = useMemo(() => {
+    const feeds = feedsQueryResult.data?.feeds ?? [];
+    return feeds;
+  }, [feedsQueryResult.data?.feeds]);
 
   // get data on human detections
   const detectionQueryResult = useDetectionsQuery();
@@ -190,7 +193,11 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
       nowPlaying: nowPlaying,
       setNowPlaying: setNowPlaying,
     };
-  }, [datasetHuman, aiDetections, feedsData, isSuccess]);
+  }, [datasetHuman, aiDetections, feedsData, isSuccess, nowPlaying]);
+
+  useEffect(() => {
+    console.log("nowPlaying: " + JSON.stringify(nowPlaying));
+  });
 
   //// COMPONENTS
 
