@@ -75,7 +75,7 @@ const CandidatePage: NextPageWithLayout = () => {
   const aiName = "Orcahello AI";
 
   const feed = feeds.filter((f) => f.id === detections?.human[0]?.feedId)[0];
-  const startTimestamp = detections.human.length
+  const playlist = detections.human.length
     ? detections.human[0].playlistTimestamp
     : 0;
 
@@ -87,7 +87,7 @@ const CandidatePage: NextPageWithLayout = () => {
 
   // ensures that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
   const firstPlaylist = detections.human.filter(
-    (d) => +d.playlistTimestamp === startTimestamp,
+    (d) => +d.playlistTimestamp === playlist,
   );
 
   const maxOffset =
@@ -120,7 +120,9 @@ const CandidatePage: NextPageWithLayout = () => {
                 {detections.combined[0]?.hydrophone}
               </Typography>
               <Typography variant="h4">
-                {new Date(startEnd[0]).toLocaleString()}
+                {startEnd[0]
+                  ? new Date(startEnd[0]).toLocaleString()
+                  : "Invalid date"}
               </Typography>
             </Box>
           </Box>
@@ -163,7 +165,7 @@ const CandidatePage: NextPageWithLayout = () => {
             {detections.human.length ? (
               <CandidateCardPlayer
                 feed={feed}
-                timestamp={startTimestamp}
+                playlist={playlist}
                 startOffset={startOffset}
                 endOffset={endOffset}
               />

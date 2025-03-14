@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
 import { Detection, Scalars } from "@/graphql/generated";
-import { Candidate } from "@/pages/moderator/candidates";
 
 export interface HumanData extends Omit<Detection, "candidate"> {
   type: string;
@@ -34,13 +33,23 @@ export interface AIData extends AIDetection {
 }
 export interface CombinedData extends HumanData, AIData {}
 
+export interface Candidate2 {
+  array: CombinedData[];
+  whale: number;
+  vessel: number;
+  other: number;
+  "whale (AI)": number;
+  hydrophone: string;
+  descriptions: string;
+}
+
 export interface Dataset {
   human: HumanData[];
   ai: AIData[];
   combined: CombinedData[];
   // feeds: Feed[];
   isSuccess: boolean;
-  setNowPlaying?: Dispatch<SetStateAction<Candidate>>;
+  setNowPlaying?: Dispatch<SetStateAction<Candidate2>>;
 }
 
 export interface Location {

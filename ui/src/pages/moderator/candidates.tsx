@@ -1,6 +1,6 @@
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import CandidateCard from "@/components/CandidateCard";
 import ChartSelect from "@/components/ChartSelect";
@@ -8,7 +8,7 @@ import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
 import ReportsBarChart from "@/components/ReportsBarChart";
 import { useData } from "@/context/DataContext";
 import { useFeedsQuery } from "@/graphql/generated";
-import { CombinedData } from "@/types/DataTypes";
+import { Candidate2, CombinedData } from "@/types/DataTypes";
 
 const sevenDays = 7 * 24 * 60 * 60 * 1000;
 const threeDays = 3 * 24 * 60 * 60 * 1000;
@@ -71,20 +71,10 @@ const categorySelect = [
   },
 ];
 
-export interface Candidate {
-  array: CombinedData[];
-  whale: number;
-  vessel: number;
-  other: number;
-  "whale (AI)": number;
-  hydrophone: string;
-  descriptions: string;
-}
-
 const createCandidates = (
   dataset: CombinedData[],
   interval: number,
-): Candidate[] => {
+): Candidate2[] => {
   const candidates: Array<Array<CombinedData>> = [];
   const sort = dataset.sort(
     (a, b) => Date.parse(b.timestampString) - Date.parse(a.timestampString),
@@ -179,8 +169,7 @@ export default function Candidates() {
   const filteredData = combined.filter((el: CombinedData) => {
     return (
       // uncomment this to block Orcahello data
-      // el.type === "human" &&
-
+      el.type === "human" &&
       // Disabling timerange filter for now because seed data is all from 2023
       //            (Date.parse(el.timestamp) >= min) &&
 
@@ -195,16 +184,16 @@ export default function Candidates() {
     return date != null ? new Date(date).getTime() : 0;
   };
 
-  const sortDescending = (array: Candidate[]) => {
+  const sortDescending = useCallback((array: Candidate2[]) => {
     const sort = array.sort(
       (a, b) =>
         handledGetTime(b.array[0].timestamp) -
         handledGetTime(a.array[0].timestamp),
     );
     return sort;
-  };
+  }, []);
 
-  const sortAscending = (array: Candidate[]) => {
+  const sortAscending = (array: Candidate2[]) => {
     const sort = array.sort(
       (a, b) =>
         handledGetTime(a.array[0].timestamp) -
@@ -213,31 +202,44 @@ export default function Candidates() {
     return sort;
   };
 
-  const candidates = sortDescending(
-    createCandidates(filteredData, filters.timeIncrement),
-  );
+  const candidates = useMemo(() => {
+    return sortDescending(
+      createCandidates(filteredData, filters.timeIncrement),
+    );
+  }, [filteredData, filters.timeIncrement, sortDescending]);
 
   const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
 
-  const handleSortAscending = (array: Candidate[]) => {
+  const handleSortAscending = (array: Candidate2[]) => {
     setSortedCandidates(() => [...sortAscending(array)]);
   };
 
-  const handleSortDescending = (array: Candidate[]) => {
+  const handleSortDescending = (array: Candidate2[]) => {
     setSortedCandidates(() => [...sortDescending(array)]);
   };
 
   useEffect(() => {
     setSortedCandidates(() => [...candidates]);
+    // run effect once on component mount to capture candidates
+    // eslint-diable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (isSuccess) {
-      setSortedCandidates(() => [...candidates]);
+      setSortedCandidates((p) => {
+        if (JSON.stringify(p) !== JSON.stringify(candidates)) {
+          return [...candidates];
+        } else {
+          return p;
+        }
+      });
     }
-  }, [isSuccess]);
+  }, [isSuccess, candidates]);
   // eslint issue: adding missing dependency 'candidates' throws a console error that maximum callback depth reached
 
   // render these first because it seems to take a while for candidates to populate from state, could just be the dev environment
   const candidateCards = candidates.map(
-    (candidate: Candidate, index: number) => (
+    (candidate: Candidate2, index: number) => (
       <CandidateCard
         candidate={candidate}
         key={index}
@@ -252,7 +254,7 @@ export default function Candidates() {
 
   // these render from state after delay, then re-render after another delay when AI candidates come through
   const sortedCandidateCards = sortedCandidates.map(
-    (candidate: Candidate, index: number) => (
+    (candidate: Candidate2, index: number) => (
       <CandidateCard
         candidate={candidate}
         key={index}

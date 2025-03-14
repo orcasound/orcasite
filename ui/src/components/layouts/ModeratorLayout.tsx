@@ -16,13 +16,13 @@ import ListSubheader from "@mui/material/ListSubheader";
 import Toolbar from "@mui/material/Toolbar";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
-import { ReactElement, useMemo, useState } from "react";
+import { ReactElement, useMemo } from "react";
 
 import Header from "@/components/Header";
 import Link from "@/components/Link";
 import { DataProvider } from "@/context/DataContext";
+import { NowPlayingProvider } from "@/context/NowPlayingContext";
 import { useDetectionsQuery, useFeedsQuery } from "@/graphql/generated";
-import { Candidate } from "@/pages/moderator/candidates";
 import { AIData } from "@/types/DataTypes";
 
 import PlayBar from "../PlayBar";
@@ -78,22 +78,22 @@ const paramsOrcahello = {
   sortBy: "timestamp",
   sortOrder: "desc",
   timeframe: "all",
-  dateFrom: new Date(new Date().setDate(new Date().getDate() - daysAgo))
-    .toLocaleDateString()
-    .replaceAll(/\//g, "%2F"),
-  dateTo: new Date().toLocaleDateString().replaceAll(/\//g, "%2F"),
+  dateFrom: new Date(
+    new Date().setDate(new Date().getDate() - daysAgo),
+  ).toLocaleDateString(),
+  dateTo: new Date().toLocaleDateString(),
   location: "all",
   recordsPerPage: 100,
 };
+
 function constructUrl(endpoint: string, paramsObj: object) {
-  let params = "";
-  const entries = Object.entries(paramsObj);
-  for (const [key, value] of entries) {
-    const str = [key, value].join("=") + "&";
-    params += str;
-  }
-  return endpoint + "?" + params;
+  const params = new URLSearchParams();
+  Object.entries(paramsObj).forEach(([key, value]) => {
+    params.append(key, String(value));
+  });
+  return `${endpoint}?${params.toString()}`;
 }
+
 const standardizeFeedName = (name: string) => {
   switch (name) {
     case "Beach Camp at Sunset Bay":
@@ -117,8 +117,6 @@ const lookupFeedName = (
 function ModeratorLayout({ children }: { children: React.ReactNode }) {
   //// DATA
 
-  const [nowPlaying, setNowPlaying] = useState({} as Candidate);
-
   // get data on hydrophones
   const feedsQueryResult = useFeedsQuery();
   const feedsData = useMemo(() => {
@@ -131,10 +129,10 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
   const detectionsData = detectionQueryResult.data?.detections?.results ?? [];
 
   // get data on AI detections
+  const url: string = constructUrl(endpointOrcahello, paramsOrcahello);
+
   const fetchOrcahelloData = async () => {
-    const response = await fetch(
-      constructUrl(endpointOrcahello, paramsOrcahello),
-    );
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Network response from Orcahello was not ok");
     }
@@ -160,14 +158,14 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
   const datasetHuman = dedupeHuman.map((el) => ({
     ...el,
     type: "human",
-    hydrophone: lookupFeedName(el.feedId!, feedsData),
+    hydrophone: el.feedId ? lookupFeedName(el.feedId, feedsData) : "Unknown",
     comments: el.description,
-    newCategory: el!.category!,
+    newCategory: el?.category || "Unknown",
     timestampString: el.timestamp.toString(),
   }));
 
   // combine global data into one object, to be passed into Data Provider for all child pages
-  const baseDataset = useMemo(() => {
+  const dataset = useMemo(() => {
     const datasetAI =
       aiDetections?.map((el: AIData) => ({
         ...el,
@@ -184,14 +182,6 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
       isSuccess: isSuccess,
     };
   }, [datasetHuman, aiDetections, feedsData, isSuccess]);
-
-  const dataset = useMemo(() => {
-    return {
-      ...baseDataset,
-      nowPlaying,
-      setNowPlaying,
-    };
-  }, [baseDataset, nowPlaying]);
 
   //// COMPONENTS
 
@@ -262,49 +252,53 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
   //// RENDER
 
   return (
-    <Box
-      sx={{
-        // use `dvh` for dynamic viewport height to handle mobile browser weirdness
-        // but fallback to `vh` for browsers that don't support `dvh`
-        // `&` is a workaround because sx prop can't have identical keys
-        "&": {
-          height: "100dvh",
-        },
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Header />
-
-      <Box sx={{ flexGrow: 1, display: "flex" }}>
-        <div key={"right"}>
-          <Drawer
-            variant="permanent"
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              [`& .MuiDrawer-paper`]: {
-                width: drawerWidth,
-                boxSizing: "border-box",
-              },
-            }}
-          >
-            <Toolbar />
-            {DrawerList}
-          </Drawer>
-        </div>
-
+    <NowPlayingProvider>
+      <DataProvider data={dataset}>
         <Box
-          // maxWidth="xl"
-          sx={{ width: "100%", padding: 0, paddingLeft: 4, margin: 0 }}
+          sx={{
+            // use `dvh` for dynamic viewport height to handle mobile browser weirdness
+            // but fallback to `vh` for browsers that don't support `dvh`
+            // `&` is a workaround because sx prop can't have identical keys
+            "&": {
+              height: "100dvh",
+            },
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
-          <DataProvider data={dataset}>{children}</DataProvider>
-        </Box>
+          <Header />
 
-        <PlayBar candidate={nowPlaying} />
-      </Box>
-    </Box>
+          <Box sx={{ flexGrow: 1, display: "flex" }}>
+            <div key={"right"}>
+              <Drawer
+                variant="permanent"
+                sx={{
+                  width: drawerWidth,
+                  flexShrink: 0,
+                  [`& .MuiDrawer-paper`]: {
+                    width: drawerWidth,
+                    boxSizing: "border-box",
+                  },
+                }}
+              >
+                <Toolbar />
+                {DrawerList}
+              </Drawer>
+            </div>
+
+            <Box
+              // maxWidth="xl"
+              sx={{ width: "100%", padding: 0, paddingLeft: 4, margin: 0 }}
+            >
+              {children}
+            </Box>
+
+            <PlayBar />
+          </Box>
+        </Box>
+      </DataProvider>
+    </NowPlayingProvider>
   );
 }
 

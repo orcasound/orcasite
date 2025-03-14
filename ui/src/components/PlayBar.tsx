@@ -1,13 +1,14 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, Stack, Toolbar, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 
+import { useNowPlaying } from "@/context/NowPlayingContext";
 import { useFeedsQuery } from "@/graphql/generated";
-import { Candidate } from "@/pages/moderator/candidates";
 
 import { CandidateCardAIPlayer } from "./Player/CandidateCardAIPlayer";
 import { CandidateCardPlayer } from "./Player/CandidateCardPlayer";
 
-export default function PlayBar({ candidate }: { candidate: Candidate }) {
+export default function PlayBar() {
+  const { nowPlaying } = useNowPlaying();
   // get hydrophone feed list
   const feedsQueryResult = useFeedsQuery();
   const feedsData = useMemo(() => {
@@ -17,39 +18,52 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
 
   const [playerProps, setPlayerProps] = useState({
     feed: feedsData.length > 0 ? feedsData[0] : null,
-    timestamp: 0,
+    playlist: 0,
     startOffset: 0,
     endOffset: 0,
     audioUri: "",
   });
 
   useEffect(() => {
-    const candidateArray = candidate.array;
-    if (candidateArray) {
+    const candidateArray = nowPlaying.array;
+    if (candidateArray && candidateArray.length > 0) {
       const firstDetection = candidateArray[candidateArray.length - 1];
       const lastDetection = candidateArray[0];
       const feed = feedsData.find((feed) => feed.id === firstDetection.feedId);
 
-      const startTimestamp = Math.min(
-        ...candidateArray.map((d) => +d.playlistTimestamp),
-      );
+      const playlist =
+        candidateArray.length > 0
+          ? Math.min(...candidateArray.map((d) => +d.playlistTimestamp))
+          : 0;
 
       const offsetPadding = 15;
-      const minOffset = Math.min(...candidateArray.map((d) => +d.playerOffset));
+      const minOffset =
+        candidateArray.length > 0
+          ? Math.min(...candidateArray.map((d) => +d.playerOffset))
+          : 0;
 
       // ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
       const firstPlaylist = candidateArray.filter(
-        (d) => +d.playlistTimestamp === startTimestamp,
+        (d) => +d.playlistTimestamp === playlist,
       );
 
-      const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
+      const maxOffset =
+        firstPlaylist.length > 0
+          ? Math.max(...firstPlaylist.map((d) => +d.playerOffset))
+          : 0;
       const startOffset = Math.max(0, minOffset - offsetPadding);
       const endOffset = maxOffset + offsetPadding;
+
+      console.log("Updating PlayerProps:", {
+        startOffset,
+        endOffset,
+        playlist,
+      });
 
       feed &&
         setPlayerProps({
           feed: feed ? feed : feedsData[0],
-          timestamp: startTimestamp,
+          playlist: playlist,
           startOffset: startOffset,
           endOffset: endOffset,
           audioUri: "",
@@ -58,11 +72,14 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
       lastDetection.audioUri &&
         setPlayerProps((p) => ({
           ...p,
-          timestamp: startTimestamp,
+          feed: null,
+          playlist: 0,
+          startOffset: 0,
+          endOffset: 0,
           audioUri: lastDetection.audioUri,
         }));
     }
-  }, [candidate, feedsData]);
+  }, [nowPlaying, feedsData]);
 
   return (
     <AppBar
@@ -79,25 +96,35 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
       }}
     >
       <Toolbar>
-        {candidate.array && playerProps.feed && (
+        {nowPlaying.array && playerProps.feed ? (
           <>
-            <Typography component="h2">{`${playerProps.timestamp}`}</Typography>
+            <Stack>
+              <Typography component="h2">{`${new Date(nowPlaying?.array[0].timestamp).toLocaleString()}`}</Typography>
+              <Typography>{`${nowPlaying?.array[0].hydrophone}`}</Typography>
+            </Stack>
             <CandidateCardPlayer
               feed={playerProps.feed}
-              timestamp={playerProps.timestamp}
+              playlist={playerProps.playlist}
               startOffset={playerProps.startOffset}
               endOffset={playerProps.endOffset}
             />
           </>
-        )}
-        {candidate.array && playerProps.audioUri.length > 0 && (
-          <CandidateCardAIPlayer audioUri={playerProps.audioUri} />
-        )}
-        {(!candidate.array ||
-          (candidate.array &&
+        ) : nowPlaying.array && playerProps.audioUri.length > 0 ? (
+          <>
+            <Stack>
+              <Typography component="h2">{`${new Date(nowPlaying?.array[0].timestamp).toLocaleString()}`}</Typography>
+              <Typography>{`${nowPlaying?.array[0].hydrophone}`}</Typography>
+            </Stack>
+            <CandidateCardAIPlayer audioUri={playerProps.audioUri} />
+          </>
+        ) : !nowPlaying.array ||
+          (nowPlaying.array &&
             !playerProps.feed &&
-            !playerProps.audioUri.length)) &&
-          "Press play on any candidate to activate Play bar"}
+            !playerProps.audioUri.length) ? (
+          "Press play on any candidate to activate Play bar"
+        ) : (
+          "Something is wrong"
+        )}
       </Toolbar>
     </AppBar>
   );

@@ -1,4 +1,3 @@
-import { InputLabel } from "@mui/material";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
@@ -24,12 +23,11 @@ export default function ChartSelect({
     <Box sx={{ minWidth: 120, flex: 1 }}>
       <FormControl fullWidth>
         {/* removing the InputLabel to make Select appearance match designs, will revist for accessibility */}
-        <InputLabel
-          style={{ display: "none" }}
+        {/* <InputLabel
           id={`chart-select-${name}-label`}
         >
           {name}
-        </InputLabel>
+        </InputLabel> */}
         <Select
           id={`${name}-select`}
           value={value}

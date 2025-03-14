@@ -4,10 +4,8 @@ import { Box, Slider, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
 import { getHlsURI } from "@/hooks/useTimestampFetcher";
-import { Candidate } from "@/pages/moderator/candidates";
 import { mobileOnly } from "@/styles/responsive";
 
 import { type PlayerStatus } from "./Player";
@@ -21,21 +19,18 @@ const VideoJS = dynamic(() => import("./VideoJS"));
 export function CandidateCardPlayer({
   feed,
   marks,
-  timestamp,
+  playlist,
   startOffset,
   endOffset,
   onAudioPlay,
-  // changeListState,
-  // index,
-  // command,
   onPlayerInit,
   onPlay,
   onPlayerEnd,
-  candidate,
+  // candidate
 }: {
   feed: Pick<Feed, "nodeName" | "bucket">;
   marks?: { label: string; value: number }[];
-  timestamp: number;
+  playlist: number;
   startOffset: number;
   endOffset: number;
   onAudioPlay?: () => void;
@@ -45,17 +40,25 @@ export function CandidateCardPlayer({
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
   onPlayerEnd?: () => void;
-  candidate?: Candidate;
+  // candidate?: Candidate2;
 }) {
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
-  const { setNowPlaying } = useData();
+  // const { setNowPlaying } = useNowPlaying();
 
-  const sliderMax = Math.max(endOffset - startOffset, 0);
-  const sliderValue = playerTime - startOffset;
+  console.log("initial render: startOffset", startOffset);
+  console.log("initial render: playerTime", playerTime);
 
-  const hlsURI = getHlsURI(feed.bucket, feed.nodeName, timestamp);
+  const startOffsetRef = useRef(startOffset);
+
+  useEffect(() => {
+    startOffsetRef.current = startOffset;
+  }, [startOffset]);
+
+  const sliderValue = playerTime - startOffsetRef.current;
+  const sliderMax = endOffset - startOffsetRef.current;
+  const hlsURI = getHlsURI(feed.bucket, feed.nodeName, playlist);
 
   const playerOptions = useMemo(
     () => ({
@@ -88,14 +91,26 @@ export function CandidateCardPlayer({
     (player: VideoJSPlayer) => {
       playerRef.current = player;
       onPlayerInit?.(player);
+      setPlayerTime(startOffset);
+
+      let metadataLoaded = false; // Flag to ensure metadata is loaded before timeupdate
+
+      console.log("handleReady: startOffset", startOffset);
+      // console.log("handleReady: playerTime", playerTime)
+
       player.on("playing", () => {
         setPlayerStatus("playing");
+        if (!metadataLoaded) {
+          console.log("Forcing seek to startOffset:", startOffset);
+          player.currentTime(startOffset);
+        }
+
         const currentTime = player.currentTime() ?? 0;
         if (currentTime < startOffset || currentTime > endOffset) {
           player.currentTime(startOffset);
         }
         onPlay?.();
-        setNowPlaying && candidate && setNowPlaying(candidate);
+        // candidate && setNowPlaying(candidate)
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
@@ -104,24 +119,74 @@ export function CandidateCardPlayer({
       player.on("error", () => setPlayerStatus("error"));
 
       player.on("timeupdate", () => {
+        if (!metadataLoaded) return; // Ignore timeupdate events before metadata loads
         const currentTime = player.currentTime() ?? 0;
+        const currentTimePlus =
+          currentTime !== startOffsetRef.current
+            ? startOffsetRef.current
+            : currentTime;
         if (currentTime > endOffset) {
-          player.currentTime(startOffset);
-          setPlayerTime(startOffset);
+          player.currentTime(startOffsetRef.current);
+          setPlayerTime(startOffsetRef.current);
           player.pause();
           onPlayerEnd?.();
         } else {
           setPlayerTime(currentTime);
+          console.log(
+            "Timeupdate currentTime <= endOffset: currentTime =",
+            currentTime,
+          );
+          console.log(
+            "Timeupdate currentTime <= endOffset: startOffsetRef.current =",
+            startOffsetRef.current,
+          );
+          console.log(
+            "Timeupdate currentTime <= endOffset: currentTimePlus =",
+            currentTimePlus,
+          );
+          console.log(
+            "Timeupdate currentTime <= endOffset: startOffset =",
+            startOffset,
+          );
+          console.log(
+            "Timeupdate currentTime <= endOffset: endOffset =",
+            endOffset,
+          );
         }
       });
       player.on("loadedmetadata", () => {
+        console.log("Loaded Metadata - stale startOffset:", startOffset);
+        console.log(
+          "Loaded Metadata - startOffsetRef.current:",
+          startOffsetRef.current,
+        );
+        console.log(
+          "loadedmetadata event fired - player.currentTime:",
+          player.currentTime(),
+        );
+        // console.log("loadedmetadata event fired - playerTime:", playerTime);
         // On initial load, set player time to startOffset
-        player.currentTime(startOffset);
+        metadataLoaded = true; // Set flag to allow timeupdate
+        player.currentTime(startOffsetRef.current);
+        // setPlayerTime(startOffset); // Ensure UI updates
       });
     },
-    [startOffset, endOffset],
+    [
+      startOffset,
+      endOffset,
+      onPlayerInit, // memoized inside useCallback in CandidateCard
+      onPlay, // memoized inside useCallback in CandidateCard
+      onPlayerEnd, // memoized inside useCallback in CandidateCard
+    ],
   );
-  // eslint issue: adding all missing dependencies to the useCallback creates player issues
+
+  useEffect(() => {
+    console.log("Syncing playerTime with startOffset:", startOffset);
+    setPlayerTime(startOffset);
+    if (playerRef.current) {
+      playerRef.current.currentTime(startOffset);
+    }
+  }, [startOffset]);
 
   const handlePlayPauseClick = () => {
     const player = playerRef.current;
@@ -134,6 +199,14 @@ export function CandidateCardPlayer({
     if (!player) {
       setPlayerStatus("error");
       return;
+    }
+
+    if (playerStatus !== "playing") {
+      console.log(
+        "clicked play and setPlayerTime(startOffsetRef.current)",
+        startOffsetRef.current,
+      );
+      setPlayerTime(startOffsetRef.current);
     }
 
     try {
@@ -179,6 +252,11 @@ export function CandidateCardPlayer({
     playerRef?.current?.currentTime(v + startOffset);
     playerRef?.current?.play();
   };
+
+  const playerTimePlus =
+    playerTime < startOffsetRef.current || playerTime > endOffset
+      ? startOffsetRef.current
+      : playerTime;
 
   return (
     <Box
@@ -229,12 +307,35 @@ export function CandidateCardPlayer({
           sx={{ display: "flex", justifyContent: "space-between" }}
         >
           <Typography component="p" variant="subtitle2">
-            {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
+            {formattedSeconds(
+              Number((playerTimePlus - startOffsetRef.current).toFixed(0)),
+            )}
           </Typography>
           <Typography component="p" variant="subtitle2">
             {"-" +
-              formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
+              formattedSeconds(Number((endOffset - playerTimePlus).toFixed(0)))}
           </Typography>
+          {(() => {
+            console.log(
+              "Rendered: playerTime",
+              playerTime,
+              "Rendered: playerTimePlus",
+              playerTimePlus,
+              "startOffset",
+              startOffset,
+              "startOffsetRef.current",
+              startOffsetRef.current,
+              "Displayed Left:",
+              formattedSeconds(
+                Number((playerTimePlus - startOffsetRef.current).toFixed(0)),
+              ),
+              "Displayed Right:",
+              formattedSeconds(Number((endOffset - playerTimePlus).toFixed(0))),
+              "endOffset",
+              endOffset,
+            );
+            return <Box></Box>;
+          })()}
         </Box>
       </Box>
     </Box>

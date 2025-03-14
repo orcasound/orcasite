@@ -1,32 +1,34 @@
 import {
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
   Link,
   Typography,
 } from "@mui/material";
-import { MutableRefObject, useCallback } from "react";
-import Player from "video.js/dist/types/player";
+import { MutableRefObject, useEffect } from "react";
 
-import { useFeedsQuery } from "@/graphql/generated";
-import { type Candidate } from "@/pages/moderator/candidates";
+// import Player from "video.js/dist/types/player";
+import { useNowPlaying } from "@/context/NowPlayingContext";
+// import { useFeedsQuery } from "@/graphql/generated";
+import { Candidate2 } from "@/types/DataTypes";
 
-import { CandidateCardAIPlayer } from "./Player/CandidateCardAIPlayer";
-import { CandidateCardPlayer } from "./Player/CandidateCardPlayer";
 import { VideoJSPlayer } from "./Player/VideoJS";
 
 export default function CandidateCard(props: {
-  candidate: Candidate;
+  candidate: Candidate2;
   index: number;
   // changeListState?: (value: number, status: string) => void;
   // command?: string;
   players: MutableRefObject<{ [index: number]: VideoJSPlayer }>;
   playNext: boolean;
 }) {
+  const { nowPlaying, setNowPlaying } = useNowPlaying();
+
   // get hydrophone feed list
-  const feedsQueryResult = useFeedsQuery();
-  const feedsData = feedsQueryResult.data?.feeds ?? [];
+  // const feedsQueryResult = useFeedsQuery();
+  // const feedsData = feedsQueryResult.data?.feeds ?? [];
 
   const candidate = props.candidate;
   const candidateArray = candidate.array;
@@ -36,31 +38,58 @@ export default function CandidateCard(props: {
   const lastTimestamp = lastCandidate.timestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
-  const feed = feedsData.find((feed) => feed.id === firstCandidate.feedId);
+  // const feed = feedsData.find((feed) => feed.id === firstCandidate.feedId);
 
-  const startTimestamp = Math.min(
-    ...candidateArray.map((d) => +d.playlistTimestamp),
-  );
+  // const playlist = Math.min(
+  //   ...candidateArray.map((d) => +d.playlistTimestamp),
+  // );
 
-  const offsetPadding = 15;
-  const minOffset = Math.min(...candidateArray.map((d) => +d.playerOffset));
+  // const offsetPadding = 15;
+  // const minOffset = Math.min(...candidateArray.map((d) => +d.playerOffset));
 
-  // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
-  // instead, ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
-  const firstPlaylist = candidateArray.filter(
-    (d) => +d.playlistTimestamp === startTimestamp,
-  );
+  // ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
+  // const firstPlaylist = candidateArray.filter(
+  //   (d) => +d.playlistTimestamp === playlist,
+  // );
 
-  const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
-  const startOffset = Math.max(0, minOffset - offsetPadding);
-  const endOffset = maxOffset + offsetPadding;
+  // const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
+  // const startOffset = Math.max(0, minOffset - offsetPadding);
+  // const endOffset = maxOffset + offsetPadding;
 
-  const onPlayerInit = useCallback(
-    (player: Player) => {
-      props.players.current[props.index] = player;
-    },
-    [props.index, props.players],
-  );
+  // const onPlayerInit = useCallback(
+  //   (player: Player) => {
+  //     props.players.current[props.index] = player;
+  //   },
+  //   [props.index, props.players],
+  // );
+
+  // const onPlay = useCallback(
+  //   () => {
+  //     Object.entries(props.players.current).forEach(([key, player]) => {
+  //       if (+key !== props.index) {
+  //         player.pause();
+  //       }
+  //     });
+  //   },
+  //   [props.index, props.players]
+  // )
+
+  // const onPlayerEnd = useCallback(
+  //   () => {
+  //     if (props.playNext)
+  //       props.players.current[props.index + 1]?.play();
+  //   },
+  //   [props.index, props.players, props.playNext]
+  // )
+
+  const handleClick = (candidate: Candidate2) => {
+    console.log("clicked, candidate is", JSON.stringify(candidate));
+    setNowPlaying(candidate);
+  };
+
+  useEffect(() => {
+    console.log("nowPlaying", JSON.stringify(nowPlaying));
+  });
 
   return (
     <Card key={firstTimestampString} sx={{ display: "flex" }}>
@@ -73,26 +102,18 @@ export default function CandidateCard(props: {
           minWidth: 250,
         }}
       >
-        {feed && candidate.array[0].playlistTimestamp ? (
+        <Button onClick={() => handleClick(candidate)}>Play</Button>
+        {/* {feed && candidate.array[0].playlistTimestamp ? (
           <CandidateCardPlayer
             candidate={candidate}
             feed={feed}
-            timestamp={startTimestamp}
+            playlist={playlist}
             startOffset={startOffset}
             endOffset={endOffset}
             index={props.index}
             onPlayerInit={onPlayerInit}
-            onPlay={() => {
-              Object.entries(props.players.current).forEach(([key, player]) => {
-                if (+key !== props.index) {
-                  player.pause();
-                }
-              });
-            }}
-            onPlayerEnd={() => {
-              if (props.playNext)
-                props.players.current[props.index + 1]?.play();
-            }}
+            onPlay={onPlay}
+            onPlayerEnd={onPlayerEnd}
           />
         ) : candidate.array[0].audioUri ? (
           <>
@@ -118,7 +139,7 @@ export default function CandidateCard(props: {
           </>
         ) : (
           "Please select a recording"
-        )}
+        )} */}
       </Box>
       <Link
         href={
@@ -158,8 +179,8 @@ export default function CandidateCard(props: {
               <br />
               {["whale", "vessel", "other", "whale (AI)"]
                 .map((item) =>
-                  candidate[item as keyof Candidate]
-                    ? candidate[item as keyof Candidate] + "  " + item
+                  candidate[item as keyof Candidate2]
+                    ? candidate[item as keyof Candidate2] + "  " + item
                     : null,
                 )
                 .filter((candidate) => candidate !== null)
