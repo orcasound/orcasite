@@ -51,11 +51,12 @@ import {
   useAudioImagesQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
+  useGenerateFeedSpectrogramsMutation,
   useGetCurrentUserQuery,
   useListFeedStreamsQuery,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
-import { useAudioImageListener } from "@/hooks/useAudioImageListener";
+import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
@@ -189,16 +190,25 @@ export default function BoutPage({
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
 
-  useAudioImageListener(feed.id, (audioImage) => {
-    console.log("audio_image", audioImage);
-  });
+  const updatedAudioImages = useAudioImageUpdatedSubscription(
+    feed.id,
+    timelineStartTime,
+    timelineEndTime,
+  );
 
   const audioImagesQueryResult = useAudioImagesQuery({
     feedId: feed.id,
     startTime: timelineStartTime,
     endTime: timelineEndTime,
   });
-  const audioImages = audioImagesQueryResult.data?.audioImages?.results ?? [];
+  const initialAudioImages =
+    audioImagesQueryResult.data?.audioImages?.results ?? [];
+  const audioImages = _.uniqBy(
+    [...updatedAudioImages, ...initialAudioImages].filter(
+      (audioImage) => audioImage !== undefined && audioImage !== null,
+    ),
+    ({ id }) => id,
+  );
 
   const [boutForm, setBoutForm] = useState<{
     errors: Record<string, string>;
@@ -278,6 +288,8 @@ export default function BoutPage({
       setBoutForm((form) => ({ ...form, isSaving: false, errors }));
     }
   };
+
+  const generateFeedSpectrograms = useGenerateFeedSpectrogramsMutation();
 
   return (
     <>
@@ -514,6 +526,32 @@ export default function BoutPage({
               </Box>
             )}
           </Box>
+          {currentUser?.moderator && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              minWidth={120}
+            >
+              <Box>
+                <Typography variant="overline">Create spectrograms</Typography>
+              </Box>
+              <Box>
+                <IconButton
+                  onClick={() => {
+                    generateFeedSpectrograms.mutate({
+                      feedId: feed.id,
+                      startTime: timelineStartTime,
+                      endTime: timelineEndTime,
+                    });
+                  }}
+                  title="Create spectrograms"
+                >
+                  <GraphicEq />
+                </IconButton>
+              </Box>
+            </Box>
+          )}
 
           {currentUser?.moderator && (
             <Box display="flex" alignItems="center" ml={{ sm: 0, md: "auto" }}>

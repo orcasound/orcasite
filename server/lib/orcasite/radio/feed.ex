@@ -113,10 +113,9 @@ defmodule Orcasite.Radio.Feed do
   end
 
   actions do
-    defaults [:destroy]
+    defaults [:read, :destroy]
 
-    read :read do
-      primary? true
+    read :index do
       prepare build(load: [:lat_lng, :lat_lng_string, :online])
     end
 
@@ -239,7 +238,7 @@ defmodule Orcasite.Radio.Feed do
     routes do
       base "/feeds"
 
-      index :read
+      index :index
     end
   end
 

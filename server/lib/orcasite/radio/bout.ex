@@ -121,6 +121,7 @@ defmodule Orcasite.Radio.Bout do
     update :update do
       primary? true
       accept [:category, :start_time, :end_time]
+      require_atomic? false
 
       change fn changeset, _ ->
         end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)

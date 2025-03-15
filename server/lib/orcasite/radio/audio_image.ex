@@ -186,12 +186,16 @@ defmodule Orcasite.Radio.AudioImage do
                prepend?: true
              )
 
-      change after_action(fn _change, record, _context ->
-               %{audio_image_id: record.id}
-               |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
-               |> Oban.insert()
+      change after_action(fn
+               _change, %{status: :complete} = record, _context ->
+                 {:ok, record}
 
-               {:ok, record}
+               _change, record, _context ->
+                 %{audio_image_id: record.id}
+                 |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
+                 |> Oban.insert()
+
+                 {:ok, record}
              end)
     end
 
@@ -255,14 +259,4 @@ defmodule Orcasite.Radio.AudioImage do
       end
     end
   end
-
-  # pub_sub do
-  #   module OrcasiteWeb.Endpoint
-
-  #   broadcast_type :broadcast
-
-  #   prefix "audio_image"
-  #   publish :for_feed_segment, ["feed", :feed_id], event: "created"
-  #   publish :update, ["feed", :feed_id], event: "updated"
-  # end
 end

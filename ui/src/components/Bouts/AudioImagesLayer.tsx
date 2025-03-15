@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 import {
   addMilliseconds,
   differenceInMilliseconds,
@@ -76,42 +76,49 @@ export function AudioImagesLayer({
         const duration = differenceInMilliseconds(endTime, startTime);
         const width = (pixelsPerMinute * duration) / (60 * 1000);
         const audioImageUrl = audioImageToUrl(audioImage);
+        if (audioImage.status === "complete") {
+          return [
+            <Box
+              key={audioImage.id}
+              zIndex={zIndex}
+              sx={{
+                minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
+                position: "absolute",
+                left: offset,
+                top: TICKER_HEIGHT,
+                width: width,
+                backgroundColor: (theme) => theme.palette.accent2.main,
+                ...(audioImage.status === "complete" && {
+                  backgroundImage: `url('${audioImageUrl}')`,
+                  backgroundSize: "auto 100%",
+                }),
+              }}
+              display="flex"
+              alignItems="stretch"
+              justifyContent="center"
+              data-starttime={startTime.toLocaleTimeString()}
+              data-endtime={endTime.toLocaleTimeString()}
+              data-duration={duration}
+              data-status={audioImage.status}
+            ></Box>,
+          ];
+        }
         return [
-          <Box
+          <Skeleton
             key={audioImage.id}
-            zIndex={zIndex}
+            animation="wave"
             sx={{
+              zIndex,
+              borderRadius: 0,
               minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
               position: "absolute",
               left: offset,
               top: TICKER_HEIGHT,
               width: width,
-              backgroundColor: (theme) => theme.palette.accent2.main,
-              ...(audioImage.status === "complete" && {
-                backgroundImage: `url('${audioImageUrl}')`,
-                backgroundSize: "auto 100%",
-              }),
+              transformOrigin: 0,
+              transform: "unset",
             }}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            data-starttime={startTime.toLocaleTimeString()}
-            data-endtime={endTime.toLocaleTimeString()}
-            data-duration={duration}
-            data-status={audioImage.status}
-          >
-            <Typography
-              color="white"
-              variant={"subtitle2"}
-              whiteSpace="nowrap"
-              sx={{
-                ...(pixelsPerMinute < 450 && {
-                  transform: "rotate(-90deg)",
-                  zoom: 1.505,
-                }),
-              }}
-            ></Typography>
-          </Box>,
+          />,
         ];
       })}
     </>

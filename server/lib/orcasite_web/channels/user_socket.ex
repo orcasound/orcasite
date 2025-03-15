@@ -5,7 +5,6 @@ defmodule OrcasiteWeb.UserSocket do
   ## Channels
   channel("feed:*", OrcasiteWeb.FeedChannel)
   channel("listener_counts:*", OrcasiteWeb.ListenerCountsChannel)
-  channel("audio_image:*", OrcasiteWeb.AudioImageChannel)
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

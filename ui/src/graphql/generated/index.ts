@@ -2848,19 +2848,6 @@ export type ListFeedStreamsQuery = {
         playlistPath?: string | null;
         playlistTimestamp?: string | null;
         segmentPath?: string | null;
-        audioImages: Array<{
-          __typename?: "AudioImage";
-          id: string;
-          startTime: Date;
-          endTime: Date;
-          status: string;
-          objectPath?: string | null;
-          bucket?: string | null;
-          bucketRegion?: string | null;
-          feedId: string;
-          imageSize?: number | null;
-          imageType?: ImageType | null;
-        }>;
       }>;
     }> | null;
   } | null;
@@ -4179,16 +4166,12 @@ export const ListFeedStreamsDocument = `
         sort: {field: START_TIME, order: ASC}
       ) {
         ...FeedSegmentParts
-        audioImages(filter: {status: {eq: "complete"}}) {
-          ...AudioImageParts
-        }
       }
     }
   }
 }
     ${FeedStreamPartsFragmentDoc}
-${FeedSegmentPartsFragmentDoc}
-${AudioImagePartsFragmentDoc}`;
+${FeedSegmentPartsFragmentDoc}`;
 
 export const useListFeedStreamsQuery = <
   TData = ListFeedStreamsQuery,

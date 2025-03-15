@@ -96,8 +96,9 @@ defmodule Orcasite.Radio.Detection do
     end
   end
 
+
   actions do
-    defaults [:destroy]
+    defaults [:read, :destroy]
 
     read :index do
       pagination do
@@ -109,11 +110,6 @@ defmodule Orcasite.Radio.Detection do
       argument :feed_id, :string
 
       filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
-      prepare build(load: [:uuid], sort: [inserted_at: :desc])
-    end
-
-    read :read do
-      primary? true
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
     end
 

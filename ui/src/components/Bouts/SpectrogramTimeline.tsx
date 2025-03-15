@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 
-import { AudioImage, AudioImagesQuery, FeedSegment } from "@/graphql/generated";
+import { AudioImagesQuery, FeedSegment } from "@/graphql/generated";
 
 import { PlayerControls } from "../Player/BoutPlayer";
 import { AudioImagesLayer } from "./AudioImagesLayer";
@@ -28,7 +28,7 @@ const PIXEL_ZOOM_FACTOR = 50;
 export type SpectrogramFeedSegment = Pick<
   FeedSegment,
   "id" | "startTime" | "endTime" | "duration"
-> & { audioImages: Pick<AudioImage, "bucket" | "objectPath">[] };
+>;
 
 export type SpectrogramControls = {
   goToTime: (time: Date) => void;
@@ -434,12 +434,6 @@ export default function SpectrogramTimeline({
           pixelsPerMinute={pixelsPerMinute}
           zIndex={1}
         />
-        {/* <FeedSegmentsLayer
-          feedSegments={feedSegments}
-          timelineStartTimeNum={timelineStartTime.valueOf()}
-          pixelsPerMinute={pixelsPerMinute}
-          zIndex={2}
-        /> */}
         {windowStartTime && windowEndTime && (
           <AudioImagesLayer
             audioImages={audioImages}
