@@ -14,6 +14,7 @@ import {
   Alert,
   Button,
   Chip,
+  CircularProgress,
   Fade,
   FormControl,
   FormHelperText,
@@ -85,6 +86,7 @@ export default function BoutPage({
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
 
   const [boutSaved, setBoutSaved] = useState(false);
+  const [spectrogramProcessing, setSpectrogramProcessing] = useState(false);
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
   const playerTime = useRef<Date>(targetTime);
@@ -289,7 +291,16 @@ export default function BoutPage({
     }
   };
 
-  const generateFeedSpectrograms = useGenerateFeedSpectrogramsMutation();
+  const generateFeedSpectrograms = useGenerateFeedSpectrogramsMutation({
+    onMutate: () => {
+      setSpectrogramProcessing(true);
+    },
+    onSuccess: () => {
+      setTimeout(() => {
+        setSpectrogramProcessing(false);
+      }, 30000);
+    },
+  });
 
   return (
     <>
@@ -538,6 +549,7 @@ export default function BoutPage({
               </Box>
               <Box>
                 <IconButton
+                  disabled={spectrogramProcessing}
                   onClick={() => {
                     generateFeedSpectrograms.mutate({
                       feedId: feed.id,
@@ -547,7 +559,11 @@ export default function BoutPage({
                   }}
                   title="Create spectrograms"
                 >
-                  <GraphicEq />
+                  {spectrogramProcessing ? (
+                    <CircularProgress size={16} />
+                  ) : (
+                    <GraphicEq />
+                  )}
                 </IconButton>
               </Box>
             </Box>
