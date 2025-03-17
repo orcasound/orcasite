@@ -294,7 +294,7 @@ defmodule Orcasite.Radio.Detection do
       end
 
       change after_action(fn _change, detection, _context ->
-               TaskSupervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+               Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
                  feed = detection |> Ash.load!(:feed) |> Map.get(:feed)
                  buffer = :timer.minutes(5)
                  start_time = detection.timestamp |> DateTime.add(-buffer, :minutes)
