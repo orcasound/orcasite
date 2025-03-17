@@ -51,9 +51,9 @@ defmodule Orcasite.Radio.Detection do
 
   relationships do
     belongs_to :candidate, Candidate, public?: true
+
     belongs_to :feed, Feed do
       public? true
-
     end
 
     belongs_to :user, Orcasite.Accounts.User
@@ -95,7 +95,6 @@ defmodule Orcasite.Radio.Detection do
       authorize_if always()
     end
   end
-
 
   actions do
     defaults [:read, :destroy]
@@ -293,7 +292,27 @@ defmodule Orcasite.Radio.Detection do
           {:ok, detection}
         end)
       end
+
+      change after_action(fn _change, detection, _context ->
+               TaskSupervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+                 feed = detection |> Ash.load!(:feed) |> Map.get(:feed)
+                 buffer = :timer.minutes(5)
+                 start_time = detection.timestamp |> DateTime.add(-buffer, :minutes)
+                 end_time = detection.timestamp |> DateTime.add(buffer, :minutes)
+
+                 feed
+                 |> Ash.Changeset.for_update(:generate_spectrogram, %{
+                   start_time: start_time,
+                   end_time: end_time
+                 })
+                 |> Ash.update(authorize?: false)
+               end)
+             end)
     end
+  end
+
+  code_interface do
+    define :submit_detection
   end
 
   admin do
@@ -307,10 +326,6 @@ defmodule Orcasite.Radio.Detection do
       :candidate_id,
       :inserted_at
     ]
-  end
-
-  code_interface do
-    define :submit_detection
   end
 
   json_api do
@@ -338,7 +353,7 @@ defmodule Orcasite.Radio.Detection do
 
   graphql do
     type :detection
-    attribute_types [candidate_id: :id, feed_id: :id]
+    attribute_types candidate_id: :id, feed_id: :id
 
     queries do
       get :detection, :read

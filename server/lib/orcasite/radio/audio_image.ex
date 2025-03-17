@@ -139,7 +139,7 @@ defmodule Orcasite.Radio.AudioImage do
                |> case do
                  {:ok, feed_segment} ->
                    change
-                   |> Ash.Changeset.change_attributes(%{
+                   |> Ash.Changeset.force_change_attributes(%{
                      start_time: feed_segment.start_time,
                      end_time: feed_segment.end_time
                    })

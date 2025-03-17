@@ -28,12 +28,28 @@ export function useAudioImageUpdatedSubscription(
   useEffect(() => {
     let channel: Channel | undefined;
     let subscriptionChannel: Channel | undefined;
+    let currentSubscriptionId: string | undefined;
+    let subscribing = false;
 
     if (socket !== null) {
       const channel = socket.channel("__absinthe__:control", {});
       channel.on("phx_reply", (payload) => {
+        if (
+          payload?.status === "ok" &&
+          currentSubscriptionId === undefined &&
+          !subscribing
+        ) {
+          subscribing = true;
+          channel.push("doc", {
+            query: AudioImageUpdatedDocument,
+            variables: { feedId, startTime, endTime },
+          });
+        }
+
+        // Subscribed to doc
         const subscriptionId = payload?.response?.subscriptionId;
         if (subscriptionId && socket) {
+          currentSubscriptionId = subscriptionId;
           subscriptionChannel = socket.channel(subscriptionId);
           subscriptionChannel.on(
             "subscription:data",
@@ -51,12 +67,6 @@ export function useAudioImageUpdatedSubscription(
             },
           );
         }
-      });
-      socket.onOpen(() => {
-        channel.push("doc", {
-          query: AudioImageUpdatedDocument,
-          variables: { feedId, startTime, endTime },
-        });
       });
       channel.join();
     }
