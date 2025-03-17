@@ -9,13 +9,19 @@ import { AudioCategory, useFeedQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const NewBoutPage: NextPageWithLayout = () => {
-  const targetTime = new Date("2025-01-06 05:26:10.000Z");
-
   const params = useParams<{ feedSlug?: string }>();
-  const feedSlug = params?.feedSlug;
+
   const searchParams = useSearchParams();
+
+  const feedSlug = params?.feedSlug;
+  const time = searchParams.get("time");
+  let targetTime: Date | undefined;
+  if (typeof time === "string" && !isNaN(new Date(time).getTime())) {
+    targetTime = new Date(time);
+  }
   const audioCategories = Object.values(AudioCategory);
   const categoryParam = searchParams.get("category");
+
   let targetAudioCategory;
   if (
     categoryParam &&
