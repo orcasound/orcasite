@@ -297,8 +297,8 @@ defmodule Orcasite.Radio.Detection do
                Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
                  feed = detection |> Ash.load!(:feed) |> Map.get(:feed)
                  buffer = :timer.minutes(5)
-                 start_time = detection.timestamp |> DateTime.add(-buffer, :minutes)
-                 end_time = detection.timestamp |> DateTime.add(buffer, :minutes)
+                 start_time = detection.timestamp |> DateTime.add(-buffer, :minute)
+                 end_time = detection.timestamp |> DateTime.add(buffer, :minute)
 
                  feed
                  |> Ash.Changeset.for_update(:generate_spectrogram, %{
@@ -307,6 +307,8 @@ defmodule Orcasite.Radio.Detection do
                  })
                  |> Ash.update(authorize?: false)
                end)
+
+               {:ok, detection}
              end)
     end
   end
