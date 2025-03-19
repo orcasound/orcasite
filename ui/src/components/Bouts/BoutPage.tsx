@@ -294,8 +294,6 @@ export default function BoutPage({
   const generateFeedSpectrograms = useGenerateFeedSpectrogramsMutation({
     onMutate: () => {
       setSpectrogramProcessing(true);
-    },
-    onSuccess: () => {
       setTimeout(() => {
         setSpectrogramProcessing(false);
       }, 30000);
