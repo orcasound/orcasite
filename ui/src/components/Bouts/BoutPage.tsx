@@ -39,7 +39,7 @@ import { addMinutes, format, max, min, subDays, subMinutes } from "date-fns";
 import _ from "lodash";
 import Image from "next/legacy/image";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import SpectrogramTimeline, {
   SpectrogramControls,
@@ -63,6 +63,7 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 import { formatTimestamp, roundToNearest } from "@/utils/time";
 
+import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
 
 export default function BoutPage({
@@ -96,6 +97,17 @@ export default function BoutPage({
   );
   const [playerControls, setPlayerControls] = useState<PlayerControls>();
   const spectrogramControls = useRef<SpectrogramControls>();
+
+  const [cachedPlayerTime, setCachedPlayerTime] = useState<Date>(targetTime);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCachedPlayerTime(playerTime.current);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
     bout?.startTime && new Date(bout.startTime),
@@ -535,6 +547,19 @@ export default function BoutPage({
               </Box>
             )}
           </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            minWidth={120}
+          >
+            <Box>
+              <Typography variant="overline">Share bout</Typography>
+            </Box>
+            <Box>
+              <CopyToClipboardButton text={shareUrl(cachedPlayerTime)} />
+            </Box>
+          </Box>
           {currentUser?.moderator && (
             <Box
               display="flex"
@@ -755,4 +780,12 @@ function TabPanel(props: {
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
+}
+
+function shareUrl(time: Date) {
+  const formattedTime = time.toISOString();
+
+  const currentUrl = new URL(window.location.href);
+  currentUrl.searchParams.set("time", formattedTime);
+  return currentUrl.toString();
 }
