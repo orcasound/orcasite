@@ -63,7 +63,8 @@ config :orcasite, Orcasite.Repo,
   stacktrace: true,
   port: System.get_env("POSTGRES_PORT") || 5432,
   pool_size: 10,
-  types: Orcasite.PostgresTypes
+  types: Orcasite.PostgresTypes,
+  pool_count: 2
 
 config :orcasite,
        :orcasite_s3_url,

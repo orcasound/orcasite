@@ -6,6 +6,7 @@ import {
   KeyboardDoubleArrowRight,
   Launch,
   Notifications,
+  PlayArrow,
   Start,
   ZoomIn,
   ZoomOut,
@@ -687,6 +688,18 @@ export default function BoutPage({
                       </TableCell>
                       <TableCell>{det.description}</TableCell>
                       <TableCell align="right" title={det.timestamp.toString()}>
+                        <IconButton
+                          title="Go to time"
+                          size="small"
+                          sx={{ transform: "scale(0.8)" }}
+                          onClick={() =>
+                            spectrogramControls.current?.goToTime(
+                              new Date(det.timestamp),
+                            )
+                          }
+                        >
+                          <PlayArrow />
+                        </IconButton>
                         {formatTimestamp(det.timestamp)}
                       </TableCell>
                       <TableCell align="right">

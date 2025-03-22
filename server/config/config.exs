@@ -72,7 +72,6 @@ config :orcasite, OrcasiteWeb.Auth.AuthAccessPipeline,
   module: OrcasiteWeb.Guardian,
   error_handler: OrcasiteWeb.Auth.AuthErrorHandler
 
-config :orcasite, :ecto_repos, [Orcasite.Repo]
 config :orcasite, :ash_domains, [Orcasite.Notifications, Orcasite.Accounts, Orcasite.Radio]
 config :orcasite, :ash_uuid, migration_default?: true
 config :ash, :custom_types, geometry: Orcasite.Types.Geometry
@@ -91,7 +90,7 @@ config :orcasite, Oban,
   repo: Orcasite.Repo,
   # 7 day job retention
   plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}],
-  queues: [default: 10, email: 10, feeds: 10, audio_images: 20]
+  queues: [default: 10, email: 10, feeds: 10, audio_images: 10]
 
 config :spark, :formatter,
   remove_parens?: true,

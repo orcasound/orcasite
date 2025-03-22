@@ -1,4 +1,11 @@
-import { Circle, Close, Launch, Person, ViewList } from "@mui/icons-material";
+import {
+  Circle,
+  Close,
+  Launch,
+  MoreTime,
+  Person,
+  ViewList,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -17,6 +24,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { VegaLite } from "react-vega";
 
+import Link from "@/components/Link";
 import {
   DetectionCategory,
   Feed,
@@ -294,9 +302,8 @@ export default function FeedItem({
         </Box>
       )}
 
-      {/* Detections table */}
       <Box>
-        <Box display="flex">
+        <Box display="flex" alignItems={"center"}>
           <Button
             variant={detsCount === 0 ? "text" : "outlined"}
             onClick={() => setShowTable(!showTable)}
@@ -327,6 +334,17 @@ export default function FeedItem({
               ))}
             </Box>
           )}
+
+          <Box ml="auto">
+            <Link
+              href={`/bouts/new/${feed.slug}`}
+              title={`Start new bout for ${feed.name}`}
+            >
+              <Button variant="text" size="small">
+                New bout
+              </Button>
+            </Link>
+          </Box>
         </Box>
         {showTable && detsCount > 0 && (
           <Box sx={{ overflowX: "scroll" }}>
@@ -351,7 +369,21 @@ export default function FeedItem({
                     </TableCell>
                     <TableCell>{det.description}</TableCell>
                     <TableCell align="right" title={det.timestamp.toString()}>
-                      {formatTimestamp(det.timestamp)}
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent={"end"}
+                      >
+                        <IconButton
+                          title="New bout at this time"
+                          href={`/bouts/new/${feed.slug}?time=${det?.timestamp}`}
+                          size="small"
+                          sx={{ transform: "scale(0.8)" }}
+                        >
+                          <MoreTime />
+                        </IconButton>
+                        {formatTimestamp(det.timestamp)}
+                      </Box>
                     </TableCell>
                     <TableCell align="right">
                       {det?.candidate?.id && (

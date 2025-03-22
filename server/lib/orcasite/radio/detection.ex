@@ -6,6 +6,7 @@ defmodule Orcasite.Radio.Detection do
     authorizers: [Ash.Policy.Authorizer]
 
   alias Orcasite.Radio.{Feed, Candidate}
+  require Logger
 
   postgres do
     table "detections"
@@ -296,9 +297,23 @@ defmodule Orcasite.Radio.Detection do
       change after_action(fn _change, detection, _context ->
                Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
                  feed = detection |> Ash.load!(:feed) |> Map.get(:feed)
-                 buffer = :timer.minutes(5)
+                 buffer = 5 # minutes
+                 now = DateTime.utc_now()
+
                  start_time = detection.timestamp |> DateTime.add(-buffer, :minute)
-                 end_time = detection.timestamp |> DateTime.add(buffer, :minute)
+
+                 plus_buffer =
+                   detection.timestamp
+                   |> DateTime.add(buffer, :minute)
+
+                 end_time =
+                   plus_buffer
+                   |> DateTime.compare(now)
+                   |> case do
+                     :gt -> now
+                     _ -> plus_buffer
+                   end
+
 
                  feed
                  |> Ash.Changeset.for_update(:generate_spectrogram, %{

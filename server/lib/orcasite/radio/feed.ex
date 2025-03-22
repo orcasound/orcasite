@@ -189,6 +189,19 @@ defmodule Orcasite.Radio.Feed do
       validate {Orcasite.Validations.Compare, [lt: [:start_time, :end_time]]}
 
       change before_action(fn change, _context ->
+               if Application.get_env(:orcasite, :env) == :dev do
+                 # Pull segments from prod if dev
+                 Orcasite.GlobalSetup.populate_feed_streams_range(
+                   change.data,
+                   Ash.Changeset.get_argument(change, :start_time),
+                   Ash.Changeset.get_argument(change, :end_time)
+                 )
+               end
+
+               change
+             end)
+
+      change before_action(fn change, _context ->
                # Get feed_segments between the start time and end time, and, for now
                # create a single spectrogram per segment. Once we can create an
                # audio image for multiple segments (with concatenation in the lambda),

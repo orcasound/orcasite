@@ -15,7 +15,7 @@ defmodule Orcasite.GlobalSetup do
     |> Enum.to_list()
   end
 
-  def populate_latest_feed_segments(feed) do
+  def populate_latest_feed_segments_from_aws(feed) do
     feed
     |> Orcasite.Radio.AwsClient.list_timestamps()
     |> case do
@@ -36,7 +36,7 @@ defmodule Orcasite.GlobalSetup do
     end
   end
 
-  def populate_latest_feed_streams(feed, minutes_ago \\ 10) do
+  def populate_latest_feed_streams_from_prod(feed, minutes_ago \\ 10) do
     now = DateTime.utc_now()
     from_time = now |> DateTime.add(-minutes_ago, :minute)
     populate_feed_streams_range(feed, from_time, now)
@@ -54,7 +54,7 @@ defmodule Orcasite.GlobalSetup do
           {:error, :feed_not_found}
 
         feed_id ->
-          # Get stream for the last `minutes` minutes
+          # Get stream in time range (from_time, to_time)
           {:ok, feed_streams_response} =
             Orcasite.Radio.GraphqlClient.get_feed_streams_with_segments(
               feed_id,
@@ -73,11 +73,22 @@ defmodule Orcasite.GlobalSetup do
             |> Map.update(
               "feed_segments",
               [],
-              &Enum.map(&1, fn seg ->
-                seg
-                |> Map.drop(["id"])
-                |> Map.put("feed", feed)
-                |> Recase.Enumerable.atomize_keys()
+              &Enum.flat_map(&1, fn seg ->
+                seg =
+                  seg
+                  |> Map.drop(["id"])
+                  |> Map.put("feed", feed)
+                  |> Recase.Enumerable.atomize_keys()
+
+                # Only include segments in time range
+                {:ok, start_time, _} = seg.start_time |> DateTime.from_iso8601()
+                {:ok, end_time, _} = seg.end_time |> DateTime.from_iso8601()
+
+                if times_overlap(start_time, end_time, from_time, to_time) do
+                  [seg]
+                else
+                  []
+                end
               end)
             )
             |> Recase.Enumerable.atomize_keys()
@@ -92,5 +103,10 @@ defmodule Orcasite.GlobalSetup do
           )
       end
     end
+  end
+
+  defp times_overlap(start_1, end_1, start_2, end_2) do
+    # Equivalent to start_1 <= end_2 && start_2 <= end_1
+    DateTime.compare(end_2, start_1) != :lt and DateTime.compare(start_2, end_1) != :gt
   end
 end

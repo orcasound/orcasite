@@ -67,17 +67,27 @@ defmodule Orcasite.Radio.AwsClient do
     end
   end
 
-  def get_stream_manifest_body(%FeedStream{
-        bucket_region: bucket_region,
-        bucket: bucket,
-        playlist_m3u8_path: path
-      }) do
-    ExAws.S3.get_object(bucket, path)
-    |> ExAws.request(region: bucket_region)
-    |> case do
-      {:ok, %{body: body, status_code: 200}} -> {:ok, body}
-      {:ok, other} -> {:error, other}
-      {:error, error} -> {:error, error}
+  def get_stream_manifest_body(
+        %FeedStream{
+          bucket_region: bucket_region,
+          bucket: bucket,
+          playlist_m3u8_path: path
+        },
+        opts \\ []
+      ) do
+    return_stream = Keyword.get(opts, :return_stream?, false)
+
+    if return_stream do
+      ExAws.S3.download_file(bucket, path, :memory)
+      |> ExAws.stream!(region: bucket_region)
+    else
+      ExAws.S3.get_object(bucket, path)
+      |> ExAws.request(region: bucket_region)
+      |> case do
+        {:ok, %{body: body, status_code: 200}} -> {:ok, body}
+        {:ok, other} -> {:error, other}
+        {:error, error} -> {:error, error}
+      end
     end
   end
 
