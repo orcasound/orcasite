@@ -2733,6 +2733,46 @@ export type AudioImagesQuery = {
   } | null;
 };
 
+export type BoutsQueryVariables = Exact<{
+  feedId?: InputMaybe<Scalars["String"]["input"]>;
+  filter?: InputMaybe<BoutFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<
+    Array<InputMaybe<BoutSortInput>> | InputMaybe<BoutSortInput>
+  >;
+}>;
+
+export type BoutsQuery = {
+  __typename?: "RootQueryType";
+  bouts?: {
+    __typename?: "PageOfBout";
+    count?: number | null;
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "Bout";
+      id: string;
+      category: AudioCategory;
+      duration?: number | null;
+      endTime?: Date | null;
+      startTime: Date;
+      feed?: {
+        __typename?: "Feed";
+        id: string;
+        name: string;
+        slug: string;
+        nodeName: string;
+        introHtml?: string | null;
+        thumbUrl?: string | null;
+        imageUrl?: string | null;
+        mapUrl?: string | null;
+        bucket: string;
+        latLng: { __typename?: "LatLng"; lat: number; lng: number };
+      } | null;
+    }> | null;
+  } | null;
+};
+
 export type CandidatesQueryVariables = Exact<{
   filter?: InputMaybe<CandidateFilterInput>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -4017,6 +4057,52 @@ useAudioImagesQuery.fetcher = (
     variables,
     options,
   );
+
+export const BoutsDocument = `
+    query bouts($feedId: String, $filter: BoutFilterInput, $limit: Int = 100, $offset: Int, $sort: [BoutSortInput]) {
+  bouts(
+    feedId: $feedId
+    filter: $filter
+    limit: $limit
+    offset: $offset
+    sort: $sort
+  ) {
+    count
+    hasNextPage
+    results {
+      ...BoutParts
+      feed {
+        ...FeedParts
+      }
+    }
+  }
+}
+    ${BoutPartsFragmentDoc}
+${FeedPartsFragmentDoc}`;
+
+export const useBoutsQuery = <TData = BoutsQuery, TError = unknown>(
+  variables?: BoutsQueryVariables,
+  options?: Omit<UseQueryOptions<BoutsQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<BoutsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<BoutsQuery, TError, TData>({
+    queryKey: variables === undefined ? ["bouts"] : ["bouts", variables],
+    queryFn: fetcher<BoutsQuery, BoutsQueryVariables>(BoutsDocument, variables),
+    ...options,
+  });
+};
+
+useBoutsQuery.document = BoutsDocument;
+
+useBoutsQuery.getKey = (variables?: BoutsQueryVariables) =>
+  variables === undefined ? ["bouts"] : ["bouts", variables];
+
+useBoutsQuery.fetcher = (
+  variables?: BoutsQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<BoutsQuery, BoutsQueryVariables>(BoutsDocument, variables, options);
 
 export const CandidatesDocument = `
     query candidates($filter: CandidateFilterInput, $limit: Int, $offset: Int, $sort: [CandidateSortInput]) {

@@ -37,7 +37,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { addMinutes, format, max, min, subDays, subMinutes } from "date-fns";
 import _ from "lodash";
-import Image from "next/legacy/image";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -58,13 +57,11 @@ import {
   useUpdateBoutMutation,
 } from "@/graphql/generated";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
-import vesselIconImage from "@/public/icons/vessel-purple.svg";
-import wavesIconImage from "@/public/icons/water-waves-blue.svg";
-import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 import { formatTimestamp, roundToNearest } from "@/utils/time";
 
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
+import CategoryIcon from "./CategoryIcon";
 
 export default function BoutPage({
   isNew,
@@ -723,43 +720,6 @@ export default function BoutPage({
       </Box>
     </>
   );
-}
-
-function CategoryIcon({
-  audioCategory,
-  size,
-}: {
-  audioCategory: AudioCategory;
-  size?: number;
-}) {
-  size = size ?? 15;
-  if (audioCategory === "BIOPHONY")
-    return (
-      <Image
-        src={whaleFlukeIconImage.src}
-        width={size}
-        height={size}
-        alt="Whale fluke icon"
-      />
-    );
-  if (audioCategory === "ANTHROPHONY")
-    return (
-      <Image
-        src={vesselIconImage.src}
-        width={size}
-        height={size}
-        alt="Vessel icon"
-      />
-    );
-  if (audioCategory === "GEOPHONY")
-    return (
-      <Image
-        src={wavesIconImage.src}
-        width={size}
-        height={size}
-        alt="Waves icon"
-      />
-    );
 }
 
 function TabPanel(props: {
