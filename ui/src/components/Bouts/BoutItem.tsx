@@ -7,7 +7,12 @@ import {
 } from "date-fns";
 import { useEffect, useState } from "react";
 
-import { Bout, Feed } from "@/graphql/generated";
+import {
+  Bout,
+  DetectionCategory,
+  Feed,
+  useDetectionsCountQuery,
+} from "@/graphql/generated";
 
 import CategoryIcon from "./CategoryIcon";
 
@@ -15,11 +20,28 @@ export default function BoutItem({
   bout,
 }: {
   bout: Pick<Bout, "id" | "endTime" | "startTime" | "category" | "duration"> & {
-    feed?: Pick<Feed, "name"> | null;
+    feed?: Pick<Feed, "id" | "name"> | null;
   };
 }) {
   const isLive = bout.endTime === undefined || bout.endTime === null;
   const startTime = new Date(bout.startTime);
+
+  const categoryMap = {
+    BIOPHONY: "WHALE",
+    ANTHROPHONY: "VESSEL",
+    GEOPHONY: "OTHER",
+  };
+
+  const detectionsCount =
+    useDetectionsCountQuery(
+      {
+        feedId: bout.feed?.id ?? "",
+        fromTime: bout.startTime,
+        toTime: bout.endTime,
+        category: categoryMap[bout.category] as DetectionCategory,
+      },
+      { enabled: !!bout.feed?.id },
+    ).data?.feedDetectionsCount ?? "-";
 
   const [duration, setDuration] = useState(
     bout.duration && bout.duration * 1000,
@@ -63,6 +85,7 @@ export default function BoutItem({
               {startTime.toLocaleDateString()}
             </Typography>
           </Box>
+
           <Box display="flex" flexDirection={"column"} ml="auto">
             {isLive && (
               <Chip
@@ -72,6 +95,10 @@ export default function BoutItem({
                 sx={{ width: 64, ml: "auto" }}
               />
             )}
+
+            <Typography variant="overline" textAlign="right">
+              {detectionsCount} detection{detectionsCount === 1 ? "" : "s"}
+            </Typography>
             {duration && (
               <Box
                 mt="auto"

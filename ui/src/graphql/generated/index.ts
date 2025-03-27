@@ -1891,6 +1891,7 @@ export type RootQueryType = {
   detection?: Maybe<Detection>;
   detections?: Maybe<PageOfDetection>;
   feed: Feed;
+  feedDetectionsCount: Scalars["Int"]["output"];
   feedSegments?: Maybe<PageOfFeedSegment>;
   feedStreams?: Maybe<PageOfFeedStream>;
   feeds: Array<Feed>;
@@ -1949,6 +1950,13 @@ export type RootQueryTypeDetectionsArgs = {
 export type RootQueryTypeFeedArgs = {
   filter?: InputMaybe<FeedFilterInput>;
   slug?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type RootQueryTypeFeedDetectionsCountArgs = {
+  category?: InputMaybe<DetectionCategory>;
+  feedId: Scalars["String"]["input"];
+  fromTime: Scalars["DateTime"]["input"];
+  toTime?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 export type RootQueryTypeFeedSegmentsArgs = {
@@ -2660,6 +2668,18 @@ export type GetCurrentUserQuery = {
     admin: boolean;
     moderator: boolean;
   } | null;
+};
+
+export type DetectionsCountQueryVariables = Exact<{
+  feedId: Scalars["String"]["input"];
+  fromTime: Scalars["DateTime"]["input"];
+  toTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  category?: InputMaybe<DetectionCategory>;
+}>;
+
+export type DetectionsCountQuery = {
+  __typename?: "RootQueryType";
+  feedDetectionsCount: number;
 };
 
 export type FeedQueryVariables = Exact<{
@@ -3913,6 +3933,56 @@ useGetCurrentUserQuery.fetcher = (
 ) =>
   fetcher<GetCurrentUserQuery, GetCurrentUserQueryVariables>(
     GetCurrentUserDocument,
+    variables,
+    options,
+  );
+
+export const DetectionsCountDocument = `
+    query detectionsCount($feedId: String!, $fromTime: DateTime!, $toTime: DateTime, $category: DetectionCategory) {
+  feedDetectionsCount(
+    feedId: $feedId
+    fromTime: $fromTime
+    toTime: $toTime
+    category: $category
+  )
+}
+    `;
+
+export const useDetectionsCountQuery = <
+  TData = DetectionsCountQuery,
+  TError = unknown,
+>(
+  variables: DetectionsCountQueryVariables,
+  options?: Omit<
+    UseQueryOptions<DetectionsCountQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<DetectionsCountQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<DetectionsCountQuery, TError, TData>({
+    queryKey: ["detectionsCount", variables],
+    queryFn: fetcher<DetectionsCountQuery, DetectionsCountQueryVariables>(
+      DetectionsCountDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useDetectionsCountQuery.document = DetectionsCountDocument;
+
+useDetectionsCountQuery.getKey = (variables: DetectionsCountQueryVariables) => [
+  "detectionsCount",
+  variables,
+];
+
+useDetectionsCountQuery.fetcher = (
+  variables: DetectionsCountQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<DetectionsCountQuery, DetectionsCountQueryVariables>(
+    DetectionsCountDocument,
     variables,
     options,
   );
