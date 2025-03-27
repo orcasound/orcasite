@@ -73,7 +73,7 @@ const BoutsPage: NextPageWithLayout = () => {
           display="flex"
           flexDirection="column"
           justifyContent="space-between"
-          m={2}
+          m={{ md: 2 }}
         >
           <h2>Current Bouts</h2>
           <Box>

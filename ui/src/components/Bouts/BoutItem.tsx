@@ -67,7 +67,7 @@ export default function BoutItem({
       sx={{ width: "100%", textDecoration: "none" }}
     >
       <Card sx={{ width: "100%", p: 3 }} elevation={1}>
-        <Box display="flex" width="100%" gap={3}>
+        <Box display="flex" width="100%" gap={3} flexWrap="wrap">
           <Box display="flex" flexDirection={"column"} gap={1}>
             <CategoryIcon audioCategory={bout.category} size={50} />
             <Typography textAlign="center" variant="subtitle1">
@@ -86,13 +86,23 @@ export default function BoutItem({
             </Typography>
           </Box>
 
-          <Box display="flex" flexDirection={"column"} ml="auto">
+          <Box
+            display="flex"
+            flexDirection={{ sm: "column" }}
+            sx={{
+              justifyContent: "flex-start",
+              alignItems: { xs: "center", sm: "flex-end" },
+              ml: { sm: "auto" },
+              gap: { xs: 2, sm: 0 },
+              width: { xs: "100%", sm: "auto" },
+            }}
+          >
             {isLive && (
               <Chip
                 label="LIVE"
                 size="small"
                 color="primary"
-                sx={{ width: 64, ml: "auto" }}
+                sx={{ width: 64, ml: { sm: "auto" } }}
               />
             )}
 
@@ -101,12 +111,12 @@ export default function BoutItem({
             </Typography>
             {duration && (
               <Box
-                mt="auto"
+                sx={{ mt: { sm: "auto" }, ml: { xs: "auto", sm: 0 } }}
                 title={formatDuration(
                   intervalToDuration({ start: 0, end: duration }),
                 )}
               >
-                <Typography variant="monospace">
+                <Typography variant="monospace" textAlign="right">
                   {durationString(duration)}
                 </Typography>
               </Box>
