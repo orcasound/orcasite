@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   Clear,
+  Close,
   GraphicEq,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
@@ -15,6 +16,10 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Fade,
   FormControl,
   FormHelperText,
@@ -30,6 +35,7 @@ import {
   TableHead,
   TableRow,
   Tabs,
+  TextareaAutosize,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -46,19 +52,27 @@ import SpectrogramTimeline, {
 import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
 import {
   AudioCategory,
+  Bout,
   BoutQuery,
+  Candidate,
+  Detection,
   FeedQuery,
+  Maybe,
   useAudioImagesQuery,
+  useCancelNotificationMutation,
   useCreateBoutMutation,
   useDetectionsQuery,
   useGenerateFeedSpectrogramsMutation,
   useGetCurrentUserQuery,
   useListFeedStreamsQuery,
+  useNotificationsForBoutQuery,
+  useNotifyLiveBoutMutation,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
 import { formatTimestamp, roundToNearest } from "@/utils/time";
 
+import CircularProgressWithLabel from "../CircularProgressWithLabel";
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
 import CategoryIcon from "./CategoryIcon";
@@ -657,65 +671,22 @@ export default function BoutPage({
             onChange={(_event, value) => setCurrentTab(value)}
           >
             <Tab icon={<GraphicEq />} label="Detections" />
-            {currentUser?.moderator && (
+            {currentUser?.moderator && bout && (
               <Tab icon={<Notifications />} label="Notifications" />
             )}
           </Tabs>
           <TabPanel value={currentTab} index={0}>
-            <Box sx={{ overflowX: "auto" }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell align="right">Timestamp</TableCell>
-                    <TableCell align="right">Candidate</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {detections.map((det, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Typography variant="caption">{det.id}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip label={det.category} />
-                      </TableCell>
-                      <TableCell>{det.description}</TableCell>
-                      <TableCell align="right" title={det.timestamp.toString()}>
-                        {formatTimestamp(det.timestamp)}
-                      </TableCell>
-                      <TableCell align="right">
-                        {det?.candidate?.id && (
-                          <IconButton
-                            href={`/reports/${det?.candidate?.id}`}
-                            target="_blank"
-                            size="small"
-                            sx={{ transform: "scale(0.8)" }}
-                          >
-                            <Launch />
-                          </IconButton>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-
-                  {detections.length < 1 && (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        <Typography textAlign="center">
-                          No detections submitted from{" "}
-                          {format(minDetectionsTime, "h:mm a")} to{" "}
-                          {format(maxDetectionsTime, "h:mm a")}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </Box>
+            <BoutDetectionsTable
+              detections={detections}
+              minDetectionsTime={minDetectionsTime}
+              maxDetectionsTime={maxDetectionsTime}
+            />
           </TabPanel>
+          {bout && currentUser?.moderator && (
+            <TabPanel value={currentTab} index={1}>
+              <BoutNotifications bout={bout} />
+            </TabPanel>
+          )}
         </Box>
       </Box>
     </>
@@ -748,4 +719,276 @@ function shareUrl(time: Date) {
   const currentUrl = new URL(window.location.href);
   currentUrl.searchParams.set("time", formattedTime);
   return currentUrl.toString();
+}
+
+function BoutDetectionsTable({
+  detections,
+  minDetectionsTime,
+  maxDetectionsTime,
+}: {
+  detections: Array<
+    Pick<Detection, "id" | "category" | "timestamp" | "description"> & {
+      candidate?: Maybe<Pick<Candidate, "id">>;
+    }
+  >;
+  minDetectionsTime: Date;
+  maxDetectionsTime: Date;
+}) {
+  return (
+    <Box sx={{ overflowX: "auto" }}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Category</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell align="right">Timestamp</TableCell>
+            <TableCell align="right">Candidate</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {detections.map((det, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                <Typography variant="caption">{det.id}</Typography>
+              </TableCell>
+              <TableCell>
+                <Chip label={det.category} />
+              </TableCell>
+              <TableCell>{det.description}</TableCell>
+              <TableCell align="right" title={det.timestamp.toString()}>
+                {formatTimestamp(det.timestamp)}
+              </TableCell>
+              <TableCell align="right">
+                {det?.candidate?.id && (
+                  <IconButton
+                    href={`/reports/${det?.candidate?.id}`}
+                    target="_blank"
+                    size="small"
+                    sx={{ transform: "scale(0.8)" }}
+                  >
+                    <Launch />
+                  </IconButton>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+
+          {detections.length < 1 && (
+            <TableRow>
+              <TableCell colSpan={5}>
+                <Typography textAlign="center">
+                  No detections submitted from{" "}
+                  {format(minDetectionsTime, "h:mm a")} to{" "}
+                  {format(maxDetectionsTime, "h:mm a")}
+                </Typography>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </Box>
+  );
+}
+
+function BoutNotifications({ bout }: { bout: Pick<Bout, "id"> }) {
+  const notificationsQuery = useNotificationsForBoutQuery({
+    boutId: bout.id,
+  });
+  const { notificationsForBout: notifications } = notificationsQuery.data ?? {};
+
+  const cancelNotification = useCancelNotificationMutation({
+    onSuccess: () => {
+      notificationsQuery.refetch();
+    },
+  });
+  return (
+    <>
+      <Box sx={{ marginTop: 1 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <h3>Notifications</h3>
+          <Box>
+            <NotificationModal
+              boutId={bout.id}
+              onNotification={() => notificationsQuery.refetch()}
+            />
+          </Box>
+        </Box>
+        {!notifications && <Typography>No notifications</Typography>}
+        {notifications && (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Event</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell align="center">Progress</TableCell>
+                <TableCell align="right">Last updated</TableCell>
+                <TableCell align="right">Created</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {notifications.map((notification, index) => (
+                <TableRow key={index}>
+                  <TableCell>{notification.eventType?.toLowerCase()}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={notification.active ? "Active" : "Inactive"}
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Box sx={{ mr: 3 }}>
+                        {notification.notifiedCount} /{" "}
+                        {notification.targetCount}
+                      </Box>
+                      {typeof notification.progress === "number" && (
+                        <CircularProgressWithLabel
+                          value={notification.progress * 100}
+                        />
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    title={notification.notifiedCountUpdatedAt?.toString()}
+                  >
+                    {notification.notifiedCountUpdatedAt &&
+                      formatTimestamp(notification.notifiedCountUpdatedAt)}
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    title={notification.insertedAt.toString()}
+                  >
+                    {formatTimestamp(notification.insertedAt)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {notification.active && !notification.finished && (
+                      <Button
+                        onClick={() => {
+                          cancelNotification.mutate({ id: notification.id });
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </Box>
+    </>
+  );
+}
+
+function NotificationModal({
+  boutId,
+  onNotification,
+}: {
+  boutId: string;
+  onNotification: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [confirming, setConfirming] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setMessage("");
+    setConfirming(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+    setMessage(e.target.value);
+
+  const handleSubmit = () => {
+    setConfirming(true);
+  };
+
+  const handleConfirm = () => {
+    notifyConfirmedCandidate.mutate({ boutId, message });
+  };
+
+  const notifyConfirmedCandidate = useNotifyLiveBoutMutation({
+    onSuccess: () => {
+      onNotification();
+      handleClose();
+    },
+  });
+
+  return (
+    <>
+      <Button onClick={handleOpen}>Notify subscribers</Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            Notify subscribers
+            <IconButton onClick={handleClose}>
+              <Close />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent
+          sx={{ minWidth: (theme) => theme.breakpoints.values.sm }}
+        >
+          <TextareaAutosize
+            style={{ width: "100%", padding: "15px" }}
+            autoFocus
+            placeholder="Message to subscribers (e.g. SRKWs heard in ...)"
+            onChange={handleChange}
+            minRows={3}
+          />
+        </DialogContent>
+        <DialogActions>
+          {confirming ? (
+            <Box
+              display="flex"
+              alignItems="center"
+              sx={{ width: "100%" }}
+              px={2}
+            >
+              <Button onClick={() => setConfirming(false)} color="primary">
+                Cancel
+              </Button>
+              <Typography sx={{ marginLeft: "auto", marginRight: 2 }}>
+                Are you sure?
+              </Typography>
+              <Button onClick={handleConfirm} color="error" variant="outlined">
+                Send to subscribers
+              </Button>
+            </Box>
+          ) : (
+            <>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                color="primary"
+                variant="outlined"
+                disabled={!message}
+              >
+                Submit
+              </Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 }

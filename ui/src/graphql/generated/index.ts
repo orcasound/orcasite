@@ -1543,6 +1543,7 @@ export type Notification = {
 
 export const NotificationEventType = {
   ConfirmedCandidate: "CONFIRMED_CANDIDATE",
+  LiveBout: "LIVE_BOUT",
   NewDetection: "NEW_DETECTION",
 } as const;
 
@@ -1699,6 +1700,24 @@ export type NotifyConfirmedCandidateResult = {
   result?: Maybe<Notification>;
 };
 
+export type NotifyLiveBoutInput = {
+  boutId: Scalars["String"]["input"];
+  /**
+   * What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
+   * and clicks can be heard at Orcasound Lab!')
+   */
+  message: Scalars["String"]["input"];
+};
+
+/** The result of the :notify_live_bout mutation */
+export type NotifyLiveBoutResult = {
+  __typename?: "NotifyLiveBoutResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Notification>;
+};
+
 /** A page of :audio_image */
 export type PageOfAudioImage = {
   __typename?: "PageOfAudioImage";
@@ -1817,6 +1836,8 @@ export type RootMutationType = {
   generateFeedSpectrograms: GenerateFeedSpectrogramsResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
   notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
+  /** Create a notification for live bout */
+  notifyLiveBout: NotifyLiveBoutResult;
   /** Register a new user with a username and password. */
   registerWithPassword: RegisterWithPasswordResult;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
@@ -1848,6 +1869,10 @@ export type RootMutationTypeGenerateFeedSpectrogramsArgs = {
 
 export type RootMutationTypeNotifyConfirmedCandidateArgs = {
   input: NotifyConfirmedCandidateInput;
+};
+
+export type RootMutationTypeNotifyLiveBoutArgs = {
+  input: NotifyLiveBoutInput;
 };
 
 export type RootMutationTypeRegisterWithPasswordArgs = {
@@ -1895,6 +1920,7 @@ export type RootQueryType = {
   feedSegments?: Maybe<PageOfFeedSegment>;
   feedStreams?: Maybe<PageOfFeedStream>;
   feeds: Array<Feed>;
+  notificationsForBout: Array<Notification>;
   notificationsForCandidate: Array<Notification>;
 };
 
@@ -1979,6 +2005,14 @@ export type RootQueryTypeFeedStreamsArgs = {
 export type RootQueryTypeFeedsArgs = {
   filter?: InputMaybe<FeedFilterInput>;
   sort?: InputMaybe<Array<InputMaybe<FeedSortInput>>>;
+};
+
+export type RootQueryTypeNotificationsForBoutArgs = {
+  active?: InputMaybe<Scalars["Boolean"]["input"]>;
+  boutId: Scalars["String"]["input"];
+  eventType?: InputMaybe<NotificationEventType>;
+  filter?: InputMaybe<NotificationFilterInput>;
+  sort?: InputMaybe<Array<InputMaybe<NotificationSortInput>>>;
 };
 
 export type RootQueryTypeNotificationsForCandidateArgs = {
@@ -2403,6 +2437,37 @@ export type NotifyConfirmedCandidateMutation = {
   };
 };
 
+export type NotifyLiveBoutMutationVariables = Exact<{
+  boutId: Scalars["String"]["input"];
+  message: Scalars["String"]["input"];
+}>;
+
+export type NotifyLiveBoutMutation = {
+  __typename?: "RootMutationType";
+  notifyLiveBout: {
+    __typename?: "NotifyLiveBoutResult";
+    result?: {
+      __typename?: "Notification";
+      id: string;
+      eventType?: NotificationEventType | null;
+      active?: boolean | null;
+      targetCount?: number | null;
+      notifiedCount?: number | null;
+      progress?: number | null;
+      finished?: boolean | null;
+      notifiedCountUpdatedAt?: Date | null;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
 export type RegisterWithPasswordMutationVariables = Exact<{
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
@@ -2703,27 +2768,6 @@ export type FeedQuery = {
   };
 };
 
-export type NotificationsForCandidateQueryVariables = Exact<{
-  candidateId: Scalars["String"]["input"];
-  eventType?: InputMaybe<NotificationEventType>;
-}>;
-
-export type NotificationsForCandidateQuery = {
-  __typename?: "RootQueryType";
-  notificationsForCandidate: Array<{
-    __typename?: "Notification";
-    id: string;
-    eventType?: NotificationEventType | null;
-    active?: boolean | null;
-    insertedAt: Date;
-    targetCount?: number | null;
-    notifiedCount?: number | null;
-    notifiedCountUpdatedAt?: Date | null;
-    progress?: number | null;
-    finished?: boolean | null;
-  }>;
-};
-
 export type AudioImagesQueryVariables = Exact<{
   feedId: Scalars["String"]["input"];
   startTime: Scalars["DateTime"]["input"];
@@ -2933,6 +2977,48 @@ export type FeedsQuery = {
     bucket: string;
     online?: boolean | null;
     latLng: { __typename?: "LatLng"; lat: number; lng: number };
+  }>;
+};
+
+export type NotificationsForBoutQueryVariables = Exact<{
+  boutId: Scalars["String"]["input"];
+  eventType?: InputMaybe<NotificationEventType>;
+}>;
+
+export type NotificationsForBoutQuery = {
+  __typename?: "RootQueryType";
+  notificationsForBout: Array<{
+    __typename?: "Notification";
+    id: string;
+    eventType?: NotificationEventType | null;
+    active?: boolean | null;
+    insertedAt: Date;
+    targetCount?: number | null;
+    notifiedCount?: number | null;
+    notifiedCountUpdatedAt?: Date | null;
+    progress?: number | null;
+    finished?: boolean | null;
+  }>;
+};
+
+export type NotificationsForCandidateQueryVariables = Exact<{
+  candidateId: Scalars["String"]["input"];
+  eventType?: InputMaybe<NotificationEventType>;
+}>;
+
+export type NotificationsForCandidateQuery = {
+  __typename?: "RootQueryType";
+  notificationsForCandidate: Array<{
+    __typename?: "Notification";
+    id: string;
+    eventType?: NotificationEventType | null;
+    active?: boolean | null;
+    insertedAt: Date;
+    targetCount?: number | null;
+    notifiedCount?: number | null;
+    notifiedCountUpdatedAt?: Date | null;
+    progress?: number | null;
+    finished?: boolean | null;
   }>;
 };
 
@@ -3345,6 +3431,66 @@ useNotifyConfirmedCandidateMutation.fetcher = (
     NotifyConfirmedCandidateMutation,
     NotifyConfirmedCandidateMutationVariables
   >(NotifyConfirmedCandidateDocument, variables, options);
+
+export const NotifyLiveBoutDocument = `
+    mutation notifyLiveBout($boutId: String!, $message: String!) {
+  notifyLiveBout(input: {boutId: $boutId, message: $message}) {
+    result {
+      id
+      eventType
+      active
+      targetCount
+      notifiedCount
+      progress
+      finished
+      notifiedCountUpdatedAt
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}
+    `;
+
+export const useNotifyLiveBoutMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    NotifyLiveBoutMutation,
+    TError,
+    NotifyLiveBoutMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    NotifyLiveBoutMutation,
+    TError,
+    NotifyLiveBoutMutationVariables,
+    TContext
+  >({
+    mutationKey: ["notifyLiveBout"],
+    mutationFn: (variables?: NotifyLiveBoutMutationVariables) =>
+      fetcher<NotifyLiveBoutMutation, NotifyLiveBoutMutationVariables>(
+        NotifyLiveBoutDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useNotifyLiveBoutMutation.getKey = () => ["notifyLiveBout"];
+
+useNotifyLiveBoutMutation.fetcher = (
+  variables: NotifyLiveBoutMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<NotifyLiveBoutMutation, NotifyLiveBoutMutationVariables>(
+    NotifyLiveBoutDocument,
+    variables,
+    options,
+  );
 
 export const RegisterWithPasswordDocument = `
     mutation registerWithPassword($firstName: String, $lastName: String, $email: String!, $username: String!, $password: String!, $passwordConfirmation: String!) {
@@ -4017,63 +4163,6 @@ useFeedQuery.fetcher = (
   options?: RequestInit["headers"],
 ) => fetcher<FeedQuery, FeedQueryVariables>(FeedDocument, variables, options);
 
-export const NotificationsForCandidateDocument = `
-    query notificationsForCandidate($candidateId: String!, $eventType: NotificationEventType) {
-  notificationsForCandidate(candidateId: $candidateId, eventType: $eventType) {
-    id
-    eventType
-    active
-    insertedAt
-    targetCount
-    notifiedCount
-    notifiedCountUpdatedAt
-    progress
-    finished
-  }
-}
-    `;
-
-export const useNotificationsForCandidateQuery = <
-  TData = NotificationsForCandidateQuery,
-  TError = unknown,
->(
-  variables: NotificationsForCandidateQueryVariables,
-  options?: Omit<
-    UseQueryOptions<NotificationsForCandidateQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseQueryOptions<
-      NotificationsForCandidateQuery,
-      TError,
-      TData
-    >["queryKey"];
-  },
-) => {
-  return useQuery<NotificationsForCandidateQuery, TError, TData>({
-    queryKey: ["notificationsForCandidate", variables],
-    queryFn: fetcher<
-      NotificationsForCandidateQuery,
-      NotificationsForCandidateQueryVariables
-    >(NotificationsForCandidateDocument, variables),
-    ...options,
-  });
-};
-
-useNotificationsForCandidateQuery.document = NotificationsForCandidateDocument;
-
-useNotificationsForCandidateQuery.getKey = (
-  variables: NotificationsForCandidateQueryVariables,
-) => ["notificationsForCandidate", variables];
-
-useNotificationsForCandidateQuery.fetcher = (
-  variables: NotificationsForCandidateQueryVariables,
-  options?: RequestInit["headers"],
-) =>
-  fetcher<
-    NotificationsForCandidateQuery,
-    NotificationsForCandidateQueryVariables
-  >(NotificationsForCandidateDocument, variables, options);
-
 export const AudioImagesDocument = `
     query audioImages($feedId: String!, $startTime: DateTime!, $endTime: DateTime!, $limit: Int = 1000, $offset: Int = 0) {
   audioImages(
@@ -4411,6 +4500,121 @@ useFeedsQuery.fetcher = (
   options?: RequestInit["headers"],
 ) =>
   fetcher<FeedsQuery, FeedsQueryVariables>(FeedsDocument, variables, options);
+
+export const NotificationsForBoutDocument = `
+    query notificationsForBout($boutId: String!, $eventType: NotificationEventType) {
+  notificationsForBout(boutId: $boutId, eventType: $eventType) {
+    id
+    eventType
+    active
+    insertedAt
+    targetCount
+    notifiedCount
+    notifiedCountUpdatedAt
+    progress
+    finished
+  }
+}
+    `;
+
+export const useNotificationsForBoutQuery = <
+  TData = NotificationsForBoutQuery,
+  TError = unknown,
+>(
+  variables: NotificationsForBoutQueryVariables,
+  options?: Omit<
+    UseQueryOptions<NotificationsForBoutQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<
+      NotificationsForBoutQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useQuery<NotificationsForBoutQuery, TError, TData>({
+    queryKey: ["notificationsForBout", variables],
+    queryFn: fetcher<
+      NotificationsForBoutQuery,
+      NotificationsForBoutQueryVariables
+    >(NotificationsForBoutDocument, variables),
+    ...options,
+  });
+};
+
+useNotificationsForBoutQuery.document = NotificationsForBoutDocument;
+
+useNotificationsForBoutQuery.getKey = (
+  variables: NotificationsForBoutQueryVariables,
+) => ["notificationsForBout", variables];
+
+useNotificationsForBoutQuery.fetcher = (
+  variables: NotificationsForBoutQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<NotificationsForBoutQuery, NotificationsForBoutQueryVariables>(
+    NotificationsForBoutDocument,
+    variables,
+    options,
+  );
+
+export const NotificationsForCandidateDocument = `
+    query notificationsForCandidate($candidateId: String!, $eventType: NotificationEventType) {
+  notificationsForCandidate(candidateId: $candidateId, eventType: $eventType) {
+    id
+    eventType
+    active
+    insertedAt
+    targetCount
+    notifiedCount
+    notifiedCountUpdatedAt
+    progress
+    finished
+  }
+}
+    `;
+
+export const useNotificationsForCandidateQuery = <
+  TData = NotificationsForCandidateQuery,
+  TError = unknown,
+>(
+  variables: NotificationsForCandidateQueryVariables,
+  options?: Omit<
+    UseQueryOptions<NotificationsForCandidateQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<
+      NotificationsForCandidateQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useQuery<NotificationsForCandidateQuery, TError, TData>({
+    queryKey: ["notificationsForCandidate", variables],
+    queryFn: fetcher<
+      NotificationsForCandidateQuery,
+      NotificationsForCandidateQueryVariables
+    >(NotificationsForCandidateDocument, variables),
+    ...options,
+  });
+};
+
+useNotificationsForCandidateQuery.document = NotificationsForCandidateDocument;
+
+useNotificationsForCandidateQuery.getKey = (
+  variables: NotificationsForCandidateQueryVariables,
+) => ["notificationsForCandidate", variables];
+
+useNotificationsForCandidateQuery.fetcher = (
+  variables: NotificationsForCandidateQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<
+    NotificationsForCandidateQuery,
+    NotificationsForCandidateQueryVariables
+  >(NotificationsForCandidateDocument, variables, options);
 
 export const AudioImageUpdatedDocument = `
     subscription audioImageUpdated($feedId: String!, $startTime: DateTime!, $endTime: DateTime!) {

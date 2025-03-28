@@ -1,0 +1,21 @@
+mutation notifyLiveBout($boutId: String!, $message: String!) {
+  notifyLiveBout(input: { boutId: $boutId, message: $message }) {
+    result {
+      id
+      eventType
+      active
+      targetCount
+      notifiedCount
+      progress
+      finished
+      notifiedCountUpdatedAt
+    }
+    errors {
+      code
+      fields
+      message
+      shortMessage
+      vars
+    }
+  }
+}

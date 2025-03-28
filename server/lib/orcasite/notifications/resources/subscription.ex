@@ -49,6 +49,23 @@ defmodule Orcasite.Notifications.Subscription do
     belongs_to :last_notification, Notification
   end
 
+  code_interface do
+    define :update_last_notification,
+      action: :update_last_notification,
+      args: [:last_notification]
+
+    define :available_for_notification,
+      action: :available_for_notification,
+      args: [:notification_id, :event_type, {:optional, :minutes_ago}]
+  end
+
+  resource do
+    description """
+    A subscription - relates a subscriber to a notification type and a channel.
+    (i.e. subscribing to :new_detection via :email)
+    """
+  end
+
   authentication do
     domain Orcasite.Notifications
 
@@ -80,23 +97,6 @@ defmodule Orcasite.Notifications.Subscription do
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
-  end
-
-  code_interface do
-    define :update_last_notification,
-      action: :update_last_notification,
-      args: [:last_notification]
-
-    define :available_for_notification,
-      action: :available_for_notification,
-      args: [:notification_id, :event_type, {:optional, :minutes_ago}]
-  end
-
-  resource do
-    description """
-    A subscription - relates a subscriber to a notification type and a channel.
-    (i.e. subscribing to :new_detection via :email)
-    """
   end
 
   actions do
