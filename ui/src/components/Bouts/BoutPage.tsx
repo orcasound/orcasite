@@ -70,6 +70,7 @@ import {
   useUpdateBoutMutation,
 } from "@/graphql/generated";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
+import { useBoutNotificationSentSubscription } from "@/hooks/useBoutNotificationSentSubscription";
 import { formatTimestamp, roundToNearest } from "@/utils/time";
 
 import CircularProgressWithLabel from "../CircularProgressWithLabel";
@@ -795,8 +796,17 @@ function BoutNotifications({ bout }: { bout: Pick<Bout, "id"> }) {
   const notificationsQuery = useNotificationsForBoutQuery({
     boutId: bout.id,
   });
-  const { notificationsForBout: notifications } = notificationsQuery.data ?? {};
+  const initialNotifications =
+    notificationsQuery.data?.notificationsForBout ?? [];
 
+  const updatedNotifications = useBoutNotificationSentSubscription(bout.id);
+  const notifications = _.uniqBy(
+    [...updatedNotifications, ...initialNotifications],
+    ({ id }) => id,
+  ).toSorted(
+    ({ insertedAt: a }, { insertedAt: b }) =>
+      new Date(a).valueOf() - new Date(b).valueOf(),
+  );
   const cancelNotification = useCancelNotificationMutation({
     onSuccess: () => {
       notificationsQuery.refetch();

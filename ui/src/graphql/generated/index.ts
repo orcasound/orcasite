@@ -1912,7 +1912,7 @@ export type RootQueryType = {
   bouts?: Maybe<PageOfBout>;
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
-  currentUser?: Maybe<User>;
+  currentUser?: Maybe<UserWithToken>;
   detection?: Maybe<Detection>;
   detections?: Maybe<PageOfDetection>;
   feed: Feed;
@@ -1955,10 +1955,6 @@ export type RootQueryTypeCandidatesArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<CandidateSortInput>>>;
-};
-
-export type RootQueryTypeCurrentUserArgs = {
-  filter?: InputMaybe<UserFilterInput>;
 };
 
 export type RootQueryTypeDetectionArgs = {
@@ -2026,6 +2022,7 @@ export type RootQueryTypeNotificationsForCandidateArgs = {
 export type RootSubscriptionType = {
   __typename?: "RootSubscriptionType";
   audioImageUpdated?: Maybe<Audio_Image_Updated_Result>;
+  boutNotificationSent?: Maybe<Bout_Notification_Sent_Result>;
 };
 
 export type RootSubscriptionTypeAudioImageUpdatedArgs = {
@@ -2033,6 +2030,13 @@ export type RootSubscriptionTypeAudioImageUpdatedArgs = {
   feedId: Scalars["String"]["input"];
   filter?: InputMaybe<AudioImageFilterInput>;
   startTime: Scalars["DateTime"]["input"];
+};
+
+export type RootSubscriptionTypeBoutNotificationSentArgs = {
+  active?: InputMaybe<Scalars["Boolean"]["input"]>;
+  boutId: Scalars["String"]["input"];
+  eventType?: InputMaybe<NotificationEventType>;
+  filter?: InputMaybe<NotificationFilterInput>;
 };
 
 export type SetDetectionVisibleInput = {
@@ -2114,106 +2118,27 @@ export type User = {
   username?: Maybe<Scalars["String"]["output"]>;
 };
 
-export type UserFilterAdmin = {
-  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type UserFilterEmail = {
-  eq?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["String"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  notEq?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type UserFilterFirstName = {
-  eq?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  ilike?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["String"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  like?: InputMaybe<Scalars["String"]["input"]>;
-  notEq?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type UserFilterId = {
-  eq?: InputMaybe<Scalars["ID"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
-  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
-  notEq?: InputMaybe<Scalars["ID"]["input"]>;
-};
-
-export type UserFilterInput = {
-  admin?: InputMaybe<UserFilterAdmin>;
-  and?: InputMaybe<Array<UserFilterInput>>;
-  email?: InputMaybe<UserFilterEmail>;
-  firstName?: InputMaybe<UserFilterFirstName>;
-  id?: InputMaybe<UserFilterId>;
-  lastName?: InputMaybe<UserFilterLastName>;
-  moderator?: InputMaybe<UserFilterModerator>;
-  not?: InputMaybe<Array<UserFilterInput>>;
-  or?: InputMaybe<Array<UserFilterInput>>;
-  username?: InputMaybe<UserFilterUsername>;
-};
-
-export type UserFilterLastName = {
-  eq?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  ilike?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["String"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  like?: InputMaybe<Scalars["String"]["input"]>;
-  notEq?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type UserFilterModerator = {
-  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
-  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type UserFilterUsername = {
-  eq?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
-  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  ilike?: InputMaybe<Scalars["String"]["input"]>;
-  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
-  lessThan?: InputMaybe<Scalars["String"]["input"]>;
-  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
-  like?: InputMaybe<Scalars["String"]["input"]>;
-  notEq?: InputMaybe<Scalars["String"]["input"]>;
+export type UserWithToken = {
+  __typename?: "UserWithToken";
+  admin: Scalars["Boolean"]["output"];
+  email: Scalars["String"]["output"];
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["ID"]["output"];
+  lastName?: Maybe<Scalars["String"]["output"]>;
+  moderator: Scalars["Boolean"]["output"];
+  token?: Maybe<Scalars["String"]["output"]>;
+  username?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type Audio_Image_Updated_Result = {
   __typename?: "audio_image_updated_result";
   created?: Maybe<AudioImage>;
   updated?: Maybe<AudioImage>;
+};
+
+export type Bout_Notification_Sent_Result = {
+  __typename?: "bout_notification_sent_result";
+  updated?: Maybe<Notification>;
 };
 
 export type AudioImagePartsFragment = {
@@ -2290,6 +2215,19 @@ export type FeedStreamPartsFragment = {
   playlistTimestamp?: string | null;
   playlistPath?: string | null;
   playlistM3u8Path?: string | null;
+};
+
+export type NotificationPartsFragment = {
+  __typename?: "Notification";
+  id: string;
+  active?: boolean | null;
+  eventType?: NotificationEventType | null;
+  progress?: number | null;
+  targetCount?: number | null;
+  finished?: boolean | null;
+  notifiedCount?: number | null;
+  notifiedCountUpdatedAt?: Date | null;
+  insertedAt: Date;
 };
 
 export type CancelCandidateNotificationsMutationVariables = Exact<{
@@ -2725,13 +2663,14 @@ export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never }>;
 export type GetCurrentUserQuery = {
   __typename?: "RootQueryType";
   currentUser?: {
-    __typename?: "User";
+    __typename?: "UserWithToken";
     id: string;
     firstName?: string | null;
     lastName?: string | null;
     email: string;
     admin: boolean;
     moderator: boolean;
+    token?: string | null;
   } | null;
 };
 
@@ -3061,6 +3000,29 @@ export type AudioImageUpdatedSubscription = {
   } | null;
 };
 
+export type BoutNotificationSentSubscriptionVariables = Exact<{
+  boutId: Scalars["String"]["input"];
+}>;
+
+export type BoutNotificationSentSubscription = {
+  __typename?: "RootSubscriptionType";
+  boutNotificationSent?: {
+    __typename?: "bout_notification_sent_result";
+    updated?: {
+      __typename?: "Notification";
+      id: string;
+      active?: boolean | null;
+      eventType?: NotificationEventType | null;
+      progress?: number | null;
+      targetCount?: number | null;
+      finished?: boolean | null;
+      notifiedCount?: number | null;
+      notifiedCountUpdatedAt?: Date | null;
+      insertedAt: Date;
+    } | null;
+  } | null;
+};
+
 export const AudioImagePartsFragmentDoc = `
     fragment AudioImageParts on AudioImage {
   id
@@ -3138,6 +3100,19 @@ export const FeedStreamPartsFragmentDoc = `
   playlistTimestamp
   playlistPath
   playlistM3u8Path
+}
+    `;
+export const NotificationPartsFragmentDoc = `
+    fragment NotificationParts on Notification {
+  id
+  active
+  eventType
+  progress
+  targetCount
+  finished
+  notifiedCount
+  notifiedCountUpdatedAt
+  insertedAt
 }
     `;
 export const CancelCandidateNotificationsDocument = `
@@ -4039,6 +4014,7 @@ export const GetCurrentUserDocument = `
     email
     admin
     moderator
+    token
   }
 }
     `;
@@ -4628,3 +4604,12 @@ export const AudioImageUpdatedDocument = `
   }
 }
     ${AudioImagePartsFragmentDoc}`;
+export const BoutNotificationSentDocument = `
+    subscription boutNotificationSent($boutId: String!) {
+  boutNotificationSent(boutId: $boutId) {
+    updated {
+      ...NotificationParts
+    }
+  }
+}
+    ${NotificationPartsFragmentDoc}`;

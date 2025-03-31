@@ -1,0 +1,11 @@
+fragment NotificationParts on Notification {
+  id
+  active
+  eventType
+  progress
+  targetCount
+  finished
+  notifiedCount
+  notifiedCountUpdatedAt
+  insertedAt
+}

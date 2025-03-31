@@ -118,6 +118,11 @@ defmodule Orcasite.Notifications.Notification do
                    else: true
                  )
              )
+
+      prepare fn query, context ->
+        query
+      end
+
     end
 
     read :for_candidate do
@@ -353,6 +358,15 @@ defmodule Orcasite.Notifications.Notification do
       create :notify_confirmed_candidate, :notify_confirmed_candidate
       create :notify_live_bout, :notify_live_bout
       update :cancel_notification, :cancel_notification
+    end
+
+    subscriptions do
+      pubsub OrcasiteWeb.Endpoint
+
+      subscribe :bout_notification_sent do
+        read_action :for_bout
+        actions [:increment_notified_count]
+      end
     end
   end
 end

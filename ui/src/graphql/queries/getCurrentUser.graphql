@@ -6,5 +6,6 @@ query getCurrentUser {
     email
     admin
     moderator
+    token
   }
 }

@@ -94,6 +94,15 @@ defmodule Orcasite.Accounts.User do
     end
   end
 
+  code_interface do
+    domain Orcasite.Accounts
+
+    define :sign_in_with_password
+    define :by_email, args: [:email]
+    define :request_password_reset_with_password
+    define :password_reset_with_password
+  end
+
   actions do
     defaults [:read, :destroy, create: :*, update: :*]
 
@@ -103,17 +112,26 @@ defmodule Orcasite.Accounts.User do
 
     read :current_user do
       get? true
+
+      metadata :token, :string
+
       manual Orcasite.Accounts.Actions.CurrentUserRead
+
+      prepare after_action(fn
+                _query, [user], _context ->
+                  {:ok,
+                   [
+                     user
+                     |> Ash.Resource.put_metadata(
+                       :token,
+                       Phoenix.Token.sign(OrcasiteWeb.Endpoint, "user auth", user.id)
+                     )
+                   ]}
+
+                _, _, _ ->
+                  {:ok, []}
+              end)
     end
-  end
-
-  code_interface do
-    domain Orcasite.Accounts
-
-    define :sign_in_with_password
-    define :by_email, args: [:email]
-    define :request_password_reset_with_password
-    define :password_reset_with_password
   end
 
   admin do
@@ -136,7 +154,10 @@ defmodule Orcasite.Accounts.User do
     type :user
 
     queries do
-      read_one :current_user, :current_user
+      get :current_user, :current_user do
+        type_name :user_with_token
+        identity false
+      end
     end
 
     mutations do
