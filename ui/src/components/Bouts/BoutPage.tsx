@@ -641,39 +641,34 @@ export default function BoutPage({
 
 function CategoryIcon({
   audioCategory,
-  size,
+  size = 15,
 }: {
   audioCategory: AudioCategory;
   size?: number;
 }) {
-  size = size ?? 15;
-  if (audioCategory === "BIOPHONY")
-    return (
-      <Image
-        src={whaleFlukeIconImage.src}
-        width={size}
-        height={size}
-        alt="Whale fluke icon"
-      />
-    );
-  if (audioCategory === "ANTHROPHONY")
-    return (
-      <Image
-        src={vesselIconImage.src}
-        width={size}
-        height={size}
-        alt="Vessel icon"
-      />
-    );
-  if (audioCategory === "GEOPHONY")
-    return (
-      <Image
-        src={wavesIconImage.src}
-        width={size}
-        height={size}
-        alt="Waves icon"
-      />
-    );
+  const iconConfig = {
+    BIOPHONY: {
+      src: whaleFlukeIconImage.src,
+      alt: "Whale fluke icon",
+    },
+    ANTHROPHONY: {
+      src: vesselIconImage.src,
+      alt: "Vessel icon",
+    },
+    GEOPHONY: {
+      src: wavesIconImage.src,
+      alt: "Waves icon",
+    },
+  }[audioCategory];
+
+  return iconConfig && (
+    <Image
+      src={iconConfig.src}
+      width={size}
+      height={size}
+      alt={iconConfig.alt}
+    />
+  );
 }
 
 function TabPanel(props: {
