@@ -89,7 +89,11 @@ export default function BoutPage({
     (time: Date) => (playerTime.current = time),
     [],
   );
-  const [playerControls, setPlayerControls] = useState<PlayerControls>();
+  const playerControls = useRef<PlayerControls>();
+  const setPlayerControls = useCallback(
+    (controls: PlayerControls) => (playerControls.current = controls),
+    [],
+  );
   const spectrogramControls = useRef<SpectrogramControls>();
 
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
@@ -661,13 +665,15 @@ function CategoryIcon({
     },
   }[audioCategory];
 
-  return iconConfig && (
-    <Image
-      src={iconConfig.src}
-      width={size}
-      height={size}
-      alt={iconConfig.alt}
-    />
+  return (
+    iconConfig && (
+      <Image
+        src={iconConfig.src}
+        width={size}
+        height={size}
+        alt={iconConfig.alt}
+      />
+    )
   );
 }
 
