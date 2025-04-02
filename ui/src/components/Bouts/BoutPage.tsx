@@ -209,6 +209,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -217,6 +218,7 @@ export default function BoutPage({
           },
         }));
       } else if (result) {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         router.push(`/bouts/${result.id}`);
       }
     },
@@ -228,6 +230,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -236,8 +239,10 @@ export default function BoutPage({
           },
         }));
       } else {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         setBoutSaved(true);
         setTimeout(() => {
+          // Remove 'bout saved' message after 5 seconds
           setBoutSaved(false);
         }, 5000);
       }
@@ -262,7 +267,6 @@ export default function BoutPage({
           category: audioCategory,
         });
       }
-      setBoutForm((form) => ({ ...form, isSaving: false }));
     } else {
       const errors: Record<string, string> = {};
       if (!audioCategory) {
@@ -271,7 +275,7 @@ export default function BoutPage({
       if (!boutStartTime) {
         errors["startTime"] = "Bout start time required";
       }
-      setBoutForm((form) => ({ ...form, isSaving: false, errors }));
+      setBoutForm((form) => ({ ...form, errors }));
     }
   };
 
