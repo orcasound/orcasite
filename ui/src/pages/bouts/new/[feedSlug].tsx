@@ -16,15 +16,9 @@ const NewBoutPage: NextPageWithLayout = () => {
   const searchParams = useSearchParams();
   const audioCategories = Object.values(AudioCategory);
   const categoryParam = searchParams.get("category");
-  let targetAudioCategory;
-  if (
-    categoryParam &&
-    audioCategories.includes(_.toUpper(categoryParam) as AudioCategory)
-  ) {
-    targetAudioCategory = categoryParam.toUpperCase() as AudioCategory;
-  } else {
-    targetAudioCategory = undefined;
-  }
+ const targetAudioCategory = audioCategories.find(
+    (category) => category === categoryParam?.toUpperCase()
+  ) as AudioCategory | undefined;
 
   const feedQueryResult = useFeedQuery(
     { slug: feedSlug || "" },
