@@ -133,7 +133,7 @@ export default function BoutPage({
     setTimelineStartTime((timelineStartTime) =>
       roundToNearest(
         subMinutes(timelineStartTime, timeBuffer),
-        nearestMinutes,
+        nearestMinutes * 60 * 1000,
         "floor",
       ),
     );
@@ -146,7 +146,7 @@ export default function BoutPage({
           currentTime,
           roundToNearest(
             addMinutes(timelineEndTime, timeBuffer),
-            nearestMinutes,
+            nearestMinutes * 60 * 1000,
             "ceil",
           ),
         ]),
