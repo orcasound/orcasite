@@ -375,7 +375,7 @@ export default function BoutPage({
           setBoutStartTime={setBoutStartTime}
           setBoutEndTime={setBoutEndTime}
           spectrogramControls={spectrogramControls}
-        ></SpectrogramTimeline>
+        />
 
         <Box
           display="flex"
