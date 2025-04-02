@@ -49,7 +49,7 @@ export function BoutPlayer({
     [playlistTimestamp],
   );
 
-  const now = useMemo(() => new Date(), []);
+  const [now] = useState(() => new Date());
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const targetOffset = useMemo(
