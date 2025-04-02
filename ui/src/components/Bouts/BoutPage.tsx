@@ -77,7 +77,7 @@ export default function BoutPage({
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const router = useRouter();
-  const now = useMemo(() => new Date(), []);
+  const [now] = useState(() => new Date());
   targetTime =
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
 
