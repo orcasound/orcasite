@@ -2818,7 +2818,6 @@ export const BoutPartsFragmentDoc = `
   duration
   endTime
   startTime
-  endTime
 }
     `;
 export const FeedPartsFragmentDoc = `
