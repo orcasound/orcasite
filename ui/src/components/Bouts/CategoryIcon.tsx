@@ -5,42 +5,36 @@ import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
-export default function CategoryIcon({
+export function CategoryIcon({
   audioCategory,
-  size,
+  size = 15,
 }: {
   audioCategory: AudioCategory;
   size?: number;
 }) {
-  size = size ?? 15;
-  if (audioCategory === "BIOPHONY")
-    return (
+  const iconConfig = {
+    BIOPHONY: {
+      src: whaleFlukeIconImage.src,
+      alt: "Whale fluke icon",
+    },
+    ANTHROPHONY: {
+      src: vesselIconImage.src,
+      alt: "Vessel icon",
+    },
+    GEOPHONY: {
+      src: wavesIconImage.src,
+      alt: "Waves icon",
+    },
+  }[audioCategory];
+
+  return (
+    iconConfig && (
       <Image
-        src={whaleFlukeIconImage.src}
+        src={iconConfig.src}
         width={size}
         height={size}
-        alt="Whale fluke icon"
-        title="Biophony"
+        alt={iconConfig.alt}
       />
-    );
-  if (audioCategory === "ANTHROPHONY")
-    return (
-      <Image
-        src={vesselIconImage.src}
-        width={size}
-        height={size}
-        alt="Vessel icon"
-        title="Anthrophony"
-      />
-    );
-  if (audioCategory === "GEOPHONY")
-    return (
-      <Image
-        src={wavesIconImage.src}
-        width={size}
-        height={size}
-        alt="Waves icon"
-        title="Geophony"
-      />
-    );
+    )
+  );
 }

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import Head from "next/head";
 import { useParams, useSearchParams } from "next/navigation";
 
@@ -21,16 +20,9 @@ const NewBoutPage: NextPageWithLayout = () => {
   }
   const audioCategories = Object.values(AudioCategory);
   const categoryParam = searchParams.get("category");
-
-  let targetAudioCategory;
-  if (
-    categoryParam &&
-    audioCategories.includes(_.toUpper(categoryParam) as AudioCategory)
-  ) {
-    targetAudioCategory = categoryParam.toUpperCase() as AudioCategory;
-  } else {
-    targetAudioCategory = undefined;
-  }
+  const targetAudioCategory = audioCategories.find(
+    (category) => category === categoryParam?.toUpperCase(),
+  ) as AudioCategory | undefined;
 
   const feedQueryResult = useFeedQuery(
     { slug: feedSlug || "" },
