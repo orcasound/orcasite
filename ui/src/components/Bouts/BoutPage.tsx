@@ -76,7 +76,7 @@ import { formatTimestamp, roundToNearest } from "@/utils/time";
 import CircularProgressWithLabel from "../CircularProgressWithLabel";
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
-import CategoryIcon from "./CategoryIcon";
+import { CategoryIcon } from "./CategoryIcon";
 
 export default function BoutPage({
   isNew,
@@ -94,7 +94,7 @@ export default function BoutPage({
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const router = useRouter();
-  const now = useMemo(() => new Date(), []);
+  const [now] = useState(() => new Date());
   targetTime =
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
 
@@ -107,7 +107,11 @@ export default function BoutPage({
     (time: Date) => (playerTime.current = time),
     [],
   );
-  const [playerControls, setPlayerControls] = useState<PlayerControls>();
+  const playerControls = useRef<PlayerControls>();
+  const setPlayerControls = useCallback(
+    (controls: PlayerControls) => (playerControls.current = controls),
+    [],
+  );
   const spectrogramControls = useRef<SpectrogramControls>();
 
   const [cachedPlayerTime, setCachedPlayerTime] = useState<Date>(targetTime);
@@ -158,7 +162,7 @@ export default function BoutPage({
     setTimelineStartTime((timelineStartTime) =>
       roundToNearest(
         subMinutes(timelineStartTime, timeBuffer),
-        nearestMinutes,
+        nearestMinutes * 60 * 1000,
         "floor",
       ),
     );
@@ -171,7 +175,7 @@ export default function BoutPage({
           currentTime,
           roundToNearest(
             addMinutes(timelineEndTime, timeBuffer),
-            nearestMinutes,
+            nearestMinutes * 60 * 1000,
             "ceil",
           ),
         ]),
@@ -249,6 +253,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -257,6 +262,7 @@ export default function BoutPage({
           },
         }));
       } else if (result) {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         router.push(`/bouts/${result.id}`);
       }
     },
@@ -268,6 +274,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -276,8 +283,10 @@ export default function BoutPage({
           },
         }));
       } else {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         setBoutSaved(true);
         setTimeout(() => {
+          // Remove 'bout saved' message after 5 seconds
           setBoutSaved(false);
         }, 5000);
       }
@@ -302,7 +311,6 @@ export default function BoutPage({
           category: audioCategory,
         });
       }
-      setBoutForm((form) => ({ ...form, isSaving: false }));
     } else {
       const errors: Record<string, string> = {};
       if (!audioCategory) {
@@ -311,7 +319,7 @@ export default function BoutPage({
       if (!boutStartTime) {
         errors["startTime"] = "Bout start time required";
       }
-      setBoutForm((form) => ({ ...form, isSaving: false, errors }));
+      setBoutForm((form) => ({ ...form, errors }));
     }
   };
 
@@ -429,7 +437,7 @@ export default function BoutPage({
           setBoutEndTime={setBoutEndTime}
           spectrogramControls={spectrogramControls}
           audioImages={audioImages}
-        ></SpectrogramTimeline>
+        />
 
         <Box
           display="flex"

@@ -43,7 +43,7 @@ function centerWindow(
   pixelsPerMinute: number,
   setWindowStartTime: (value: SetStateAction<Date | undefined>) => void,
   setWindowEndTime: (value: SetStateAction<Date | undefined>) => void,
-  playerControls?: PlayerControls,
+  playerControls?: MutableRefObject<PlayerControls | undefined>,
 ) {
   if (spectrogramWindow.current) {
     const offset = timeToOffset(targetTime, timelineStartTime, pixelsPerMinute);
@@ -67,8 +67,8 @@ function centerWindow(
         ),
       );
     }
-    if (playerControls?.setPlayerTime) {
-      playerControls.setPlayerTime(targetTime);
+    if (playerControls?.current?.setPlayerTime) {
+      playerControls.current.setPlayerTime(targetTime);
     }
   }
 }
@@ -121,7 +121,7 @@ export default function SpectrogramTimeline({
     NonNullable<AudioImagesQuery["audioImages"]>["results"]
   >;
   playerTimeRef: MutableRefObject<Date>;
-  playerControls?: PlayerControls;
+  playerControls?: MutableRefObject<PlayerControls | undefined>;
   boutStartTime?: Date;
   boutEndTime?: Date;
   setBoutStartTime: Dispatch<SetStateAction<Date | undefined>>;
@@ -145,7 +145,7 @@ export default function SpectrogramTimeline({
     [setWindowEndTimeUnthrottled],
   );
   const setPlayerTime = _.throttle(
-    (time: Date) => playerControls?.setPlayerTime(time),
+    (time: Date) => playerControls?.current?.setPlayerTime(time),
     200,
     { trailing: false },
   );
@@ -254,7 +254,7 @@ export default function SpectrogramTimeline({
     windowStartX.current =
       e.touches[0].pageX - (spectrogramWindow.current?.offsetLeft ?? 0);
     windowScrollX.current = spectrogramWindow.current?.scrollLeft ?? 0;
-    playerControls?.pause();
+    playerControls?.current?.pause();
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -295,7 +295,7 @@ export default function SpectrogramTimeline({
     windowStartX.current =
       e.pageX - (spectrogramWindow.current?.offsetLeft ?? 0);
     windowScrollX.current = spectrogramWindow.current?.scrollLeft ?? 0;
-    playerControls?.pause();
+    playerControls?.current?.pause();
   };
 
   const handleMouseLeave = useCallback(() => {
