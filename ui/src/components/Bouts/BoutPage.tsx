@@ -430,7 +430,6 @@ export default function BoutPage({
           timelineStartTime={timelineStartTime}
           timelineEndTime={timelineEndTime}
           playerControls={playerControls}
-          feedSegments={feedSegments}
           boutStartTime={boutStartTime}
           boutEndTime={boutEndTime}
           setBoutStartTime={setBoutStartTime}
