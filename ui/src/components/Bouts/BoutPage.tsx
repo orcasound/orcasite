@@ -81,7 +81,7 @@ export default function BoutPage({
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const router = useRouter();
-  const now = useMemo(() => new Date(), []);
+  const [now] = useState(() => new Date());
   targetTime =
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
 
@@ -94,7 +94,11 @@ export default function BoutPage({
     (time: Date) => (playerTime.current = time),
     [],
   );
-  const [playerControls, setPlayerControls] = useState<PlayerControls>();
+  const playerControls = useRef<PlayerControls>();
+  const setPlayerControls = useCallback(
+    (controls: PlayerControls) => (playerControls.current = controls),
+    [],
+  );
   const spectrogramControls = useRef<SpectrogramControls>();
 
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
@@ -134,7 +138,7 @@ export default function BoutPage({
     setTimelineStartTime((timelineStartTime) =>
       roundToNearest(
         subMinutes(timelineStartTime, timeBuffer),
-        nearestMinutes,
+        nearestMinutes * 60 * 1000,
         "floor",
       ),
     );
@@ -147,7 +151,7 @@ export default function BoutPage({
           currentTime,
           roundToNearest(
             addMinutes(timelineEndTime, timeBuffer),
-            nearestMinutes,
+            nearestMinutes * 60 * 1000,
             "ceil",
           ),
         ]),
@@ -225,6 +229,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -233,6 +238,7 @@ export default function BoutPage({
           },
         }));
       } else if (result) {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         router.push(`/bouts/${result.id}`);
       }
     },
@@ -244,6 +250,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -252,8 +259,10 @@ export default function BoutPage({
           },
         }));
       } else {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         setBoutSaved(true);
         setTimeout(() => {
+          // Remove 'bout saved' message after 5 seconds
           setBoutSaved(false);
         }, 5000);
       }
@@ -278,7 +287,6 @@ export default function BoutPage({
           category: audioCategory,
         });
       }
-      setBoutForm((form) => ({ ...form, isSaving: false }));
     } else {
       const errors: Record<string, string> = {};
       if (!audioCategory) {
@@ -287,7 +295,7 @@ export default function BoutPage({
       if (!boutStartTime) {
         errors["startTime"] = "Bout start time required";
       }
-      setBoutForm((form) => ({ ...form, isSaving: false, errors }));
+      setBoutForm((form) => ({ ...form, errors }));
     }
   };
 
@@ -405,7 +413,7 @@ export default function BoutPage({
           setBoutEndTime={setBoutEndTime}
           spectrogramControls={spectrogramControls}
           audioImages={audioImages}
-        ></SpectrogramTimeline>
+        />
 
         <Box
           display="flex"
@@ -702,39 +710,36 @@ export default function BoutPage({
 
 function CategoryIcon({
   audioCategory,
-  size,
+  size = 15,
 }: {
   audioCategory: AudioCategory;
   size?: number;
 }) {
-  size = size ?? 15;
-  if (audioCategory === "BIOPHONY")
-    return (
+  const iconConfig = {
+    BIOPHONY: {
+      src: whaleFlukeIconImage.src,
+      alt: "Whale fluke icon",
+    },
+    ANTHROPHONY: {
+      src: vesselIconImage.src,
+      alt: "Vessel icon",
+    },
+    GEOPHONY: {
+      src: wavesIconImage.src,
+      alt: "Waves icon",
+    },
+  }[audioCategory];
+
+  return (
+    iconConfig && (
       <Image
-        src={whaleFlukeIconImage.src}
+        src={iconConfig.src}
         width={size}
         height={size}
-        alt="Whale fluke icon"
+        alt={iconConfig.alt}
       />
-    );
-  if (audioCategory === "ANTHROPHONY")
-    return (
-      <Image
-        src={vesselIconImage.src}
-        width={size}
-        height={size}
-        alt="Vessel icon"
-      />
-    );
-  if (audioCategory === "GEOPHONY")
-    return (
-      <Image
-        src={wavesIconImage.src}
-        width={size}
-        height={size}
-        alt="Waves icon"
-      />
-    );
+    )
+  );
 }
 
 function TabPanel(props: {
