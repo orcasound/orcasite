@@ -25,7 +25,7 @@ export const TICKER_HEIGHT = 30;
 const SPECTROGRAM_HEIGHT = 300;
 const PIXEL_ZOOM_FACTOR = 50;
 
-export type SpectrogramFeedSegment = Pick<
+type SpectrogramFeedSegment = Pick<
   FeedSegment,
   "id" | "startTime" | "endTime" | "duration"
 >;
@@ -106,7 +106,6 @@ export function rangesOverlap(
 export default function SpectrogramTimeline({
   timelineStartTime,
   timelineEndTime,
-  feedSegments,
   audioImages,
   playerTimeRef,
   playerControls,
@@ -116,7 +115,6 @@ export default function SpectrogramTimeline({
 }: {
   timelineStartTime: Date;
   timelineEndTime: Date;
-  feedSegments: SpectrogramFeedSegment[];
   audioImages: NonNullable<
     NonNullable<AudioImagesQuery["audioImages"]>["results"]
   >;

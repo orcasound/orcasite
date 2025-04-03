@@ -5,7 +5,7 @@ import vesselIconImage from "@/public/icons/vessel-purple.svg";
 import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
-export function CategoryIcon({
+export default function CategoryIcon({
   audioCategory,
   size = 15,
 }: {

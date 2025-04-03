@@ -76,7 +76,7 @@ import { formatTimestamp, roundToNearest } from "@/utils/time";
 import CircularProgressWithLabel from "../CircularProgressWithLabel";
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
-import { CategoryIcon } from "./CategoryIcon";
+import CategoryIcon from "./CategoryIcon";
 
 export default function BoutPage({
   isNew,
