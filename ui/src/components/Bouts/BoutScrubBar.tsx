@@ -2,7 +2,7 @@ import { Box, Slider } from "@mui/material";
 import { addMilliseconds, differenceInMilliseconds, format } from "date-fns";
 import { MutableRefObject, useCallback, useEffect, useState } from "react";
 
-import { Detection, Feed } from "@/graphql/generated";
+import { Detection } from "@/graphql/generated";
 
 import { PlayerControls } from "../Player/BoutPlayer";
 import { SpectrogramControls } from "./SpectrogramTimeline";
@@ -21,8 +21,7 @@ console.error = (...msg) =>
     ) && originalError(...msg);
 
 export default function BoutScrubBar({
-  feed,
-  feedStream,
+  feedStreamStartTimeNum,
   detections,
   playerTimeRef,
   playerControls,
@@ -30,8 +29,7 @@ export default function BoutScrubBar({
   timelineEndTimeNum,
   spectrogramControls,
 }: {
-  feed: Pick<Feed, "id">;
-  feedStream: { startTime: Date };
+  feedStreamStartTimeNum: number;
   detections: Array<Pick<Detection, "timestamp" | "playerOffset">>;
   playerTimeRef: MutableRefObject<Date>;
   playerControls?: MutableRefObject<PlayerControls | undefined>;
@@ -45,13 +43,14 @@ export default function BoutScrubBar({
   const [playerTime, setPlayerTime] = useState(playerTimeRef.current);
 
   const startOffset =
-    differenceInMilliseconds(timelineStartTime, feedStream?.startTime) / 1000;
+    differenceInMilliseconds(
+      timelineStartTime,
+      new Date(feedStreamStartTimeNum),
+    ) / 1000;
   const sliderMax =
     differenceInMilliseconds(timelineEndTime, timelineStartTime) / 1000;
   const sliderValue =
     differenceInMilliseconds(playerTime, timelineStartTime) / 1000;
-
-  console.log("min, max, current", sliderMax, sliderValue);
 
   const marks = detections
     .sort(({ timestamp: a }, { timestamp: b }) => {
@@ -83,10 +82,10 @@ export default function BoutScrubBar({
       playerControls?.current?.pause();
       if (typeof v !== "number") return;
       spectrogramControls.current?.goToTime(
-        addMilliseconds(timelineStartTime, 1000 * v),
+        addMilliseconds(new Date(timelineStartTimeNum), 1000 * v),
       );
     },
-    [spectrogramControls, timelineStartTime, playerControls],
+    [spectrogramControls, timelineStartTimeNum, playerControls],
   );
 
   const handleSliderChangeCommitted = useCallback(
@@ -96,11 +95,11 @@ export default function BoutScrubBar({
     ) => {
       if (typeof v !== "number") return;
       spectrogramControls.current?.goToTime(
-        addMilliseconds(timelineStartTime, 1000 * v),
+        addMilliseconds(new Date(timelineStartTimeNum), 1000 * v),
       );
       playerControls?.current?.play();
     },
-    [spectrogramControls, timelineStartTime, playerControls],
+    [spectrogramControls, timelineStartTimeNum, playerControls],
   );
   return (
     <Box zIndex={10}>

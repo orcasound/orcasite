@@ -411,6 +411,20 @@ export default function BoutPage({
             </Button>
             {format(timelineStartTime, "h:mm:ss a")}
           </Box>
+
+          <Box flexGrow={1} sx={{ mx: 2 }}>
+            {feedStream?.startTime && (
+              <BoutScrubBar
+                feedStreamStartTimeNum={feedStream.startTime.valueOf()}
+                detections={detections}
+                playerTimeRef={playerTime}
+                playerControls={playerControls}
+                timelineStartTimeNum={timelineStartTime.valueOf()}
+                timelineEndTimeNum={timelineEndTime.valueOf()}
+                spectrogramControls={spectrogramControls}
+              />
+            )}
+          </Box>
           <Box>
             {format(timelineEndTime, "h:mm:ss a")}
             <Button
@@ -438,16 +452,6 @@ export default function BoutPage({
           spectrogramControls={spectrogramControls}
           audioImages={audioImages}
         />
-        <BoutScrubBar
-          feed={feed}
-          feedStream={feedStream}
-          detections={detections}
-          playerTimeRef={playerTime}
-          playerControls={playerControls}
-          timelineStartTimeNum={timelineStartTime.valueOf()}
-          timelineEndTimeNum={timelineEndTime.valueOf()}
-          spectrogramControls={spectrogramControls}
-        />
 
         <Box
           display="flex"
@@ -463,6 +467,7 @@ export default function BoutPage({
                 feed={feed}
                 targetTime={targetTime}
                 feedStream={feedStream}
+                maxTimeNum={timelineEndTime.valueOf()}
                 onPlayerTimeUpdate={setPlayerTime}
                 setPlayerTimeRef={setPlayerTime}
                 onPlayerInit={setPlayerControls}

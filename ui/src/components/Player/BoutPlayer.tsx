@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { differenceInSeconds, format } from "date-fns";
+import { differenceInSeconds, format, isBefore } from "date-fns";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -27,6 +27,7 @@ export function BoutPlayer({
   feed,
   feedStream,
   targetTime,
+  maxTimeNum,
   onPlayerInit,
   onPlayerTimeUpdate,
   setPlayerTimeRef,
@@ -34,6 +35,7 @@ export function BoutPlayer({
   feed: Pick<Feed, "bucket" | "nodeName">;
   feedStream: Pick<FeedStream, "bucket" | "playlistTimestamp">;
   targetTime: Date;
+  maxTimeNum: number;
   onPlayerInit?: (playerControls: PlayerControls) => void;
   onPlayerTimeUpdate?: (time: Date) => void;
   setPlayerTimeRef?: (time: Date) => void;
@@ -150,6 +152,10 @@ export function BoutPlayer({
           if (onPlayerTimeUpdate !== undefined) {
             onPlayerTimeUpdate(playerDateTime);
           }
+          // On hitting max time, pause
+          if (!isBefore(playerDateTime, new Date(maxTimeNum))) {
+            player.pause();
+          }
         }, 10);
       });
       player.on("pause", () => {
@@ -185,6 +191,7 @@ export function BoutPlayer({
       targetOffset,
       intervalRef,
       setPlayerTimeRef,
+      maxTimeNum,
     ],
   );
   const handlePlayPauseClick = () => {
