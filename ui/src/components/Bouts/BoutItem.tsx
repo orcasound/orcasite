@@ -131,14 +131,10 @@ export default function BoutItem({
 function durationString(durationMs: number | null | undefined) {
   if (typeof durationMs !== "number") return "";
   const duration = intervalToDuration({ start: 0, end: durationMs });
-  const zeroPad = (num: number) => String(num).padStart(2, "0");
-  const daysInHours = duration.days ? duration.days * 24 : 0;
+  const hours = Math.floor(durationMs / 1000 / 60 / 60);
 
-  const formatted = [
-    daysInHours + (duration.hours ?? 0),
-    duration.minutes ?? 0,
-    duration.seconds ?? 0,
-  ]
+  const zeroPad = (num: number) => String(num).padStart(2, "0");
+  const formatted = [hours, duration.minutes ?? 0, duration.seconds ?? 0]
     .map(zeroPad)
     .join(":");
 

@@ -76,6 +76,7 @@ import { formatTimestamp, roundToNearest } from "@/utils/time";
 import CircularProgressWithLabel from "../CircularProgressWithLabel";
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
+import BoutScrubBar from "./BoutScrubBar";
 import CategoryIcon from "./CategoryIcon";
 
 export default function BoutPage({
@@ -436,6 +437,16 @@ export default function BoutPage({
           setBoutEndTime={setBoutEndTime}
           spectrogramControls={spectrogramControls}
           audioImages={audioImages}
+        />
+        <BoutScrubBar
+          feed={feed}
+          feedStream={feedStream}
+          detections={detections}
+          playerTimeRef={playerTime}
+          playerControls={playerControls}
+          timelineStartTimeNum={timelineStartTime.valueOf()}
+          timelineEndTimeNum={timelineEndTime.valueOf()}
+          spectrogramControls={spectrogramControls}
         />
 
         <Box
