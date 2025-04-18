@@ -786,6 +786,7 @@ function BoutDetectionsTable({
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>#</TableCell>
             <TableCell>ID</TableCell>
             <TableCell>Category</TableCell>
             <TableCell>Description</TableCell>
@@ -794,32 +795,40 @@ function BoutDetectionsTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {detections.map((det, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <Typography variant="caption">{det.id}</Typography>
-              </TableCell>
-              <TableCell>
-                <Chip label={det.category} />
-              </TableCell>
-              <TableCell>{det.description}</TableCell>
-              <TableCell align="right" title={det.timestamp.toString()}>
-                {formatTimestamp(det.timestamp)}
-              </TableCell>
-              <TableCell align="right">
-                {det?.candidate?.id && (
-                  <IconButton
-                    href={`/reports/${det?.candidate?.id}`}
-                    target="_blank"
-                    size="small"
-                    sx={{ transform: "scale(0.8)" }}
-                  >
-                    <Launch />
-                  </IconButton>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
+          {detections
+            .sort(({ timestamp: a }, { timestamp: b }) => {
+              const date_a = new Date(a);
+              const date_b = new Date(b);
+              // Sort by timestamp, low to high
+              return +date_a - +date_b;
+            })
+            .map((det, index) => (
+              <TableRow key={index}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>
+                  <Typography variant="caption">{det.id}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Chip label={det.category} />
+                </TableCell>
+                <TableCell>{det.description}</TableCell>
+                <TableCell align="right" title={det.timestamp.toString()}>
+                  {formatTimestamp(det.timestamp)}
+                </TableCell>
+                <TableCell align="right">
+                  {det?.candidate?.id && (
+                    <IconButton
+                      href={`/reports/${det?.candidate?.id}`}
+                      target="_blank"
+                      size="small"
+                      sx={{ transform: "scale(0.8)" }}
+                    >
+                      <Launch />
+                    </IconButton>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
 
           {detections.length < 1 && (
             <TableRow>

@@ -37,20 +37,15 @@ export default function BoutScrubBar({
   maxTimeNum: number;
   spectrogramControls: MutableRefObject<SpectrogramControls | undefined>;
 }) {
-  const timelineStartTime = new Date(minTimeNum);
-  const timelineEndTime = new Date(maxTimeNum);
+  const minTime = new Date(minTimeNum);
+  const maxTime = new Date(maxTimeNum);
 
   const [playerTime, setPlayerTime] = useState(playerTimeRef.current);
 
   const startOffset =
-    differenceInMilliseconds(
-      timelineStartTime,
-      new Date(feedStreamStartTimeNum),
-    ) / 1000;
-  const sliderMax =
-    differenceInMilliseconds(timelineEndTime, timelineStartTime) / 1000;
-  const sliderValue =
-    differenceInMilliseconds(playerTime, timelineStartTime) / 1000;
+    differenceInMilliseconds(minTime, new Date(feedStreamStartTimeNum)) / 1000;
+  const sliderMax = differenceInMilliseconds(maxTime, minTime) / 1000;
+  const sliderValue = differenceInMilliseconds(playerTime, minTime) / 1000;
 
   const marks = detections
     .sort(({ timestamp: a }, { timestamp: b }) => {
@@ -64,8 +59,6 @@ export default function BoutScrubBar({
       label: (index + 1).toString(),
       value: Number((+d.playerOffset - +startOffset).toFixed(1)),
     }));
-  // const sliderMax = endOffset - startOffset;
-  // const sliderValue = playerTime - startOffset;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -103,14 +96,11 @@ export default function BoutScrubBar({
   );
   return (
     <Box zIndex={10}>
-      {timelineStartTime && timelineEndTime && (
+      {minTime && maxTime && (
         <Slider
           valueLabelDisplay="auto"
           valueLabelFormat={(v: number, _index: number) =>
-            format(
-              addMilliseconds(timelineStartTime, 1000 * v),
-              "h:mm:ss.SS a O",
-            )
+            format(addMilliseconds(minTime, 1000 * v), "h:mm:ss.SS a O")
           }
           step={0.1}
           max={sliderMax}
