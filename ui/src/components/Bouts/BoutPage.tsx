@@ -7,6 +7,7 @@ import {
   KeyboardDoubleArrowRight,
   Launch,
   Notifications,
+  PlayArrow,
   Start,
   ZoomIn,
   ZoomOut,
@@ -45,7 +46,14 @@ import Typography from "@mui/material/Typography";
 import { addMinutes, format, max, min, subDays, subMinutes } from "date-fns";
 import _ from "lodash";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import SpectrogramTimeline, {
   SpectrogramControls,
@@ -206,15 +214,12 @@ export default function BoutPage({
     dayBeforeFromDateTime: timelineStartTimeMinusADay,
   });
 
-  // Get detections at current time plus or minus 1 hour
-  const minDetectionsTime = subMinutes(targetTime, 60);
-  const maxDetectionsTime = addMinutes(targetTime, 60);
   const detectionQueryResult = useDetectionsQuery({
     feedId: feed.id,
     filter: {
       timestamp: {
-        greaterThanOrEqual: minDetectionsTime,
-        lessThanOrEqual: maxDetectionsTime,
+        greaterThanOrEqual: playableLimits.min,
+        lessThanOrEqual: playableLimits.max,
       },
     },
   });
@@ -224,10 +229,6 @@ export default function BoutPage({
     [feedStreamQueryResult],
   );
   const feedStream = feedStreams[0];
-  const feedSegments = useMemo(
-    () => feedStreams.flatMap(({ feedSegments }) => feedSegments),
-    [feedStreams],
-  );
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
 
@@ -725,8 +726,10 @@ export default function BoutPage({
           <TabPanel value={currentTab} index={0}>
             <BoutDetectionsTable
               detections={detections}
-              minDetectionsTime={minDetectionsTime}
-              maxDetectionsTime={maxDetectionsTime}
+              minDetectionsTime={playableLimits.min}
+              maxDetectionsTime={playableLimits.max}
+              playerControls={playerControls}
+              spectrogramControls={spectrogramControls}
             />
           </TabPanel>
           {bout && currentUser?.moderator && (
@@ -772,6 +775,8 @@ function BoutDetectionsTable({
   detections,
   minDetectionsTime,
   maxDetectionsTime,
+  spectrogramControls,
+  playerControls,
 }: {
   detections: Array<
     Pick<Detection, "id" | "category" | "timestamp" | "description"> & {
@@ -780,12 +785,15 @@ function BoutDetectionsTable({
   >;
   minDetectionsTime: Date;
   maxDetectionsTime: Date;
+  playerControls: MutableRefObject<PlayerControls | undefined>;
+  spectrogramControls: MutableRefObject<SpectrogramControls | undefined>;
 }) {
   return (
     <Box sx={{ overflowX: "auto" }}>
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell></TableCell>
             <TableCell>#</TableCell>
             <TableCell>ID</TableCell>
             <TableCell>Category</TableCell>
@@ -804,6 +812,20 @@ function BoutDetectionsTable({
             })
             .map((det, index) => (
               <TableRow key={index}>
+                <TableCell>
+                  <IconButton
+                    size="small"
+                    sx={{ transform: "scale(0.8)" }}
+                    onClick={() => {
+                      spectrogramControls.current?.goToTime(
+                        new Date(det.timestamp),
+                      );
+                      playerControls.current?.play();
+                    }}
+                  >
+                    <PlayArrow />
+                  </IconButton>
+                </TableCell>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <Typography variant="caption">{det.id}</Typography>
@@ -812,8 +834,11 @@ function BoutDetectionsTable({
                   <Chip label={det.category} />
                 </TableCell>
                 <TableCell>{det.description}</TableCell>
-                <TableCell align="right" title={det.timestamp.toString()}>
-                  {formatTimestamp(det.timestamp)}
+                <TableCell
+                  align="right"
+                  title={new Date(det.timestamp).toString()}
+                >
+                  {format(new Date(det.timestamp), "h:mm:ss a O")}
                 </TableCell>
                 <TableCell align="right">
                   {det?.candidate?.id && (
@@ -835,8 +860,8 @@ function BoutDetectionsTable({
               <TableCell colSpan={5}>
                 <Typography textAlign="center">
                   No detections submitted from{" "}
-                  {format(minDetectionsTime, "h:mm a")} to{" "}
-                  {format(maxDetectionsTime, "h:mm a")}
+                  {format(minDetectionsTime, "h:mm a O")} to{" "}
+                  {format(maxDetectionsTime, "h:mm a O")}
                 </Typography>
               </TableCell>
             </TableRow>
