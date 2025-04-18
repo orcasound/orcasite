@@ -431,7 +431,7 @@ export default function BoutPage({
             >
               -{nearestMinutes} min
             </Button>
-            {format(timelineStartTime, "h:mm:ss a")}
+            {format(playableLimits.min, "h:mm:ss a")}
           </Box>
 
           <Box flexGrow={1} sx={{ mx: 2 }}>
@@ -448,7 +448,7 @@ export default function BoutPage({
             )}
           </Box>
           <Box>
-            {format(timelineEndTime, "h:mm:ss a")}
+            {format(playableLimits.max, "h:mm:ss a")}
             <Button
               endIcon={<KeyboardDoubleArrowRight />}
               variant="outlined"
