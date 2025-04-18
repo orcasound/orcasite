@@ -3,6 +3,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Chip,
   Link,
   Typography,
 } from "@mui/material";
@@ -15,6 +16,22 @@ import { CandidateCardAIPlayer } from "./Player/CandidateCardAIPlayer";
 import { CandidateCardPlayer } from "./Player/CandidateCardPlayer";
 import { VideoJSPlayer } from "./Player/VideoJS";
 
+const tagRegex = [
+  "s[0-9]+",
+  "srkw",
+  "call",
+  "whistle",
+  "click",
+  "j pod",
+  "j-pod",
+  "k pod",
+  "k-pod",
+  "l pod",
+  "l-pod",
+  "biggs",
+  "bigg's",
+];
+
 export default function CandidateCard(props: {
   candidate: Candidate;
   index: number;
@@ -26,6 +43,16 @@ export default function CandidateCard(props: {
   // get hydrophone feed list
   const feedsQueryResult = useFeedsQuery();
   const feedsData = feedsQueryResult.data?.feeds ?? [];
+
+  const { descriptions } = props.candidate;
+  const tagArray = descriptions.match(new RegExp(tagRegex.join("|"), "gi"));
+  const uniqueTags = [...new Set(tagArray)];
+  const tagObject: { [key: string]: number | undefined } = {};
+
+  uniqueTags.forEach((tag) => {
+    const count = tagArray?.filter((el) => el === tag).length;
+    tagObject[tag] = count;
+  });
 
   const candidate = props.candidate;
   const candidateArray = candidate.array;
@@ -161,6 +188,26 @@ export default function CandidateCard(props: {
                 .filter((candidate) => candidate !== null)
                 .join(" • ")}
               <br />
+              {tagArray && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "10px",
+                    padding: "1rem 0",
+                  }}
+                >
+                  {Object.entries(tagObject).map(([tag, count]) => (
+                    <Chip
+                      label={`${tag}`}
+                      key={tag}
+                      variant="filled"
+                      sx={{
+                        fontSize: "14px",
+                      }}
+                    />
+                  ))}
+                </Box>
+              )}
               {candidate.descriptions ? (
                 <span>{"Descriptions: " + candidate.descriptions}</span>
               ) : (

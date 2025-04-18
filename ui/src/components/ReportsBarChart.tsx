@@ -13,6 +13,12 @@ const chartSetting = {
     },
   ],
   height: 300,
+  margin: {
+    top: 70,
+    right: 20,
+    bottom: 40,
+    left: 40,
+  },
 };
 
 type ChartData = {
@@ -152,7 +158,26 @@ export default function ReportsBarChart({
 
   return (
     <>
-      <Box style={{ display: "flex", gap: 16, padding: "24px 0" }}>
+      <BarChart
+        dataset={chartData}
+        xAxis={[{ scaleType: "band", dataKey: "label", label: "Hour" }]}
+        slotProps={{
+          legend: {
+            position: { horizontal: "middle", vertical: "top" },
+            padding: { bottom: 0, top: 0 },
+          },
+        }}
+        series={legend ? categorySeries : hydrophoneSeries}
+        {...chartSetting}
+      />
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 16,
+          padding: "24px 0",
+        }}
+      >
         <ChartButton
           onClick={handleLegend}
           name="category"
@@ -164,18 +189,6 @@ export default function ReportsBarChart({
           label="By hydrophone"
         />
       </Box>
-      <BarChart
-        dataset={chartData}
-        xAxis={[{ scaleType: "band", dataKey: "label", label: "Hour" }]}
-        slotProps={{
-          legend: {
-            position: { horizontal: "middle", vertical: "top" },
-            padding: { bottom: 20, top: 5 },
-          },
-        }}
-        series={legend ? categorySeries : hydrophoneSeries}
-        {...chartSetting}
-      />
     </>
   );
 }

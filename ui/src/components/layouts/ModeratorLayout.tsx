@@ -23,7 +23,6 @@ import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { AIData } from "@/types/DataTypes";
 import { analytics } from "@/utils/analytics";
 
-import PlayBar from "../PlayBar";
 import { TopNav } from "./Devias-dashboard/vertical-layout/top-nav";
 import navigationHalfMap from "./navigationHalfMap";
 
@@ -195,9 +194,14 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
 
   //// COMPONENTS
 
-  const listItem = (title: string, path: string, icon: ReactElement) => (
+  const listItem = (
+    title: string,
+    path: string,
+    icon: ReactElement,
+    key: string,
+  ) => (
     <Link
-      key={title}
+      key={key}
       href={path}
       underline="none"
       width={0.9}
@@ -281,7 +285,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
     let component;
     switch (div.kind) {
       case "divider":
-        component = <Divider />;
+        component = <Divider key={index} />;
         break;
       case "subheader":
         component = (
@@ -299,8 +303,13 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
             }}
           >
             {div.children &&
-              div.children.map((item) =>
-                listItem(item.title, item.path, item.icon),
+              div.children.map((item, index) =>
+                listItem(
+                  item.title,
+                  item.path,
+                  item.icon,
+                  `${item.title}-${index}`,
+                ),
               )}
           </List>
         );
@@ -408,7 +417,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
         >
           <DataProvider data={dataset}>{children}</DataProvider>
         </Box>
-        <PlayBar candidate={nowPlaying} />
+        {/* <PlayBar candidate={nowPlaying} /> */}
       </Box>
     </Box>
   );

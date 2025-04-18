@@ -7,9 +7,9 @@ import PropTypes from "prop-types";
 import type { FC } from "react";
 
 import { AccountButton } from "./Devias-dashboard/account-button";
-import { ContactsButton } from "./Devias-dashboard/contacts-button";
+// import { ContactsButton } from "./Devias-dashboard/contacts-button";
 // import { LanguageSwitch } from './Devias-dashboard/language-switch';
-import { NotificationsButton } from "./Devias-dashboard/notifications-button";
+// import { NotificationsButton } from "./Devias-dashboard/notifications-button";
 import { SearchButton } from "./Devias-dashboard/search-button";
 
 const TOP_NAV_HEIGHT: number = 64;
@@ -64,8 +64,8 @@ export const TopNav: FC<TopNavProps> = (props) => {
         </Stack>
         <Stack alignItems="center" direction="row" spacing={2}>
           {/* <LanguageSwitch /> */}
-          <NotificationsButton />
-          <ContactsButton />
+          {/* <NotificationsButton /> */}
+          {/* <ContactsButton /> */}
           <AccountButton />
         </Stack>
       </Stack>

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import CandidateCard from "@/components/CandidateCard";
 import ChartSelect from "@/components/ChartSelect";
 import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout";
+import SearchBar from "@/components/SearchBar";
 import { useData } from "@/context/DataContext";
 import { useFeedsQuery } from "@/graphql/generated";
 import { CombinedData } from "@/types/DataTypes";
@@ -158,6 +159,8 @@ export default function Candidates() {
     category: "All categories",
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [timeRange, setTimeRange] = useState(threeDays);
   const [timeIncrement, setTimeIncrement] = useState(15);
   const [hydrophone, setHydrophone] = useState("All hydrophones");
@@ -304,6 +307,7 @@ export default function Candidates() {
             flexWrap: "wrap",
           }}
         >
+          <SearchBar setSearchQuery={setSearchQuery} />
           <ChartSelect
             name={"timeRange"}
             value={filters.timeRange}
