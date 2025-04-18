@@ -22,7 +22,7 @@ export function useSubscription({
     let subscribing = false;
 
     if (socket) {
-      const channel = socket.channel("__absinthe__:control");
+      channel = socket.channel("__absinthe__:control");
       channel.on("phx_reply", (payload) => {
         if (
           payload?.status === "ok" &&
@@ -30,7 +30,7 @@ export function useSubscription({
           !subscribing
         ) {
           subscribing = true;
-          channel.push("doc", query);
+          channel?.push("doc", query);
         }
 
         // Subscribed to doc
@@ -39,6 +39,8 @@ export function useSubscription({
           currentSubscriptionId = subscriptionId;
           subscriptionChannel = socket.channel(subscriptionId);
           subscriptionChannel.on("subscription:data", onData);
+          // NOTE: You don't need to join the subscriptionChannel to start
+          // receiving data.
         }
       });
       channel.join();
