@@ -1,6 +1,11 @@
 import { PlayCircleFilled } from "@mui/icons-material";
 import { Box } from "@mui/material";
-import { addMinutes, differenceInMilliseconds } from "date-fns";
+import {
+  addMilliseconds,
+  addMinutes,
+  differenceInMilliseconds,
+  subMilliseconds,
+} from "date-fns";
 import _ from "lodash";
 import {
   Dispatch,
@@ -112,6 +117,7 @@ export default function SpectrogramTimeline({
   boutStartTime,
   boutEndTime,
   spectrogramControls,
+  setPlayableLimits,
 }: {
   timelineStartTime: Date;
   timelineEndTime: Date;
@@ -125,6 +131,7 @@ export default function SpectrogramTimeline({
   setBoutStartTime: Dispatch<SetStateAction<Date | undefined>>;
   setBoutEndTime: Dispatch<SetStateAction<Date | undefined>>;
   spectrogramControls: MutableRefObject<SpectrogramControls | undefined>;
+  setPlayableLimits: Dispatch<SetStateAction<{ min: Date; max: Date }>>;
 }) {
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
@@ -245,6 +252,29 @@ export default function SpectrogramTimeline({
     timelineStartTime,
     setWindowStartTime,
     setWindowEndTime,
+  ]);
+
+  // Calculate playable limits based on: current zoom level,
+  // timeline start/end, and spectrogram window width
+  useEffect(() => {
+    if (
+      spectrogramWindow.current &&
+      timelineStartTime &&
+      timelineEndTime &&
+      pixelsPerMinute
+    ) {
+      const endOffset = spectrogramWindow.current.clientWidth / 2;
+      const offsetMs = (endOffset / pixelsPerMinute) * 60 * 1000;
+      const min = addMilliseconds(timelineStartTime, offsetMs);
+      const max = subMilliseconds(timelineEndTime, offsetMs);
+      setPlayableLimits({ min, max });
+    }
+  }, [
+    pixelsPerMinute,
+    timelineStartTime,
+    timelineEndTime,
+    setPlayableLimits,
+    spectrogramWindow,
   ]);
 
   const handleTouchStart = (e: React.TouchEvent) => {

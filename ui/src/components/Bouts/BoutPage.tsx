@@ -25,6 +25,7 @@ import {
   FormHelperText,
   IconButton,
   InputLabel,
+  Link,
   ListItemIcon,
   MenuItem,
   Select,
@@ -158,6 +159,15 @@ export default function BoutPage({
       ),
     ]),
   );
+
+  // With the current implementation of the spectrogram, the play head is
+  // fixed at the center of the spectrogram. The timeline start and end are about the full
+  // window length, but the playable limit is at the play head's time when the spectrogram
+  // is scrolled to the ends.
+  const [playableLimits, setPlayableLimits] = useState<{
+    min: Date;
+    max: Date;
+  }>({ min: timelineStartTime, max: timelineEndTime });
 
   const expandTimelineStart = useCallback(() => {
     setTimelineStartTime((timelineStartTime) =>
@@ -343,7 +353,19 @@ export default function BoutPage({
       >
         <Box>
           <Typography variant="overline" sx={{ fontSize: 18 }}>
-            Bout
+            <Link
+              sx={{
+                color: "black",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                "&:hover": { color: (theme) => theme.palette.accent2.main },
+              }}
+              href={"/bouts"}
+            >
+              <KeyboardDoubleArrowLeft />
+              Bouts
+            </Link>
           </Typography>
           <Typography variant="h4">{feed.name}</Typography>
         </Box>
@@ -419,8 +441,8 @@ export default function BoutPage({
                 detections={detections}
                 playerTimeRef={playerTime}
                 playerControls={playerControls}
-                timelineStartTimeNum={timelineStartTime.valueOf()}
-                timelineEndTimeNum={timelineEndTime.valueOf()}
+                minTimeNum={playableLimits.min.valueOf()}
+                maxTimeNum={playableLimits.max.valueOf()}
                 spectrogramControls={spectrogramControls}
               />
             )}
@@ -447,10 +469,11 @@ export default function BoutPage({
           playerControls={playerControls}
           boutStartTime={boutStartTime}
           boutEndTime={boutEndTime}
-          setBoutStartTime={setBoutStartTime}
-          setBoutEndTime={setBoutEndTime}
           spectrogramControls={spectrogramControls}
           audioImages={audioImages}
+          setBoutStartTime={setBoutStartTime}
+          setBoutEndTime={setBoutEndTime}
+          setPlayableLimits={setPlayableLimits}
         />
 
         <Box
@@ -467,7 +490,7 @@ export default function BoutPage({
                 feed={feed}
                 targetTime={targetTime}
                 feedStream={feedStream}
-                maxTimeNum={timelineEndTime.valueOf()}
+                maxTimeNum={playableLimits.max.valueOf()}
                 onPlayerTimeUpdate={setPlayerTime}
                 setPlayerTimeRef={setPlayerTime}
                 onPlayerInit={setPlayerControls}

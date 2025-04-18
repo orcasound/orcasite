@@ -15,8 +15,8 @@ const originalError = console.error.bind(console.error);
 // https://stackoverflow.com/a/58789421
 console.error = (...msg) =>
   !msg[2]
-    .toString()
-    .includes(
+    ?.toString()
+    ?.includes(
       "Invalid prop `value` of type `string` supplied to `MuiSliderValueLabel`",
     ) && originalError(...msg);
 
@@ -25,20 +25,20 @@ export default function BoutScrubBar({
   detections,
   playerTimeRef,
   playerControls,
-  timelineStartTimeNum,
-  timelineEndTimeNum,
+  minTimeNum,
+  maxTimeNum,
   spectrogramControls,
 }: {
   feedStreamStartTimeNum: number;
   detections: Array<Pick<Detection, "timestamp" | "playerOffset">>;
   playerTimeRef: MutableRefObject<Date>;
   playerControls?: MutableRefObject<PlayerControls | undefined>;
-  timelineStartTimeNum: number;
-  timelineEndTimeNum: number;
+  minTimeNum: number;
+  maxTimeNum: number;
   spectrogramControls: MutableRefObject<SpectrogramControls | undefined>;
 }) {
-  const timelineStartTime = new Date(timelineStartTimeNum);
-  const timelineEndTime = new Date(timelineEndTimeNum);
+  const timelineStartTime = new Date(minTimeNum);
+  const timelineEndTime = new Date(maxTimeNum);
 
   const [playerTime, setPlayerTime] = useState(playerTimeRef.current);
 
@@ -82,10 +82,10 @@ export default function BoutScrubBar({
       playerControls?.current?.pause();
       if (typeof v !== "number") return;
       spectrogramControls.current?.goToTime(
-        addMilliseconds(new Date(timelineStartTimeNum), 1000 * v),
+        addMilliseconds(new Date(minTimeNum), 1000 * v),
       );
     },
-    [spectrogramControls, timelineStartTimeNum, playerControls],
+    [spectrogramControls, minTimeNum, playerControls],
   );
 
   const handleSliderChangeCommitted = useCallback(
@@ -95,11 +95,11 @@ export default function BoutScrubBar({
     ) => {
       if (typeof v !== "number") return;
       spectrogramControls.current?.goToTime(
-        addMilliseconds(new Date(timelineStartTimeNum), 1000 * v),
+        addMilliseconds(new Date(minTimeNum), 1000 * v),
       );
       playerControls?.current?.play();
     },
-    [spectrogramControls, timelineStartTimeNum, playerControls],
+    [spectrogramControls, minTimeNum, playerControls],
   );
   return (
     <Box zIndex={10}>
