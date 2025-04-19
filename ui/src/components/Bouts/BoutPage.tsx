@@ -4,9 +4,7 @@ import {
   GraphicEq,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  Launch,
   Notifications,
-  PlayArrow,
   Start,
   ZoomIn,
   ZoomOut,
@@ -14,7 +12,6 @@ import {
 import {
   Alert,
   Button,
-  Chip,
   CircularProgress,
   Fade,
   FormControl,
@@ -26,11 +23,6 @@ import {
   MenuItem,
   Select,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Tabs,
   useMediaQuery,
   useTheme,
@@ -40,14 +32,7 @@ import Typography from "@mui/material/Typography";
 import { addMinutes, format, max, min, subDays, subMinutes } from "date-fns";
 import _ from "lodash";
 import { useRouter } from "next/router";
-import {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import SpectrogramTimeline, {
   SpectrogramControls,
@@ -56,10 +41,7 @@ import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
 import {
   AudioCategory,
   BoutQuery,
-  Candidate,
-  Detection,
   FeedQuery,
-  Maybe,
   useAudioImagesQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
@@ -73,6 +55,7 @@ import { roundToNearest } from "@/utils/time";
 
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
+import { BoutDetectionsTable } from "./BoutDetectionsTable";
 import { BoutNotifications } from "./BoutNotifications";
 import BoutScrubBar from "./BoutScrubBar";
 import CategoryIcon from "./CategoryIcon";
@@ -758,105 +741,4 @@ function shareUrl(time: Date) {
   const currentUrl = new URL(window.location.href);
   currentUrl.searchParams.set("time", formattedTime);
   return currentUrl.toString();
-}
-
-function BoutDetectionsTable({
-  detections,
-  minDetectionsTime,
-  maxDetectionsTime,
-  spectrogramControls,
-  playerControls,
-}: {
-  detections: Array<
-    Pick<Detection, "id" | "category" | "timestamp" | "description"> & {
-      candidate?: Maybe<Pick<Candidate, "id">>;
-    }
-  >;
-  minDetectionsTime: Date;
-  maxDetectionsTime: Date;
-  playerControls: MutableRefObject<PlayerControls | undefined>;
-  spectrogramControls: MutableRefObject<SpectrogramControls | undefined>;
-}) {
-  return (
-    <Box sx={{ overflowX: "auto" }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell></TableCell>
-            <TableCell>#</TableCell>
-            <TableCell>ID</TableCell>
-            <TableCell>Category</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell align="right">Timestamp</TableCell>
-            <TableCell align="right">Candidate</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {detections
-            .sort(({ timestamp: a }, { timestamp: b }) => {
-              const date_a = new Date(a);
-              const date_b = new Date(b);
-              // Sort by timestamp, low to high
-              return +date_a - +date_b;
-            })
-            .map((det, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <IconButton
-                    size="small"
-                    sx={{ transform: "scale(0.8)" }}
-                    onClick={() => {
-                      spectrogramControls.current?.goToTime(
-                        new Date(det.timestamp),
-                      );
-                      playerControls.current?.play();
-                    }}
-                  >
-                    <PlayArrow />
-                  </IconButton>
-                </TableCell>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  <Typography variant="caption">{det.id}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip label={det.category} />
-                </TableCell>
-                <TableCell>{det.description}</TableCell>
-                <TableCell
-                  align="right"
-                  title={new Date(det.timestamp).toString()}
-                >
-                  {format(new Date(det.timestamp), "h:mm:ss a O")}
-                </TableCell>
-                <TableCell align="right">
-                  {det?.candidate?.id && (
-                    <IconButton
-                      href={`/reports/${det?.candidate?.id}`}
-                      target="_blank"
-                      size="small"
-                      sx={{ transform: "scale(0.8)" }}
-                    >
-                      <Launch />
-                    </IconButton>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-
-          {detections.length < 1 && (
-            <TableRow>
-              <TableCell colSpan={5}>
-                <Typography textAlign="center">
-                  No detections submitted from{" "}
-                  {format(minDetectionsTime, "h:mm a O")} to{" "}
-                  {format(maxDetectionsTime, "h:mm a O")}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </Box>
-  );
 }
