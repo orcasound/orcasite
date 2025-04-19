@@ -70,7 +70,7 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
       const startOffset = Math.max(0, minOffset - offsetPadding);
       const endOffset = maxOffset + offsetPadding;
 
-      feed &&
+      if (feed)
         setPlayerProps({
           feed: feed ? feed : feedsData[0],
           timestamp: startTimestamp,
@@ -79,7 +79,7 @@ export default function PlayBar({ candidate }: { candidate: Candidate }) {
           audioUri: "",
         });
 
-      lastDetection.audioUri &&
+      if (lastDetection.audioUri)
         setPlayerProps({
           ...playerProps,
           timestamp: startTimestamp,
