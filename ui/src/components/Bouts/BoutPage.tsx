@@ -25,6 +25,7 @@ import {
   FormControl,
   FormHelperText,
   IconButton,
+  Input,
   InputLabel,
   Link,
   ListItemIcon,
@@ -48,6 +49,7 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 import {
   MutableRefObject,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -135,6 +137,9 @@ export default function BoutPage({
     };
   }, []);
 
+  const [boutName, setBoutName] = useState<string | undefined>(
+    bout?.name ?? undefined,
+  );
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
     bout?.startTime && new Date(bout.startTime),
   );
@@ -314,6 +319,7 @@ export default function BoutPage({
           startTime: boutStartTime,
           endTime: boutEndTime,
           category: audioCategory,
+          name: boutName,
         });
       } else if (bout) {
         updateBoutMutation.mutate({
@@ -321,6 +327,7 @@ export default function BoutPage({
           startTime: boutStartTime,
           endTime: boutEndTime,
           category: audioCategory,
+          name: boutName,
         });
       }
     } else {
@@ -368,7 +375,11 @@ export default function BoutPage({
               Bouts
             </Link>
           </Typography>
-          <Typography variant="h4">{feed.name}</Typography>
+          <BoutName
+            feedName={feed.name}
+            boutName={boutName}
+            setBoutName={setBoutName}
+          />
         </Box>
         <Box
           display="flex"
@@ -1080,5 +1091,49 @@ function NotificationModal({
         </DialogActions>
       </Dialog>
     </>
+  );
+}
+
+// Shows current name and if user is a moderator, allows setting bout name
+function BoutName({
+  feedName,
+  boutName,
+  setBoutName,
+}: {
+  feedName: string;
+  boutName?: string;
+  setBoutName: (value: SetStateAction<string | undefined>) => void;
+}) {
+  const theme = useTheme();
+
+  const { moderator } = useGetCurrentUserQuery().data?.currentUser ?? {
+    moderator: false,
+  };
+
+  return (
+    <Box>
+      {!moderator && (
+        <Typography variant="h4" my={1}>
+          {boutName ?? feedName}
+        </Typography>
+      )}
+
+      {moderator && (
+        <Input
+          sx={{ ...theme.typography.h4 }}
+          disableUnderline={true}
+          type="text"
+          value={boutName ?? feedName}
+          onBlur={(event) =>
+            setBoutName(
+              (event.target.value ?? "").length > 0
+                ? event.target.value
+                : feedName,
+            )
+          }
+          onChange={(event) => setBoutName(event.target.value ?? feedName)}
+        />
+      )}
+    </Box>
   );
 }

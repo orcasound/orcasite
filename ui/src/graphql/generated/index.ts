@@ -307,7 +307,10 @@ export type Bout = {
   feedId?: Maybe<Scalars["ID"]["output"]>;
   feedStreams: Array<FeedStream>;
   id: Scalars["ID"]["output"];
+  itemTags: Array<ItemTag>;
+  name?: Maybe<Scalars["String"]["output"]>;
   startTime: Scalars["DateTime"]["output"];
+  tags: Array<Tag>;
 };
 
 export type BoutFeedStreamsArgs = {
@@ -315,6 +318,20 @@ export type BoutFeedStreamsArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<FeedStreamSortInput>>>;
+};
+
+export type BoutItemTagsArgs = {
+  filter?: InputMaybe<ItemTagFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<ItemTagSortInput>>>;
+};
+
+export type BoutTagsArgs = {
+  filter?: InputMaybe<TagFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<TagSortInput>>>;
 };
 
 /** Join table between Bout and FeedStream */
@@ -402,9 +419,25 @@ export type BoutFilterInput = {
   feedId?: InputMaybe<BoutFilterFeedId>;
   feedStreams?: InputMaybe<FeedStreamFilterInput>;
   id?: InputMaybe<BoutFilterId>;
+  itemTags?: InputMaybe<ItemTagFilterInput>;
+  name?: InputMaybe<BoutFilterName>;
   not?: InputMaybe<Array<BoutFilterInput>>;
   or?: InputMaybe<Array<BoutFilterInput>>;
   startTime?: InputMaybe<BoutFilterStartTime>;
+  tags?: InputMaybe<TagFilterInput>;
+};
+
+export type BoutFilterName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type BoutFilterStartTime = {
@@ -424,6 +457,7 @@ export const BoutSortField = {
   EndTime: "END_TIME",
   FeedId: "FEED_ID",
   Id: "ID",
+  Name: "NAME",
   StartTime: "START_TIME",
 } as const;
 
@@ -574,6 +608,7 @@ export type CreateBoutInput = {
   category: AudioCategory;
   endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
   feedId: Scalars["String"]["input"];
+  name?: InputMaybe<Scalars["String"]["input"]>;
   startTime: Scalars["DateTime"]["input"];
 };
 
@@ -584,6 +619,34 @@ export type CreateBoutResult = {
   errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Bout>;
+};
+
+export type CreateBoutTagInput = {
+  bout: ItemTagBoutTagBoutInput;
+  tag: ItemTagBoutTagTagInput;
+};
+
+/** The result of the :create_bout_tag mutation */
+export type CreateBoutTagResult = {
+  __typename?: "CreateBoutTagResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<ItemTag>;
+};
+
+export type CreateTagInput = {
+  description?: InputMaybe<Scalars["String"]["input"]>;
+  name: Scalars["String"]["input"];
+};
+
+/** The result of the :create_tag mutation */
+export type CreateTagResult = {
+  __typename?: "CreateTagResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Tag>;
 };
 
 export type Detection = {
@@ -1502,6 +1565,92 @@ export const ImageType = {
 } as const;
 
 export type ImageType = (typeof ImageType)[keyof typeof ImageType];
+/** Tag applied by a user to an item: currently just bouts */
+export type ItemTag = {
+  __typename?: "ItemTag";
+  bout?: Maybe<Bout>;
+  boutId?: Maybe<Scalars["ID"]["output"]>;
+  id: Scalars["ID"]["output"];
+  tag?: Maybe<Tag>;
+  tagId?: Maybe<Scalars["ID"]["output"]>;
+  user?: Maybe<User>;
+  userId?: Maybe<Scalars["ID"]["output"]>;
+};
+
+export type ItemTagBoutTagBoutInput = {
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type ItemTagBoutTagTagInput = {
+  description?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+  name?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type ItemTagFilterBoutId = {
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type ItemTagFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type ItemTagFilterInput = {
+  and?: InputMaybe<Array<ItemTagFilterInput>>;
+  bout?: InputMaybe<BoutFilterInput>;
+  boutId?: InputMaybe<ItemTagFilterBoutId>;
+  id?: InputMaybe<ItemTagFilterId>;
+  not?: InputMaybe<Array<ItemTagFilterInput>>;
+  or?: InputMaybe<Array<ItemTagFilterInput>>;
+  tag?: InputMaybe<TagFilterInput>;
+  tagId?: InputMaybe<ItemTagFilterTagId>;
+  user?: InputMaybe<UserFilterInput>;
+  userId?: InputMaybe<ItemTagFilterUserId>;
+};
+
+export type ItemTagFilterTagId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["ID"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type ItemTagFilterUserId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["ID"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export const ItemTagSortField = {
+  BoutId: "BOUT_ID",
+  Id: "ID",
+  TagId: "TAG_ID",
+  UserId: "USER_ID",
+} as const;
+
+export type ItemTagSortField =
+  (typeof ItemTagSortField)[keyof typeof ItemTagSortField];
+export type ItemTagSortInput = {
+  field: ItemTagSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
 export type LatLng = {
   __typename?: "LatLng";
   lat: Scalars["Float"]["output"];
@@ -1784,6 +1933,28 @@ export type PageOfFeedStream = {
   results?: Maybe<Array<FeedStream>>;
 };
 
+/** A page of :item_tag */
+export type PageOfItemTag = {
+  __typename?: "PageOfItemTag";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<ItemTag>>;
+};
+
+/** A page of :tag */
+export type PageOfTag = {
+  __typename?: "PageOfTag";
+  /** Total count on all pages */
+  count?: Maybe<Scalars["Int"]["output"]>;
+  /** Whether or not there is a next page */
+  hasNextPage: Scalars["Boolean"]["output"];
+  /** The records contained in the page */
+  results?: Maybe<Array<Tag>>;
+};
+
 export type PasswordResetInput = {
   password: Scalars["String"]["input"];
   passwordConfirmation: Scalars["String"]["input"];
@@ -1833,6 +2004,8 @@ export type RootMutationType = {
   cancelCandidateNotifications: CancelCandidateNotificationsResult;
   cancelNotification: CancelNotificationResult;
   createBout: CreateBoutResult;
+  createBoutTag: CreateBoutTagResult;
+  createTag: CreateTagResult;
   generateFeedSpectrograms: GenerateFeedSpectrogramsResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
   notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
@@ -1860,6 +2033,14 @@ export type RootMutationTypeCancelNotificationArgs = {
 
 export type RootMutationTypeCreateBoutArgs = {
   input: CreateBoutInput;
+};
+
+export type RootMutationTypeCreateBoutTagArgs = {
+  input: CreateBoutTagInput;
+};
+
+export type RootMutationTypeCreateTagArgs = {
+  input: CreateTagInput;
 };
 
 export type RootMutationTypeGenerateFeedSpectrogramsArgs = {
@@ -1909,6 +2090,7 @@ export type RootQueryType = {
   __typename?: "RootQueryType";
   audioImages?: Maybe<PageOfAudioImage>;
   bout?: Maybe<Bout>;
+  boutTags?: Maybe<PageOfItemTag>;
   bouts?: Maybe<PageOfBout>;
   candidate?: Maybe<Candidate>;
   candidates?: Maybe<PageOfCandidate>;
@@ -1922,6 +2104,8 @@ export type RootQueryType = {
   feeds: Array<Feed>;
   notificationsForBout: Array<Notification>;
   notificationsForCandidate: Array<Notification>;
+  searchTags: Array<Tag>;
+  tags?: Maybe<PageOfTag>;
 };
 
 export type RootQueryTypeAudioImagesArgs = {
@@ -1936,6 +2120,14 @@ export type RootQueryTypeAudioImagesArgs = {
 
 export type RootQueryTypeBoutArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type RootQueryTypeBoutTagsArgs = {
+  boutId: Scalars["String"]["input"];
+  filter?: InputMaybe<ItemTagFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<ItemTagSortInput>>>;
 };
 
 export type RootQueryTypeBoutsArgs = {
@@ -2019,6 +2211,19 @@ export type RootQueryTypeNotificationsForCandidateArgs = {
   sort?: InputMaybe<Array<InputMaybe<NotificationSortInput>>>;
 };
 
+export type RootQueryTypeSearchTagsArgs = {
+  filter?: InputMaybe<TagFilterInput>;
+  query: Scalars["String"]["input"];
+  sort?: InputMaybe<Array<InputMaybe<TagSortInput>>>;
+};
+
+export type RootQueryTypeTagsArgs = {
+  filter?: InputMaybe<TagFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<TagSortInput>>>;
+};
+
 export type RootSubscriptionType = {
   __typename?: "RootSubscriptionType";
   audioImageUpdated?: Maybe<Audio_Image_Updated_Result>;
@@ -2092,9 +2297,92 @@ export type SubmitDetectionResult = {
   result?: Maybe<Detection>;
 };
 
+/** Tag definition with a name, description, and unique slug */
+export type Tag = {
+  __typename?: "Tag";
+  description?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["ID"]["output"];
+  name: Scalars["String"]["output"];
+  slug: Scalars["String"]["output"];
+};
+
+export type TagFilterDescription = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type TagFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type TagFilterInput = {
+  and?: InputMaybe<Array<TagFilterInput>>;
+  description?: InputMaybe<TagFilterDescription>;
+  id?: InputMaybe<TagFilterId>;
+  name?: InputMaybe<TagFilterName>;
+  not?: InputMaybe<Array<TagFilterInput>>;
+  or?: InputMaybe<Array<TagFilterInput>>;
+  slug?: InputMaybe<TagFilterSlug>;
+};
+
+export type TagFilterName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type TagFilterSlug = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export const TagSortField = {
+  Description: "DESCRIPTION",
+  Id: "ID",
+  Name: "NAME",
+  Slug: "SLUG",
+} as const;
+
+export type TagSortField = (typeof TagSortField)[keyof typeof TagSortField];
+export type TagSortInput = {
+  field: TagSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
 export type UpdateBoutInput = {
   category?: InputMaybe<AudioCategory>;
   endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  name?: InputMaybe<Scalars["String"]["input"]>;
   startTime?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
@@ -2109,23 +2397,119 @@ export type UpdateBoutResult = {
 
 export type User = {
   __typename?: "User";
-  admin: Scalars["Boolean"]["output"];
-  email: Scalars["String"]["output"];
+  admin?: Maybe<Scalars["Boolean"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
-  moderator: Scalars["Boolean"]["output"];
+  moderator?: Maybe<Scalars["Boolean"]["output"]>;
   username?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type UserFilterAdmin = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type UserFilterEmail = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterFirstName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterId = {
+  eq?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["ID"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["ID"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["ID"]["input"]>;
+  notEq?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type UserFilterInput = {
+  admin?: InputMaybe<UserFilterAdmin>;
+  and?: InputMaybe<Array<UserFilterInput>>;
+  email?: InputMaybe<UserFilterEmail>;
+  firstName?: InputMaybe<UserFilterFirstName>;
+  id?: InputMaybe<UserFilterId>;
+  lastName?: InputMaybe<UserFilterLastName>;
+  moderator?: InputMaybe<UserFilterModerator>;
+  not?: InputMaybe<Array<UserFilterInput>>;
+  or?: InputMaybe<Array<UserFilterInput>>;
+  username?: InputMaybe<UserFilterUsername>;
+};
+
+export type UserFilterLastName = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UserFilterModerator = {
+  eq?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["Boolean"]["input"]>;
+  notEq?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type UserFilterUsername = {
+  eq?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["String"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  ilike?: InputMaybe<Scalars["String"]["input"]>;
+  in?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<Scalars["String"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["String"]["input"]>;
+  like?: InputMaybe<Scalars["String"]["input"]>;
+  notEq?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type UserWithToken = {
   __typename?: "UserWithToken";
-  admin: Scalars["Boolean"]["output"];
-  email: Scalars["String"]["output"];
+  admin?: Maybe<Scalars["Boolean"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
   firstName?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   lastName?: Maybe<Scalars["String"]["output"]>;
-  moderator: Scalars["Boolean"]["output"];
+  moderator?: Maybe<Scalars["Boolean"]["output"]>;
   token?: Maybe<Scalars["String"]["output"]>;
   username?: Maybe<Scalars["String"]["output"]>;
 };
@@ -2158,6 +2542,7 @@ export type AudioImagePartsFragment = {
 export type BoutPartsFragment = {
   __typename?: "Bout";
   id: string;
+  name?: string | null;
   category: AudioCategory;
   duration?: number | null;
   endTime?: Date | null;
@@ -2217,6 +2602,19 @@ export type FeedStreamPartsFragment = {
   playlistM3u8Path?: string | null;
 };
 
+export type ItemTagPartsFragment = {
+  __typename?: "ItemTag";
+  id: string;
+  user?: { __typename?: "User"; username?: string | null } | null;
+  tag?: {
+    __typename?: "Tag";
+    id: string;
+    name: string;
+    slug: string;
+    description?: string | null;
+  } | null;
+};
+
 export type NotificationPartsFragment = {
   __typename?: "Notification";
   id: string;
@@ -2228,6 +2626,14 @@ export type NotificationPartsFragment = {
   notifiedCount?: number | null;
   notifiedCountUpdatedAt?: Date | null;
   insertedAt: Date;
+};
+
+export type TagPartsFragment = {
+  __typename?: "Tag";
+  id: string;
+  name: string;
+  description?: string | null;
+  slug: string;
 };
 
 export type CancelCandidateNotificationsMutationVariables = Exact<{
@@ -2282,6 +2688,7 @@ export type CancelNotificationMutation = {
 
 export type CreateBoutMutationVariables = Exact<{
   feedId: Scalars["String"]["input"];
+  name?: InputMaybe<Scalars["String"]["input"]>;
   startTime: Scalars["DateTime"]["input"];
   endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
   category: AudioCategory;
@@ -2294,10 +2701,45 @@ export type CreateBoutMutation = {
     result?: {
       __typename?: "Bout";
       id: string;
+      name?: string | null;
       category: AudioCategory;
       duration?: number | null;
       endTime?: Date | null;
       startTime: Date;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type CreateBoutTagMutationVariables = Exact<{
+  tagId?: InputMaybe<Scalars["ID"]["input"]>;
+  tagName: Scalars["String"]["input"];
+  tagDescription?: InputMaybe<Scalars["String"]["input"]>;
+  boutId: Scalars["ID"]["input"];
+}>;
+
+export type CreateBoutTagMutation = {
+  __typename?: "RootMutationType";
+  createBoutTag: {
+    __typename?: "CreateBoutTagResult";
+    result?: {
+      __typename?: "ItemTag";
+      id: string;
+      user?: { __typename?: "User"; username?: string | null } | null;
+      tag?: {
+        __typename?: "Tag";
+        id: string;
+        name: string;
+        slug: string;
+        description?: string | null;
+      } | null;
     } | null;
     errors: Array<{
       __typename?: "MutationError";
@@ -2422,9 +2864,9 @@ export type RegisterWithPasswordMutation = {
     result?: {
       __typename?: "User";
       id: string;
-      email: string;
+      email?: string | null;
       username?: string | null;
-      admin: boolean;
+      admin?: boolean | null;
       firstName?: string | null;
       lastName?: string | null;
     } | null;
@@ -2469,10 +2911,10 @@ export type ResetPasswordMutation = {
     user?: {
       __typename?: "User";
       id: string;
-      email: string;
+      email?: string | null;
       firstName?: string | null;
       lastName?: string | null;
-      admin: boolean;
+      admin?: boolean | null;
     } | null;
   } | null;
 };
@@ -2514,8 +2956,8 @@ export type SignInWithPasswordMutation = {
     user?: {
       __typename?: "User";
       id: string;
-      email: string;
-      admin: boolean;
+      email?: string | null;
+      admin?: boolean | null;
       firstName?: string | null;
       lastName?: string | null;
     } | null;
@@ -2566,6 +3008,7 @@ export type UpdateBoutMutationVariables = Exact<{
   id: Scalars["ID"]["input"];
   startTime: Scalars["DateTime"]["input"];
   endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  name?: InputMaybe<Scalars["String"]["input"]>;
   category: AudioCategory;
 }>;
 
@@ -2576,6 +3019,7 @@ export type UpdateBoutMutation = {
     result?: {
       __typename?: "Bout";
       id: string;
+      name?: string | null;
       category: AudioCategory;
       duration?: number | null;
       endTime?: Date | null;
@@ -2601,6 +3045,7 @@ export type BoutQuery = {
   bout?: {
     __typename?: "Bout";
     id: string;
+    name?: string | null;
     category: AudioCategory;
     duration?: number | null;
     endTime?: Date | null;
@@ -2667,9 +3112,9 @@ export type GetCurrentUserQuery = {
     id: string;
     firstName?: string | null;
     lastName?: string | null;
-    email: string;
-    admin: boolean;
-    moderator: boolean;
+    email?: string | null;
+    admin?: boolean | null;
+    moderator?: boolean | null;
     token?: string | null;
   } | null;
 };
@@ -2755,6 +3200,7 @@ export type BoutsQuery = {
     results?: Array<{
       __typename?: "Bout";
       id: string;
+      name?: string | null;
       category: AudioCategory;
       duration?: number | null;
       endTime?: Date | null;
@@ -2961,6 +3407,21 @@ export type NotificationsForCandidateQuery = {
   }>;
 };
 
+export type SearchTagsQueryVariables = Exact<{
+  query: Scalars["String"]["input"];
+}>;
+
+export type SearchTagsQuery = {
+  __typename?: "RootQueryType";
+  searchTags: Array<{
+    __typename?: "Tag";
+    id: string;
+    name: string;
+    description?: string | null;
+    slug: string;
+  }>;
+};
+
 export type AudioImageUpdatedSubscriptionVariables = Exact<{
   feedId: Scalars["String"]["input"];
   startTime: Scalars["DateTime"]["input"];
@@ -3040,6 +3501,7 @@ export const AudioImagePartsFragmentDoc = `
 export const BoutPartsFragmentDoc = `
     fragment BoutParts on Bout {
   id
+  name
   category
   duration
   endTime
@@ -3102,6 +3564,20 @@ export const FeedStreamPartsFragmentDoc = `
   playlistM3u8Path
 }
     `;
+export const ItemTagPartsFragmentDoc = `
+    fragment ItemTagParts on ItemTag {
+  id
+  user {
+    username
+  }
+  tag {
+    id
+    name
+    slug
+    description
+  }
+}
+    `;
 export const NotificationPartsFragmentDoc = `
     fragment NotificationParts on Notification {
   id
@@ -3113,6 +3589,14 @@ export const NotificationPartsFragmentDoc = `
   notifiedCount
   notifiedCountUpdatedAt
   insertedAt
+}
+    `;
+export const TagPartsFragmentDoc = `
+    fragment TagParts on Tag {
+  id
+  name
+  description
+  slug
 }
     `;
 export const CancelCandidateNotificationsDocument = `
@@ -3236,23 +3720,20 @@ useCancelNotificationMutation.fetcher = (
   );
 
 export const CreateBoutDocument = `
-    mutation createBout($feedId: String!, $startTime: DateTime!, $endTime: DateTime, $category: AudioCategory!) {
+    mutation createBout($feedId: String!, $name: String, $startTime: DateTime!, $endTime: DateTime, $category: AudioCategory!) {
   createBout(
-    input: {feedId: $feedId, category: $category, startTime: $startTime, endTime: $endTime}
+    input: {feedId: $feedId, category: $category, startTime: $startTime, endTime: $endTime, name: $name}
   ) {
     result {
       ...BoutParts
     }
     errors {
-      code
-      fields
-      message
-      shortMessage
-      vars
+      ...ErrorParts
     }
   }
 }
-    ${BoutPartsFragmentDoc}`;
+    ${BoutPartsFragmentDoc}
+${ErrorPartsFragmentDoc}`;
 
 export const useCreateBoutMutation = <TError = unknown, TContext = unknown>(
   options?: UseMutationOptions<
@@ -3286,6 +3767,58 @@ useCreateBoutMutation.fetcher = (
 ) =>
   fetcher<CreateBoutMutation, CreateBoutMutationVariables>(
     CreateBoutDocument,
+    variables,
+    options,
+  );
+
+export const CreateBoutTagDocument = `
+    mutation createBoutTag($tagId: ID, $tagName: String!, $tagDescription: String, $boutId: ID!) {
+  createBoutTag(
+    input: {bout: {id: $boutId}, tag: {id: $tagId, name: $tagName, description: $tagDescription}}
+  ) {
+    result {
+      ...ItemTagParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
+    ${ItemTagPartsFragmentDoc}
+${ErrorPartsFragmentDoc}`;
+
+export const useCreateBoutTagMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CreateBoutTagMutation,
+    TError,
+    CreateBoutTagMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CreateBoutTagMutation,
+    TError,
+    CreateBoutTagMutationVariables,
+    TContext
+  >({
+    mutationKey: ["createBoutTag"],
+    mutationFn: (variables?: CreateBoutTagMutationVariables) =>
+      fetcher<CreateBoutTagMutation, CreateBoutTagMutationVariables>(
+        CreateBoutTagDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCreateBoutTagMutation.getKey = () => ["createBoutTag"];
+
+useCreateBoutTagMutation.fetcher = (
+  variables: CreateBoutTagMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<CreateBoutTagMutation, CreateBoutTagMutationVariables>(
+    CreateBoutTagDocument,
     variables,
     options,
   );
@@ -3852,10 +4385,10 @@ useSubmitDetectionMutation.fetcher = (
   );
 
 export const UpdateBoutDocument = `
-    mutation updateBout($id: ID!, $startTime: DateTime!, $endTime: DateTime, $category: AudioCategory!) {
+    mutation updateBout($id: ID!, $startTime: DateTime!, $endTime: DateTime, $name: String, $category: AudioCategory!) {
   updateBout(
     id: $id
-    input: {category: $category, startTime: $startTime, endTime: $endTime}
+    input: {category: $category, startTime: $startTime, endTime: $endTime, name: $name}
   ) {
     result {
       ...BoutParts
@@ -4591,6 +5124,50 @@ useNotificationsForCandidateQuery.fetcher = (
     NotificationsForCandidateQuery,
     NotificationsForCandidateQueryVariables
   >(NotificationsForCandidateDocument, variables, options);
+
+export const SearchTagsDocument = `
+    query searchTags($query: String!) {
+  searchTags(query: $query) {
+    ...TagParts
+  }
+}
+    ${TagPartsFragmentDoc}`;
+
+export const useSearchTagsQuery = <TData = SearchTagsQuery, TError = unknown>(
+  variables: SearchTagsQueryVariables,
+  options?: Omit<
+    UseQueryOptions<SearchTagsQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<SearchTagsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<SearchTagsQuery, TError, TData>({
+    queryKey: ["searchTags", variables],
+    queryFn: fetcher<SearchTagsQuery, SearchTagsQueryVariables>(
+      SearchTagsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useSearchTagsQuery.document = SearchTagsDocument;
+
+useSearchTagsQuery.getKey = (variables: SearchTagsQueryVariables) => [
+  "searchTags",
+  variables,
+];
+
+useSearchTagsQuery.fetcher = (
+  variables: SearchTagsQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SearchTagsQuery, SearchTagsQueryVariables>(
+    SearchTagsDocument,
+    variables,
+    options,
+  );
 
 export const AudioImageUpdatedDocument = `
     subscription audioImageUpdated($feedId: String!, $startTime: DateTime!, $endTime: DateTime!) {
