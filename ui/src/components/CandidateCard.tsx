@@ -113,7 +113,7 @@ export default function CandidateCard(props: {
             timestamp={startPlaylistTimestamp}
             startOffset={startOffset}
             endOffset={endOffset}
-            index={props.index}
+            // index={props.index}
             onPlayerInit={(player) => {
               props.players.current[props.index] = player;
             }}
@@ -134,7 +134,7 @@ export default function CandidateCard(props: {
             <CandidateCardAIPlayer
               candidate={candidate}
               audioUri={candidate.array[0].audioUri}
-              index={props.index}
+              // index={props.index}
               onPlayerInit={(player) => {
                 props.players.current[props.index] = player;
               }}
