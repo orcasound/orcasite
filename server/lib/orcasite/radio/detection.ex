@@ -96,6 +96,10 @@ defmodule Orcasite.Radio.Detection do
     end
   end
 
+  code_interface do
+    define :submit_detection
+  end
+
   actions do
     defaults [:read, :destroy]
 
@@ -326,10 +330,6 @@ defmodule Orcasite.Radio.Detection do
                {:ok, detection}
              end)
     end
-  end
-
-  code_interface do
-    define :submit_detection
   end
 
   admin do

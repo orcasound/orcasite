@@ -21,6 +21,10 @@ defmodule Orcasite.Radio.ItemTag do
     end
   end
 
+  identities do
+    identity :unique_tag, [:user_id, :tag_id, :bout_id]
+  end
+
   attributes do
     uuid_primary_key :id
 
@@ -96,9 +100,13 @@ defmodule Orcasite.Radio.ItemTag do
                     ]
       end
 
-      argument :bout, :map
+      argument :bout, :map do
+        allow_nil? false
 
-      change debug_log(:create_tag)
+        constraints fields: [
+                      id: [type: :string, allow_nil?: false]
+                    ]
+      end
 
       change manage_relationship(:bout, type: :append)
 
