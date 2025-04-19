@@ -1,4 +1,4 @@
-import Image from "next/legacy/image";
+import Image from "next/image";
 
 import { AudioCategory } from "@/graphql/generated";
 import vesselIconImage from "@/public/icons/vessel-purple.svg";
@@ -7,7 +7,7 @@ import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 
 export default function CategoryIcon({
   audioCategory,
-  size = 15,
+  size,
 }: {
   audioCategory: AudioCategory;
   size?: number;
@@ -31,8 +31,7 @@ export default function CategoryIcon({
     iconConfig && (
       <Image
         src={iconConfig.src}
-        width={size}
-        height={size}
+        {...(size ? { width: size, height: size } : { fill: true })}
         alt={iconConfig.alt}
       />
     )

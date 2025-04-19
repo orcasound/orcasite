@@ -19,7 +19,10 @@ import CategoryIcon from "./CategoryIcon";
 export default function BoutItem({
   bout,
 }: {
-  bout: Pick<Bout, "id" | "endTime" | "startTime" | "category" | "duration"> & {
+  bout: Pick<
+    Bout,
+    "id" | "name" | "endTime" | "startTime" | "category" | "duration"
+  > & {
     feed?: Pick<Feed, "id" | "name"> | null;
   };
 }) {
@@ -68,14 +71,29 @@ export default function BoutItem({
     >
       <Card sx={{ width: "100%", p: 3 }} elevation={1}>
         <Box display="flex" width="100%" gap={3} flexWrap="wrap">
-          <Box display="flex" flexDirection={"column"} gap={1}>
-            <CategoryIcon audioCategory={bout.category} size={50} />
-            <Typography textAlign="center" variant="subtitle1">
+          <Box display="flex" flexDirection={"column"} gap={1} width={80}>
+            <Box
+              position="relative"
+              flexGrow={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CategoryIcon audioCategory={bout.category} />
+            </Box>
+            <Typography
+              textAlign="center"
+              variant="subtitle1"
+              sx={{
+                fontSize:
+                  bout.category === "ANTHROPHONY" ? "0.75rem" : "inherit",
+              }}
+            >
               {bout.category}
             </Typography>
           </Box>
           <Box display="flex" flexDirection={"column"}>
-            <Typography variant="h5">{bout.feed?.name}</Typography>
+            <Typography variant="h5">{bout.name ?? bout.feed?.name}</Typography>
             <Typography variant="subtitle1" sx={{ fontWeight: "normal" }}>
               {format(startTime, "h:mm:ss a O")}
               {bout.endTime &&

@@ -17,7 +17,7 @@ import {
   useState,
 } from "react";
 
-import { AudioImagesQuery, FeedSegment } from "@/graphql/generated";
+import { AudioImagesQuery } from "@/graphql/generated";
 
 import { PlayerControls } from "../Player/BoutPlayer";
 import { AudioImagesLayer } from "./AudioImagesLayer";
@@ -29,11 +29,6 @@ import { TimelineTickerLayer } from "./TimelineTickerLayer";
 export const TICKER_HEIGHT = 30;
 const SPECTROGRAM_HEIGHT = 300;
 const PIXEL_ZOOM_FACTOR = 50;
-
-type SpectrogramFeedSegment = Pick<
-  FeedSegment,
-  "id" | "startTime" | "endTime" | "duration"
->;
 
 export type SpectrogramControls = {
   goToTime: (time: Date) => void;

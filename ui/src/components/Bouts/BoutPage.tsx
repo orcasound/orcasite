@@ -696,7 +696,7 @@ export default function BoutPage({
                           },
                         }}
                       >
-                        <CategoryIcon audioCategory={category} />
+                        <CategoryIcon audioCategory={category} size={15} />
                       </ListItemIcon>
                       {_.startCase(_.toLower(category))}
                     </MenuItem>
