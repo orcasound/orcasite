@@ -136,6 +136,7 @@ defmodule Orcasite.Radio.Bout do
       accept [:category, :start_time, :end_time, :name]
       require_atomic? false
 
+      change debug_log()
       change fn changeset, _ ->
         end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
         start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)

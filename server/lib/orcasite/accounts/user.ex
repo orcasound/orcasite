@@ -115,9 +115,10 @@ defmodule Orcasite.Accounts.User do
 
   field_policies do
     field_policy_bypass :* do
+      authorize_if expr(id == ^actor(:id))
       authorize_if actor_attribute_equals(:admin, true)
       authorize_if actor_attribute_equals(:moderator, true)
-      authorize_if expr(id == ^actor(:id))
+      authorize_if AshAuthentication.Checks.AshAuthenticationInteraction
     end
 
     field_policy :username do

@@ -140,8 +140,6 @@ defmodule OrcasiteWeb.Router do
 
     auth_routes_for Orcasite.Notifications.Subscription,
       to: OrcasiteWeb.SubscriptionAuthController
-
-    sign_out_route OrcasiteWeb.SubscriptionAuthController
   end
 
   scope "/" do
