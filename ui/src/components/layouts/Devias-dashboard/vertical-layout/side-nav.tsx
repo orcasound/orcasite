@@ -2,7 +2,7 @@
 import { Drawer, Link, Stack, Typography } from "@mui/material";
 // import { Logo } from '../../../components/logo';
 import Image from "next/image";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { analytics } from "@/utils/analytics";
@@ -10,7 +10,20 @@ import { analytics } from "@/utils/analytics";
 // import { Scrollbar } from '../../../components/scrollbar';
 // import { paths } from '../../../paths';
 // import type { NavColor } from '../../../types/settings';
-import type { Section } from "../config";
+
+interface Item {
+  disabled?: boolean;
+  icon?: ReactNode;
+  items?: Item[];
+  label?: ReactNode;
+  path?: string;
+  title: string;
+}
+
+export interface Section {
+  items: Item[];
+  subheader?: string;
+}
 
 const SIDE_NAV_WIDTH: string = "280px";
 
