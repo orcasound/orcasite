@@ -2,7 +2,7 @@ defmodule Orcasite.Radio.Tag do
   use Ash.Resource,
     otp_app: :orcasite,
     domain: Orcasite.Radio,
-    extensions: [AshAdmin.Resource, AshGraphql.Resource],
+    extensions: [AshAdmin.Resource, AshGraphql.Resource, AshSlug, AshUUID],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -13,6 +13,10 @@ defmodule Orcasite.Radio.Tag do
   postgres do
     table "tags"
     repo Orcasite.Repo
+
+    custom_indexes do
+      index ["name gin_trgm_ops"], name: "tags_name_gin_index", using: "gin"
+    end
   end
 
   identities do
@@ -52,7 +56,7 @@ defmodule Orcasite.Radio.Tag do
   end
 
   actions do
-    defaults [:destroy, create: :*, update: :*]
+    defaults [:destroy, update: :*]
 
     read :read do
       primary? true
@@ -63,6 +67,24 @@ defmodule Orcasite.Radio.Tag do
         countable true
       end
     end
+
+    read :search do
+      argument :query, :string, allow_nil?: false
+
+      prepare build(sort: [name: :asc])
+      filter expr(fragment("? ilike ?", name, expr("%" <> ^arg(:query) <> "%")))
+    end
+
+    create :create do
+      primary? true
+      upsert? true
+      upsert_identity :unique_slug
+      upsert_fields [:name, :description]
+
+      accept [:name, :description]
+
+      change slugify(:name, into: :slug)
+    end
   end
 
   graphql do
@@ -70,6 +92,7 @@ defmodule Orcasite.Radio.Tag do
 
     queries do
       list :tags, :read
+      list :search_tags, :search
     end
 
     mutations do

@@ -20,6 +20,7 @@ defmodule Orcasite.Radio.Bout do
   attributes do
     uuid_attribute :id, prefix: "bout", public?: true
 
+    attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
     attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
@@ -92,7 +93,7 @@ defmodule Orcasite.Radio.Bout do
 
     create :create do
       primary? true
-      accept [:category, :start_time, :end_time]
+      accept [:category, :start_time, :end_time, :name]
 
       argument :feed_id, :string, allow_nil?: false
 
@@ -132,7 +133,7 @@ defmodule Orcasite.Radio.Bout do
 
     update :update do
       primary? true
-      accept [:category, :start_time, :end_time]
+      accept [:category, :start_time, :end_time, :name]
       require_atomic? false
 
       change fn changeset, _ ->

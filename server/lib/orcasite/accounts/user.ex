@@ -34,6 +34,10 @@ defmodule Orcasite.Accounts.User do
     update_timestamp :updated_at
   end
 
+  relationships do
+    has_many :item_tags, Orcasite.Radio.ItemTag
+  end
+
   authentication do
     domain Orcasite.Accounts
 

@@ -2,7 +2,7 @@ defmodule Orcasite.Radio.ItemTag do
   use Ash.Resource,
     otp_app: :orcasite,
     domain: Orcasite.Radio,
-    extensions: [AshAdmin.Resource, AshGraphql.Resource],
+    extensions: [AshAdmin.Resource, AshGraphql.Resource, AshUUID],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -28,7 +28,10 @@ defmodule Orcasite.Radio.ItemTag do
   end
 
   calculations do
-    calculate :item, :struct, Orcasite.Radio.Calculations.ItemTagItem
+    calculate :item, :struct, Orcasite.Radio.Calculations.ItemTagItem do
+      # Update contraints/output to Union type once we have other taggable items
+      constraints instance_of: Orcasite.Radio.Bout
+    end
   end
 
   relationships do
@@ -83,13 +86,24 @@ defmodule Orcasite.Radio.ItemTag do
     end
 
     create :bout_tag do
-      argument :tag, :map, allow_nil?: false
-      argument :bout, :map, allow_nil?: false
+      argument :tag, :map do
+        allow_nil? false
+
+        constraints fields: [
+                      id: [type: :string],
+                      name: [type: :string, allow_nil?: false],
+                      description: [type: :string]
+                    ]
+      end
+
+      argument :bout, :map
+
+      change debug_log(:create_tag)
 
       change manage_relationship(:bout, type: :append)
 
       change manage_relationship(:tag,
-               on_lookup: :relate,
+               on_lookup: :relate_and_update,
                on_no_match: :create,
                on_match: :ignore,
                on_missing: :ignore
@@ -104,6 +118,8 @@ defmodule Orcasite.Radio.ItemTag do
 
   graphql do
     type :item_tag
+
+    attribute_types bout_id: :id, user_id: :id, tag_id: :id
 
     queries do
       list :bout_tags, :for_bout

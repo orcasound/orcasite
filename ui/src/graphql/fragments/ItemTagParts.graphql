@@ -1,0 +1,12 @@
+fragment ItemTagParts on ItemTag {
+  id
+  user {
+    username
+  }
+  tag {
+    id
+    name
+    slug
+    description
+  }
+}

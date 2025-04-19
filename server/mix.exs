@@ -111,7 +111,8 @@ defmodule Orcasite.Mixfile do
       {:broadway_sqs, "~> 0.7"},
       {:recon, "~> 2.5"},
       {:ecto_psql_extras, "~> 0.6"},
-      {:recase, "~> 0.5"}
+      {:recase, "~> 0.5"},
+      {:ash_slug, "~> 0.2.1"}
     ]
   end
 

@@ -6,6 +6,7 @@
     "postgis",
     "ash-uuid_v2",
     "pg_stat_statements",
-    "ash-functions"
+    "ash-functions",
+    "pg_trgm"
   ]
 }

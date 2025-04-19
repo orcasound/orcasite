@@ -16,7 +16,8 @@ defmodule Orcasite.Repo do
       "postgis",
       AshUUID.PostgresExtension,
       "pg_stat_statements",
-      "ash-functions"
+      "ash-functions",
+      "pg_trgm"
     ]
   end
 
