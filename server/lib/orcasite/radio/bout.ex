@@ -46,6 +46,15 @@ defmodule Orcasite.Radio.Bout do
       through Orcasite.Radio.BoutFeedStream
       public? true
     end
+
+    has_many :item_tags, Orcasite.Radio.ItemTag do
+      public? true
+    end
+
+    many_to_many :tags, Orcasite.Radio.Tag do
+      through Orcasite.Radio.ItemTag
+      public? true
+    end
   end
 
   policies do
@@ -102,7 +111,10 @@ defmodule Orcasite.Radio.Bout do
 
         if start_time && end_time do
           changeset
-          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
+          |> Ash.Changeset.change_attribute(
+            :duration,
+            DateTime.diff(end_time, start_time, :millisecond) / 1000
+          )
         else
           changeset
         end
@@ -129,7 +141,10 @@ defmodule Orcasite.Radio.Bout do
 
         if start_time && end_time do
           changeset
-          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
+          |> Ash.Changeset.change_attribute(
+            :duration,
+            DateTime.diff(end_time, start_time, :millisecond) / 1000
+          )
         else
           changeset
         end
@@ -139,7 +154,7 @@ defmodule Orcasite.Radio.Bout do
 
   graphql do
     type :bout
-    attribute_types [feed_id: :id, feed_stream_id: :id]
+    attribute_types feed_id: :id, feed_stream_id: :id
 
     queries do
       list :bouts, :index

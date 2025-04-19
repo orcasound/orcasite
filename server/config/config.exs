@@ -98,6 +98,7 @@ config :spark, :formatter,
   "Ash.Resource": [
     type: Ash.Resource,
     section_order: [
+      :resource,
       :postgres,
       :identities,
       :attributes,
