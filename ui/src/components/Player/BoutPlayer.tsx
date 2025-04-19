@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { differenceInSeconds, format, isBefore } from "date-fns";
+import { differenceInSeconds, format, isAfter } from "date-fns";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -152,8 +152,8 @@ export function BoutPlayer({
           if (onPlayerTimeUpdate !== undefined) {
             onPlayerTimeUpdate(playerDateTime);
           }
-          // On hitting max time, pause
-          if (!isBefore(playerDateTime, new Date(maxTimeNum))) {
+          // Pause on hitting max time
+          if (isAfter(playerDateTime, new Date(maxTimeNum))) {
             player.pause();
           }
         }, 10);
