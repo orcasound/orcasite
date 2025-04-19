@@ -1,13 +1,10 @@
 import {
   ArrowRight,
   Clear,
-  Close,
   GraphicEq,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  Launch,
   Notifications,
-  PlayArrow,
   Start,
   ZoomIn,
   ZoomOut,
@@ -15,12 +12,7 @@ import {
 import {
   Alert,
   Button,
-  Chip,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Fade,
   FormControl,
   FormHelperText,
@@ -32,13 +24,7 @@ import {
   MenuItem,
   Select,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Tabs,
-  TextareaAutosize,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -48,7 +34,6 @@ import { addMinutes, format, max, min, subDays, subMinutes } from "date-fns";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import {
-  MutableRefObject,
   SetStateAction,
   useCallback,
   useEffect,
@@ -63,30 +48,23 @@ import SpectrogramTimeline, {
 import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
 import {
   AudioCategory,
-  Bout,
   BoutQuery,
-  Candidate,
-  Detection,
   FeedQuery,
-  Maybe,
   useAudioImagesQuery,
-  useCancelNotificationMutation,
   useCreateBoutMutation,
   useDetectionsQuery,
   useGenerateFeedSpectrogramsMutation,
   useGetCurrentUserQuery,
   useListFeedStreamsQuery,
-  useNotificationsForBoutQuery,
-  useNotifyLiveBoutMutation,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
-import { useBoutNotificationSentSubscription } from "@/hooks/useBoutNotificationSentSubscription";
-import { formatTimestamp, roundToNearest } from "@/utils/time";
+import { roundToNearest } from "@/utils/time";
 
-import CircularProgressWithLabel from "../CircularProgressWithLabel";
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
+import { BoutDetectionsTable } from "./BoutDetectionsTable";
+import { BoutNotifications } from "./BoutNotifications";
 import BoutScrubBar from "./BoutScrubBar";
 import CategoryIcon from "./CategoryIcon";
 
@@ -137,9 +115,6 @@ export default function BoutPage({
     };
   }, []);
 
-  const [boutName, setBoutName] = useState<string | undefined>(
-    bout?.name ?? undefined,
-  );
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
     bout?.startTime && new Date(bout.startTime),
   );
@@ -319,7 +294,6 @@ export default function BoutPage({
           startTime: boutStartTime,
           endTime: boutEndTime,
           category: audioCategory,
-          name: boutName,
         });
       } else if (bout) {
         updateBoutMutation.mutate({
@@ -327,7 +301,6 @@ export default function BoutPage({
           startTime: boutStartTime,
           endTime: boutEndTime,
           category: audioCategory,
-          name: boutName,
         });
       }
     } else {
@@ -696,7 +669,7 @@ export default function BoutPage({
                           },
                         }}
                       >
-                        <CategoryIcon audioCategory={category} size={15} />
+                        <CategoryIcon audioCategory={category} />
                       </ListItemIcon>
                       {_.startCase(_.toLower(category))}
                     </MenuItem>
@@ -780,318 +753,6 @@ function shareUrl(time: Date) {
   const currentUrl = new URL(window.location.href);
   currentUrl.searchParams.set("time", formattedTime);
   return currentUrl.toString();
-}
-
-function BoutDetectionsTable({
-  detections,
-  minDetectionsTime,
-  maxDetectionsTime,
-  spectrogramControls,
-  playerControls,
-}: {
-  detections: Array<
-    Pick<Detection, "id" | "category" | "timestamp" | "description"> & {
-      candidate?: Maybe<Pick<Candidate, "id">>;
-    }
-  >;
-  minDetectionsTime: Date;
-  maxDetectionsTime: Date;
-  playerControls: MutableRefObject<PlayerControls | undefined>;
-  spectrogramControls: MutableRefObject<SpectrogramControls | undefined>;
-}) {
-  return (
-    <Box sx={{ overflowX: "auto" }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell></TableCell>
-            <TableCell>#</TableCell>
-            <TableCell>ID</TableCell>
-            <TableCell>Category</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell align="right">Timestamp</TableCell>
-            <TableCell align="right">Candidate</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {detections
-            .sort(({ timestamp: a }, { timestamp: b }) => {
-              const date_a = new Date(a);
-              const date_b = new Date(b);
-              // Sort by timestamp, low to high
-              return +date_a - +date_b;
-            })
-            .map((det, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <IconButton
-                    size="small"
-                    sx={{ transform: "scale(0.8)" }}
-                    onClick={() => {
-                      spectrogramControls.current?.goToTime(
-                        new Date(det.timestamp),
-                      );
-                      playerControls.current?.play();
-                    }}
-                  >
-                    <PlayArrow />
-                  </IconButton>
-                </TableCell>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  <Typography variant="caption">{det.id}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip label={det.category} />
-                </TableCell>
-                <TableCell>{det.description}</TableCell>
-                <TableCell
-                  align="right"
-                  title={new Date(det.timestamp).toString()}
-                >
-                  {format(new Date(det.timestamp), "h:mm:ss a O")}
-                </TableCell>
-                <TableCell align="right">
-                  {det?.candidate?.id && (
-                    <IconButton
-                      href={`/reports/${det?.candidate?.id}`}
-                      target="_blank"
-                      size="small"
-                      sx={{ transform: "scale(0.8)" }}
-                    >
-                      <Launch />
-                    </IconButton>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-
-          {detections.length < 1 && (
-            <TableRow>
-              <TableCell colSpan={5}>
-                <Typography textAlign="center">
-                  No detections submitted from{" "}
-                  {format(minDetectionsTime, "h:mm a O")} to{" "}
-                  {format(maxDetectionsTime, "h:mm a O")}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </Box>
-  );
-}
-
-function BoutNotifications({ bout }: { bout: Pick<Bout, "id"> }) {
-  const notificationsQuery = useNotificationsForBoutQuery({
-    boutId: bout.id,
-  });
-  const initialNotifications =
-    notificationsQuery.data?.notificationsForBout ?? [];
-
-  const updatedNotifications = useBoutNotificationSentSubscription(bout.id);
-  const notifications = _.uniqBy(
-    [...updatedNotifications, ...initialNotifications],
-    ({ id }) => id,
-  ).toSorted(
-    ({ insertedAt: a }, { insertedAt: b }) =>
-      new Date(a).valueOf() - new Date(b).valueOf(),
-  );
-  const cancelNotification = useCancelNotificationMutation({
-    onSuccess: () => {
-      notificationsQuery.refetch();
-    },
-  });
-  return (
-    <>
-      <Box sx={{ marginTop: 1 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <h3>Notifications</h3>
-          <Box>
-            <NotificationModal
-              boutId={bout.id}
-              onNotification={() => notificationsQuery.refetch()}
-            />
-          </Box>
-        </Box>
-        {!notifications && <Typography>No notifications</Typography>}
-        {notifications && (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Event</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="center">Progress</TableCell>
-                <TableCell align="right">Last updated</TableCell>
-                <TableCell align="right">Created</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {notifications.map((notification, index) => (
-                <TableRow key={index}>
-                  <TableCell>{notification.eventType?.toLowerCase()}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={notification.active ? "Active" : "Inactive"}
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Box sx={{ mr: 3 }}>
-                        {notification.notifiedCount} /{" "}
-                        {notification.targetCount}
-                      </Box>
-                      {typeof notification.progress === "number" && (
-                        <CircularProgressWithLabel
-                          value={notification.progress * 100}
-                        />
-                      )}
-                    </Box>
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    title={notification.notifiedCountUpdatedAt?.toString()}
-                  >
-                    {notification.notifiedCountUpdatedAt &&
-                      formatTimestamp(notification.notifiedCountUpdatedAt)}
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    title={notification.insertedAt.toString()}
-                  >
-                    {formatTimestamp(notification.insertedAt)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {notification.active && !notification.finished && (
-                      <Button
-                        onClick={() => {
-                          cancelNotification.mutate({ id: notification.id });
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </Box>
-    </>
-  );
-}
-
-function NotificationModal({
-  boutId,
-  onNotification,
-}: {
-  boutId: string;
-  onNotification: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [confirming, setConfirming] = useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setMessage("");
-    setConfirming(false);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-    setMessage(e.target.value);
-
-  const handleSubmit = () => {
-    setConfirming(true);
-  };
-
-  const handleConfirm = () => {
-    notifyConfirmedCandidate.mutate({ boutId, message });
-  };
-
-  const notifyConfirmedCandidate = useNotifyLiveBoutMutation({
-    onSuccess: () => {
-      onNotification();
-      handleClose();
-    },
-  });
-
-  return (
-    <>
-      <Button onClick={handleOpen}>Notify subscribers</Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            Notify subscribers
-            <IconButton onClick={handleClose}>
-              <Close />
-            </IconButton>
-          </Box>
-        </DialogTitle>
-        <DialogContent
-          sx={{ minWidth: (theme) => theme.breakpoints.values.sm }}
-        >
-          <TextareaAutosize
-            style={{ width: "100%", padding: "15px" }}
-            autoFocus
-            placeholder="Message to subscribers (e.g. SRKWs heard in ...)"
-            onChange={handleChange}
-            minRows={3}
-          />
-        </DialogContent>
-        <DialogActions>
-          {confirming ? (
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{ width: "100%" }}
-              px={2}
-            >
-              <Button onClick={() => setConfirming(false)} color="primary">
-                Cancel
-              </Button>
-              <Typography sx={{ marginLeft: "auto", marginRight: 2 }}>
-                Are you sure?
-              </Typography>
-              <Button onClick={handleConfirm} color="error" variant="outlined">
-                Send to subscribers
-              </Button>
-            </Box>
-          ) : (
-            <>
-              <Button onClick={handleClose} color="primary">
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                color="primary"
-                variant="outlined"
-                disabled={!message}
-              >
-                Submit
-              </Button>
-            </>
-          )}
-        </DialogActions>
-      </Dialog>
-    </>
-  );
 }
 
 // Shows current name and if user is a moderator, allows setting bout name
