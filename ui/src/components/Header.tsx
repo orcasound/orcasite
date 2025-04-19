@@ -116,6 +116,9 @@ function Mobile({
           onClose={handleMenuToggle}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
+            BackdropProps: {
+              style: { backgroundColor: "transparent" },
+            },
           }}
           sx={{
             display: { xs: "block", sm: "none" },
@@ -123,6 +126,7 @@ function Mobile({
               boxSizing: "border-box",
               width: drawerWidth,
               backgroundColor: "base.main",
+              marginTop: (theme) => `${theme.mixins.toolbar.minHeight}px`,
             },
             zIndex: (theme) => theme.zIndex.drawer + 1,
           }}
@@ -134,15 +138,6 @@ function Mobile({
             flexDirection="column"
             alignItems="center"
           >
-            <Box sx={{ my: 2 }}>
-              <Image
-                src={wordmark.src}
-                alt="Orcasound"
-                width={140}
-                height={60}
-                priority={true}
-              />
-            </Box>
             <Divider color="base.contrastText" />
             <List sx={{ maxWidth: (theme) => theme.breakpoints.values.sm }}>
               {navItems.map((item) => (
@@ -155,7 +150,7 @@ function Mobile({
                     <ListItemIcon
                       sx={{
                         color: "base.contrastText",
-                        displa: "flex",
+                        display: "flex",
                         justifyContent: "center",
                         opacity: 0.9,
                       }}
