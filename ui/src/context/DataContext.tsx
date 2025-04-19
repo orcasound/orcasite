@@ -8,6 +8,7 @@ const DataContext = createContext<Dataset>({
   combined: [],
   isSuccess: false,
   setNowPlaying: undefined,
+  feeds: [],
 });
 
 export const useData = () => useContext(DataContext);

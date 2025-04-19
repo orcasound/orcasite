@@ -9,12 +9,12 @@ const navigationHalfMap = [
     children: [
       {
         title: "Locations",
-        path: "/concept/hydrophones",
+        path: "/moderator/hydrophones",
         icon: <PlaceIcon fontSize="inherit" />,
       },
       {
         title: "Learn",
-        path: "/concept/learn/",
+        path: "/moderator/learn/",
         icon: <EarbudsIcon fontSize="inherit" />,
       },
     ],
@@ -26,12 +26,12 @@ const navigationHalfMap = [
     children: [
       {
         title: "Bout Monitor",
-        path: "/concept/bouts",
+        path: "/moderator/bouts",
         icon: <PlaceIcon fontSize="inherit" />,
       },
       {
         title: "Candidates",
-        path: "/concept/candidates/",
+        path: "/moderator/candidates/",
         icon: <EarbudsIcon fontSize="inherit" />,
       },
       {
