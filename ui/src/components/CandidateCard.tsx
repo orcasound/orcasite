@@ -1,3 +1,4 @@
+import type { Theme } from "@mui/material";
 import {
   Box,
   Card,
@@ -7,9 +8,10 @@ import {
   Link,
   Typography,
 } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import { MutableRefObject } from "react";
 
-import { useFeedsQuery } from "@/graphql/generated";
+import { Feed } from "@/graphql/generated";
 import { type Candidate } from "@/pages/moderator/candidates";
 
 import { CandidateCardAIPlayer } from "./Player/CandidateCardAIPlayer";
@@ -39,10 +41,9 @@ export default function CandidateCard(props: {
   // command?: string;
   players: MutableRefObject<{ [index: number]: VideoJSPlayer }>;
   playNext: boolean;
+  feeds: Feed[];
 }) {
-  // get hydrophone feed list
-  const feedsQueryResult = useFeedsQuery();
-  const feedsData = feedsQueryResult.data?.feeds ?? [];
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const { descriptions } = props.candidate;
   const tagArray = descriptions.match(new RegExp(tagRegex.join("|"), "gi"));
@@ -62,19 +63,23 @@ export default function CandidateCard(props: {
   const lastTimestamp = lastCandidate.timestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
-  const feed = feedsData.find((feed) => feed.id === firstCandidate.feedId);
+  const feed = props.feeds.find((feed) => feed.id === firstCandidate.feedId);
 
-  const startTimestamp = Math.min(
-    ...candidateArray.map((d) => +d.playlistTimestamp),
+  const humanReports = candidateArray.filter(
+    (d) => d.playlistTimestamp !== undefined && d.playerOffset !== undefined,
+  );
+
+  const startPlaylistTimestamp = Math.min(
+    ...humanReports.map((d) => +d.playlistTimestamp),
   );
 
   const offsetPadding = 15;
-  const minOffset = Math.min(...candidateArray.map((d) => +d.playerOffset));
+  const minOffset = Math.min(...humanReports.map((d) => +d.playerOffset));
 
   // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
   // instead, ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
-  const firstPlaylist = candidateArray.filter(
-    (d) => +d.playlistTimestamp === startTimestamp,
+  const firstPlaylist = humanReports.filter(
+    (d) => +d.playlistTimestamp === startPlaylistTimestamp,
   );
 
   const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
@@ -82,21 +87,30 @@ export default function CandidateCard(props: {
   const endOffset = maxOffset + offsetPadding;
 
   return (
-    <Card key={firstTimestampString} sx={{ display: "flex" }}>
+    <Card
+      key={firstTimestampString}
+      sx={{
+        display: "flex",
+        flexFlow: "row",
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           pl: 1,
           pb: 1,
-          minWidth: 250,
+          minWidth: lgUp ? 250 : 0,
         }}
       >
         {feed && candidate.array[0].playlistTimestamp ? (
           <CandidateCardPlayer
             candidate={candidate}
             feed={feed}
-            timestamp={startTimestamp}
+            timestamp={startPlaylistTimestamp}
             startOffset={startOffset}
             endOffset={endOffset}
             index={props.index}
@@ -146,8 +160,8 @@ export default function CandidateCard(props: {
       <Link
         href={
           firstTimestamp === lastTimestamp
-            ? `${firstTimestamp}`
-            : `${firstTimestamp}_${lastTimestamp}`
+            ? `${firstTimestampString}`
+            : `${firstTimestampString}_${lastTimestampString}`
         }
         sx={{ width: "100%", color: "inherit", textDecoration: "inherit" }}
       >
@@ -196,7 +210,7 @@ export default function CandidateCard(props: {
                     padding: "1rem 0",
                   }}
                 >
-                  {Object.entries(tagObject).map(([tag, count]) => (
+                  {Object.entries(tagObject).map(([tag]) => (
                     <Chip
                       label={`${tag}`}
                       key={tag}

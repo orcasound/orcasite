@@ -1,12 +1,13 @@
 import "videojs-offset";
 
+import type { Theme } from "@mui/material";
 import { Box, Slider, Typography } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { useData } from "@/context/DataContext";
 import { Candidate } from "@/pages/moderator/candidates";
-import { mobileOnly } from "@/styles/responsive";
 
 import { type PlayerStatus } from "./Player";
 import PlayPauseButton from "./PlayPauseButton";
@@ -24,9 +25,9 @@ export function CandidateCardAIPlayer({
   // endOffset,
   audioUri,
   onAudioPlay,
-  changeListState,
-  index,
-  command,
+  // changeListState,
+  // index,
+  // command,
   onPlayerInit,
   onPlay,
   onPlayerEnd,
@@ -39,14 +40,16 @@ export function CandidateCardAIPlayer({
   // endOffset: number;
   audioUri: string;
   onAudioPlay?: () => void;
-  changeListState?: (value: number, status: string) => void;
-  index?: number;
-  command?: string;
+  // changeListState?: (value: number, status: string) => void;
+  // index?: number;
+  // command?: string;
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
   onPlayerEnd?: () => void;
   candidate?: Candidate;
 }) {
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
+
   // special to the AI player
   const startOffset = 0;
 
@@ -94,7 +97,7 @@ export function CandidateCardAIPlayer({
   const handleReady = useCallback((player: VideoJSPlayer) => {
     playerRef.current = player;
 
-    onPlayerInit && onPlayerInit(player);
+    if (onPlayerInit) onPlayerInit(player);
     player.on("playing", () => {
       setPlayerStatus("playing");
       // const currentTime = player.currentTime() ?? 0;
@@ -103,9 +106,9 @@ export function CandidateCardAIPlayer({
       //   setPlayerTime(endOffset);
       // }
       // (changeListState && index) && changeListState(index, "playing");
-      onPlay && onPlay();
-      candidate && console.log("aiplayer");
-      setNowPlaying && candidate && setNowPlaying(candidate);
+      if (onPlay) onPlay();
+      if (candidate) console.log("aiplayer");
+      if (setNowPlaying && candidate) setNowPlaying(candidate);
     });
     player.on("pause", () => {
       setPlayerStatus("paused");
@@ -120,7 +123,7 @@ export function CandidateCardAIPlayer({
         player.currentTime(startOffset);
         setPlayerTime(startOffset);
         player.pause();
-        onPlayerEnd && onPlayerEnd();
+        if (onPlayerEnd) onPlayerEnd();
       } else {
         setPlayerTime(currentTime);
       }
@@ -200,12 +203,6 @@ export function CandidateCardAIPlayer({
         justifyContent: "space-between",
         px: [0, 2],
         position: "relative",
-        [mobileOnly(theme)]: {
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-        },
         // Keep player above the sliding drawer
         zIndex: theme.zIndex.drawer + 1,
       })}
@@ -220,36 +217,38 @@ export function CandidateCardAIPlayer({
           disabled={!audioUri}
         />
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", width: "90px" }}>
-        <Box width={"100%"} id="slider">
-          <Slider
-            valueLabelDisplay="auto"
-            valueLabelFormat={(v) => `${v + startOffset.toFixed(2)} s`}
-            step={0.1}
-            max={endOffset}
-            // max={sliderMax}
-            value={playerTime}
-            // value={sliderValue}
-            marks={marks}
-            onChange={handleSliderChange}
-            onChangeCommitted={handleSliderChangeCommitted}
-            size="small"
-          />
-        </Box>
+      {lgUp && (
+        <Box sx={{ display: "flex", flexDirection: "column", width: "90px" }}>
+          <Box width={"100%"} id="slider">
+            <Slider
+              valueLabelDisplay="auto"
+              valueLabelFormat={(v) => `${v + startOffset.toFixed(2)} s`}
+              step={0.1}
+              max={endOffset}
+              // max={sliderMax}
+              value={playerTime}
+              // value={sliderValue}
+              marks={marks}
+              onChange={handleSliderChange}
+              onChangeCommitted={handleSliderChangeCommitted}
+              size="small"
+            />
+          </Box>
 
-        <Box
-          id="formatted-seconds"
-          sx={{ display: "flex", justifyContent: "space-between" }}
-        >
-          <Typography component="p" variant="subtitle2">
-            {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
-          </Typography>
-          <Typography component="p" variant="subtitle2">
-            {"-" +
-              formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
-          </Typography>
+          <Box
+            id="formatted-seconds"
+            sx={{ display: "flex", justifyContent: "space-between" }}
+          >
+            <Typography component="p" variant="subtitle2">
+              {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
+            </Typography>
+            <Typography component="p" variant="subtitle2">
+              {"-" +
+                formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
     </Box>
   );
 }

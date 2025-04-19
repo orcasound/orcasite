@@ -1,4 +1,6 @@
+import type { Theme } from "@mui/material";
 import { Box, Stack, Typography } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -7,6 +9,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListSubheader from "@mui/material/ListSubheader";
 import { useQuery } from "@tanstack/react-query";
+import { gql, request } from "graphql-request";
 import Image from "next/image";
 import * as React from "react";
 import { ReactElement, useMemo, useState } from "react";
@@ -14,7 +17,8 @@ import { ReactElement, useMemo, useState } from "react";
 import Link from "@/components/Link";
 import { DataProvider } from "@/context/DataContext";
 import {
-  DetectionCategory,
+  Detection,
+  Feed,
   useDetectionsQuery,
   useFeedsQuery,
 } from "@/graphql/generated";
@@ -99,11 +103,8 @@ const standardizeFeedName = (name: string) => {
       break;
   }
 };
-const lookupFeedName = (
-  id: string,
-  feedList: { id: string; name: string }[],
-) => {
-  let name = "feed not found";
+const lookupFeedName = (id: string, feedList: Feed[]) => {
+  let name = "feed name not found";
   feedList.forEach((feed) => {
     if (id === feed.id) {
       name = feed.name;
@@ -112,28 +113,119 @@ const lookupFeedName = (
   return standardizeFeedName(name);
 };
 
+const lookupFeedId = (name: string, feedList: Feed[]) => {
+  let id = "feed id not found";
+  const standardizedName = standardizeFeedName(name);
+  feedList.forEach((feed) => {
+    if (standardizedName === feed.name) {
+      id = feed.id;
+    }
+  });
+  return id;
+};
+
 export function ModeratorLayout({ children }: { children: React.ReactNode }) {
   //// DATA
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const [nowPlaying, setNowPlaying] = useState({} as Candidate);
 
-  // get data on hydrophones
+  // get feeds via live endpoint
+
+  // get data on hydrophones from seed data
   const feedsQueryResult = useFeedsQuery();
   const feedsData = useMemo(() => {
     return feedsQueryResult.data?.feeds ?? [];
   }, [feedsQueryResult.data?.feeds]);
 
-  type CategoryOptions = "WHALE" | "WHALE (AI)" | "VESSEL" | "OTHER" | "ALL";
-  const [category, setCategory] = useState<CategoryOptions>("ALL");
+  // get data on human detections using endpoint directly (gives live data in dev)
+  const endpoint = "https://live.orcasound.net/graphiql/";
+  const detectionsGQL = gql`
+    {
+      detections(limit: 250) {
+        results {
+          id
+          feedId
+          listenerCount
+          category
+          description
+          playerOffset
+          playlistTimestamp
+          timestamp
+          candidate {
+            id
+            feedId
+          }
+          feed {
+            name
+            id
+          }
+        }
+      }
+    }
+  `;
+  const feedsGQL = gql`
+    {
+      feeds {
+        id
+        name
+        slug
+        nodeName
+        latLng {
+          lat
+          lng
+        }
+        imageUrl
+        thumbUrl
+        mapUrl
+        bucket
+        online
+      }
+    }
+  `;
 
-  // get data on human detections
-  const detectionQueryResult = useDetectionsQuery(
-    ["WHALE", "VESSEL", "OTHER"].includes(category)
-      ? { filter: { category: { eq: category as DetectionCategory } } }
-      : {},
-    { enabled: ["WHALE", "VESSEL", "OTHER", "ALL"].includes(category || "") },
-  );
-  const detectionsData = detectionQueryResult.data?.detections?.results ?? [];
+  const [useLiveData, setUseLiveData] = useState(true);
+  type LiveDataResponse = {
+    detections: {
+      results: Detection[];
+    };
+  };
+  const fetchLiveDetections = (): Promise<LiveDataResponse> =>
+    request(endpoint, detectionsGQL);
+  const {
+    data: liveDetectionData,
+    isLoading: isLoadingLive,
+    error: errorLive,
+  } = useQuery({
+    queryKey: ["detections-live"],
+    queryFn: fetchLiveDetections,
+    enabled: useLiveData,
+  });
+  type LiveFeedsResponse = {
+    feeds: Feed[];
+  };
+  const fetchLiveFeeds = (): Promise<LiveFeedsResponse> =>
+    request(endpoint, feedsGQL);
+  const {
+    data: liveFeedsData,
+    isLoading: isLoadingFeedsLive,
+    error: errorFeedsLive,
+  } = useQuery({
+    queryKey: ["feeds-live"],
+    queryFn: fetchLiveFeeds,
+    enabled: useLiveData,
+  });
+
+  // get data on human detections using graphql/generated (gives seed data in dev)
+  const detectionQueryResult = useDetectionsQuery();
+
+  // populate data based on live/seed toggle
+  const humanDetections = useLiveData
+    ? (liveDetectionData?.detections?.results ?? [])
+    : ((detectionQueryResult.data?.detections?.results ?? []) as Detection[]);
+  const feedList = useLiveData
+    ? (liveFeedsData?.feeds ?? [])
+    : ((feedsData ?? []) as Feed[]);
 
   // get data on AI detections
   const fetchOrcahelloData = async () => {
@@ -153,7 +245,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
   const aiDetections = data;
 
   // deduplicate data on human detections
-  const dedupeHuman = detectionsData.filter(
+  const dedupeHuman = humanDetections.filter(
     (obj, index, arr) =>
       arr.findIndex(
         (el) =>
@@ -165,11 +257,22 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
   const datasetHuman = dedupeHuman.map((el) => ({
     ...el,
     type: "human",
-    hydrophone: lookupFeedName(el.feedId!, feedsData),
+    hydrophone: lookupFeedName(el.feedId!, feedList),
     comments: el.description,
-    newCategory: el!.category!,
+    newCategory: el.category!,
     timestampString: el.timestamp.toString(),
   }));
+
+  console.log(`feedsData: ` + JSON.stringify(feedsData, null, 2));
+  console.log(`liveFeedsData: ` + JSON.stringify(liveFeedsData, null, 2));
+  console.log(
+    `datasetHuman[0] with useLiveData: ${useLiveData} ` +
+      JSON.stringify(humanDetections[0], null, 2),
+  );
+  console.log(
+    `datasetHuman[0] with useLiveData: ${useLiveData} ` +
+      JSON.stringify(datasetHuman[0], null, 2),
+  );
 
   // combine global data into one object, to be passed into Data Provider for all child pages
   const dataset = useMemo(() => {
@@ -178,6 +281,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
         ...el,
         type: "ai",
         hydrophone: standardizeFeedName(el.location.name),
+        feedId: lookupFeedId(el.location.name, feedList),
         newCategory: "WHALE (AI)",
         timestampString: el.timestamp.toString(),
       })) ?? [];
@@ -185,12 +289,12 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
       human: datasetHuman,
       ai: datasetAI,
       combined: [...datasetHuman, ...datasetAI],
-      feeds: feedsData,
+      feeds: feedList,
       isSuccess: isSuccess,
       nowPlaying: nowPlaying,
       setNowPlaying: setNowPlaying,
     };
-  }, [datasetHuman, aiDetections, feedsData, isSuccess, nowPlaying]);
+  }, [datasetHuman, aiDetections, feedList, isSuccess, nowPlaying]);
 
   //// COMPONENTS
 
@@ -340,42 +444,58 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
       }}
     >
       {/* <Header /> */}
+      {process.env.NODE_ENV === "development" && (
+        <button
+          onClick={() => setUseLiveData((prev) => !prev)}
+          style={{
+            position: "fixed",
+            zIndex: 10000,
+            bottom: "4%",
+            right: "5%",
+            background: "yellow",
+          }}
+        >
+          {useLiveData ? "Using LIVE data" : "Using SEED data"}
+        </button>
+      )}
       <TopNav />
       <Box sx={{ flexGrow: 1, display: "flex", width: "100vw" }}>
-        <Drawer
-          anchor="left"
-          open
-          sx={{ width: drawerWidth }}
-          PaperProps={{
-            sx: {
-              width: drawerWidth,
-              backgroundColor: "base.main",
-              color: "base.contrastText",
-            },
-          }}
-          variant="permanent"
-        >
-          <Stack sx={{ height: "100%" }}>
-            <Stack
-              alignItems="center"
-              direction="row"
-              spacing={2}
-              sx={{ padding: "4px 36px" }}
-            >
-              <Brand />
+        {lgUp && (
+          <Drawer
+            anchor="left"
+            open
+            sx={{ width: drawerWidth }}
+            PaperProps={{
+              sx: {
+                width: drawerWidth,
+                backgroundColor: "base.main",
+                color: "base.contrastText",
+              },
+            }}
+            variant="permanent"
+          >
+            <Stack sx={{ height: "100%" }}>
+              <Stack
+                alignItems="center"
+                direction="row"
+                spacing={2}
+                sx={{ padding: "4px 36px" }}
+              >
+                <Brand />
+              </Stack>
+              <Stack
+                component="nav"
+                spacing={2}
+                sx={{
+                  flexGrow: 1,
+                  px: 2,
+                }}
+              >
+                {DrawerList}
+              </Stack>
             </Stack>
-            <Stack
-              component="nav"
-              spacing={2}
-              sx={{
-                flexGrow: 1,
-                px: 2,
-              }}
-            >
-              {DrawerList}
-            </Stack>
-          </Stack>
-        </Drawer>
+          </Drawer>
+        )}
 
         {/* <div key={"left"} className="drawer-div">
           <Drawer

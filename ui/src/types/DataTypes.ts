@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { Detection, Scalars } from "@/graphql/generated";
+import { Detection, Feed, Scalars } from "@/graphql/generated";
 import { Candidate } from "@/pages/moderator/candidates";
 
 export interface HumanData extends Omit<Detection, "candidate"> {
@@ -38,7 +38,7 @@ export interface Dataset {
   human: HumanData[];
   ai: AIData[];
   combined: CombinedData[];
-  // feeds: Feed[];
+  feeds: Feed[];
   isSuccess: boolean;
   setNowPlaying?: Dispatch<SetStateAction<Candidate>>;
 }

@@ -1,9 +1,10 @@
 import {
   useMutation,
-  useQuery,
   UseMutationOptions,
+  useQuery,
   UseQueryOptions,
 } from "@tanstack/react-query";
+
 import { fetcher } from "@/graphql/client";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;

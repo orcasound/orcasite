@@ -1,4 +1,6 @@
+import type { Theme } from "@mui/material";
 import { Box, Container, Stack, Typography } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
@@ -13,7 +15,7 @@ import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
 import ReportsBarChart from "@/components/ReportsBarChart";
 import SearchBar from "@/components/SearchBar";
 import { useData } from "@/context/DataContext";
-import { useFeedsQuery } from "@/graphql/generated";
+import { Feed } from "@/graphql/generated";
 import { CombinedData } from "@/types/DataTypes";
 
 // dayjs plugin for date pickers
@@ -163,15 +165,17 @@ const createCandidates = (
 };
 
 export default function Candidates() {
-  // replace this with a direct react-query?
   const {
     combined,
+    feeds,
     isSuccess,
-  }: { combined: CombinedData[] | undefined; isSuccess: boolean } = useData();
+  }: {
+    combined: CombinedData[] | undefined;
+    feeds: Feed[];
+    isSuccess: boolean;
+  } = useData();
 
-  // get hydrophone feed list
-  const feedsQueryResult = useFeedsQuery();
-  const feeds = feedsQueryResult.data?.feeds ?? [];
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const [filters, setFilters] = useState<{
     timeRange: number;
@@ -325,21 +329,7 @@ export default function Candidates() {
         index={index}
         // changeListState={changeListState}
         // command={playing.index === index ? "play" : "pause"}
-        players={players}
-        playNext={playNext}
-      />
-    ),
-  );
-
-  // these render from state after delay, then re-render after another delay when AI candidates come through
-  const sortedCandidateCards = sortedCandidates.map(
-    (candidate: Candidate, index: number) => (
-      <CandidateCard
-        candidate={candidate}
-        key={index}
-        index={index}
-        // changeListState={changeListState}
-        // command={playing.index === index ? "play" : "pause"}
+        feeds={feeds}
         players={players}
         playNext={playNext}
       />
@@ -347,13 +337,19 @@ export default function Candidates() {
   );
 
   return (
-    <Container maxWidth="xl">
+    <Container
+      maxWidth="xl"
+      sx={{
+        px: { xs: 1, sm: 2, md: 3 },
+      }}
+    >
       <Box
         style={{
           display: "flex",
           margin: "24px 0",
           gap: "1rem",
           flexWrap: "wrap",
+          width: "100%",
         }}
       >
         <SearchBar setSearchQuery={setSearchQuery} />
@@ -405,12 +401,25 @@ export default function Candidates() {
         sx={{
           display: "grid",
           gridAutoColumns: "1fr",
-          gap: "40px",
-          gridTemplateColumns: "1.42fr 1fr",
+          gap: lgUp ? "40px" : 0,
+          gridTemplateColumns: lgUp ? "1.42fr 1fr" : "1fr",
           gridTemplateRows: "auto",
         }}
       >
-        <Stack>
+        <Stack
+          sx={{
+            // this is necessary as a grid item to avoid overflowing container
+            minWidth: 0,
+          }}
+        >
+          {!lgUp && (
+            <Box>
+              <ReportsBarChart
+                dataset={filteredData}
+                timeRange={filters.timeRange}
+              />
+            </Box>
+          )}
           <Box
             sx={{
               display: "flex",
@@ -457,12 +466,14 @@ export default function Candidates() {
             {/* {sortedCandidates.length ? sortedCandidateCards : candidateCards} */}
           </Stack>
         </Stack>
-        <Box>
-          <ReportsBarChart
-            dataset={filteredData}
-            timeRange={filters.timeRange}
-          />
-        </Box>
+        {lgUp && (
+          <Box>
+            <ReportsBarChart
+              dataset={filteredData}
+              timeRange={filters.timeRange}
+            />
+          </Box>
+        )}
       </Box>
     </Container>
   );

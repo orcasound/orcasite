@@ -114,7 +114,7 @@ export default function ReportsBarChart({
               chartItem["whale (ai)"] += 1;
               break;
             default:
-              null;
+              break;
           }
         }
       }
@@ -153,11 +153,16 @@ export default function ReportsBarChart({
 
   const handleLegend = (e: React.MouseEvent) => {
     const button = e.target as HTMLButtonElement;
-    button.name === "category" ? setLegend(true) : setLegend(false);
+    setLegend(button.name === "category"); // returns true/false
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        width: "100%",
+        overflowX: "auto",
+      }}
+    >
       <BarChart
         dataset={chartData}
         xAxis={[{ scaleType: "band", dataKey: "label", label: "Hour" }]}
@@ -189,6 +194,6 @@ export default function ReportsBarChart({
           label="By hydrophone"
         />
       </Box>
-    </>
+    </Box>
   );
 }
