@@ -6,6 +6,7 @@ import {
   KeyboardDoubleArrowRight,
   Notifications,
   Start,
+  Tag,
   ZoomIn,
   ZoomOut,
 } from "@mui/icons-material";
@@ -66,6 +67,7 @@ import LoadingSpinner from "../LoadingSpinner";
 import { BoutDetectionsTable } from "./BoutDetectionsTable";
 import { BoutNotifications } from "./BoutNotifications";
 import BoutScrubBar from "./BoutScrubBar";
+import { BoutTags } from "./BoutTags";
 import CategoryIcon from "./CategoryIcon";
 
 export default function BoutPage({
@@ -115,6 +117,9 @@ export default function BoutPage({
     };
   }, []);
 
+  const [boutName, setBoutName] = useState<string | undefined>(
+    bout?.name ?? feed.name,
+  );
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
     bout?.startTime && new Date(bout.startTime),
   );
@@ -669,7 +674,7 @@ export default function BoutPage({
                           },
                         }}
                       >
-                        <CategoryIcon audioCategory={category} />
+                        <CategoryIcon audioCategory={category} size={15} />
                       </ListItemIcon>
                       {_.startCase(_.toLower(category))}
                     </MenuItem>
@@ -703,6 +708,7 @@ export default function BoutPage({
             onChange={(_event, value) => setCurrentTab(value)}
           >
             <Tab icon={<GraphicEq />} label="Detections" />
+            {bout && <Tab icon={<Tag />} label="Tags" />}
             {currentUser?.moderator && bout && (
               <Tab icon={<Notifications />} label="Notifications" />
             )}
@@ -716,8 +722,13 @@ export default function BoutPage({
               spectrogramControls={spectrogramControls}
             />
           </TabPanel>
-          {bout && currentUser?.moderator && (
+          {bout && (
             <TabPanel value={currentTab} index={1}>
+              <BoutTags bout={bout} />
+            </TabPanel>
+          )}
+          {bout && currentUser?.moderator && (
+            <TabPanel value={currentTab} index={2}>
               <BoutNotifications bout={bout} />
             </TabPanel>
           )}

@@ -1,0 +1,8 @@
+query boutTags($boutId: String!) {
+  boutTags(boutId: $boutId) {
+    count
+    results {
+      ...ItemTagParts
+    }
+  }
+}

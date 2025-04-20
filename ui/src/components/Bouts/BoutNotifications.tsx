@@ -13,7 +13,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TextareaAutosize,
+  TextField,
   Typography,
 } from "@mui/material";
 import _ from "lodash";
@@ -194,12 +194,12 @@ function NotificationModal({
         <DialogContent
           sx={{ minWidth: (theme) => theme.breakpoints.values.sm }}
         >
-          <TextareaAutosize
-            style={{ width: "100%", padding: "15px" }}
+          <TextField
+            fullWidth
+            multiline
             autoFocus
             placeholder="Message to subscribers (e.g. SRKWs heard in ...)"
             onChange={handleChange}
-            minRows={3}
           />
         </DialogContent>
         <DialogActions>

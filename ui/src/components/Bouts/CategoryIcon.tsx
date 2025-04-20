@@ -28,12 +28,14 @@ export default function CategoryIcon({
   }[audioCategory];
 
   return (
-    iconConfig && (
-      <Image
-        src={iconConfig.src}
-        {...(size ? { width: size, height: size } : { fill: true })}
-        alt={iconConfig.alt}
-      />
-    )
+    <>
+      {iconConfig && (
+        <Image
+          src={iconConfig.src}
+          {...(size ? { width: size, height: size } : { fill: true })}
+          alt={iconConfig.alt}
+        />
+      )}
+    </>
   );
 }

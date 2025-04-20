@@ -135,6 +135,7 @@ defmodule Orcasite.Radio.ItemTag do
 
     mutations do
       create :create_bout_tag, :bout_tag
+      destroy :delete_bout_tag, :destroy
     end
   end
 end

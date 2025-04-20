@@ -112,7 +112,8 @@ defmodule Orcasite.Mixfile do
       {:recon, "~> 2.5"},
       {:ecto_psql_extras, "~> 0.6"},
       {:recase, "~> 0.5"},
-      {:ash_slug, "~> 0.2.1"}
+      {:ash_slug, "~> 0.2.1"},
+      {:sourceror, "~> 1.7", only: [:dev, :test]}
     ]
   end
 

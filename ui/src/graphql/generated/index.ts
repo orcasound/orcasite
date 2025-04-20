@@ -649,6 +649,15 @@ export type CreateTagResult = {
   result?: Maybe<Tag>;
 };
 
+/** The result of the :delete_bout_tag mutation */
+export type DeleteBoutTagResult = {
+  __typename?: "DeleteBoutTagResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The record that was successfully deleted */
+  result?: Maybe<ItemTag>;
+};
+
 export type Detection = {
   __typename?: "Detection";
   candidate?: Maybe<Candidate>;
@@ -2006,6 +2015,7 @@ export type RootMutationType = {
   createBout: CreateBoutResult;
   createBoutTag: CreateBoutTagResult;
   createTag: CreateTagResult;
+  deleteBoutTag: DeleteBoutTagResult;
   generateFeedSpectrograms: GenerateFeedSpectrogramsResult;
   /** Create a notification for confirmed candidate (i.e. detection group) */
   notifyConfirmedCandidate: NotifyConfirmedCandidateResult;
@@ -2041,6 +2051,10 @@ export type RootMutationTypeCreateBoutTagArgs = {
 
 export type RootMutationTypeCreateTagArgs = {
   input: CreateTagInput;
+};
+
+export type RootMutationTypeDeleteBoutTagArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 export type RootMutationTypeGenerateFeedSpectrogramsArgs = {
@@ -2752,6 +2766,37 @@ export type CreateBoutTagMutation = {
   };
 };
 
+export type DeleteBoutTagMutationVariables = Exact<{
+  boutTagId: Scalars["ID"]["input"];
+}>;
+
+export type DeleteBoutTagMutation = {
+  __typename?: "RootMutationType";
+  deleteBoutTag: {
+    __typename?: "DeleteBoutTagResult";
+    result?: {
+      __typename?: "ItemTag";
+      id: string;
+      user?: { __typename?: "User"; username?: string | null } | null;
+      tag?: {
+        __typename?: "Tag";
+        id: string;
+        name: string;
+        slug: string;
+        description?: string | null;
+      } | null;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
 export type GenerateFeedSpectrogramsMutationVariables = Exact<{
   feedId: Scalars["ID"]["input"];
   startTime: Scalars["DateTime"]["input"];
@@ -3112,6 +3157,7 @@ export type GetCurrentUserQuery = {
     id: string;
     firstName?: string | null;
     lastName?: string | null;
+    username?: string | null;
     email?: string | null;
     admin?: boolean | null;
     moderator?: boolean | null;
@@ -3177,6 +3223,30 @@ export type AudioImagesQuery = {
       feedId: string;
       imageSize?: number | null;
       imageType?: ImageType | null;
+    }> | null;
+  } | null;
+};
+
+export type BoutTagsQueryVariables = Exact<{
+  boutId: Scalars["String"]["input"];
+}>;
+
+export type BoutTagsQuery = {
+  __typename?: "RootQueryType";
+  boutTags?: {
+    __typename?: "PageOfItemTag";
+    count?: number | null;
+    results?: Array<{
+      __typename?: "ItemTag";
+      id: string;
+      user?: { __typename?: "User"; username?: string | null } | null;
+      tag?: {
+        __typename?: "Tag";
+        id: string;
+        name: string;
+        slug: string;
+        description?: string | null;
+      } | null;
     }> | null;
   } | null;
 };
@@ -3405,6 +3475,29 @@ export type NotificationsForCandidateQuery = {
     progress?: number | null;
     finished?: boolean | null;
   }>;
+};
+
+export type TagsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  filter?: InputMaybe<TagFilterInput>;
+  sort?: InputMaybe<Array<InputMaybe<TagSortInput>> | InputMaybe<TagSortInput>>;
+}>;
+
+export type TagsQuery = {
+  __typename?: "RootQueryType";
+  tags?: {
+    __typename?: "PageOfTag";
+    count?: number | null;
+    hasNextPage: boolean;
+    results?: Array<{
+      __typename?: "Tag";
+      id: string;
+      name: string;
+      description?: string | null;
+      slug: string;
+    }> | null;
+  } | null;
 };
 
 export type SearchTagsQueryVariables = Exact<{
@@ -3819,6 +3912,56 @@ useCreateBoutTagMutation.fetcher = (
 ) =>
   fetcher<CreateBoutTagMutation, CreateBoutTagMutationVariables>(
     CreateBoutTagDocument,
+    variables,
+    options,
+  );
+
+export const DeleteBoutTagDocument = `
+    mutation deleteBoutTag($boutTagId: ID!) {
+  deleteBoutTag(id: $boutTagId) {
+    result {
+      ...ItemTagParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
+    ${ItemTagPartsFragmentDoc}
+${ErrorPartsFragmentDoc}`;
+
+export const useDeleteBoutTagMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    DeleteBoutTagMutation,
+    TError,
+    DeleteBoutTagMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    DeleteBoutTagMutation,
+    TError,
+    DeleteBoutTagMutationVariables,
+    TContext
+  >({
+    mutationKey: ["deleteBoutTag"],
+    mutationFn: (variables?: DeleteBoutTagMutationVariables) =>
+      fetcher<DeleteBoutTagMutation, DeleteBoutTagMutationVariables>(
+        DeleteBoutTagDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useDeleteBoutTagMutation.getKey = () => ["deleteBoutTag"];
+
+useDeleteBoutTagMutation.fetcher = (
+  variables: DeleteBoutTagMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<DeleteBoutTagMutation, DeleteBoutTagMutationVariables>(
+    DeleteBoutTagDocument,
     variables,
     options,
   );
@@ -4544,6 +4687,7 @@ export const GetCurrentUserDocument = `
     id
     firstName
     lastName
+    username
     email
     admin
     moderator
@@ -4722,6 +4866,50 @@ useAudioImagesQuery.fetcher = (
 ) =>
   fetcher<AudioImagesQuery, AudioImagesQueryVariables>(
     AudioImagesDocument,
+    variables,
+    options,
+  );
+
+export const BoutTagsDocument = `
+    query boutTags($boutId: String!) {
+  boutTags(boutId: $boutId) {
+    count
+    results {
+      ...ItemTagParts
+    }
+  }
+}
+    ${ItemTagPartsFragmentDoc}`;
+
+export const useBoutTagsQuery = <TData = BoutTagsQuery, TError = unknown>(
+  variables: BoutTagsQueryVariables,
+  options?: Omit<UseQueryOptions<BoutTagsQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<BoutTagsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<BoutTagsQuery, TError, TData>({
+    queryKey: ["boutTags", variables],
+    queryFn: fetcher<BoutTagsQuery, BoutTagsQueryVariables>(
+      BoutTagsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useBoutTagsQuery.document = BoutTagsDocument;
+
+useBoutTagsQuery.getKey = (variables: BoutTagsQueryVariables) => [
+  "boutTags",
+  variables,
+];
+
+useBoutTagsQuery.fetcher = (
+  variables: BoutTagsQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<BoutTagsQuery, BoutTagsQueryVariables>(
+    BoutTagsDocument,
     variables,
     options,
   );
@@ -5124,6 +5312,41 @@ useNotificationsForCandidateQuery.fetcher = (
     NotificationsForCandidateQuery,
     NotificationsForCandidateQueryVariables
   >(NotificationsForCandidateDocument, variables, options);
+
+export const TagsDocument = `
+    query tags($limit: Int, $offset: Int, $filter: TagFilterInput, $sort: [TagSortInput]) {
+  tags(limit: $limit, offset: $offset, filter: $filter, sort: $sort) {
+    count
+    hasNextPage
+    results {
+      ...TagParts
+    }
+  }
+}
+    ${TagPartsFragmentDoc}`;
+
+export const useTagsQuery = <TData = TagsQuery, TError = unknown>(
+  variables?: TagsQueryVariables,
+  options?: Omit<UseQueryOptions<TagsQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<TagsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<TagsQuery, TError, TData>({
+    queryKey: variables === undefined ? ["tags"] : ["tags", variables],
+    queryFn: fetcher<TagsQuery, TagsQueryVariables>(TagsDocument, variables),
+    ...options,
+  });
+};
+
+useTagsQuery.document = TagsDocument;
+
+useTagsQuery.getKey = (variables?: TagsQueryVariables) =>
+  variables === undefined ? ["tags"] : ["tags", variables];
+
+useTagsQuery.fetcher = (
+  variables?: TagsQueryVariables,
+  options?: RequestInit["headers"],
+) => fetcher<TagsQuery, TagsQueryVariables>(TagsDocument, variables, options);
 
 export const SearchTagsDocument = `
     query searchTags($query: String!) {
