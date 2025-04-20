@@ -119,6 +119,11 @@ defmodule Orcasite.Accounts.User do
       authorize_if actor_attribute_equals(:admin, true)
       authorize_if actor_attribute_equals(:moderator, true)
       authorize_if AshAuthentication.Checks.AshAuthenticationInteraction
+      authorize_if action(:register_with_password)
+      authorize_if just_created_with_action(:register_with_password)
+      authorize_if action(:sign_in_with_password)
+      authorize_if action(:request_password_reset_with_password)
+      authorize_if action(:password_reset_with_password)
     end
 
     field_policy :username do
