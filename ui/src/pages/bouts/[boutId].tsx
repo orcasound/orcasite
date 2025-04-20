@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 import BoutPage from "@/components/Bouts/BoutPage";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
@@ -10,6 +10,13 @@ import type { NextPageWithLayout } from "@/pages/_app";
 const BoutShowPage: NextPageWithLayout = () => {
   const params = useParams<{ boutId?: string }>();
   const boutId = params?.boutId;
+
+  const searchParams = useSearchParams();
+  const time = searchParams.get("time");
+  let targetTime: Date | undefined;
+  if (typeof time === "string" && !isNaN(new Date(time).getTime())) {
+    targetTime = new Date(time);
+  }
 
   const boutQueryResult = useBoutQuery(
     { id: boutId || "" },
@@ -31,7 +38,12 @@ const BoutShowPage: NextPageWithLayout = () => {
       </Head>
 
       <main>
-        <BoutPage bout={bout} feed={feed} isNew={false} />
+        <BoutPage
+          bout={bout}
+          feed={feed}
+          isNew={false}
+          targetTime={targetTime}
+        />
       </main>
     </div>
   );

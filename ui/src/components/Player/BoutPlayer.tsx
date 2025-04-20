@@ -44,26 +44,22 @@ export function BoutPlayer({
     Number(feedStream.playlistTimestamp),
   );
   const playlistTimestamp = feedStream.playlistTimestamp;
-  const playlistDatetime = useMemo(
+  const [playlistDatetime] = useState(
     () => new Date(Number(playlistTimestamp) * 1000),
-    [playlistTimestamp],
   );
 
   const now = useMemo(() => new Date(), []);
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
-  const targetOffset = useMemo(
-    () => differenceInSeconds(targetTime, playlistDatetime),
-    [targetTime, playlistDatetime],
+  const [targetOffset] = useState(() =>
+    differenceInSeconds(targetTime, playlistDatetime),
   );
   const [playerOffset, setPlayerOffset] = useState<number>(
     targetOffset ?? now.valueOf() / 1000 - Number(playlistTimestamp),
   );
-  const playerDateTime = useMemo(
-    () => playerOffsetToDateTime(playlistDatetime, playerOffset),
-    [playlistDatetime, playerOffset],
+  const [playerDateTime] = useState(() =>
+    playerOffsetToDateTime(playlistDatetime, playerOffset),
   );
-
   const intervalRef = useRef<NodeJS.Timeout>();
   useEffect(() => {
     return () => {
@@ -187,6 +183,20 @@ export function BoutPlayer({
       setPlayerTimeRef,
     ],
   );
+
+  useEffect(() => {
+    // `loadedmetadata` gets called on inital play. If
+    // we've changed the playerOffset and the player hasn't played
+    // yet, update `loadedmetadata` callback with new time
+    playerRef.current?.off("loadedmetadata");
+    playerRef.current?.on("loadedmetadata", () => {
+      playerRef.current?.currentTime(playerOffset);
+    });
+    return () => {
+      playerRef.current?.off("loadedmetadata");
+    };
+  }, [playerOffset, playerRef]);
+
   const handlePlayPauseClick = () => {
     const player = playerRef.current;
 
