@@ -2,7 +2,7 @@ import EarbudsIcon from "@mui/icons-material/Earbuds";
 import PlaceIcon from "@mui/icons-material/Place";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 
-const navigationHalfMap = [
+const navigationList = [
   {
     kind: "subheader",
     title: "Listen Live",
@@ -87,4 +87,4 @@ const navigationHalfMap = [
   },
 ];
 
-export default navigationHalfMap;
+export default navigationList;

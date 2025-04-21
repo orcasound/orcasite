@@ -246,7 +246,7 @@ export default function Candidates() {
   //   }));
   // };
 
-  const [playNext, setPlayNext] = useState(true);
+  const [playNext, _setPlayNext] = useState(true);
 
   const players = useRef({});
 
@@ -282,28 +282,6 @@ export default function Candidates() {
     });
   }, [combined, filters, searchQuery]);
 
-  const handledGetTime = (date?: Date) => {
-    return date != null ? new Date(date).getTime() : 0;
-  };
-
-  const sortDescending = (array: Candidate[]) => {
-    const sort = array.sort(
-      (a, b) =>
-        handledGetTime(b.array[0].timestamp) -
-        handledGetTime(a.array[0].timestamp),
-    );
-    return sort;
-  };
-
-  const sortAscending = (array: Candidate[]) => {
-    const sort = array.sort(
-      (a, b) =>
-        handledGetTime(a.array[0].timestamp) -
-        handledGetTime(b.array[0].timestamp),
-    );
-    return sort;
-  };
-
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const candidates = useMemo(() => {
@@ -313,6 +291,27 @@ export default function Candidates() {
   const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
 
   useEffect(() => {
+    const handledGetTime = (date?: Date) => {
+      return date != null ? new Date(date).getTime() : 0;
+    };
+
+    const sortDescending = (array: Candidate[]) => {
+      const sort = array.sort(
+        (a, b) =>
+          handledGetTime(b.array[0].timestamp) -
+          handledGetTime(a.array[0].timestamp),
+      );
+      return sort;
+    };
+
+    const sortAscending = (array: Candidate[]) => {
+      const sort = array.sort(
+        (a, b) =>
+          handledGetTime(a.array[0].timestamp) -
+          handledGetTime(b.array[0].timestamp),
+      );
+      return sort;
+    };
     const sorted =
       sortOrder === "desc"
         ? sortDescending([...candidates])

@@ -6,10 +6,9 @@ import { useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { useData } from "@/context/DataContext";
+// import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
 import { getHlsURI } from "@/hooks/useTimestampFetcher";
-import { Candidate } from "@/pages/moderator/candidates";
 
 import { type PlayerStatus } from "./Player";
 import PlayPauseButton from "./PlayPauseButton";
@@ -32,7 +31,6 @@ export function CandidateCardPlayer({
   onPlayerInit,
   onPlay,
   onPlayerEnd,
-  candidate,
 }: {
   feed: Pick<Feed, "nodeName" | "bucket">;
   marks?: { label: string; value: number }[];
@@ -46,14 +44,13 @@ export function CandidateCardPlayer({
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
   onPlayerEnd?: () => void;
-  candidate?: Candidate;
 }) {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
-  const { setNowPlaying } = useData();
+  // const { setNowPlaying } = useData();
 
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
@@ -98,7 +95,7 @@ export function CandidateCardPlayer({
           player.currentTime(startOffset);
         }
         if (onPlay) onPlay();
-        if (setNowPlaying && candidate) setNowPlaying(candidate);
+        // if (setNowPlaying && candidate) setNowPlaying(candidate);
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
@@ -122,7 +119,7 @@ export function CandidateCardPlayer({
         player.currentTime(startOffset);
       });
     },
-    [startOffset, endOffset],
+    [startOffset, endOffset, onPlay, onPlayerEnd, onPlayerInit],
   );
 
   const handlePlayPauseClick = () => {

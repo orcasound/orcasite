@@ -28,7 +28,7 @@ import { AIData } from "@/types/DataTypes";
 import { analytics } from "@/utils/analytics";
 
 import { TopNav } from "./Devias-dashboard/vertical-layout/top-nav";
-import navigationHalfMap from "./navigationHalfMap";
+import navigationList from "./navigationList";
 
 // const drawerWidth = 240;
 const drawerWidth = "280px";
@@ -194,8 +194,8 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
     request(endpoint, detectionsGQL);
   const {
     data: liveDetectionData,
-    isLoading: isLoadingLive,
-    error: errorLive,
+    // isLoading: isLoadingLive,
+    // error: errorLive,
   } = useQuery({
     queryKey: ["detections-live"],
     queryFn: fetchLiveDetections,
@@ -208,8 +208,8 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
     request(endpoint, feedsGQL);
   const {
     data: liveFeedsData,
-    isLoading: isLoadingFeedsLive,
-    error: errorFeedsLive,
+    // isLoading: isLoadingFeedsLive,
+    // error: errorFeedsLive,
   } = useQuery({
     queryKey: ["feeds-live"],
     queryFn: fetchLiveFeeds,
@@ -223,9 +223,12 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
   const humanDetections = useLiveData
     ? (liveDetectionData?.detections?.results ?? [])
     : ((detectionQueryResult.data?.detections?.results ?? []) as Detection[]);
-  const feedList = useLiveData
-    ? (liveFeedsData?.feeds ?? [])
-    : ((feedsData ?? []) as Feed[]);
+
+  const feedList = useMemo(() => {
+    return useLiveData
+      ? (liveFeedsData?.feeds ?? [])
+      : ((feedsData ?? []) as Feed[]);
+  }, [useLiveData, liveFeedsData, feedsData]);
 
   // get data on AI detections
   const fetchOrcahelloData = async () => {
@@ -262,17 +265,6 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
     newCategory: el.category!,
     timestampString: el.timestamp.toString(),
   }));
-
-  console.log(`feedsData: ` + JSON.stringify(feedsData, null, 2));
-  console.log(`liveFeedsData: ` + JSON.stringify(liveFeedsData, null, 2));
-  console.log(
-    `datasetHuman[0] with useLiveData: ${useLiveData} ` +
-      JSON.stringify(humanDetections[0], null, 2),
-  );
-  console.log(
-    `datasetHuman[0] with useLiveData: ${useLiveData} ` +
-      JSON.stringify(datasetHuman[0], null, 2),
-  );
 
   // combine global data into one object, to be passed into Data Provider for all child pages
   const dataset = useMemo(() => {
@@ -423,7 +415,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
 
   const DrawerList = (
     <Box sx={{ overflow: "auto", marginTop: "5px" }}>
-      {navigationHalfMap.map((item, index) => navDiv(item, index))}
+      {navigationList.map((item, index) => navDiv(item, index))}
     </Box>
   );
 

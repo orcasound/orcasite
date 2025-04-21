@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
-import { MutableRefObject } from "react";
+import { MutableRefObject, useCallback } from "react";
 
 import { Feed } from "@/graphql/generated";
 import { type Candidate } from "@/pages/moderator/candidates";
@@ -86,6 +86,25 @@ export default function CandidateCard(props: {
   const startOffset = Math.max(0, minOffset - offsetPadding);
   const endOffset = maxOffset + offsetPadding;
 
+  const onPlay = useCallback(() => {
+    Object.entries(props.players.current).forEach(([key, player]) => {
+      if (+key !== props.index) {
+        player.pause();
+      }
+    });
+  }, [props.index, props.players]);
+
+  const onPlayerEnd = useCallback(() => {
+    if (props.playNext) props.players.current[props.index + 1]?.play();
+  }, [props.playNext, props.index, props.players]);
+
+  const onPlayerInit = useCallback(
+    (player: VideoJSPlayer) => {
+      props.players.current[props.index] = player;
+    },
+    [props.index, props.players],
+  );
+
   return (
     <Card
       key={firstTimestampString}
@@ -108,49 +127,23 @@ export default function CandidateCard(props: {
       >
         {feed && candidate.array[0].playlistTimestamp ? (
           <CandidateCardPlayer
-            candidate={candidate}
             feed={feed}
             timestamp={startPlaylistTimestamp}
             startOffset={startOffset}
             endOffset={endOffset}
             // index={props.index}
-            onPlayerInit={(player) => {
-              props.players.current[props.index] = player;
-            }}
-            onPlay={() => {
-              Object.entries(props.players.current).forEach(([key, player]) => {
-                if (+key !== props.index) {
-                  player.pause();
-                }
-              });
-            }}
-            onPlayerEnd={() => {
-              if (props.playNext)
-                props.players.current[props.index + 1]?.play();
-            }}
+            onPlayerInit={onPlayerInit}
+            onPlay={onPlay}
+            onPlayerEnd={onPlayerEnd}
           />
         ) : candidate.array[0].audioUri ? (
           <>
             <CandidateCardAIPlayer
-              candidate={candidate}
               audioUri={candidate.array[0].audioUri}
               // index={props.index}
-              onPlayerInit={(player) => {
-                props.players.current[props.index] = player;
-              }}
-              onPlay={() => {
-                Object.entries(props.players.current).forEach(
-                  ([key, player]) => {
-                    if (+key !== props.index) {
-                      player.pause();
-                    }
-                  },
-                );
-              }}
-              onPlayerEnd={() => {
-                if (props.playNext)
-                  props.players.current[props.index + 1]?.play();
-              }}
+              onPlayerInit={onPlayerInit}
+              onPlay={onPlay}
+              onPlayerEnd={onPlayerEnd}
             />
           </>
         ) : (
@@ -201,27 +194,28 @@ export default function CandidateCard(props: {
                 )
                 .filter((candidate) => candidate !== null)
                 .join(" • ")}
-              <br />
-              {tagArray && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: "10px",
-                    padding: "1rem 0",
-                  }}
-                >
-                  {Object.entries(tagObject).map(([tag]) => (
-                    <Chip
-                      label={`${tag}`}
-                      key={tag}
-                      variant="filled"
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    />
-                  ))}
-                </Box>
-              )}
+            </Typography>
+            {tagArray && (
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "10px",
+                  padding: "1rem 0",
+                }}
+              >
+                {Object.entries(tagObject).map(([tag]) => (
+                  <Chip
+                    label={`${tag}`}
+                    key={tag}
+                    variant="filled"
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  />
+                ))}
+              </Box>
+            )}
+            <Typography>
               {candidate.descriptions ? (
                 <span>{"Descriptions: " + candidate.descriptions}</span>
               ) : (

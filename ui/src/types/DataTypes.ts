@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Detection, Feed, Scalars } from "@/graphql/generated";
 import { Candidate } from "@/pages/moderator/candidates";
 
-export interface HumanData extends Omit<Detection, "candidate"> {
+interface HumanData extends Omit<Detection, "candidate"> {
   type: string;
   hydrophone: string;
   comments: string | null | undefined;
@@ -11,7 +11,7 @@ export interface HumanData extends Omit<Detection, "candidate"> {
   timestampString: string;
 }
 
-export interface AIDetection {
+interface AIDetection {
   id: string;
   audioUri: string;
   spectrogramUri: string;
@@ -43,10 +43,10 @@ export interface Dataset {
   setNowPlaying?: Dispatch<SetStateAction<Candidate>>;
 }
 
-export interface Location {
+interface Location {
   name: string;
 }
-export interface Annotation {
+interface Annotation {
   id: number;
   startTime: number;
   endTime: number;

@@ -21,7 +21,6 @@ import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
 import { CandidateCardAIPlayer } from "@/components/Player/CandidateCardAIPlayer";
 import { CandidateCardPlayer } from "@/components/Player/CandidateCardPlayer";
 import { useData } from "@/context/DataContext";
-import { useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { CombinedData } from "@/types/DataTypes";
 
@@ -40,9 +39,8 @@ const CandidatePage: NextPageWithLayout = () => {
     isSuccess,
   }: { combined: CombinedData[] | undefined; isSuccess: boolean } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
 
-  // get hydrophone feed list
-  const feedsQueryResult = useFeedsQuery();
-  const feeds = feedsQueryResult.data?.feeds ?? [];
+  // // get hydrophone feed list
+  const { feeds } = useData();
 
   type DetectionStats = {
     combined: CombinedData[];
@@ -73,11 +71,10 @@ const CandidatePage: NextPageWithLayout = () => {
       ai: arr.filter((d) => d.newCategory === "WHALE (AI)"),
     });
     console.log("combined length is " + combined.length);
-  }, [combined]);
+  }, [combined, startTime, endTime]);
 
   const userName = "UserProfile123";
   const aiName = "Orcahello AI";
-  const communityName = "Community";
 
   const feed = feeds.filter((f) => f.id === detections?.human[0]?.feedId)[0];
   const startTimestamp = detections.human.length

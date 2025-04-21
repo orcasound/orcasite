@@ -26,7 +26,7 @@ const feedFromSlug = (feedSlug: string) => ({
   latLng: { lat: 48.6, lng: -122.3 },
 });
 
-export default function MapPage({ children }: { children: ReactNode }) {
+export default function MapPage({ _children }: { _children: ReactNode }) {
   const router = useRouter();
   const slug = router.query.feed as string;
 

@@ -4,17 +4,17 @@ import { Fragment } from "react";
 
 import { TICKER_HEIGHT } from "./SpectrogramTimeline";
 
-type Scaling = "linear" | "logarithmic";
+// type Scaling = "linear" | "logarithmic";
 
 const MAX_TICK_WIDTH = 0.3;
 
 export function FrequencyAxisLayer({
-  scaling,
+  // scaling,
   minFrequency,
   maxFrequency,
   zIndex,
 }: {
-  scaling: Scaling;
+  // scaling: Scaling;
   minFrequency: number;
   maxFrequency: number;
   zIndex: number;

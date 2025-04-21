@@ -9,12 +9,12 @@ import { AccountPopover } from "./account-popover";
 
 export const AccountButton: FC = () => {
   // const user = useMockedUser();
-  const user = {
-    id: "5e86809283e28b96d2d38537",
-    avatar: "/assets/avatars/avatar-anika-visser.png",
-    name: "Anika Visser",
-    email: "anika.visser@devias.io",
-  };
+  // const user = {
+  //   id: "5e86809283e28b96d2d38537",
+  //   avatar: "/assets/avatars/avatar-anika-visser.png",
+  //   name: "Anika Visser",
+  //   email: "anika.visser@devias.io",
+  // };
   const anchorRef = useRef<HTMLButtonElement | null>(null);
   const [openPopover, setOpenPopover] = useState<boolean>(false);
 
@@ -48,7 +48,7 @@ export const AccountButton: FC = () => {
             height: 32,
             width: 32,
           }}
-          src={user.avatar}
+          // src={user.avatar}
         >
           <SvgIcon>
             <FaceIcon />

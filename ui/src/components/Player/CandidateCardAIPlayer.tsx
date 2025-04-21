@@ -6,9 +6,6 @@ import { useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import { useData } from "@/context/DataContext";
-import { Candidate } from "@/pages/moderator/candidates";
-
 import { type PlayerStatus } from "./Player";
 import PlayPauseButton from "./PlayPauseButton";
 import { type VideoJSPlayer } from "./VideoJS";
@@ -31,7 +28,6 @@ export function CandidateCardAIPlayer({
   onPlayerInit,
   onPlay,
   onPlayerEnd,
-  candidate,
 }: {
   // feed: Pick<Feed, "nodeName" | "bucket">;
   marks?: { label: string; value: number }[];
@@ -46,7 +42,6 @@ export function CandidateCardAIPlayer({
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
   onPlayerEnd?: () => void;
-  candidate?: Candidate;
 }) {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
@@ -56,7 +51,6 @@ export function CandidateCardAIPlayer({
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
-  const { setNowPlaying } = useData();
 
   // special to the AI player
   const [endOffset, setEndOffset] = useState(58);
@@ -94,48 +88,49 @@ export function CandidateCardAIPlayer({
     [audioUri],
   );
 
-  const handleReady = useCallback((player: VideoJSPlayer) => {
-    playerRef.current = player;
+  const handleReady = useCallback(
+    (player: VideoJSPlayer) => {
+      playerRef.current = player;
 
-    if (onPlayerInit) onPlayerInit(player);
-    player.on("playing", () => {
-      setPlayerStatus("playing");
-      // const currentTime = player.currentTime() ?? 0;
-      // if (currentTime < startOffset || currentTime > endOffset) {
-      //   player.currentTime(startOffset);
-      //   setPlayerTime(endOffset);
-      // }
-      // (changeListState && index) && changeListState(index, "playing");
-      if (onPlay) onPlay();
-      if (candidate) console.log("aiplayer");
-      if (setNowPlaying && candidate) setNowPlaying(candidate);
-    });
-    player.on("pause", () => {
-      setPlayerStatus("paused");
-      // (changeListState && index) && changeListState(index, "paused");
-    });
-    player.on("waiting", () => setPlayerStatus("loading"));
-    player.on("error", () => setPlayerStatus("error"));
+      if (onPlayerInit) onPlayerInit(player);
+      player.on("playing", () => {
+        setPlayerStatus("playing");
+        // const currentTime = player.currentTime() ?? 0;
+        // if (currentTime < startOffset || currentTime > endOffset) {
+        //   player.currentTime(startOffset);
+        //   setPlayerTime(endOffset);
+        // }
+        // (changeListState && index) && changeListState(index, "playing");
+        if (onPlay) onPlay();
+      });
+      player.on("pause", () => {
+        setPlayerStatus("paused");
+        // (changeListState && index) && changeListState(index, "paused");
+      });
+      player.on("waiting", () => setPlayerStatus("loading"));
+      player.on("error", () => setPlayerStatus("error"));
 
-    player.on("timeupdate", () => {
-      const currentTime = player.currentTime() ?? 0;
-      if (currentTime >= endOffset) {
+      player.on("timeupdate", () => {
+        const currentTime = player.currentTime() ?? 0;
+        if (currentTime >= endOffset) {
+          player.currentTime(startOffset);
+          setPlayerTime(startOffset);
+          player.pause();
+          if (onPlayerEnd) onPlayerEnd();
+        } else {
+          setPlayerTime(currentTime);
+        }
+      });
+      player.on("loadedmetadata", () => {
+        // special to the AI player
+        const duration = player.duration() || 0;
+        setEndOffset(duration);
+        // On initial load, set player time to startOffset
         player.currentTime(startOffset);
-        setPlayerTime(startOffset);
-        player.pause();
-        if (onPlayerEnd) onPlayerEnd();
-      } else {
-        setPlayerTime(currentTime);
-      }
-    });
-    player.on("loadedmetadata", () => {
-      // special to the AI player
-      const duration = player.duration() || 0;
-      setEndOffset(duration);
-      // On initial load, set player time to startOffset
-      player.currentTime(startOffset);
-    });
-  }, []);
+      });
+    },
+    [startOffset, endOffset, onPlay, onPlayerEnd, onPlayerInit],
+  );
 
   const handlePlayPauseClick = () => {
     const player = playerRef.current;
