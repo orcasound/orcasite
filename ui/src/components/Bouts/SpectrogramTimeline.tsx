@@ -410,7 +410,7 @@ export default function SpectrogramTimeline({
         <FrequencyAxisLayer
           minFrequency={1}
           maxFrequency={48000}
-          scaling="logarithmic"
+          // scaling="logarithmic"
           zIndex={3}
         />
 
