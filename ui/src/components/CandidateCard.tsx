@@ -151,6 +151,7 @@ export default function CandidateCard(props: {
         )}
       </Box>
       <Link
+        // href needs a slash before so it isn't relative to folder path
         href={
           firstTimestamp === lastTimestamp
             ? `/moderator/${firstTimestampString}`
