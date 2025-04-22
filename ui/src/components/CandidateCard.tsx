@@ -153,8 +153,8 @@ export default function CandidateCard(props: {
       <Link
         href={
           firstTimestamp === lastTimestamp
-            ? `${firstTimestampString}`
-            : `${firstTimestampString}_${lastTimestampString}`
+            ? `/moderator/${firstTimestampString}`
+            : `/moderator/${firstTimestampString}_${lastTimestampString}`
         }
         sx={{ width: "100%", color: "inherit", textDecoration: "inherit" }}
       >
