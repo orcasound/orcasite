@@ -328,7 +328,11 @@ export default function Candidates() {
     (candidate: Candidate, index: number) => (
       <CandidateCard
         candidate={candidate}
-        key={index}
+        key={
+          candidate.array[0].timestampString +
+          "-" +
+          candidate.array[candidate.array.length - 1].timestampString
+        }
         index={index}
         // changeListState={changeListState}
         // command={playing.index === index ? "play" : "pause"}
