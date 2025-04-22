@@ -92,6 +92,10 @@ const categorySelect = [
     label: "Whale (AI)",
     value: "whale (ai)",
   },
+  {
+    label: "Whale + Whale (AI)",
+    value: "whale + whale (ai)",
+  },
 ];
 
 export interface Candidate {
@@ -267,7 +271,9 @@ export default function Candidates() {
         (filters.hydrophone === "All hydrophones" ||
           el.hydrophone === filters.hydrophone) &&
         (filters.category === "All categories" ||
-          el.newCategory.toLowerCase() === filters.category) &&
+          el.newCategory.toLowerCase() === filters.category ||
+          (filters.category === "whale + whale (ai)" &&
+            ["whale", "whale (ai)"].includes(el.newCategory.toLowerCase()))) &&
         (filters.timeRange === allTime ||
           filters.timeRange === customRange ||
           Date.parse(el.timestampString) >= min) &&
