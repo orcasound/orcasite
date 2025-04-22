@@ -290,6 +290,11 @@ export default function Candidates() {
 
   const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
 
+  // // clear players list whenever the candidates list changes
+  useEffect(() => {
+    players.current = {};
+  }, [sortedCandidates, isSuccess]);
+
   useEffect(() => {
     const handledGetTime = (date?: Date) => {
       return date != null ? new Date(date).getTime() : 0;
@@ -319,7 +324,6 @@ export default function Candidates() {
     setSortedCandidates(sorted);
   }, [candidates, sortOrder, isSuccess]);
 
-  // render these first because it seems to take a while for candidates to populate from state, could just be the dev environment
   const candidateCards = sortedCandidates.map(
     (candidate: Candidate, index: number) => (
       <CandidateCard
