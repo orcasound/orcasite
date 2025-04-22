@@ -1,5 +1,0 @@
-# ignore local vscode configs
-.vscode/*
-# but allow files with default or shared to be included as example setups
-!.vscode/*.default*
-!.vscode/*.shared*
