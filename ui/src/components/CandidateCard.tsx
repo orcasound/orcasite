@@ -110,7 +110,7 @@ export default function CandidateCard(props: {
       key={firstTimestampString}
       sx={{
         display: "flex",
-        flexFlow: "row",
+        flexFlow: lgUp ? "row" : "column-reverse",
         width: "100%",
         maxWidth: "100%",
         overflow: "hidden",
