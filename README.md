@@ -2,12 +2,6 @@
 
 I am developing a new dashboard for the Orcasound project that enables public users to browse and listen to live-updated field recordings of orcas from the Salish Sea.
 
-Test change to README with no .gitignore
-
-Test change to README with .gitignore
-
-Test change to README with .gitignore and cached README removed
-
 The dashboard is available for demo and testing at [https://orcasound-dashboard.vercel.app/moderator](https://orcasound-dashboard.vercel.app/moderator)
 
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Flive.orcasound.net)](https://live.orcasound.net)
