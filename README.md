@@ -18,7 +18,8 @@ Before -- the existing app looks like this. On the left is a list of hydrophone 
 After -- in my redesign, I focused on resolving the following user pain points:
 * Difficult to navigate from the home screen to the Reports page.
 * No filter/search functions.
-* The way it groups reports into "candidates" creates disjointed segments of audio.
+* Limited mobile layouts.
+* Unable to play recent audio reports as a continuous playlist.
 * Doesn't pull relevant data from other sources.
 Users need to quickly see where periods of activity are, so they can find and hear whale sounds. 
 
