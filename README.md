@@ -1,15 +1,27 @@
-# Orcasound Candidates Dashboard
+# Orcasound Dashboard Prototype
 
-I am developing a new dashboard for the Orcasound project that enables public users to browse and listen to live-updated field recordings of orcas from the Salish Sea.
+This is a UX and engineering contribution to Orcasound, an open-source platform that streams real-time underwater audio from hydrophones in the Salish Sea to detect and protect orcas.
 
-The dashboard is available for demo and testing at [https://orcasound-dashboard.vercel.app/moderator](https://orcasound-dashboard.vercel.app/moderator)
+I’ve been volunteering with the Orcasound team since 2023, focused on improving the experience for listeners, scientists, and volunteers who report orca detections. This prototype reimagines the reporting interface and proposes a scalable, data-rich dashboard for reviewing past detections, integrating AI models, and surfacing patterns that inform conservation.
 
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Flive.orcasound.net)](https://live.orcasound.net)
-[![License](https://img.shields.io/github/license/orcasound/orcasite)](https://github.com/orcasound/orcasite/blob/master/LICENSE)
+**Live prototype:** [https://orcasound-dashboard.vercel.app/moderator](https://orcasound-dashboard.vercel.app/moderator)
 
-[![Zulip](https://img.shields.io/badge/zulip-join_chat-blue.svg)](https://orcasound.zulipchat.com/#narrow/channel/437031-orcasite)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)](https://github.com/orcasound/orcasite/blob/master/CONTRIBUTING.md)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/orcasound/orcasite/badge)](https://scorecard.dev/viewer/?uri=github.com/orcasound/orcasite)
+**Tech stack:** Next.js, React, Typescript, Material UI 
 
-This repo specifies the web backend and frontend for the [Orcasound app](http://live.orcasound.net) that plays a live audio stream through the user's browser of choice. The backend is an [Elixir](https://elixir-lang.org/) app using the [Phoenix framework](https://phoenixframework.org/). The frontend is built in [Next.js](https://nextjs.org/).
+## Designs in progress
 
+Before -- the existing app looks like this. On the left is a list of hydrophone locations. Users can stream the audio live, and submit a report when they hear an interesting sound such as a whale, ship, or other. On the right is a list of user-submitted reports.
+
+![Before screens](https://github.com/user-attachments/assets/86dc0f36-38c0-4625-85c7-efa8a25c39ad)
+
+
+After -- in my redesign, I focused on resolving the following user pain points:
+* Difficult to navigate from the home screen to the Reports page.
+* No filter/search functions.
+* The way it groups reports into "candidates" creates disjointed segments of audio.
+* Doesn't pull relevant data from other sources.
+Users need to quickly see where periods of activity are, so they can find and hear whale sounds. 
+
+Redesigns
+
+![After screens](https://github.com/user-attachments/assets/df3c6e68-2f46-46ec-b443-25d82bf5e606)
