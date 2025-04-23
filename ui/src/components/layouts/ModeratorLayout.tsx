@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 import Image from "next/image";
 import * as React from "react";
-import { ReactElement, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 
 import Link from "@/components/Link";
 import { DataProvider } from "@/context/DataContext";
@@ -245,7 +245,38 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
     queryKey: ["ai-detections"],
     queryFn: fetchOrcahelloData,
   });
-  const aiDetections = data;
+
+  // // LocalStorage key name
+  const AI_DETECTIONS_CACHE_KEY = "orcahello-ai-detections";
+
+  const [cachedAIDetections, setCachedAIDetections] = useState<AIData[] | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem(AI_DETECTIONS_CACHE_KEY);
+      if (raw) {
+        try {
+          setCachedAIDetections(JSON.parse(raw));
+        } catch (e) {
+          console.log("Failed to parse cached AI detections", e);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      try {
+        localStorage.setItem(AI_DETECTIONS_CACHE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.log("Failed to save AI detections to localStorage", e);
+      }
+    }
+  }, [isSuccess, data]);
+
+  const aiDetections = data ?? cachedAIDetections;
 
   // deduplicate data on human detections
   const dedupeHuman = humanDetections.filter(

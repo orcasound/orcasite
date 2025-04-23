@@ -226,9 +226,9 @@ export function CandidateCardAIPlayer({
             valueLabelDisplay="auto"
             valueLabelFormat={(v) => `${v + startOffset.toFixed(2)} s`}
             step={0.1}
-            max={endOffset}
+            max={endOffset - startOffset}
             // max={sliderMax}
-            value={playerTime}
+            value={playerTime - startOffset}
             // value={sliderValue}
             marks={marks}
             onChange={handleSliderChange}

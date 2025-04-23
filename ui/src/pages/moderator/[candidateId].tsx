@@ -1,16 +1,14 @@
-import {
-  AccountCircle,
-  Edit,
-  ThumbDownOffAlt,
-  ThumbUpOffAlt,
-} from "@mui/icons-material";
+import { AccountCircle, Edit } from "@mui/icons-material";
 import {
   Box,
+  Container,
   List,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  Theme,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import Head from "next/head";
@@ -32,6 +30,8 @@ const CandidatePage: NextPageWithLayout = () => {
   const startTime = new Date(startEnd[0]).getTime();
   const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
   console.log("startTime: " + startTime + ", endTime: " + endTime);
+
+  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   // replace this with a direct react-query...
   const {
@@ -106,10 +106,16 @@ const CandidatePage: NextPageWithLayout = () => {
   return (
     <div>
       <Head>Report {candidateId} | Orcasound </Head>
-      <Grid container spacing={4} height={"100vh"}>
-        <Grid size={8}>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            {/* <Breadcrumbs sx={{ paddingTop: 4, width: "50%" }}>
+      <Container
+        maxWidth="xl"
+        sx={{
+          px: { xs: 1, sm: 2, md: 3 },
+        }}
+      >
+        <Grid container spacing={4} height={"100vh"}>
+          <Grid size={lgUp ? 8 : 12}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              {/* <Breadcrumbs sx={{ paddingTop: 4, width: "50%" }}>
           <Link underline="hover" color="inherit" href={"/candidates"}>
             Recordings
           </Link>
@@ -117,128 +123,126 @@ const CandidatePage: NextPageWithLayout = () => {
             {breadcrumb}
           </Typography>
         </Breadcrumbs> */}
-            {/* <Breadcrumbs sx={{ paddingTop: 4, justifyContent: "flex-end" }}>
+              {/* <Breadcrumbs sx={{ paddingTop: 4, justifyContent: "flex-end" }}>
           <Typography>&nbsp;{!isSuccess && "Waiting for Orcahello request..."}</Typography>
         </Breadcrumbs> */}
-          </Box>
-
-          <Box sx={{ marginTop: 4 }}>
-            <Box>
-              <Typography variant="h6">
-                {detections.combined[0]?.hydrophone}
-              </Typography>
-              <Typography variant="h4">
-                {new Date(startEnd[0]).toLocaleString()}
-              </Typography>
             </Box>
-          </Box>
-          <Box p={2} />
-          <div
-            style={{
-              display: "flex",
-              overflow: "scroll",
-              width: "100%",
-              height: 382,
-            }}
-          >
-            {detections?.ai?.map((d) => (
-              <Box
-                key={d.spectrogramUri}
-                component="img"
-                src={d.spectrogramUri}
-                sx={{
-                  width: "100%",
-                  flexBasis: 0,
-                }}
-              />
-            ))}
-            <Typography>
-              &nbsp;{!isSuccess && "Waiting for Orcahello request..."}
-            </Typography>
-          </div>
-          <Box p={2} />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              pl: 1,
-              pb: 1,
-              minWidth: 250,
-            }}
-          >
-            {detections.human.length ? (
-              <CandidateCardPlayer
-                feed={feed}
-                timestamp={startTimestamp}
-                startOffset={startOffset}
-                endOffset={endOffset}
-              />
-            ) : detections.ai.length ? (
-              <>
-                <CandidateCardAIPlayer audioUri={detections.ai[0].audioUri} />
-              </>
-            ) : (
-              "no player found"
-            )}
-          </Box>
-          <Box className="main">
-            <List>
-              {detections.combined?.map((el, index) => (
-                <ListItemButton key={index}>
-                  <ListItemAvatar>
-                    <AccountCircle style={{ fontSize: 40, opacity: 0.9 }} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    className="list-item-text"
-                    primary={
-                      (el.newCategory !== "WHALE (AI)" ? userName : aiName) +
-                      " • " +
-                      new Date(el.timestamp).toLocaleTimeString()
-                    }
-                    secondary={
-                      el.newCategory !== "WHALE (AI)"
-                        ? `${el.newCategory} • ${el.comments}`
-                        : `Moderator: ${el.comments}`
-                    }
-                  />
-                  <ListItemAvatar sx={{ display: "flex", opacity: "0.9" }}>
-                    <Edit />
-                    <Box sx={{ padding: "0 8px" }} />
-                    <ThumbUpOffAlt />
-                    <Box sx={{ padding: "0 8px" }} />
-                    <ThumbDownOffAlt />
-                  </ListItemAvatar>
-                </ListItemButton>
+
+            <Box sx={{ marginTop: 4 }}>
+              <Box>
+                <Typography variant="h6">
+                  {detections.combined[0]?.hydrophone}
+                </Typography>
+                <Typography variant="h4">
+                  {new Date(startEnd[0]).toLocaleString()}
+                </Typography>
+              </Box>
+            </Box>
+            <Box p={2} />
+            <div
+              style={{
+                display: "flex",
+                overflow: "scroll",
+                width: "100%",
+                height: 382,
+              }}
+            >
+              {detections?.ai?.map((d) => (
+                <Box
+                  key={d.spectrogramUri}
+                  component="img"
+                  src={d.spectrogramUri}
+                  sx={{
+                    width: "100%",
+                    flexBasis: 0,
+                  }}
+                />
               ))}
-            </List>
-          </Box>
-          <Box p={2} />
-          <Typography>More things to go here include:</Typography>
-          <ul>
-            <li>
-              Tags - initially populated by regex, can be edited by moderator
-            </li>
-            <li>Valentina noise analysis</li>
-            <li>Dave T signal state</li>
-            <li>Share / save an audio clip</li>
-          </ul>
+            </div>
+            <Box p={2} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                pl: 1,
+                pb: 1,
+                minWidth: 250,
+              }}
+            >
+              {detections.human.length ? (
+                <CandidateCardPlayer
+                  feed={feed}
+                  timestamp={startTimestamp}
+                  startOffset={startOffset}
+                  endOffset={endOffset}
+                />
+              ) : detections.ai.length ? (
+                <>
+                  <CandidateCardAIPlayer audioUri={detections.ai[0].audioUri} />
+                </>
+              ) : (
+                "no player found"
+              )}
+            </Box>
+            <Box className="main">
+              <List>
+                {detections.combined?.map((el, index) => (
+                  <ListItemButton key={index}>
+                    <ListItemAvatar>
+                      <AccountCircle style={{ fontSize: 40, opacity: 0.9 }} />
+                    </ListItemAvatar>
+                    <ListItemText
+                      className="list-item-text"
+                      primary={
+                        (el.newCategory !== "WHALE (AI)" ? userName : aiName) +
+                        " • " +
+                        new Date(el.timestamp).toLocaleTimeString()
+                      }
+                      secondary={
+                        el.newCategory !== "WHALE (AI)"
+                          ? `${el.newCategory} • ${el.comments}`
+                          : `Moderator: ${el.comments}`
+                      }
+                    />
+                    <ListItemAvatar sx={{ display: "flex", opacity: "0.9" }}>
+                      <Edit />
+                      <Box sx={{ padding: "0 8px" }} />
+                      {/* <ThumbUpOffAlt /> */}
+                      <Box sx={{ padding: "0 8px" }} />
+                      {/* <ThumbDownOffAlt /> */}
+                    </ListItemAvatar>
+                  </ListItemButton>
+                ))}
+              </List>
+            </Box>
+            <Box p={2} />
+            <Typography>More things to go here include:</Typography>
+            <ul>
+              <li>
+                Tags - initially populated by regex, can be edited by moderator
+              </li>
+              <li>Valentina noise analysis</li>
+              <li>Dave T signal state</li>
+              <li>Share / save an audio clip</li>
+            </ul>
+          </Grid>
+          <Grid
+            className="drawer"
+            size={4}
+            p={4}
+            style={{ borderLeft: "1px solid rgba(0,0,0,.1)" }}
+          >
+            <Typography>Things to go here could include:</Typography>
+            <ul>
+              <li>Acartia map of detections in time range</li>
+              <li>
+                Marine Exchange of Puget Sound map of ship traffic in time range
+              </li>
+              <li>Local weather conditions in time range</li>
+            </ul>
+          </Grid>
         </Grid>
-        <Grid
-          className="drawer"
-          size={4}
-          p={4}
-          style={{ borderLeft: "1px solid rgba(0,0,0,.1)" }}
-        >
-          <Typography>Things to go here could include:</Typography>
-          <ul>
-            <li>Acartia map of detections in time range</li>
-            <li>
-              Marine Exchange of Puget Sound map of ship traffic in time range
-            </li>
-            <li>Local weather conditions in time range</li>
-          </ul>
-        </Grid>
-      </Grid>
+      </Container>
     </div>
   );
 };
