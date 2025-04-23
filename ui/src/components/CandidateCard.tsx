@@ -63,7 +63,9 @@ export default function CandidateCard(props: {
   const lastTimestamp = lastCandidate.timestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
-  const feed = props.feeds.find((feed) => feed.id === firstCandidate.feedId);
+  const feed =
+    props.feeds.find((feed) => feed.id === firstCandidate.feedId) ||
+    props.feeds.find((feed) => feed.id === lastCandidate.feedId);
 
   const humanReports = candidateArray.filter(
     (d) => d.playlistTimestamp !== undefined && d.playerOffset !== undefined,
@@ -110,7 +112,7 @@ export default function CandidateCard(props: {
       key={firstTimestampString}
       sx={{
         display: "flex",
-        flexFlow: "row",
+        flexFlow: lgUp ? "row" : "column-reverse",
         width: "100%",
         maxWidth: "100%",
         overflow: "hidden",
@@ -147,7 +149,14 @@ export default function CandidateCard(props: {
             />
           </>
         ) : (
-          "no player found"
+          "startOffset: " +
+          startOffset +
+          " endOffset: " +
+          endOffset +
+          " timestamp: " +
+          startPlaylistTimestamp +
+          " feed: " +
+          feed
         )}
       </Box>
       <Link

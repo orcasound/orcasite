@@ -191,6 +191,7 @@ export function CandidateCardPlayer({
         className: "candidate-card-player",
         // Keep player above the sliding drawer
         zIndex: theme.zIndex.drawer + 1,
+        width: "100%",
       })}
     >
       <Box display="none" id="video-js">
@@ -203,36 +204,41 @@ export function CandidateCardPlayer({
           disabled={!feed}
         />
       </Box>
-      {lgUp && (
-        <Box sx={{ display: "flex", flexDirection: "column", width: "90px" }}>
-          <Box width={"100%"} id="slider">
-            <Slider
-              valueLabelDisplay="auto"
-              valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
-              step={0.1}
-              max={sliderMax}
-              value={sliderValue}
-              marks={marks}
-              onChange={handleSliderChange}
-              onChangeCommitted={handleSliderChangeCommitted}
-              size="small"
-            />
-          </Box>
-
-          <Box
-            id="formatted-seconds"
-            sx={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <Typography component="p" variant="subtitle2">
-              {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
-            </Typography>
-            <Typography component="p" variant="subtitle2">
-              {"-" +
-                formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
-            </Typography>
-          </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          width: lgUp ? "90px" : "100%",
+          paddingRight: "2em",
+        }}
+      >
+        <Box width={"100%"} id="slider">
+          <Slider
+            valueLabelDisplay="auto"
+            valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
+            step={0.1}
+            max={sliderMax}
+            value={sliderValue}
+            marks={marks}
+            onChange={handleSliderChange}
+            onChangeCommitted={handleSliderChangeCommitted}
+            size="small"
+          />
         </Box>
-      )}
+
+        <Box
+          id="formatted-seconds"
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <Typography component="p" variant="subtitle2">
+            {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
+          </Typography>
+          <Typography component="p" variant="subtitle2">
+            {"-" +
+              formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
+          </Typography>
+        </Box>
+      </Box>
     </Box>
   );
 }

@@ -92,6 +92,10 @@ const categorySelect = [
     label: "Whale (AI)",
     value: "whale (ai)",
   },
+  {
+    label: "Whale + Whale (AI)",
+    value: "whale + whale (ai)",
+  },
 ];
 
 export interface Candidate {
@@ -267,7 +271,9 @@ export default function Candidates() {
         (filters.hydrophone === "All hydrophones" ||
           el.hydrophone === filters.hydrophone) &&
         (filters.category === "All categories" ||
-          el.newCategory.toLowerCase() === filters.category) &&
+          el.newCategory.toLowerCase() === filters.category ||
+          (filters.category === "whale + whale (ai)" &&
+            ["whale", "whale (ai)"].includes(el.newCategory.toLowerCase()))) &&
         (filters.timeRange === allTime ||
           filters.timeRange === customRange ||
           Date.parse(el.timestampString) >= min) &&
@@ -289,6 +295,11 @@ export default function Candidates() {
   }, [filteredData, filters.timeIncrement]);
 
   const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
+
+  // // clear players list whenever the candidates list changes
+  useEffect(() => {
+    players.current = {};
+  }, [sortedCandidates, isSuccess]);
 
   useEffect(() => {
     const handledGetTime = (date?: Date) => {
@@ -319,12 +330,15 @@ export default function Candidates() {
     setSortedCandidates(sorted);
   }, [candidates, sortOrder, isSuccess]);
 
-  // render these first because it seems to take a while for candidates to populate from state, could just be the dev environment
   const candidateCards = sortedCandidates.map(
     (candidate: Candidate, index: number) => (
       <CandidateCard
         candidate={candidate}
-        key={index}
+        key={
+          candidate.array[0].timestampString +
+          "-" +
+          candidate.array[candidate.array.length - 1].timestampString
+        }
         index={index}
         // changeListState={changeListState}
         // command={playing.index === index ? "play" : "pause"}
