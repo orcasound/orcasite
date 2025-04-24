@@ -442,9 +442,7 @@ export default function Candidates() {
           >
             <Typography>
               Showing {sortedCandidates.length}{" "}
-              {!isSuccess
-                ? "results from Orcasound, loading Orcahello..."
-                : "results"}
+              {!isSuccess ? "results, checking Orcahello..." : "results"}
             </Typography>
             <Box>
               <ChartSelect

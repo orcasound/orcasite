@@ -184,7 +184,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
     }
   `;
 
-  const [useLiveData, setUseLiveData] = useState(true);
+  const [useLiveData, setUseLiveData] = useState(false);
   type LiveDataResponse = {
     detections: {
       results: Detection[];

@@ -211,6 +211,7 @@ export default function CandidateCard(props: {
                   display: "flex",
                   gap: "10px",
                   padding: "1rem 0",
+                  flexWrap: "wrap",
                 }}
               >
                 {Object.entries(tagObject).map(([tag]) => (
