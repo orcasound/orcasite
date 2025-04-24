@@ -183,7 +183,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
       }
     }
   `;
-
+  // running this without using live data endpoint to see if performance improves
   const [useLiveData, setUseLiveData] = useState(false);
   type LiveDataResponse = {
     detections: {
