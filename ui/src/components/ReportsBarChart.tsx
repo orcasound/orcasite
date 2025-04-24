@@ -30,6 +30,7 @@ type ChartData = {
   vessel: number;
   other: number;
   "whale (ai)": number;
+  [key: string]: number | string;
 };
 
 export default function ReportsBarChart({
@@ -41,10 +42,6 @@ export default function ReportsBarChart({
   timeRange: number;
   feeds: Feed[];
 }) {
-  // // get hydrophone feed list
-  // const feedsQueryResult = useFeedsQuery();
-  // const feeds = feedsQueryResult.data?.feeds ?? [];
-
   const [legend, setLegend] = React.useState(true);
 
   const max = Date.now();
@@ -81,10 +78,12 @@ export default function ReportsBarChart({
   }));
   hydrophoneSeries.shift(); // remove the "all hydrophones" from legend
 
+  // create an array of objects for each hydrophone name that looks like [{"name1": 0}, {"name2": 0}]
   const hydrophoneCounts = feeds.map((el) => ({
     [el.name.toLowerCase()]: 0,
   }));
 
+  // add the name/value pair of item in the hydrophoneCounts object to each item in chartData
   chartData.forEach((el) => {
     hydrophoneCounts.forEach((hydro) => {
       Object.assign(el, hydro);
@@ -92,17 +91,20 @@ export default function ReportsBarChart({
   });
 
   const countData = () => {
+    // iterate over each report in the dataset array and define the timestamp and tick index
     for (let i = 0; i < dataset.length; i++) {
       const timestamp = Date.parse(dataset[i].timestampString);
       const tick = Math.round((timestamp - min) / (1000 * 60 * 60));
+      // iterate over each hour of the chartData array and determine if the report tick matches the chart hour
       for (let j = 0; j < chartData.length; j++) {
         if (chartData[j].tick === tick) {
+          // if so, add to the count of detections, whale, vessel, other, and whale (ai)
           const chartItem = chartData[j];
           chartItem.detections += 1;
-          if (dataset[i].newCategory.toLowerCase() === "whale") {
-            chartItem.whale += 1;
-          }
-          switch (dataset[i].newCategory.toLowerCase()) {
+
+          const category = dataset[i].newCategory.toLowerCase();
+
+          switch (category) {
             case "whale":
               chartItem.whale += 1;
               break;
@@ -117,6 +119,14 @@ export default function ReportsBarChart({
               break;
             default:
               break;
+          }
+          // also, get the hydrophone name
+          const feedName = dataset[i].hydrophone.toLowerCase();
+          // if the chartItem object has that feedName as a key, increment it by one
+          if (chartItem[feedName] !== undefined) {
+            if (typeof chartItem[feedName] === "number") {
+              chartItem[feedName] += 1;
+            }
           }
         }
       }
