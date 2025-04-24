@@ -4,10 +4,11 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 
-import { ModeratorLayout } from "@/components/layouts/ModeratorLayout";
 import Player, { PlayerSpacer } from "@/components/Player";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import { displayMobileOnly } from "@/styles/responsive";
+
+import { MasterDataLayout } from "./MasterDataLayout";
 
 const MapWithNoSSR = dynamic(() => import("@/components/Map"), {
   ssr: false,
@@ -132,8 +133,8 @@ function MapPage({ children }: { children: ReactNode }) {
 
 export function getHalfMapLayout(page: ReactElement) {
   return (
-    <ModeratorLayout>
+    <MasterDataLayout>
       <MapPage>{page}</MapPage>
-    </ModeratorLayout>
+    </MasterDataLayout>
   );
 }

@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import CandidateCard from "@/components/CandidateCard";
 import ChartSelect from "@/components/ChartSelect";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
-import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
+import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import ReportsBarChart from "@/components/ReportsBarChart";
 import SearchBar from "@/components/SearchBar";
 import { useData } from "@/context/DataContext";
@@ -492,4 +492,5 @@ export default function Candidates() {
   );
 }
 
-Candidates.getLayout = getModeratorLayout;
+Candidates.getLayout = getLeftNavLayout;
+// Candidates.getLayout = getHalfMapLayout;
