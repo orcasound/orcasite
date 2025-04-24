@@ -208,7 +208,7 @@ export function CandidateCardPlayer({
         sx={{
           display: "flex",
           flexDirection: "column",
-          width: lgUp ? "90px" : "100%",
+          width: "100%",
           paddingRight: "2em",
         }}
       >
