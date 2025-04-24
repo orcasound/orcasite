@@ -184,7 +184,7 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
     }
   `;
   // running this without using live data endpoint to see if performance improves
-  const [useLiveData, setUseLiveData] = useState(false);
+  const [useLiveData, setUseLiveData] = useState(true);
   type LiveDataResponse = {
     detections: {
       results: Detection[];
@@ -299,8 +299,11 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
 
   // combine global data into one object, to be passed into Data Provider for all child pages
   const dataset = useMemo(() => {
+    const truePositives = aiDetections?.filter(
+      (el: AIData) => el.found === "yes",
+    );
     const datasetAI =
-      aiDetections?.map((el: AIData) => ({
+      truePositives?.map((el: AIData) => ({
         ...el,
         type: "ai",
         hydrophone: standardizeFeedName(el.location.name),
