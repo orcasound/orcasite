@@ -1,28 +1,53 @@
-# Orcasound Dashboard Prototype
+## Redesigned Orcasound Listening Experience
 
-This is a UX and engineering contribution to Orcasound, an open-source platform that streams real-time underwater audio from hydrophones in the Salish Sea to detect and protect orcas.
+This prototype is part of my work with [Orcasound](https://www.orcasound.net/), an open-source citizen science project that streams live underwater audio from hydrophones in the Salish Sea to detect orcas and reduce ship noise when they're nearby.
 
-I’ve been volunteering with the Orcasound team since 2023, focused on improving the experience for listeners, scientists, and volunteers who report orca detections. This prototype reimagines the reporting interface and proposes a scalable, data-rich dashboard for reviewing past detections, integrating AI models, and surfacing patterns that inform conservation.
+Over the past year, I’ve contributed UX research, product strategy, and front-end development to help Orcasound evolve from a passive listening tool into a more engaging, informative, and conservation-oriented platform.
 
-**Live prototype:** [https://orcasound-dashboard.vercel.app/moderator](https://orcasound-dashboard.vercel.app/moderator)
+### What We Noticed
+- Most listeners visit only after receiving orca alert notifications.
+- Historical audio data is difficult to access, search, or explore.
+- The AI model currently underperforms compared to the Orcasound community.
+- Users don’t receive feedback on their contributions or have ways to deepen engagement with orca conservation.
 
-**Tech stack:** Next.js, React, Typescript, Material UI 
+### Design Goals
+We set out to:
+- Make past detections and user reports more discoverable.
+- Provide a more interactive experience that helps users explore and analyze orca sounds.
+- Start integrating AI detections to support learning and research.
+- Build a foundation for richer conservation tools and community feedback.
 
-## Designs in progress
+---
 
-Before -- the existing app looks like this. On the left is a list of hydrophone locations. Users can stream the audio live, and submit a report when they hear an interesting sound such as a whale, ship, or other. On the right is a list of user-submitted reports.
+### Before
 
-![Before screens](https://github.com/user-attachments/assets/86dc0f36-38c0-4625-85c7-efa8a25c39ad)
+The existing site allowed real-time listening and manual reporting, but had limited historical context and minimal interactivity:
 
+![Before - candidate screens](https://github.com/user-attachments/assets/e7adc8a1-0c02-47af-87ab-6ddfaaa17494)
 
-After -- in my redesign, I focused on resolving the following user pain points:
-* Difficult to navigate from the home screen to the Reports page.
-* No filter/search functions.
-* Limited mobile layouts.
-* Unable to play recent audio reports as a continuous playlist.
-* Doesn't pull relevant data from other sources.
-Users need to quickly see where periods of activity are, so they can find and hear whale sounds. 
+---
 
-Redesigns
+### After
 
-![After screens](https://github.com/user-attachments/assets/df3c6e68-2f46-46ec-b443-25d82bf5e606)
+The redesigned prototype introduces:
+
+- A searchable, filterable list of historical recordings based on user reports and AI detections.
+- Integrated spectrogram viewer and audio player for quick review and annotation.
+- Previewable detection markers tied to audio segments for easier analysis.
+- A responsive layout optimized for both desktop and mobile use.
+
+![After - candidate screens](https://github.com/user-attachments/assets/d8cf3850-785d-453e-bea3-cf2d97df6e6a)
+
+---
+
+### Built With
+
+This prototype was built in React using:
+- **Next.js** for app structure and routing
+- **Material UI** for the component system
+- **React Query** for data fetching and caching
+- **Video.js** for advanced audio playback
+- **GraphQL** to fetch detection and hydrophone metadata
+
+This is an experimental prototype used for testing ideas and generating feedback. The design is open source and still evolving. Contributions and collaborations welcome!
+
