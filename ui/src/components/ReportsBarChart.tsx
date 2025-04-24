@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import React from "react";
 
-import { useFeedsQuery } from "@/graphql/generated";
+import { Feed } from "@/graphql/generated";
 import { CombinedData } from "@/types/DataTypes";
 
 const chartSetting = {
@@ -35,13 +35,15 @@ type ChartData = {
 export default function ReportsBarChart({
   dataset,
   timeRange,
+  feeds,
 }: {
   dataset: CombinedData[];
   timeRange: number;
+  feeds: Feed[];
 }) {
-  // get hydrophone feed list
-  const feedsQueryResult = useFeedsQuery();
-  const feeds = feedsQueryResult.data?.feeds ?? [];
+  // // get hydrophone feed list
+  // const feedsQueryResult = useFeedsQuery();
+  // const feeds = feedsQueryResult.data?.feeds ?? [];
 
   const [legend, setLegend] = React.useState(true);
 

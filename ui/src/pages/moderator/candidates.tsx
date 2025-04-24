@@ -430,6 +430,7 @@ export default function Candidates() {
               <ReportsBarChart
                 dataset={filteredData}
                 timeRange={filters.timeRange}
+                feeds={feeds}
               />
             </Box>
           )}
@@ -482,6 +483,7 @@ export default function Candidates() {
             <ReportsBarChart
               dataset={filteredData}
               timeRange={filters.timeRange}
+              feeds={feeds}
             />
           </Box>
         )}
