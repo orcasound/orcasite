@@ -1,8 +1,6 @@
 import "videojs-offset";
 
-import type { Theme } from "@mui/material";
 import { Box, Slider, Typography } from "@mui/material";
-import { useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useRef, useState } from "react";
 
@@ -43,7 +41,7 @@ export function CandidateCardAIPlayer({
   onPlay?: () => void;
   onPlayerEnd?: () => void;
 }) {
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
+  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   // special to the AI player
   const startOffset = 0;

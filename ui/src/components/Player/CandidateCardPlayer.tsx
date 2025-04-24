@@ -1,8 +1,6 @@
 import "videojs-offset";
 
-import type { Theme } from "@mui/material";
 import { Box, Slider, Typography } from "@mui/material";
-import { useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -45,7 +43,7 @@ export function CandidateCardPlayer({
   onPlay?: () => void;
   onPlayerEnd?: () => void;
 }) {
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
+  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
