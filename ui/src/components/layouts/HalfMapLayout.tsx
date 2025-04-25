@@ -1,10 +1,12 @@
-import { Box, Divider } from "@mui/material";
+import { Box } from "@mui/material";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 
+import Header from "@/components/Header";
 import Player, { PlayerSpacer } from "@/components/Player";
+import { LayoutContext } from "@/context/LayoutContext";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import { displayMobileOnly } from "@/styles/responsive";
 
@@ -25,7 +27,7 @@ const feedFromSlug = (feedSlug: string) => ({
   latLng: { lat: 48.6, lng: -122.3 },
 });
 
-function MapPage({ children }: { children: ReactNode }) {
+export function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const slug = router.query.feed as string;
 
@@ -75,7 +77,7 @@ function MapPage({ children }: { children: ReactNode }) {
         flexGrow: 1,
       }}
     >
-      <Divider />
+      <Header />
       <Box
         component="main"
         sx={{
@@ -134,7 +136,9 @@ function MapPage({ children }: { children: ReactNode }) {
 export function getHalfMapLayout(page: ReactElement) {
   return (
     <MasterDataLayout>
-      <MapPage>{page}</MapPage>
+      <LayoutContext.Provider value="halfMap">
+        <HalfMapLayout>{page}</HalfMapLayout>
+      </LayoutContext.Provider>
     </MasterDataLayout>
   );
 }

@@ -22,8 +22,8 @@ import {
   useDetectionsQuery,
   useFeedsQuery,
 } from "@/graphql/generated";
-import { Candidate } from "@/pages/moderator/candidates";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
+import { Candidate } from "@/types/DataTypes";
 import { AIData } from "@/types/DataTypes";
 import { analytics } from "@/utils/analytics";
 

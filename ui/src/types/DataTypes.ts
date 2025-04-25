@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
 import { Detection, Feed, Scalars } from "@/graphql/generated";
-import { Candidate } from "@/pages/moderator/candidates";
 
 interface HumanData extends Omit<Detection, "candidate"> {
   type: string;
@@ -51,4 +50,14 @@ interface Annotation {
   startTime: number;
   endTime: number;
   confidence: number;
+}
+
+export interface Candidate {
+  array: CombinedData[];
+  whale: number;
+  vessel: number;
+  other: number;
+  "whale (AI)": number;
+  hydrophone: string;
+  descriptions: string;
 }

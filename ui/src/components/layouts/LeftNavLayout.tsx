@@ -13,8 +13,8 @@ import * as React from "react";
 import { ReactElement, useState } from "react";
 
 import Link from "@/components/Link";
-import { Candidate } from "@/pages/moderator/candidates";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
+import { Candidate } from "@/types/DataTypes";
 import { analytics } from "@/utils/analytics";
 
 import { TopNav } from "./Devias-dashboard/vertical-layout/top-nav";

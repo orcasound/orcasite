@@ -1,16 +1,9 @@
-import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 
-import Candidates from "./candidates";
+import ModeratorCandidatesPage from "./candidates";
 
-const NewFeedsPage: NextPageWithLayout = () => {
-  return (
-    <>
-      <Candidates />
-    </>
-  );
+const ModeratorIndexPage: NextPageWithLayout = () => {
+  return <ModeratorCandidatesPage />;
 };
 
-NewFeedsPage.getLayout = getModeratorLayout;
-
-export default NewFeedsPage;
+export default ModeratorIndexPage;

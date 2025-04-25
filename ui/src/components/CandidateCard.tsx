@@ -12,7 +12,7 @@ import { useMediaQuery } from "@mui/material";
 import { MutableRefObject, useCallback } from "react";
 
 import { Feed } from "@/graphql/generated";
-import { type Candidate } from "@/pages/moderator/candidates";
+import { Candidate } from "@/types/DataTypes";
 
 import { CandidateCardAIPlayer } from "./Player/CandidateCardAIPlayer";
 import { CandidateCardPlayer } from "./Player/CandidateCardPlayer";

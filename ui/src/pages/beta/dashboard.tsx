@@ -1,16 +1,16 @@
-import CandidatesList from "@/components/CandidatesList";
 import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import { LayoutContext } from "@/context/LayoutContext";
 import type { NextPageWithLayout } from "@/pages/_app";
+import Candidates from "@/pages/moderator/candidates";
 
-const ModeratorCandidatesPage: NextPageWithLayout = () => {
+const BetaPage: NextPageWithLayout = () => {
   return (
     <LayoutContext.Provider value="leftNav">
-      <CandidatesList />
+      <Candidates />
     </LayoutContext.Provider>
   );
 };
 
-ModeratorCandidatesPage.getLayout = getLeftNavLayout;
+BetaPage.getLayout = getLeftNavLayout;
 
-export default ModeratorCandidatesPage;
+export default BetaPage;

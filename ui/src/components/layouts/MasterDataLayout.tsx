@@ -11,8 +11,7 @@ import {
   useDetectionsQuery,
   useFeedsQuery,
 } from "@/graphql/generated";
-import { Candidate } from "@/pages/moderator/candidates";
-import { AIData } from "@/types/DataTypes";
+import { AIData, Candidate } from "@/types/DataTypes";
 
 const endpointOrcahello =
   "https://aifororcasdetections.azurewebsites.net/api/detections?";
