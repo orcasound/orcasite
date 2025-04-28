@@ -97,5 +97,4 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
         {k, v}
     end)
   end
-
 end

@@ -146,7 +146,7 @@ export default function BoutPage({
     min([
       now,
       roundToNearest(
-        max([targetTime, addMinutes(targetTime, timeBuffer)]),
+        max([targetTime, addMinutes(bout?.endTime ?? targetTime, timeBuffer)]),
         nearestMinutes * 60 * 1000,
         "ceil",
       ),
