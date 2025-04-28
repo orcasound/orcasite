@@ -94,6 +94,7 @@ export function HalfMapLayout({ children }: { children: ReactNode }) {
             borderRightStyle: "solid",
             borderRightWidth: 1,
             width: "45%",
+            overflow: "auto",
             // flex: "0 0 400px"
           }}
         >
