@@ -91,14 +91,10 @@ export default function PlayBar() {
     }
   }, [nowPlaying]);
 
-  useEffect(() => {
-    console.log("candidate is: " + JSON.stringify(nowPlaying, null, 2));
-  });
-
   return (
     <AppBar
       position="fixed"
-      color="secondary"
+      //   color="base"
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -108,6 +104,7 @@ export default function PlayBar() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: (theme) => theme.palette.base.main,
       }}
     >
       <Toolbar

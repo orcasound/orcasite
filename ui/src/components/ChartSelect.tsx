@@ -34,7 +34,10 @@ export default function ChartSelect({
           variant={variant}
           onChange={onChange}
           name={name}
-          sx={sx}
+          disableUnderline={true}
+          sx={{
+            color: "white",
+          }}
         >
           {list?.map((el) => (
             <MenuItem key={el.label} value={el.value}>

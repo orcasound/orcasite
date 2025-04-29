@@ -1,4 +1,4 @@
-import CandidatesList from "@/components/CandidatesList";
+import CandidatesList from "@/components/CandidateList/CandidatesList";
 import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import { LayoutContext } from "@/context/LayoutContext";
 import type { NextPageWithLayout } from "@/pages/_app";

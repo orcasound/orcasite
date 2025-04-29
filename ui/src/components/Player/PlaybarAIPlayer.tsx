@@ -132,7 +132,6 @@ export function PlaybarAIPlayer({
       });
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? 0;
-        console.log(currentTime);
         if (currentTime >= endOffset) {
           player.currentTime(startOffset);
           setPlayerTime(startOffset);

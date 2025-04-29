@@ -10,6 +10,7 @@ import { LayoutContext } from "@/context/LayoutContext";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import { displayMobileOnly } from "@/styles/responsive";
 
+import PlayBar from "../PlayBar";
 import { MasterDataLayout } from "./MasterDataLayout";
 
 const MapWithNoSSR = dynamic(() => import("@/components/Map"), {
@@ -130,6 +131,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           <Player currentFeed={currentFeed} />
         </Box>
       </Box>
+      <PlayBar />
     </Box>
   );
 }

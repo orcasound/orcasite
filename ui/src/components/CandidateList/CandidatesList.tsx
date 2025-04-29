@@ -8,7 +8,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import CandidateCard from "@/components/CandidateCard";
+import CandidateCard from "@/components/CandidateList/CandidateCard";
 import ChartSelect from "@/components/ChartSelect";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import ReportsBarChart from "@/components/ReportsBarChart";
@@ -232,21 +232,6 @@ export default function CandidatesList() {
     }));
   };
 
-  // const [playing, setPlaying] = useState({
-  //   index: -1,
-  //   status: "ready",
-  // });
-
-  // const changeListState = (index: number, status: string) => {
-  //   setPlaying((prevState) => ({
-  //     ...prevState,
-  //     index: index,
-  //     status: status,
-  //   }));
-  // };
-
-  // const [playNext, _setPlayNext] = useState(true);
-
   const players = useRef({});
 
   const feedList = feeds.map((el) => ({
@@ -326,24 +311,16 @@ export default function CandidatesList() {
     setQueue(sorted);
   }, [candidates, sortOrder, isSuccess, setQueue]);
 
-  const candidateCards = sortedCandidates.map(
-    (candidate: Candidate, index: number) => (
-      <CandidateCard
-        candidate={candidate}
-        key={
-          candidate.array[0].timestampString +
-          "-" +
-          candidate.array[candidate.array.length - 1].timestampString
-        }
-        index={index}
-        // changeListState={changeListState}
-        // command={playing.index === index ? "play" : "pause"}
-        feeds={feeds}
-        players={players}
-        // playNext={playNext}
-      />
-    ),
-  );
+  const candidateCards = sortedCandidates.map((candidate: Candidate) => (
+    <CandidateCard
+      candidate={candidate}
+      key={
+        candidate.array[0].timestampString +
+        "-" +
+        candidate.array[candidate.array.length - 1].timestampString
+      }
+    />
+  ));
 
   return (
     <Container
@@ -361,7 +338,6 @@ export default function CandidatesList() {
           width: "100%",
         }}
       >
-        {layout === "halfMap" ? "halfMap" : "leftNav"}
         <SearchBar setSearchQuery={setSearchQuery} />
         <ChartSelect
           name={"timeRange"}
@@ -471,10 +447,7 @@ export default function CandidatesList() {
             </Box>
           </Box>
           <Box sx={{ paddingTop: "1rem" }}></Box>
-          <Stack spacing={3}>
-            {candidateCards}
-            {/* {sortedCandidates.length ? sortedCandidateCards : candidateCards} */}
-          </Stack>
+          <Stack spacing={2}>{candidateCards}</Stack>
         </Stack>
         {lgUp && layout === "leftNav" && (
           <Box>

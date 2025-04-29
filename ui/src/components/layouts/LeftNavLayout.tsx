@@ -214,7 +214,7 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
             PaperProps={{
               sx: {
                 width: drawerWidth,
-                backgroundColor: "base.main",
+                backgroundColor: "background.default",
                 color: "base.contrastText",
               },
             }}
@@ -243,46 +243,7 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
           </Drawer>
         )}
 
-        {/* <div key={"left"} className="drawer-div">
-          <Drawer
-            PaperProps={{
-              sx: {
-                backgroundColor: "base.main",
-                color: "base.contrastText",
-              }
-            }}
-            variant="permanent"
-            sx={{
-              flexShrink: 0,
-              width: drawerWidth,
-              [`& .MuiDrawer-paper`]: {
-                width: drawerWidth,
-                boxSizing: "border-box",
-              },
-            }}
-          >
-          <Box 
-            sx={{
-              backgroundColor: "base.main",
-              color: "base.contrastText",
-              height: "100vh",
-              // overflow: "scroll",
-              padding: "0px 16px",
-              fontWeight: "700"
-            }}
-          >
-            <div style={{height: ".5rem"}} />
-            <Toolbar />
-            {DrawerList}
-          </Box>
-          </Drawer>
-          </div> */}
-        <Box
-          // maxWidth="xl"
-          sx={{ width: "100%", padding: 0, margin: 0 }}
-        >
-          {children}
-        </Box>
+        <Box sx={{ width: "100%", padding: 0, margin: 0 }}>{children}</Box>
         <PlayBar />
       </Box>
     </Box>
