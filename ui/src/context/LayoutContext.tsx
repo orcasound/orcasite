@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-export type LayoutType = "halfMap" | "leftNav";
+type LayoutType = "halfMap" | "leftNav";
 
 export const LayoutContext = createContext<LayoutType | null>(null);
 

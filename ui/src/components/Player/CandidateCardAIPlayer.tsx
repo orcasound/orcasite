@@ -4,6 +4,8 @@ import { Box, Slider, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useRef, useState } from "react";
 
+import { useNowPlaying } from "@/context/NowPlayingContext";
+
 import { type PlayerStatus } from "./Player";
 import PlayPauseButton from "./PlayPauseButton";
 import { type VideoJSPlayer } from "./VideoJS";
@@ -46,6 +48,7 @@ export function CandidateCardAIPlayer({
   // special to the AI player
   const startOffset = 0;
 
+  const { masterPlayerRef, setMasterPlayerStatus } = useNowPlaying();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
@@ -89,10 +92,16 @@ export function CandidateCardAIPlayer({
   const handleReady = useCallback(
     (player: VideoJSPlayer) => {
       playerRef.current = player;
+      // auto-play the player when it mounts -- mounting is triggered in Playbar based on nowPlaying
+      if (playerRef.current) {
+        masterPlayerRef.current = playerRef.current;
+        player.play();
+      }
 
       if (onPlayerInit) onPlayerInit(player);
       player.on("playing", () => {
         setPlayerStatus("playing");
+        setMasterPlayerStatus("playing");
         // const currentTime = player.currentTime() ?? 0;
         // if (currentTime < startOffset || currentTime > endOffset) {
         //   player.currentTime(startOffset);
@@ -103,11 +112,17 @@ export function CandidateCardAIPlayer({
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
+        setMasterPlayerStatus("paused");
         // (changeListState && index) && changeListState(index, "paused");
       });
-      player.on("waiting", () => setPlayerStatus("loading"));
-      player.on("error", () => setPlayerStatus("error"));
-
+      player.on("waiting", () => {
+        setPlayerStatus("loading");
+        setMasterPlayerStatus("loading");
+      });
+      player.on("error", () => {
+        setPlayerStatus("error");
+        setMasterPlayerStatus("error");
+      });
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? 0;
         if (currentTime >= endOffset) {
@@ -127,7 +142,15 @@ export function CandidateCardAIPlayer({
         player.currentTime(startOffset);
       });
     },
-    [startOffset, endOffset, onPlay, onPlayerEnd, onPlayerInit],
+    [
+      startOffset,
+      endOffset,
+      onPlay,
+      onPlayerEnd,
+      onPlayerInit,
+      masterPlayerRef,
+      setMasterPlayerStatus,
+    ],
   );
 
   const handlePlayPauseClick = () => {
@@ -135,11 +158,13 @@ export function CandidateCardAIPlayer({
 
     if (playerStatus === "error") {
       setPlayerStatus("idle");
+      setMasterPlayerStatus("idle");
       return;
     }
 
     if (!player) {
       setPlayerStatus("error");
+      setMasterPlayerStatus("error");
       return;
     }
 
@@ -156,6 +181,7 @@ export function CandidateCardAIPlayer({
       // It's not important, so don't show this error to the user
       if (e instanceof DOMException && e.name === "AbortError") return;
       setPlayerStatus("error");
+      setMasterPlayerStatus("error");
     }
   };
 

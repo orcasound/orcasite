@@ -4,6 +4,7 @@ import { Box, Slider, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useNowPlaying } from "@/context/NowPlayingContext";
 // import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
 import { getHlsURI } from "@/hooks/useTimestampFetcher";
@@ -19,7 +20,7 @@ const VideoJS = dynamic(() => import("./VideoJS"));
 export function CandidateCardPlayer({
   feed,
   marks,
-  timestamp,
+  playlistTimestamp,
   startOffset,
   endOffset,
   onAudioPlay,
@@ -32,7 +33,7 @@ export function CandidateCardPlayer({
 }: {
   feed: Pick<Feed, "nodeName" | "bucket">;
   marks?: { label: string; value: number }[];
-  timestamp: number;
+  playlistTimestamp: number;
   startOffset: number;
   endOffset: number;
   onAudioPlay?: () => void;
@@ -44,16 +45,15 @@ export function CandidateCardPlayer({
   onPlayerEnd?: () => void;
 }) {
   // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-
+  const { masterPlayerRef, setMasterPlayerStatus } = useNowPlaying();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
-  // const { setNowPlaying } = useData();
 
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
 
-  const hlsURI = getHlsURI(feed.bucket, feed.nodeName, timestamp);
+  const hlsURI = getHlsURI(feed.bucket, feed.nodeName, playlistTimestamp);
 
   const playerOptions = useMemo(
     () => ({
@@ -85,9 +85,15 @@ export function CandidateCardPlayer({
   const handleReady = useCallback(
     (player: VideoJSPlayer) => {
       playerRef.current = player;
+      // auto-play the player when it mounts -- mounting is triggered in Playbar based on nowPlaying
+      if (playerRef.current) {
+        masterPlayerRef.current = playerRef.current;
+        player.play();
+      }
       if (onPlayerInit) onPlayerInit(player);
       player.on("playing", () => {
         setPlayerStatus("playing");
+        setMasterPlayerStatus("playing");
         const currentTime = player.currentTime() ?? 0;
         if (currentTime < startOffset || currentTime > endOffset) {
           player.currentTime(startOffset);
@@ -97,9 +103,16 @@ export function CandidateCardPlayer({
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
+        setMasterPlayerStatus("paused");
       });
-      player.on("waiting", () => setPlayerStatus("loading"));
-      player.on("error", () => setPlayerStatus("error"));
+      player.on("waiting", () => {
+        setPlayerStatus("loading");
+        setMasterPlayerStatus("loading");
+      });
+      player.on("error", () => {
+        setPlayerStatus("error");
+        setMasterPlayerStatus("error");
+      });
 
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? 0;
@@ -117,7 +130,15 @@ export function CandidateCardPlayer({
         player.currentTime(startOffset);
       });
     },
-    [startOffset, endOffset, onPlay, onPlayerEnd, onPlayerInit],
+    [
+      startOffset,
+      endOffset,
+      onPlay,
+      onPlayerEnd,
+      onPlayerInit,
+      masterPlayerRef,
+      setMasterPlayerStatus,
+    ],
   );
 
   const handlePlayPauseClick = () => {
@@ -125,11 +146,13 @@ export function CandidateCardPlayer({
 
     if (playerStatus === "error") {
       setPlayerStatus("idle");
+      setMasterPlayerStatus("idle");
       return;
     }
 
     if (!player) {
       setPlayerStatus("error");
+      setMasterPlayerStatus("error");
       return;
     }
 
@@ -146,6 +169,7 @@ export function CandidateCardPlayer({
       // It's not important, so don't show this error to the user
       if (e instanceof DOMException && e.name === "AbortError") return;
       setPlayerStatus("error");
+      setMasterPlayerStatus("error");
     }
   };
 
@@ -157,6 +181,10 @@ export function CandidateCardPlayer({
       setPlayerStatus("idle");
     };
   }, [hlsURI, feed.nodeName]);
+
+  useEffect(() => {
+    console.log("playerStatus: " + playerStatus);
+  }, [playerStatus]);
 
   const handleSliderChange = (
     _e: Event,
@@ -186,7 +214,7 @@ export function CandidateCardPlayer({
         justifyContent: "space-between",
         px: [0, 2],
         position: "relative",
-        className: "candidate-card-player",
+        // className: "candidate-card-player",
         // Keep player above the sliding drawer
         zIndex: theme.zIndex.drawer + 1,
         width: "100%",

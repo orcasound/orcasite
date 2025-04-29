@@ -15,7 +15,9 @@ import * as React from "react";
 import { ReactElement, useEffect, useMemo, useState } from "react";
 
 import Link from "@/components/Link";
+import PlayBar from "@/components/PlayBar";
 import { DataProvider } from "@/context/DataContext";
+import { NowPlayingProvider } from "@/context/NowPlayingContext";
 import {
   Detection,
   Feed,
@@ -23,7 +25,6 @@ import {
   useFeedsQuery,
 } from "@/graphql/generated";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
-import { Candidate } from "@/types/DataTypes";
 import { AIData } from "@/types/DataTypes";
 import { analytics } from "@/utils/analytics";
 
@@ -124,11 +125,9 @@ const lookupFeedId = (name: string, feedList: Feed[]) => {
   return id;
 };
 
-export function ModeratorLayout({ children }: { children: React.ReactNode }) {
+function ModeratorLayout({ children }: { children: React.ReactNode }) {
   //// DATA
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-
-  const [nowPlaying, setNowPlaying] = useState({} as Candidate);
 
   // get data on hydrophones from seed data
   const feedsQueryResult = useFeedsQuery();
@@ -315,10 +314,8 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
       combined: [...datasetHuman, ...datasetAI],
       feeds: feedList,
       isSuccess: isSuccess,
-      nowPlaying: nowPlaying,
-      setNowPlaying: setNowPlaying,
     };
-  }, [datasetHuman, aiDetections, feedList, isSuccess, nowPlaying]);
+  }, [datasetHuman, aiDetections, feedList, isSuccess]);
 
   //// COMPONENTS
 
@@ -557,9 +554,11 @@ export function ModeratorLayout({ children }: { children: React.ReactNode }) {
           // maxWidth="xl"
           sx={{ width: "100%", padding: 0, margin: 0 }}
         >
-          <DataProvider data={dataset}>{children}</DataProvider>
+          <NowPlayingProvider>
+            <DataProvider data={dataset}>{children}</DataProvider>
+          </NowPlayingProvider>
         </Box>
-        {/* <PlayBar candidate={nowPlaying} /> */}
+        <PlayBar />
       </Box>
     </Box>
   );

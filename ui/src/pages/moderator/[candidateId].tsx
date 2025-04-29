@@ -36,8 +36,11 @@ const CandidatePage: NextPageWithLayout = () => {
   // replace this with a direct react-query...
   const {
     combined,
-    isSuccess,
-  }: { combined: CombinedData[] | undefined; isSuccess: boolean } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
+    // isSuccess,
+  }: {
+    combined: CombinedData[] | undefined;
+    // isSuccess: boolean;
+  } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
 
   // // get hydrophone feed list
   const { feeds } = useData();
@@ -172,7 +175,7 @@ const CandidatePage: NextPageWithLayout = () => {
               {detections.human.length ? (
                 <CandidateCardPlayer
                   feed={feed}
-                  timestamp={startTimestamp}
+                  playlistTimestamp={startTimestamp}
                   startOffset={startOffset}
                   endOffset={endOffset}
                 />

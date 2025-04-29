@@ -7,7 +7,6 @@ const DataContext = createContext<Dataset>({
   ai: [],
   combined: [],
   isSuccess: false,
-  setNowPlaying: undefined,
   feeds: [],
 });
 

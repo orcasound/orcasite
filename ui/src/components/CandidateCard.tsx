@@ -1,6 +1,7 @@
 import type { Theme } from "@mui/material";
 import {
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -9,13 +10,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
-import { MutableRefObject, useCallback } from "react";
+import { MutableRefObject, useEffect } from "react";
 
+import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import { Candidate } from "@/types/DataTypes";
 
-import { CandidateCardAIPlayer } from "./Player/CandidateCardAIPlayer";
-import { CandidateCardPlayer } from "./Player/CandidateCardPlayer";
 import { VideoJSPlayer } from "./Player/VideoJS";
 
 const tagRegex = [
@@ -43,6 +43,8 @@ export default function CandidateCard(props: {
   playNext: boolean;
   feeds: Feed[];
 }) {
+  const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
+    useNowPlaying();
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const { descriptions } = props.candidate;
@@ -63,49 +65,65 @@ export default function CandidateCard(props: {
   const lastTimestamp = lastCandidate.timestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
-  const feed =
-    props.feeds.find((feed) => feed.id === firstCandidate.feedId) ||
-    props.feeds.find((feed) => feed.id === lastCandidate.feedId);
+  // const feed =
+  //   props.feeds.find((feed) => feed.id === firstCandidate.feedId) ||
+  //   props.feeds.find((feed) => feed.id === lastCandidate.feedId);
 
-  const humanReports = candidateArray.filter(
-    (d) => d.playlistTimestamp !== undefined && d.playerOffset !== undefined,
-  );
+  // const humanReports = candidateArray.filter(
+  //   (d) => d.playlistTimestamp !== undefined && d.playerOffset !== undefined,
+  // );
 
-  const startPlaylistTimestamp = Math.min(
-    ...humanReports.map((d) => +d.playlistTimestamp),
-  );
+  // const startPlaylistTimestamp = Math.min(
+  //   ...humanReports.map((d) => +d.playlistTimestamp),
+  // );
 
-  const offsetPadding = 15;
-  const minOffset = Math.min(...humanReports.map((d) => +d.playerOffset));
+  // const offsetPadding = 15;
+  // const minOffset = Math.min(...humanReports.map((d) => +d.playerOffset));
 
-  // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
-  // instead, ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
-  const firstPlaylist = humanReports.filter(
-    (d) => +d.playlistTimestamp === startPlaylistTimestamp,
-  );
+  // // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
+  // // instead, ensure that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
+  // const firstPlaylist = humanReports.filter(
+  //   (d) => +d.playlistTimestamp === startPlaylistTimestamp,
+  // );
 
-  const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
-  const startOffset = Math.max(0, minOffset - offsetPadding);
-  const endOffset = maxOffset + offsetPadding;
+  // const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
+  // const startOffset = Math.max(0, minOffset - offsetPadding);
+  // const endOffset = maxOffset + offsetPadding;
 
-  const onPlay = useCallback(() => {
-    Object.entries(props.players.current).forEach(([key, player]) => {
-      if (+key !== props.index) {
-        player.pause();
-      }
-    });
-  }, [props.index, props.players]);
+  // const onPlay = useCallback(() => {
+  //   Object.entries(props.players.current).forEach(([key, player]) => {
+  //     if (+key !== props.index) {
+  //       player.pause();
+  //     }
+  //   });
+  // }, [props.index, props.players]);
 
-  const onPlayerEnd = useCallback(() => {
-    if (props.playNext) props.players.current[props.index + 1]?.play();
-  }, [props.playNext, props.index, props.players]);
+  // const onPlayerEnd = useCallback(() => {
+  //   if (props.playNext) props.players.current[props.index + 1]?.play();
+  // }, [props.playNext, props.index, props.players]);
 
-  const onPlayerInit = useCallback(
-    (player: VideoJSPlayer) => {
-      props.players.current[props.index] = player;
-    },
-    [props.index, props.players],
-  );
+  // const onPlayerInit = useCallback(
+  //   (player: VideoJSPlayer) => {
+  //     props.players.current[props.index] = player;
+  //   },
+  //   [props.index, props.players],
+  // );
+
+  const handlePlay = (candidate: Candidate) => {
+    console.log("clicked, candidate is", JSON.stringify(candidate));
+    setNowPlaying(candidate);
+    masterPlayerRef?.current?.play();
+  };
+
+  const handlePause = () => {
+    masterPlayerRef?.current?.pause();
+  };
+
+  useEffect(() => {
+    console.log("nowPlaying is ", JSON.stringify(nowPlaying));
+    console.log("candidate is ", JSON.stringify(candidate));
+    console.log("candidate === nowPlaying: ", candidate === nowPlaying);
+  }, [nowPlaying, candidate]);
 
   return (
     <Card
@@ -127,7 +145,14 @@ export default function CandidateCard(props: {
           minWidth: lgUp ? 250 : 0,
         }}
       >
-        {feed && candidate.array[0].playlistTimestamp ? (
+        {candidate !== nowPlaying ? (
+          <Button onClick={() => handlePlay(candidate)}>Play</Button>
+        ) : masterPlayerStatus === "paused" ? (
+          <Button onClick={() => handlePlay(candidate)}>Play</Button>
+        ) : (
+          <Button onClick={() => handlePause()}>Pause</Button>
+        )}{" "}
+        {/* {feed && candidate.array[0].playlistTimestamp ? (
           <CandidateCardPlayer
             feed={feed}
             timestamp={startPlaylistTimestamp}
@@ -157,7 +182,7 @@ export default function CandidateCard(props: {
           startPlaylistTimestamp +
           " feed: " +
           feed
-        )}
+        )} */}
       </Box>
       <Link
         // href needs a slash before so it isn't relative to folder path

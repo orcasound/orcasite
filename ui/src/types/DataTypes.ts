@@ -10,7 +10,7 @@ interface HumanData extends Omit<Detection, "candidate"> {
   timestampString: string;
 }
 
-export interface AIDetection {
+interface AIDetection {
   id: string;
   audioUri: string;
   spectrogramUri: string;
