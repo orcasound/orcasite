@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
-import { MutableRefObject, useEffect } from "react";
+import { MutableRefObject } from "react";
 
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
@@ -40,7 +40,7 @@ export default function CandidateCard(props: {
   // changeListState?: (value: number, status: string) => void;
   // command?: string;
   players: MutableRefObject<{ [index: number]: VideoJSPlayer }>;
-  playNext: boolean;
+  // playNext: boolean;
   feeds: Feed[];
 }) {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
@@ -119,11 +119,11 @@ export default function CandidateCard(props: {
     masterPlayerRef?.current?.pause();
   };
 
-  useEffect(() => {
-    console.log("nowPlaying is ", JSON.stringify(nowPlaying));
-    console.log("candidate is ", JSON.stringify(candidate));
-    console.log("candidate === nowPlaying: ", candidate === nowPlaying);
-  }, [nowPlaying, candidate]);
+  // useEffect(() => {
+  //   console.log("nowPlaying is ", JSON.stringify(nowPlaying));
+  //   console.log("candidate is ", JSON.stringify(candidate));
+  //   console.log("candidate === nowPlaying: ", candidate === nowPlaying);
+  // }, [nowPlaying, candidate]);
 
   return (
     <Card

@@ -27,7 +27,7 @@ export function CandidateCardAIPlayer({
   // command,
   onPlayerInit,
   onPlay,
-  onPlayerEnd,
+  // onPlayerEnd,
 }: {
   // feed: Pick<Feed, "nodeName" | "bucket">;
   marks?: { label: string; value: number }[];
@@ -41,14 +41,15 @@ export function CandidateCardAIPlayer({
   // command?: string;
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
-  onPlayerEnd?: () => void;
+  // onPlayerEnd?: () => void;
 }) {
   // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   // special to the AI player
   const startOffset = 0;
 
-  const { masterPlayerRef, setMasterPlayerStatus } = useNowPlaying();
+  const { masterPlayerRef, setMasterPlayerStatus, onPlayerEnd } =
+    useNowPlaying();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
@@ -125,6 +126,7 @@ export function CandidateCardAIPlayer({
       });
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? 0;
+        console.log(currentTime);
         if (currentTime >= endOffset) {
           player.currentTime(startOffset);
           setPlayerTime(startOffset);

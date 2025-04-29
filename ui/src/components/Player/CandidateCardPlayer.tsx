@@ -29,7 +29,7 @@ export function CandidateCardPlayer({
   // command,
   onPlayerInit,
   onPlay,
-  onPlayerEnd,
+  // onPlayerEnd,
 }: {
   feed: Pick<Feed, "nodeName" | "bucket">;
   marks?: { label: string; value: number }[];
@@ -42,10 +42,11 @@ export function CandidateCardPlayer({
   // command?: string;
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
-  onPlayerEnd?: () => void;
+  // onPlayerEnd?: () => void;
 }) {
   // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-  const { masterPlayerRef, setMasterPlayerStatus } = useNowPlaying();
+  const { masterPlayerRef, setMasterPlayerStatus, onPlayerEnd } =
+    useNowPlaying();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);

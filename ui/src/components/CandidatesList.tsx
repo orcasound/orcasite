@@ -15,6 +15,7 @@ import ReportsBarChart from "@/components/ReportsBarChart";
 import SearchBar from "@/components/SearchBar";
 import { useData } from "@/context/DataContext";
 import { useLayout } from "@/context/LayoutContext";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import { Candidate, CombinedData } from "@/types/DataTypes";
 
@@ -169,6 +170,8 @@ export default function CandidatesList() {
     isSuccess: boolean;
   } = useData();
 
+  const { setQueue } = useNowPlaying();
+
   const layout = useLayout();
 
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
@@ -242,7 +245,7 @@ export default function CandidatesList() {
   //   }));
   // };
 
-  const [playNext, _setPlayNext] = useState(true);
+  // const [playNext, _setPlayNext] = useState(true);
 
   const players = useRef({});
 
@@ -320,7 +323,8 @@ export default function CandidatesList() {
         ? sortDescending([...candidates])
         : sortAscending([...candidates]);
     setSortedCandidates(sorted);
-  }, [candidates, sortOrder, isSuccess]);
+    setQueue(sorted);
+  }, [candidates, sortOrder, isSuccess, setQueue]);
 
   const candidateCards = sortedCandidates.map(
     (candidate: Candidate, index: number) => (
@@ -336,7 +340,7 @@ export default function CandidatesList() {
         // command={playing.index === index ? "play" : "pause"}
         feeds={feeds}
         players={players}
-        playNext={playNext}
+        // playNext={playNext}
       />
     ),
   );

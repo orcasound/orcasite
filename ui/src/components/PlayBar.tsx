@@ -114,7 +114,10 @@ export default function PlayBar() {
               <Typography component="h2">{`${new Date(nowPlaying?.array[0].timestamp).toLocaleString()}`}</Typography>
               <Typography>{`${nowPlaying?.array[0].hydrophone}`}</Typography>
             </Stack>
-            <CandidateCardAIPlayer audioUri={playerProps.audioUri} />
+            <CandidateCardAIPlayer
+              audioUri={playerProps.audioUri}
+              key={playerProps.audioUri}
+            />
           </>
         ) : !nowPlaying.array ||
           (nowPlaying.array &&
