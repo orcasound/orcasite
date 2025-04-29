@@ -153,7 +153,7 @@ export default function CandidateCard(props: {
           <Button onClick={() => handlePause()}>Pause</Button>
         )}{" "}
         {/* {feed && candidate.array[0].playlistTimestamp ? (
-          <CandidateCardPlayer
+          <PlaybarPlayer
             feed={feed}
             timestamp={startPlaylistTimestamp}
             startOffset={startOffset}
@@ -165,7 +165,7 @@ export default function CandidateCard(props: {
           />
         ) : candidate.array[0].audioUri ? (
           <>
-            <CandidateCardAIPlayer
+            <PlaybarAIPlayer
               audioUri={candidate.array[0].audioUri}
               // index={props.index}
               onPlayerInit={onPlayerInit}

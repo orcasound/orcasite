@@ -16,8 +16,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
-import { CandidateCardAIPlayer } from "@/components/Player/CandidateCardAIPlayer";
-import { CandidateCardPlayer } from "@/components/Player/CandidateCardPlayer";
+import { PlaybarAIPlayer } from "@/components/Player/PlaybarAIPlayer";
+import { PlaybarPlayer } from "@/components/Player/PlaybarPlayer";
 import { useData } from "@/context/DataContext";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { CombinedData } from "@/types/DataTypes";
@@ -173,7 +173,7 @@ const CandidatePage: NextPageWithLayout = () => {
               }}
             >
               {detections.human.length ? (
-                <CandidateCardPlayer
+                <PlaybarPlayer
                   feed={feed}
                   playlistTimestamp={startTimestamp}
                   startOffset={startOffset}
@@ -181,7 +181,7 @@ const CandidatePage: NextPageWithLayout = () => {
                 />
               ) : detections.ai.length ? (
                 <>
-                  <CandidateCardAIPlayer audioUri={detections.ai[0].audioUri} />
+                  <PlaybarAIPlayer audioUri={detections.ai[0].audioUri} />
                 </>
               ) : (
                 "no player found"

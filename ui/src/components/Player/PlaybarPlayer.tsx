@@ -2,9 +2,12 @@ import "videojs-offset";
 
 import { Box, Slider, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useNowPlaying } from "@/context/NowPlayingContext";
+// import { useData } from "@/context/DataContext";
+import { Feed } from "@/graphql/generated";
+import { getHlsURI } from "@/hooks/useTimestampFetcher";
 
 import { type PlayerStatus } from "./Player";
 import PlayPauseButton from "./PlayPauseButton";
@@ -14,13 +17,15 @@ import { type VideoJSPlayer } from "./VideoJS";
 
 const VideoJS = dynamic(() => import("./VideoJS"));
 
-export function CandidateCardAIPlayer({
-  // feed,
+export function PlaybarPlayer({
+  clipDateTime,
+  clipNode,
+  feed,
+  image,
   marks,
-  // timestamp,
-  // startOffset,
-  // endOffset,
-  audioUri,
+  playlistTimestamp,
+  startOffset,
+  endOffset,
   onAudioPlay,
   // changeListState,
   // index,
@@ -29,12 +34,14 @@ export function CandidateCardAIPlayer({
   onPlay,
   // onPlayerEnd,
 }: {
-  // feed: Pick<Feed, "nodeName" | "bucket">;
+  clipDateTime?: string;
+  clipNode?: string;
+  feed: Pick<Feed, "nodeName" | "bucket">;
+  image: string | undefined;
   marks?: { label: string; value: number }[];
-  // timestamp: number;
-  // startOffset: number;
-  // endOffset: number;
-  audioUri: string;
+  playlistTimestamp: number;
+  startOffset: number;
+  endOffset: number;
   onAudioPlay?: () => void;
   // changeListState?: (value: number, status: string) => void;
   // index?: number;
@@ -44,50 +51,42 @@ export function CandidateCardAIPlayer({
   // onPlayerEnd?: () => void;
 }) {
   // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-
-  // special to the AI player
-  const startOffset = 0;
-
   const { masterPlayerRef, setMasterPlayerStatus, onPlayerEnd } =
     useNowPlaying();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
 
-  // special to the AI player
-  const [endOffset, setEndOffset] = useState(58);
+  const sliderMax = endOffset - startOffset;
+  const sliderValue = playerTime - startOffset;
 
-  // const sliderMax = endOffset - startOffset;
-  // const sliderValue = playerTime - startOffset;
-
-  // const hlsURI = getHlsURI(feed.bucket, feed.nodeName, timestamp);
+  const hlsURI = getHlsURI(feed.bucket, feed.nodeName, playlistTimestamp);
 
   const playerOptions = useMemo(
     () => ({
       autoplay: false,
-      // flash: {
-      //   hls: {
-      //     overrideNative: true,
-      //   },
-      // },
-      // html5: {
-      //   hls: {
-      //     overrideNative: true,
-      //   },
-      // },
+      flash: {
+        hls: {
+          overrideNative: true,
+        },
+      },
+      html5: {
+        hls: {
+          overrideNative: true,
+        },
+      },
       sources: [
         {
           // If hlsURI isn't set, use a dummy URI to trigger an error
           // The dummy URI doesn't actually exist, it should return 404
           // This is the only way to get videojs to throw an error, otherwise
           // it just won't initialize (if src is undefined/null/empty))
-          src: audioUri,
-          type: "audio/wav",
-          // type: "application/x-mpegurl",
+          src: hlsURI ?? `${feed.nodeName}/404`,
+          type: "application/x-mpegurl",
         },
       ],
     }),
-    [audioUri],
+    [hlsURI, feed?.nodeName],
   );
 
   const handleReady = useCallback(
@@ -98,23 +97,20 @@ export function CandidateCardAIPlayer({
         masterPlayerRef.current = playerRef.current;
         player.play();
       }
-
       if (onPlayerInit) onPlayerInit(player);
       player.on("playing", () => {
         setPlayerStatus("playing");
         setMasterPlayerStatus("playing");
-        // const currentTime = player.currentTime() ?? 0;
-        // if (currentTime < startOffset || currentTime > endOffset) {
-        //   player.currentTime(startOffset);
-        //   setPlayerTime(endOffset);
-        // }
-        // (changeListState && index) && changeListState(index, "playing");
+        const currentTime = player.currentTime() ?? 0;
+        if (currentTime < startOffset || currentTime > endOffset) {
+          player.currentTime(startOffset);
+        }
         if (onPlay) onPlay();
+        // if (setNowPlaying && candidate) setNowPlaying(candidate);
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
         setMasterPlayerStatus("paused");
-        // (changeListState && index) && changeListState(index, "paused");
       });
       player.on("waiting", () => {
         setPlayerStatus("loading");
@@ -124,10 +120,10 @@ export function CandidateCardAIPlayer({
         setPlayerStatus("error");
         setMasterPlayerStatus("error");
       });
+
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() ?? 0;
-        console.log(currentTime);
-        if (currentTime >= endOffset) {
+        if (currentTime > endOffset) {
           player.currentTime(startOffset);
           setPlayerTime(startOffset);
           player.pause();
@@ -137,9 +133,6 @@ export function CandidateCardAIPlayer({
         }
       });
       player.on("loadedmetadata", () => {
-        // special to the AI player
-        const duration = player.duration() || 0;
-        setEndOffset(duration);
         // On initial load, set player time to startOffset
         player.currentTime(startOffset);
       });
@@ -187,14 +180,18 @@ export function CandidateCardAIPlayer({
     }
   };
 
-  // useEffect(() => {
-  //   if (process.env.NODE_ENV === "development" && hlsURI) {
-  //     console.log(`New stream instance: ${hlsURI}`);
-  //   }
-  //   return () => {
-  //     setPlayerStatus("idle");
-  //   };
-  // }, [hlsURI, feed.nodeName]);
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development" && hlsURI) {
+      console.log(`New stream instance: ${hlsURI}`);
+    }
+    return () => {
+      setPlayerStatus("idle");
+    };
+  }, [hlsURI, feed.nodeName]);
+
+  useEffect(() => {
+    console.log("playerStatus: " + playerStatus);
+  }, [playerStatus]);
 
   const handleSliderChange = (
     _e: Event,
@@ -224,6 +221,7 @@ export function CandidateCardAIPlayer({
         justifyContent: "space-between",
         px: [0, 2],
         position: "relative",
+        // className: "candidate-card-player",
         // Keep player above the sliding drawer
         zIndex: theme.zIndex.drawer + 1,
         width: "100%",
@@ -232,13 +230,25 @@ export function CandidateCardAIPlayer({
       <Box display="none" id="video-js">
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      <Box ml={2} mr={6} id="play-pause-button">
+      <Box ml={0} mr={3} id="play-pause-button">
         <PlayPauseButton
           playerStatus={playerStatus}
           onClick={handlePlayPauseClick}
-          disabled={!audioUri}
+          disabled={!feed}
         />
       </Box>
+      <Box
+        mr={4}
+        sx={{
+          backgroundImage: `url(${image})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          width: "105px",
+          height: "60px",
+          borderRadius: "4px",
+        }}
+      ></Box>
       <Box
         sx={{
           display: "flex",
@@ -247,19 +257,24 @@ export function CandidateCardAIPlayer({
           paddingRight: "2em",
         }}
       >
-        <Box width={"100%"} id="slider">
+        <Box width={"100%"} height={"42px"} id="slider">
+          <Typography component="h2">
+            <span style={{ fontWeight: "bold" }}>{clipDateTime}</span> •{" "}
+            {clipNode}
+          </Typography>
           <Slider
             valueLabelDisplay="auto"
-            valueLabelFormat={(v) => `${v + startOffset.toFixed(2)} s`}
+            valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
             step={0.1}
-            max={endOffset - startOffset}
-            // max={sliderMax}
-            value={playerTime - startOffset}
-            // value={sliderValue}
+            max={sliderMax}
+            value={sliderValue}
             marks={marks}
             onChange={handleSliderChange}
             onChangeCommitted={handleSliderChangeCommitted}
             size="small"
+            sx={{
+              padding: "9px 0",
+            }}
           />
         </Box>
 
