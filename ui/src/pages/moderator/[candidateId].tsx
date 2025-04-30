@@ -16,8 +16,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
-import { CandidateCardAIPlayer } from "@/components/Player/CandidateCardAIPlayer";
-import { CandidateCardPlayer } from "@/components/Player/CandidateCardPlayer";
+import { PlaybarAIPlayer } from "@/components/Player/PlaybarAIPlayer";
+import { PlaybarPlayer } from "@/components/Player/PlaybarPlayer";
 import { useData } from "@/context/DataContext";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { CombinedData } from "@/types/DataTypes";
@@ -36,8 +36,11 @@ const CandidatePage: NextPageWithLayout = () => {
   // replace this with a direct react-query...
   const {
     combined,
-    isSuccess,
-  }: { combined: CombinedData[] | undefined; isSuccess: boolean } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
+    // isSuccess,
+  }: {
+    combined: CombinedData[] | undefined;
+    // isSuccess: boolean;
+  } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
 
   // // get hydrophone feed list
   const { feeds } = useData();
@@ -170,15 +173,15 @@ const CandidatePage: NextPageWithLayout = () => {
               }}
             >
               {detections.human.length ? (
-                <CandidateCardPlayer
+                <PlaybarPlayer
                   feed={feed}
-                  timestamp={startTimestamp}
+                  playlistTimestamp={startTimestamp}
                   startOffset={startOffset}
                   endOffset={endOffset}
                 />
               ) : detections.ai.length ? (
                 <>
-                  <CandidateCardAIPlayer audioUri={detections.ai[0].audioUri} />
+                  <PlaybarAIPlayer audioUri={detections.ai[0].audioUri} />
                 </>
               ) : (
                 "no player found"

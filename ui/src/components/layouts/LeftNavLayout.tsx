@@ -10,11 +10,12 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListSubheader from "@mui/material/ListSubheader";
 import Image from "next/image";
 import * as React from "react";
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 
 import Link from "@/components/Link";
+import PlayBar from "@/components/PlayBar";
+import { LayoutContext } from "@/context/LayoutContext";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
-import { Candidate } from "@/types/DataTypes";
 import { analytics } from "@/utils/analytics";
 
 import { TopNav } from "./Devias-dashboard/vertical-layout/top-nav";
@@ -54,11 +55,9 @@ function Brand({ onClick }: { onClick?: () => void }) {
   );
 }
 
-export function LeftNavLayout({ children }: { children: React.ReactNode }) {
+function LeftNavLayout({ children }: { children: React.ReactNode }) {
   //// DATA
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-
-  const [nowPlaying, setNowPlaying] = useState({} as Candidate);
 
   //// COMPONENTS
 
@@ -284,7 +283,7 @@ export function LeftNavLayout({ children }: { children: React.ReactNode }) {
         >
           {children}
         </Box>
-        {/* <PlayBar candidate={nowPlaying} /> */}
+        <PlayBar />
       </Box>
     </Box>
   );
@@ -293,7 +292,9 @@ export function LeftNavLayout({ children }: { children: React.ReactNode }) {
 export function getLeftNavLayout(page: ReactElement) {
   return (
     <MasterDataLayout>
-      <LeftNavLayout>{page}</LeftNavLayout>
+      <LayoutContext.Provider value="leftNav">
+        <LeftNavLayout>{page}</LeftNavLayout>
+      </LayoutContext.Provider>
     </MasterDataLayout>
   );
 }

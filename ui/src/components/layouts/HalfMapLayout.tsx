@@ -27,7 +27,7 @@ const feedFromSlug = (feedSlug: string) => ({
   latLng: { lat: 48.6, lng: -122.3 },
 });
 
-export function HalfMapLayout({ children }: { children: ReactNode }) {
+function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const slug = router.query.feed as string;
 

@@ -2,16 +2,17 @@ import { Box } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 import * as React from "react";
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { DataProvider } from "@/context/DataContext";
+import { NowPlayingProvider } from "@/context/NowPlayingContext";
 import {
   Detection,
   Feed,
   useDetectionsQuery,
   useFeedsQuery,
 } from "@/graphql/generated";
-import { AIData, Candidate } from "@/types/DataTypes";
+import { AIData } from "@/types/DataTypes";
 
 const endpointOrcahello =
   "https://aifororcasdetections.azurewebsites.net/api/detections?";
@@ -72,8 +73,6 @@ const lookupFeedId = (name: string, feedList: Feed[]) => {
 
 export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   //// DATA
-
-  const [nowPlaying, setNowPlaying] = useState({} as Candidate);
 
   // get data on hydrophones from seed data
   const feedsQueryResult = useFeedsQuery();
@@ -260,10 +259,8 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       combined: [...datasetHuman, ...datasetAI],
       feeds: feedList,
       isSuccess: isSuccess,
-      nowPlaying: nowPlaying,
-      setNowPlaying: setNowPlaying,
     };
-  }, [datasetHuman, aiDetections, feedList, isSuccess, nowPlaying]);
+  }, [datasetHuman, aiDetections, feedList, isSuccess]);
 
   //// RENDER
 
@@ -295,12 +292,14 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
           {useLiveData ? "Using LIVE data" : "Using SEED data"}
         </button>
       )}
-
-      <DataProvider data={dataset}>{children}</DataProvider>
+      <NowPlayingProvider>
+        <DataProvider data={dataset}>{children}</DataProvider>
+      </NowPlayingProvider>
     </Box>
   );
 }
 
-export function getMasterDataLayout(page: ReactElement) {
-  return <MasterDataLayout>{page}</MasterDataLayout>;
-}
+// Not needed
+// export function getMasterDataLayout(page: ReactElement) {
+//   return <MasterDataLayout>{page}</MasterDataLayout>;
+// }
