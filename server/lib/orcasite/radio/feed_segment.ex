@@ -67,6 +67,20 @@ defmodule Orcasite.Radio.FeedSegment do
     update_timestamp :updated_at
   end
 
+  calculations do
+    calculate :s3_url,
+              :string,
+              expr(
+                string_join([
+                  type("https://s3-", :string),
+                  bucket_region,
+                  type(".amazonaws.com/", :string),
+                  bucket,
+                  segment_path
+                ])
+              )
+  end
+
   relationships do
     belongs_to :feed, Orcasite.Radio.Feed, public?: true
     belongs_to :feed_stream, Orcasite.Radio.FeedStream, public?: true
@@ -124,6 +138,12 @@ defmodule Orcasite.Radio.FeedSegment do
                       ^arg(:end_time)
                     ))
              )
+    end
+
+    read :for_bout do
+      argument :bout_id, :string, allow_nil?: false
+
+      prepare Orcasite.Radio.Preparations.FeedSegmentsForBout
     end
 
     create :create do
@@ -212,7 +232,7 @@ defmodule Orcasite.Radio.FeedSegment do
 
   graphql do
     type :feed_segment
-    attribute_types [feed_id: :id, feed_stream_id: :id]
+    attribute_types feed_id: :id, feed_stream_id: :id
 
     queries do
       list :feed_segments, :index

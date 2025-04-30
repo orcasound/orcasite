@@ -34,6 +34,13 @@ defmodule Orcasite.Radio.Bout do
     update_timestamp :updated_at
   end
 
+  calculations do
+    calculate :export_json, :string, Orcasite.Radio.Calculations.BoutExportJson do
+      public? true
+      description "JSON file for exporting the bout and its feed segments"
+    end
+  end
+
   relationships do
     belongs_to :created_by_user, Orcasite.Accounts.User
 
@@ -55,6 +62,10 @@ defmodule Orcasite.Radio.Bout do
     many_to_many :tags, Orcasite.Radio.Tag do
       through Orcasite.Radio.ItemTag
       public? true
+    end
+
+    has_many :feed_segments, Orcasite.Radio.FeedSegment do
+      manual __MODULE__.Relationships.BoutFeedSegments
     end
   end
 
@@ -137,6 +148,7 @@ defmodule Orcasite.Radio.Bout do
       require_atomic? false
 
       change debug_log()
+
       change fn changeset, _ ->
         end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
         start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
