@@ -3,7 +3,7 @@ import { ThemeProvider } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 import * as React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 
 import { DataProvider } from "@/context/DataContext";
 import { NowPlayingProvider } from "@/context/NowPlayingContext";
@@ -15,6 +15,8 @@ import {
 } from "@/graphql/generated";
 import darkTheme from "@/styles/darkTheme";
 import { AIData } from "@/types/DataTypes";
+
+import PlayBar from "../PlayBar";
 
 const endpointOrcahello =
   "https://aifororcasdetections.azurewebsites.net/api/detections?";
@@ -297,14 +299,16 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       <NowPlayingProvider>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
-          <DataProvider data={dataset}>{children}</DataProvider>
+          <DataProvider data={dataset}>
+            {children}
+            <PlayBar />
+          </DataProvider>
         </ThemeProvider>
       </NowPlayingProvider>
     </Box>
   );
 }
 
-// Not needed
-// export function getMasterDataLayout(page: ReactElement) {
-//   return <MasterDataLayout>{page}</MasterDataLayout>;
-// }
+export function getMasterDataLayout(page: ReactElement) {
+  return <MasterDataLayout>{page}</MasterDataLayout>;
+}

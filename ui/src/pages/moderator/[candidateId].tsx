@@ -15,7 +15,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
+import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import { PlaybarAIPlayer } from "@/components/Player/PlaybarAIPlayer";
 import { PlaybarPlayer } from "@/components/Player/PlaybarPlayer";
 import { useData } from "@/context/DataContext";
@@ -29,21 +29,10 @@ const CandidatePage: NextPageWithLayout = () => {
     typeof candidateId === "string" ? candidateId?.split("_") : [];
   const startTime = new Date(startEnd[0]).getTime();
   const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
-  console.log("startTime: " + startTime + ", endTime: " + endTime);
 
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
-  // replace this with a direct react-query...
-  const {
-    combined,
-    // isSuccess,
-  }: {
-    combined: CombinedData[] | undefined;
-    // isSuccess: boolean;
-  } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
-
-  // // get hydrophone feed list
-  const { feeds } = useData();
+  const { combined, feeds } = useData();
 
   type DetectionStats = {
     combined: CombinedData[];
@@ -51,60 +40,89 @@ const CandidatePage: NextPageWithLayout = () => {
     ai: CombinedData[];
   };
 
+  const [playerProps, setPlayerProps] = useState({
+    clipDateTime: "",
+    clipNode: "",
+    feed: feeds.length > 0 ? feeds[0] : null,
+    image: feeds.length > 0 ? feeds[0].imageUrl : "",
+    playlist: 0,
+    startOffset: 0,
+    endOffset: 0,
+    audioUri: "",
+  });
+
   const [detections, setDetections] = useState<DetectionStats>({
     combined: [],
     human: [],
     ai: [],
   });
 
+  const userName = "UserProfile123";
+  const aiName = "Orcahello AI";
+
   useEffect(() => {
+    // select the detection array that matches the start/end times in the page URL
     const arr: CombinedData[] = [];
-    combined?.forEach((d) => {
+    combined.forEach((d) => {
       const time = new Date(d.timestamp).getTime();
-      if (time >= startTime && time <= endTime) {
-        console.log("both true");
-      }
       if (time >= startTime && time <= endTime) {
         arr.push(d);
       }
     });
+    // store the array and separate human vs ai
+    const humanArr = arr.filter((d) => d.newCategory !== "WHALE (AI)");
+    const aiArr = arr.filter((d) => d.newCategory === "WHALE (AI)");
     setDetections({
       combined: arr,
-      human: arr.filter((d) => d.newCategory !== "WHALE (AI)"),
-      ai: arr.filter((d) => d.newCategory === "WHALE (AI)"),
+      human: humanArr,
+      ai: aiArr,
     });
-    console.log("combined length is " + combined.length);
-  }, [combined, startTime, endTime]);
+    const startTimestamp = humanArr.length ? humanArr[0].playlistTimestamp : 0;
 
-  const userName = "UserProfile123";
-  const aiName = "Orcahello AI";
+    const offsetPadding = 15;
+    const minOffset = Math.min(...humanArr.map((d) => +d.playerOffset));
+    // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
 
-  const feed = feeds.filter((f) => f.id === detections?.human[0]?.feedId)[0];
-  const startTimestamp = detections.human.length
-    ? detections.human[0].playlistTimestamp
-    : 0;
+    // ensures that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
+    const firstPlaylist = humanArr.filter(
+      (d) => +d.playlistTimestamp === startTimestamp,
+    );
 
-  const offsetPadding = 15;
-  const minOffset = Math.min(...detections.human.map((d) => +d.playerOffset));
-  // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
+    const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
 
-  // ensures that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
-  const firstPlaylist = detections.human.filter(
-    (d) => +d.playlistTimestamp === startTimestamp,
-  );
+    const startOffset = Math.max(0, minOffset - offsetPadding);
+    const endOffset = maxOffset + offsetPadding;
 
-  const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
+    const feed = humanArr.length
+      ? feeds.find((f) => f.id === humanArr[0].feedId)
+      : feeds.find((f) => f.name === aiArr[0].hydrophone);
 
-  const startOffset = Math.max(0, minOffset - offsetPadding);
-  const endOffset = maxOffset + offsetPadding;
-
-  // const [breadcrumb, setBreadcrumb] = useState<string>("")
-  // useEffect(() => {
-  //   const breadcrumbName: string[] = [];
-  //   detections.human.length && breadcrumbName.push(communityName);
-  //   detections.ai.length && breadcrumbName.push(aiName);
-  //   setBreadcrumb(breadcrumbName.join(" + "));
-  // }, [detections])
+    // use feed and start/end for the player if there are any human detections
+    if (humanArr.length) {
+      setPlayerProps({
+        clipDateTime: new Date(humanArr[0].timestamp).toLocaleString(),
+        clipNode: feed ? feed.name : "",
+        feed: feed ? feed : feeds[0],
+        image: feed ? feed.imageUrl : "",
+        playlist: startTimestamp,
+        startOffset: startOffset,
+        endOffset: endOffset,
+        audioUri: "",
+      });
+      // otherwise, grab the audio clip from the first AI detection
+    } else if (aiArr.length) {
+      setPlayerProps({
+        clipDateTime: new Date(aiArr[0].timestamp).toLocaleString(),
+        clipNode: feed ? feed.name : "",
+        feed: null,
+        image: feed ? feed.imageUrl : "",
+        playlist: 0,
+        startOffset: 0,
+        endOffset: 0,
+        audioUri: aiArr[0].audioUri,
+      });
+    }
+  }, [combined, feeds, startTime, endTime]);
 
   return (
     <div>
@@ -172,16 +190,22 @@ const CandidatePage: NextPageWithLayout = () => {
                 minWidth: 250,
               }}
             >
-              {detections.human.length ? (
+              {detections.human.length && playerProps.feed ? (
                 <PlaybarPlayer
-                  feed={feed}
-                  playlistTimestamp={startTimestamp}
-                  startOffset={startOffset}
-                  endOffset={endOffset}
+                  clipDateTime={playerProps.clipDateTime}
+                  clipNode={playerProps.clipNode}
+                  feed={playerProps.feed}
+                  image={playerProps.image?.toString()}
+                  playlistTimestamp={playerProps.playlist}
+                  startOffset={playerProps.startOffset}
+                  endOffset={playerProps.endOffset}
                 />
               ) : detections.ai.length ? (
                 <>
-                  <PlaybarAIPlayer audioUri={detections.ai[0].audioUri} />
+                  <PlaybarAIPlayer
+                    audioUri={detections.ai[0].audioUri}
+                    image={playerProps.image?.toString()}
+                  />
                 </>
               ) : (
                 "no player found"
@@ -250,6 +274,6 @@ const CandidatePage: NextPageWithLayout = () => {
   );
 };
 
-CandidatePage.getLayout = getModeratorLayout;
+CandidatePage.getLayout = getLeftNavLayout;
 
 export default CandidatePage;

@@ -2,6 +2,7 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -33,12 +34,36 @@ export const NowPlayingProvider = ({
   const [masterPlayerStatus, setMasterPlayerStatus] = useState("empty");
   const masterPlayerRef = useRef<VideoJSPlayer | null>(null);
   const [queue, setQueue] = useState<Candidate[]>([]);
-  const onPlayerEnd = useCallback(() => {
-    const currentIndex = queue.indexOf(nowPlaying);
-    const nextIndex = currentIndex + 1;
-    setNowPlaying(queue[nextIndex]);
-    console.log("currentIndex in queue: " + currentIndex);
+
+  const onPlayerEndRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    onPlayerEndRef.current = () => {
+      const currentIndex = queue.findIndex(
+        (candidate) => candidate.id === nowPlaying.id,
+      );
+      const nextIndex = currentIndex + 1;
+      if (queue[nextIndex]) {
+        setNowPlaying(queue[nextIndex]);
+      }
+      console.log("nowPlaying: " + JSON.stringify(nowPlaying, null, 2));
+      console.log("currentIndex in queue: " + currentIndex);
+      console.log("next up: " + queue[nextIndex]?.descriptions);
+    };
   }, [queue, nowPlaying, setNowPlaying]);
+
+  const onPlayerEnd = useCallback(() => {
+    onPlayerEndRef.current();
+  }, []);
+
+  // const onPlayerEnd = useCallback(() => {
+  //   const currentIndex = queue.indexOf(nowPlaying);
+  //   const nextIndex = currentIndex + 1;
+  //   if(queue[nextIndex]) setNowPlaying(queue[nextIndex]);
+  //   console.log("currentIndex in queue: " + currentIndex);
+  //   console.log("next up: " + queue[nextIndex].descriptions)
+  // }, [queue, nowPlaying, setNowPlaying]);
+
   return (
     <NowPlayingContext.Provider
       value={{

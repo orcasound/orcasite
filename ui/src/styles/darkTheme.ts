@@ -8,11 +8,11 @@ import theme from "./theme";
 
 // Fonts with fallbacks
 const mukta = "Mukta, Helvetica, Arial, sans-serif";
-const montserrat = "Montserrat, Helvetica, Arial, sans-serif";
+// const montserrat = "Montserrat, Helvetica, Arial, sans-serif";
 
 // Hack to get access to theme helpers
 // see https://github.com/mui/material-ui/issues/35895#issuecomment-1401579770
-const helperTheme = createTheme();
+// const helperTheme = createTheme();
 
 const darkTheme = createTheme({
   ...theme,

@@ -53,6 +53,7 @@ interface Annotation {
 }
 
 export interface Candidate {
+  id: string;
   array: CombinedData[];
   whale: number;
   vessel: number;

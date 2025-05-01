@@ -13,7 +13,6 @@ import * as React from "react";
 import { ReactElement } from "react";
 
 import Link from "@/components/Link";
-import PlayBar from "@/components/PlayBar";
 import { LayoutContext } from "@/context/LayoutContext";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { analytics } from "@/utils/analytics";
@@ -244,7 +243,6 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
         )}
 
         <Box sx={{ width: "100%", padding: 0, margin: 0 }}>{children}</Box>
-        <PlayBar />
       </Box>
     </Box>
   );

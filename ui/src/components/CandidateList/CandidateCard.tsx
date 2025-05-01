@@ -1,17 +1,15 @@
 import { PauseCircle, PlayCircle } from "@mui/icons-material";
-import type { Theme } from "@mui/material";
 import {
   Box,
   Card,
   CardActionArea,
   CardContent,
   Chip,
-  Link,
   Stack,
   Typography,
 } from "@mui/material";
-import { useMediaQuery } from "@mui/material";
 
+import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Candidate } from "@/types/DataTypes";
@@ -40,7 +38,6 @@ export default function CandidateCard(props: {
 }) {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
     useNowPlaying();
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   const { feeds } = useData();
   const feed = feeds.find(
@@ -116,20 +113,21 @@ export default function CandidateCard(props: {
           p: 2,
         }}
       >
-        {candidate !== nowPlaying
+        {candidate.id !== nowPlaying.id
           ? playIcon
           : masterPlayerStatus === "paused"
             ? playIcon
             : pauseIcon}
       </Box>
       <Link
+        // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page
         // href needs a slash before so it isn't relative to folder path
         href={
           firstTimestamp === lastTimestamp
             ? `/moderator/${firstTimestampString}`
             : `/moderator/${firstTimestampString}_${lastTimestampString}`
         }
-        sx={{ width: "100%", color: "inherit", textDecoration: "inherit" }}
+        style={{ width: "100%", color: "inherit", textDecoration: "inherit" }}
       >
         <CardActionArea>
           <CardContent

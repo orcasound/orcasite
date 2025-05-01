@@ -26,7 +26,6 @@ export default function PlayBar() {
       const firstDetection = candidateArray[candidateArray.length - 1];
       const lastDetection = candidateArray[0];
       const feed = feeds.find((feed) => feed.id === firstDetection.feedId);
-      console.log("feed is: " + JSON.stringify(feed, null, 2));
 
       const playlist =
         candidateArray.length > 0
@@ -51,6 +50,7 @@ export default function PlayBar() {
       const startOffset = Math.max(0, minOffset - offsetPadding);
       const endOffset = maxOffset + offsetPadding;
 
+      // there will only be a feed if there are human detections in the candidate
       if (feed) {
         setPlayerProps({
           feed: feed ? feed : feeds[0],
@@ -60,9 +60,8 @@ export default function PlayBar() {
           endOffset: endOffset,
           audioUri: "",
         });
-      }
-
-      if (lastDetection.audioUri) {
+        // otherwise, grab the audio clip from the earliest AI detection
+      } else if (lastDetection.audioUri) {
         setPlayerProps((p) => ({
           ...p,
           feed: null,
@@ -94,7 +93,7 @@ export default function PlayBar() {
   return (
     <AppBar
       position="fixed"
-      //   color="base"
+      color="base"
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,
