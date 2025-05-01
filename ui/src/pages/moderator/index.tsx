@@ -1,12 +1,14 @@
-import type { NextPageWithLayout } from "@/pages/_app";
-import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-import ModeratorCandidatesPage from "./candidates";
+const ModeratorIndexPage = () => {
+  const router = useRouter();
 
-const ModeratorIndexPage: NextPageWithLayout = () => {
-  return <ModeratorCandidatesPage />;
+  useEffect(() => {
+    router.replace("/moderator/candidates");
+  }, [router]);
+
+  return null;
 };
-
-ModeratorCandidatesPage.getLayout = getLeftNavLayout;
 
 export default ModeratorIndexPage;
