@@ -36,7 +36,7 @@ export function PlaybarPlayer({
 }: {
   clipDateTime?: string;
   clipNode?: string;
-  feed: Pick<Feed, "nodeName" | "bucket">;
+  feed: Feed;
   image: string | undefined;
   marks?: { label: string; value: number }[];
   playlistTimestamp: number;

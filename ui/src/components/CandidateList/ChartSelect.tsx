@@ -22,19 +22,29 @@ export default function ChartSelect({
   size = "small",
   variant,
   onChange,
-  sx,
 }: SelectProps) {
   return (
     <Box sx={{ minWidth: 120, flex: 1 }}>
-      <FormControl fullWidth size={size}>
+      <FormControl fullWidth size={size} variant={variant}>
         <Select
           id={`${name}-select`}
           value={value}
-          // size={size}
-          variant={variant}
+          size={size}
           onChange={onChange}
           name={name}
-          sx={sx}
+          sx={{
+            ...(variant === "standard" && {
+              "&::before": {
+                borderBottom: "none !important", // removes underline in standard variant
+              },
+              "&::after": {
+                borderBottom: "none !important", // removes focused underline
+              },
+              "& .MuiSelect-select": {
+                padding: 0,
+              },
+            }),
+          }}
         >
           {list?.map((el) => (
             <MenuItem key={el.label} value={el.value}>

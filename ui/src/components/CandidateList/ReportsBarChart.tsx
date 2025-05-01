@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import React from "react";
 
-import { Feed } from "@/graphql/generated";
+import { useData } from "@/context/DataContext";
 import { CombinedData } from "@/types/DataTypes";
 
 const chartSetting = {
@@ -36,12 +36,12 @@ type ChartData = {
 export default function ReportsBarChart({
   dataset,
   timeRange,
-  feeds,
 }: {
   dataset: CombinedData[];
   timeRange: number;
-  feeds: Feed[];
 }) {
+  const { feeds } = useData();
+
   const [legend, setLegend] = React.useState(true);
 
   const max = Date.now();

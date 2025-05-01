@@ -15,7 +15,6 @@ import * as React from "react";
 import { ReactElement, useEffect, useMemo, useState } from "react";
 
 import Link from "@/components/Link";
-import PlayBar from "@/components/PlayBar";
 import { DataProvider } from "@/context/DataContext";
 import { NowPlayingProvider } from "@/context/NowPlayingContext";
 import {
@@ -558,7 +557,6 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
             <DataProvider data={dataset}>{children}</DataProvider>
           </NowPlayingProvider>
         </Box>
-        <PlayBar />
       </Box>
     </Box>
   );
