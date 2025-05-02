@@ -8,10 +8,6 @@ import React from "react";
 
 import { useData } from "@/context/DataContext";
 
-type SearchBarProps = {
-  setSearchQuery: (query: string) => void;
-};
-
 const SearchBar = () => {
   const { setFilters } = useData();
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
