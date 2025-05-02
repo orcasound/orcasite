@@ -1,4 +1,4 @@
-import CandidatesList from "@/components/CandidateList/CandidatesList";
+import CandidatesGrid from "@/components/CandidateList/CandidatesGrid";
 import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import { LayoutContext } from "@/context/LayoutContext";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -6,7 +6,7 @@ import type { NextPageWithLayout } from "@/pages/_app";
 const ModeratorCandidatesPage: NextPageWithLayout = () => {
   return (
     <LayoutContext.Provider value="leftNav">
-      <CandidatesList />
+      <CandidatesGrid />
     </LayoutContext.Provider>
   );
 };

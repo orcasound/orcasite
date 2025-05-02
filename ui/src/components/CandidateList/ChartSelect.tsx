@@ -40,6 +40,9 @@ export default function ChartSelect({
               "&::after": {
                 borderBottom: "none !important", // removes focused underline
               },
+              "&:hover:not(.Mui-disabled)::before": {
+                borderBottom: "none",
+              },
               "& .MuiSelect-select": {
                 padding: 0,
               },

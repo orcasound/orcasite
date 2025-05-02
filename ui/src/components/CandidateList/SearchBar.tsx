@@ -4,15 +4,21 @@ import FormControl from "@mui/material/FormControl";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import React, { FC } from "react";
+import React from "react";
+
+import { useData } from "@/context/DataContext";
 
 type SearchBarProps = {
   setSearchQuery: (query: string) => void;
 };
 
-const SearchBar: FC<SearchBarProps> = ({ setSearchQuery }) => {
+const SearchBar = () => {
+  const { setFilters } = useData();
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value.toLowerCase());
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      searchQuery: e.target.value.toLowerCase(),
+    }));
   };
 
   return (

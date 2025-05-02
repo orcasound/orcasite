@@ -98,15 +98,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             // flex: "0 0 400px"
           }}
         >
-          {/* <Box sx={{ p: 2 }}>
-              <Typography variant="h5">
-                Livestreams
-              </Typography>
-            </Box> */}
           {children}
-          {/* <FeedsPage /> */}
-          {/* <Candidates /> */}
-          {/* <BoutsPage /> */}
         </Box>
 
         <Box
