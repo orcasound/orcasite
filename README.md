@@ -6,6 +6,9 @@ UX case study: [https://www.adriandesigner.com/orcasound-listening-experience](h
 
 ___
 
+![After - candidate screens](https://github.com/user-attachments/assets/d8cf3850-785d-453e-bea3-cf2d97df6e6a)
+
+
 ### Design Goals
 We set out to:
 - Make past detections and user reports more discoverable.
@@ -20,9 +23,6 @@ The redesigned prototype introduces:
 - Integrated spectrogram viewer and audio player for quick review and annotation.
 - Previewable detection markers tied to audio segments for easier analysis.
 - A responsive layout optimized for both desktop and mobile use.
-
-
-![After - candidate screens](https://github.com/user-attachments/assets/d8cf3850-785d-453e-bea3-cf2d97df6e6a)
 
 ---
 
