@@ -1,19 +1,25 @@
 import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { useMemo } from "react";
 
+import { CandidateFilters } from "@/context/DataContext";
 import { CombinedData } from "@/types/DataTypes";
 
 import { allTime, customRange } from "./CandidateListFilters";
-import { CandidateFilters } from "./CandidatesList";
+
+// dayjs plugin for date pickers
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export default function useFilteredData(
   data: CombinedData[],
   filters: CandidateFilters,
-  searchQuery: string,
 ): CombinedData[] {
+  const searchQuery = filters.searchQuery;
+
   return useMemo(() => {
     const min = Date.now() - filters.timeRange;
-    console.log("filteredData recalculated");
 
     return data.filter((el: CombinedData) => {
       return (

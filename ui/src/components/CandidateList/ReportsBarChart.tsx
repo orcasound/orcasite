@@ -1,9 +1,8 @@
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useData } from "@/context/DataContext";
-import { CombinedData } from "@/types/DataTypes";
 
 const chartSetting = {
   yAxis: [
@@ -12,11 +11,11 @@ const chartSetting = {
       dataKey: "detections",
     },
   ],
-  height: 300,
+  height: 340,
   margin: {
-    top: 70,
+    top: 10,
     right: 20,
-    bottom: 40,
+    bottom: 110,
     left: 40,
   },
 };
@@ -33,16 +32,13 @@ type ChartData = {
   [key: string]: number | string;
 };
 
-export default function ReportsBarChart({
-  dataset,
-  timeRange,
-}: {
-  dataset: CombinedData[];
-  timeRange: number;
-}) {
-  const { feeds } = useData();
+export default function ReportsBarChart() {
+  const { feeds, filteredData, filters } = useData();
+  const timeRange = filters.timeRange;
 
-  const [legend, setLegend] = React.useState(true);
+  const feedNames = [...new Set(filteredData.map((el) => el.hydrophone))];
+  const categories = [...new Set(filteredData.map((el) => el.newCategory))];
+  const legend = filters.chartLegend;
 
   const max = Date.now();
   const min = max - timeRange;
@@ -65,25 +61,29 @@ export default function ReportsBarChart({
     });
   }
 
-  const categorySeries = [
-    { dataKey: "whale", label: "Whale" },
-    { dataKey: "vessel", label: "Vessel" },
-    { dataKey: "other", label: "Other" },
-    { dataKey: "whale (ai)", label: "Whale (AI)" },
-  ];
+  // const categorySeries = [
+  //   { dataKey: "whale", label: "Whale" },
+  //   { dataKey: "vessel", label: "Vessel" },
+  //   { dataKey: "other", label: "Other" },
+  //   { dataKey: "whale (ai)", label: "Whale (AI)" },
+  // ];
 
-  const hydrophoneSeries = feeds.map((el) => ({
-    dataKey: el.name.toLowerCase(),
-    label: el.name,
+  const categorySeries = categories.map((el) => ({
+    dataKey: el.toLowerCase(),
+    label: el,
   }));
-  hydrophoneSeries.shift(); // remove the "all hydrophones" from legend
+
+  const hydrophoneSeries = feedNames.map((el) => ({
+    dataKey: el.toLowerCase(),
+    label: el,
+  }));
 
   // create an array of objects for each hydrophone name that looks like [{"name1": 0}, {"name2": 0}]
-  const hydrophoneCounts = feeds.map((el) => ({
-    [el.name.toLowerCase()]: 0,
+  const hydrophoneCounts = feedNames.map((el) => ({
+    [el.toLowerCase()]: 0,
   }));
 
-  // add the name/value pair of item in the hydrophoneCounts object to each item in chartData
+  // add each name/value pair in hydrophoneCounts to each item in chartData
   chartData.forEach((el) => {
     hydrophoneCounts.forEach((hydro) => {
       Object.assign(el, hydro);
@@ -91,9 +91,9 @@ export default function ReportsBarChart({
   });
 
   const countData = () => {
-    // iterate over each report in the dataset array and define the timestamp and tick index
-    for (let i = 0; i < dataset.length; i++) {
-      const timestamp = Date.parse(dataset[i].timestampString);
+    // iterate over each report in the filteredData array and define the timestamp and tick index
+    for (let i = 0; i < filteredData.length; i++) {
+      const timestamp = Date.parse(filteredData[i].timestampString);
       const tick = Math.round((timestamp - min) / (1000 * 60 * 60));
       // iterate over each hour of the chartData array and determine if the report tick matches the chart hour
       for (let j = 0; j < chartData.length; j++) {
@@ -102,7 +102,7 @@ export default function ReportsBarChart({
           const chartItem = chartData[j];
           chartItem.detections += 1;
 
-          const category = dataset[i].newCategory.toLowerCase();
+          const category = filteredData[i].newCategory.toLowerCase();
 
           switch (category) {
             case "whale":
@@ -121,7 +121,7 @@ export default function ReportsBarChart({
               break;
           }
           // also, get the hydrophone name
-          const feedName = dataset[i].hydrophone.toLowerCase();
+          const feedName = filteredData[i].hydrophone.toLowerCase();
           // if the chartItem object has that feedName as a key, increment it by one
           if (chartItem[feedName] !== undefined) {
             if (typeof chartItem[feedName] === "number") {
@@ -134,39 +134,10 @@ export default function ReportsBarChart({
   };
   countData();
 
-  interface ChartButtonProps {
-    onClick: (e: React.MouseEvent) => void;
-    name: string;
-    label: string;
-  }
-
-  const ChartButton: React.FC<ChartButtonProps> = ({
-    onClick,
-    name,
-    label,
-  }) => {
-    return (
-      <Button
-        size="small"
-        onClick={onClick}
-        name={name}
-        variant={
-          legend && name === "category"
-            ? "contained"
-            : !legend && name === "hydro"
-              ? "contained"
-              : "outlined"
-        }
-      >
-        {label}
-      </Button>
-    );
-  };
-
-  const handleLegend = (e: React.MouseEvent) => {
-    const button = e.target as HTMLButtonElement;
-    setLegend(button.name === "category"); // returns true/false
-  };
+  useEffect(() => {
+    console.log(JSON.stringify(filteredData[0], null, 2));
+    console.log(feedNames);
+  });
 
   return (
     <Box
@@ -180,11 +151,11 @@ export default function ReportsBarChart({
         xAxis={[{ scaleType: "band", dataKey: "label", label: "Hour" }]}
         slotProps={{
           legend: {
-            position: { horizontal: "middle", vertical: "top" },
+            position: { horizontal: "middle", vertical: "bottom" },
             padding: { bottom: 0, top: 0 },
           },
         }}
-        series={legend ? categorySeries : hydrophoneSeries}
+        series={legend === "category" ? categorySeries : hydrophoneSeries}
         {...chartSetting}
       />
       <Box
@@ -195,7 +166,7 @@ export default function ReportsBarChart({
           padding: "24px 0",
         }}
       >
-        <ChartButton
+        {/* <ChartButton
           onClick={handleLegend}
           name="category"
           label="By category"
@@ -204,7 +175,7 @@ export default function ReportsBarChart({
           onClick={handleLegend}
           name="hydro"
           label="By hydrophone"
-        />
+        /> */}
       </Box>
     </Box>
   );

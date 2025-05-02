@@ -1,16 +1,37 @@
-import React, { createContext, useContext } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-import { Dataset } from "@/types/DataTypes";
+import { defaultRange } from "@/components/CandidateList/CandidateListFilters";
+import useFilteredData from "@/components/CandidateList/useFilteredData";
+import useSortedCandidates from "@/components/CandidateList/useSortedCandidates";
+import { Feed } from "@/graphql/generated";
+import { Candidate, CombinedData, Dataset } from "@/types/DataTypes";
 
-const DataContext = createContext<Dataset>({
-  human: [],
-  ai: [],
-  combined: [],
-  isSuccess: false,
-  feeds: [],
-});
+import { useNowPlaying } from "./NowPlayingContext";
 
-export const useData = () => useContext(DataContext);
+// filters
+export interface CandidateFilters {
+  timeRange: number;
+  timeIncrement: number;
+  hydrophone: string;
+  category: string;
+  startDate: Dayjs | null;
+  endDate: Dayjs | null;
+  sortOrder: "asc" | "desc";
+  searchQuery: string;
+  chartLegend: "category" | "hydrophone";
+}
+
+interface DataContextType {
+  feeds: Feed[];
+  filteredData: CombinedData[];
+  sortedCandidates: Candidate[];
+  filters: CandidateFilters;
+  setFilters: React.Dispatch<React.SetStateAction<CandidateFilters>>;
+  isSuccess: boolean;
+}
+
+const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider = ({
   children,
@@ -19,5 +40,55 @@ export const DataProvider = ({
   children: React.ReactNode;
   data: Dataset;
 }) => {
-  return <DataContext.Provider value={data}>{children}</DataContext.Provider>;
+  const feeds = data.feeds;
+  const isSuccess = data.isSuccess;
+
+  const [filters, setFilters] = useState<CandidateFilters>({
+    timeRange: defaultRange,
+    timeIncrement: 15,
+    hydrophone: "All hydrophones",
+    category: "All categories",
+    startDate: null,
+    endDate: dayjs(),
+    sortOrder: "desc",
+    searchQuery: "",
+    chartLegend: "category",
+  });
+
+  const filteredData = useFilteredData(data.combined, filters);
+
+  const sortedCandidates = useSortedCandidates(
+    filteredData,
+    filters.timeIncrement,
+    filters.sortOrder,
+  );
+
+  // playbar queue
+  const { setQueue } = useNowPlaying();
+  useEffect(() => {
+    setQueue(sortedCandidates);
+  }, [sortedCandidates, setQueue]);
+
+  return (
+    <DataContext.Provider
+      value={{
+        feeds,
+        filteredData,
+        sortedCandidates,
+        filters,
+        setFilters,
+        isSuccess,
+      }}
+    >
+      {children}
+    </DataContext.Provider>
+  );
+};
+
+export const useData = (): DataContextType => {
+  const context = useContext(DataContext);
+  if (!context) {
+    throw new Error("useData must be used within a DataContextProvider");
+  }
+  return context;
 };

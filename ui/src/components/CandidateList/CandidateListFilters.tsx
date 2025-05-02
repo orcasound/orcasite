@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import { useData } from "@/context/DataContext";
 
-import { CandidateFilters } from "./CandidatesList";
 import ChartSelect from "./ChartSelect";
 import { CustomDatePicker } from "./CustomDatePicker";
 import SearchBar from "./SearchBar";
@@ -86,16 +85,8 @@ const categorySelect = [
   },
 ];
 
-const CandidateListFilters = ({
-  filters,
-  setFilters,
-  setSearchQuery,
-}: {
-  filters: CandidateFilters;
-  setFilters: React.Dispatch<React.SetStateAction<CandidateFilters>>;
-  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-}) => {
-  const { feeds } = useData();
+const CandidateListFilters = () => {
+  const { feeds, filters, setFilters } = useData();
   const feedList = feeds.map((el) => ({
     label: el.name,
     value: el.name,
@@ -146,13 +137,12 @@ const CandidateListFilters = ({
     <Box
       style={{
         display: "flex",
-        margin: "24px 0",
         gap: "1rem",
         flexWrap: "wrap",
         width: "100%",
       }}
     >
-      <SearchBar setSearchQuery={setSearchQuery} />
+      <SearchBar />
       <ChartSelect
         name={"timeRange"}
         value={filters.timeRange}

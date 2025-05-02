@@ -1,9 +1,14 @@
-import type { NextPageWithLayout } from "@/pages/_app";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-import ModeratorCandidatesPage from "./candidates";
+const ModeratorIndexPage = () => {
+  const router = useRouter();
 
-const ModeratorIndexPage: NextPageWithLayout = () => {
-  return <ModeratorCandidatesPage />;
+  useEffect(() => {
+    router.replace("/moderator/candidates");
+  }, [router]);
+
+  return null;
 };
 
 export default ModeratorIndexPage;

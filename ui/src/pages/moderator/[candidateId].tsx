@@ -32,10 +32,10 @@ const CandidatePage: NextPageWithLayout = () => {
 
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
-  const { combined, feeds } = useData();
+  const { filteredData, feeds } = useData();
 
   type DetectionStats = {
-    combined: CombinedData[];
+    all: CombinedData[];
     human: CombinedData[];
     ai: CombinedData[];
   };
@@ -52,7 +52,7 @@ const CandidatePage: NextPageWithLayout = () => {
   });
 
   const [detections, setDetections] = useState<DetectionStats>({
-    combined: [],
+    all: [],
     human: [],
     ai: [],
   });
@@ -63,7 +63,7 @@ const CandidatePage: NextPageWithLayout = () => {
   useEffect(() => {
     // select the detection array that matches the start/end times in the page URL
     const arr: CombinedData[] = [];
-    combined.forEach((d) => {
+    filteredData.forEach((d) => {
       const time = new Date(d.timestamp).getTime();
       if (time >= startTime && time <= endTime) {
         arr.push(d);
@@ -73,7 +73,7 @@ const CandidatePage: NextPageWithLayout = () => {
     const humanArr = arr.filter((d) => d.newCategory !== "WHALE (AI)");
     const aiArr = arr.filter((d) => d.newCategory === "WHALE (AI)");
     setDetections({
-      combined: arr,
+      all: arr,
       human: humanArr,
       ai: aiArr,
     });
@@ -122,7 +122,7 @@ const CandidatePage: NextPageWithLayout = () => {
         audioUri: aiArr[0].audioUri,
       });
     }
-  }, [combined, feeds, startTime, endTime]);
+  }, [filteredData, feeds, startTime, endTime]);
 
   return (
     <div>
@@ -135,24 +135,13 @@ const CandidatePage: NextPageWithLayout = () => {
       >
         <Grid container spacing={4} height={"100vh"}>
           <Grid size={lgUp ? 8 : 12}>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              {/* <Breadcrumbs sx={{ paddingTop: 4, width: "50%" }}>
-          <Link underline="hover" color="inherit" href={"/candidates"}>
-            Recordings
-          </Link>
-          <Typography>
-            {breadcrumb}
-          </Typography>
-        </Breadcrumbs> */}
-              {/* <Breadcrumbs sx={{ paddingTop: 4, justifyContent: "flex-end" }}>
-          <Typography>&nbsp;{!isSuccess && "Waiting for Orcahello request..."}</Typography>
-        </Breadcrumbs> */}
-            </Box>
-
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            ></Box>
             <Box sx={{ marginTop: 4 }}>
               <Box>
                 <Typography variant="h6">
-                  {detections.combined[0]?.hydrophone}
+                  {detections.all[0]?.hydrophone}
                 </Typography>
                 <Typography variant="h4">
                   {new Date(startEnd[0]).toLocaleString()}
@@ -213,7 +202,7 @@ const CandidatePage: NextPageWithLayout = () => {
             </Box>
             <Box className="main">
               <List>
-                {detections.combined?.map((el, index) => (
+                {detections.all?.map((el, index) => (
                   <ListItemButton key={index}>
                     <ListItemAvatar>
                       <AccountCircle style={{ fontSize: 40, opacity: 0.9 }} />

@@ -104,7 +104,6 @@ export default function useSortedCandidates(
   sortOrder: string,
 ): Candidate[] {
   return useMemo(() => {
-    console.log("sortedData recalculated");
     const created = createCandidates(rawData, timeIncrement);
     const sorted = sortCandidates(created, sortOrder);
     return sorted;
