@@ -14,16 +14,6 @@ We set out to:
 
 ---
 
-### Before
-
-The existing site allowed real-time listening and manual reporting, but had limited historical context and minimal interactivity:
-
-![Before - candidate screens](https://github.com/user-attachments/assets/e7adc8a1-0c02-47af-87ab-6ddfaaa17494)
-
----
-
-### After
-
 The redesigned prototype introduces:
 
 - A searchable, filterable list of historical recordings based on user reports and AI detections.
