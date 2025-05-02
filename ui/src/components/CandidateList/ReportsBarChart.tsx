@@ -33,7 +33,7 @@ type ChartData = {
 };
 
 export default function ReportsBarChart() {
-  const { feeds, filteredData, filters } = useData();
+  const { filteredData, filters } = useData();
   const timeRange = filters.timeRange;
 
   const feedNames = [...new Set(filteredData.map((el) => el.hydrophone))];

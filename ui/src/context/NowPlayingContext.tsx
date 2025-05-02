@@ -35,7 +35,7 @@ export const NowPlayingProvider = ({
   const masterPlayerRef = useRef<VideoJSPlayer | null>(null);
   const [queue, setQueue] = useState<Candidate[]>([]);
 
-  const onPlayerEndRef = useRef<() => void>(() => {});
+  const onPlayerEndRef = useRef<(() => void) | undefined>(undefined);
 
   useEffect(() => {
     onPlayerEndRef.current = () => {
@@ -53,16 +53,8 @@ export const NowPlayingProvider = ({
   }, [queue, nowPlaying, setNowPlaying]);
 
   const onPlayerEnd = useCallback(() => {
-    onPlayerEndRef.current();
+    onPlayerEndRef.current?.();
   }, []);
-
-  // const onPlayerEnd = useCallback(() => {
-  //   const currentIndex = queue.indexOf(nowPlaying);
-  //   const nextIndex = currentIndex + 1;
-  //   if(queue[nextIndex]) setNowPlaying(queue[nextIndex]);
-  //   console.log("currentIndex in queue: " + currentIndex);
-  //   console.log("next up: " + queue[nextIndex].descriptions)
-  // }, [queue, nowPlaying, setNowPlaying]);
 
   return (
     <NowPlayingContext.Provider

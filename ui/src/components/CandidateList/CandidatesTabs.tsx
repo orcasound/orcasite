@@ -1,20 +1,13 @@
-import type { Theme } from "@mui/material";
 import { Box, Container, Tab, Tabs } from "@mui/material";
-import { useMediaQuery } from "@mui/material";
 import { useState } from "react";
 
 import ReportsBarChart from "@/components/CandidateList/ReportsBarChart";
-import { useLayout } from "@/context/LayoutContext";
 
 import CandidateListFilters from "./CandidateListFilters";
 import CandidatesList from "./CandidatesList";
 import { CandidatesResults } from "./CandidatesResults";
 
 export default function CandidatesTabs() {
-  // layout
-  const layout = useLayout();
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-
   // tabs
   interface TabProps {
     index: number;
@@ -27,8 +20,9 @@ export default function CandidatesTabs() {
     value: number;
   }
 
-  function CustomTab(props: TabProps) {
-    const { label, index, ...other } = props;
+  // couldn't make this work, need to revisit
+  function _CustomTab(props: TabProps) {
+    const { label, index } = props;
     return <Tab label={label} {...a11yProps(index)} />;
   }
 
