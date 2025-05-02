@@ -1,6 +1,7 @@
-## Redesigned Orcasound Listening Experience
+## Orcasound Listening Interface
 
 Prototype: [https://orcasound-dashboard.vercel.app/beta](https://orcasound-dashboard.vercel.app/beta)
+
 UX case study: [https://www.adriandesigner.com/orcasound-listening-experience](https://www.adriandesigner.com/orcasound-listening-experience)
 
 
