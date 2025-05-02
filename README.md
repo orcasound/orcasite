@@ -1,4 +1,4 @@
-## Orcasound Listening Interface
+## Orcasound Listening Experience
 
 Prototype: [https://orcasound-dashboard.vercel.app/beta](https://orcasound-dashboard.vercel.app/beta)
 
