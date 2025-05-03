@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
@@ -87,25 +87,26 @@ const categorySelect = [
 
 const CandidateListFilters = () => {
   const { feeds, filters, setFilters } = useData();
+
+  // dynamically create hydrophone options
   const feedList = feeds.map((el) => ({
     label: el.name,
     value: el.name,
   }));
-
   feedList.unshift({ label: "All hydrophones", value: "All hydrophones" });
+
+  const [showFilters, setShowFilters] = useState(false);
 
   const [lastPredefinedRange, setLastPredefinedRange] =
     useState<number>(defaultRange);
 
   const handleChange = (event: SelectChangeEvent<unknown>) => {
     const { name, value } = event.target;
-
     setFilters((prevFilters) => {
       const newFilters = {
         ...prevFilters,
         [name]: value,
       };
-
       if (name === "timeRange") {
         if (value !== customRange) {
           // Save the last predefined range
@@ -121,7 +122,6 @@ const CandidateListFilters = () => {
           newFilters.endDate = dayjs();
         }
       }
-
       return newFilters;
     });
   };
@@ -133,8 +133,12 @@ const CandidateListFilters = () => {
     }));
   };
 
+  const handleToggle = () => {
+    setShowFilters(!showFilters);
+  };
+
   return (
-    <Box
+    <Stack
       style={{
         display: "flex",
         gap: "1rem",
@@ -142,16 +146,44 @@ const CandidateListFilters = () => {
         width: "100%",
       }}
     >
-      <SearchBar />
-      <ChartSelect
-        name={"timeRange"}
-        value={filters.timeRange}
-        list={timeRangeSelect}
-        onChange={handleChange}
-      />
+      <Stack direction="row" spacing={2} sx={{ maxWidth: "100%" }}>
+        <SearchBar />
+        <ChartSelect
+          name={"timeRange"}
+          value={filters.timeRange}
+          list={timeRangeSelect}
+          onChange={handleChange}
+        />
+        <Button size="small" variant="outlined" onClick={handleToggle}>
+          Filters
+        </Button>
+      </Stack>
+
+      {showFilters && (
+        <Stack direction="row" spacing={2} sx={{ maxWidth: "100%" }}>
+          <ChartSelect
+            name={"hydrophone"}
+            value={filters.hydrophone}
+            list={feedList}
+            onChange={handleChange}
+          />
+          <ChartSelect
+            name={"category"}
+            value={filters.category}
+            list={categorySelect}
+            onChange={handleChange}
+          />
+          <ChartSelect
+            name={"timeIncrement"}
+            value={filters.timeIncrement}
+            list={timeIncrementSelect}
+            onChange={handleChange}
+          />
+        </Stack>
+      )}
 
       {filters.timeRange === customRange && (
-        <>
+        <Stack direction="row" spacing={2} sx={{ maxWidth: "100%" }}>
           <CustomDatePicker
             label="Start date"
             valueProp={filters.startDate}
@@ -164,28 +196,9 @@ const CandidateListFilters = () => {
             name="endDate"
             onDataChange={handleDatePicker}
           />
-        </>
+        </Stack>
       )}
-
-      <ChartSelect
-        name={"hydrophone"}
-        value={filters.hydrophone}
-        list={feedList}
-        onChange={handleChange}
-      />
-      <ChartSelect
-        name={"category"}
-        value={filters.category}
-        list={categorySelect}
-        onChange={handleChange}
-      />
-      <ChartSelect
-        name={"timeIncrement"}
-        value={filters.timeIncrement}
-        list={timeIncrementSelect}
-        onChange={handleChange}
-      />
-    </Box>
+    </Stack>
   );
 };
 

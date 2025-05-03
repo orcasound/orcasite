@@ -234,14 +234,17 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   );
 
   // standardize data from Orcasound and OrcaHello
-  const datasetHuman = dedupeHuman.map((el) => ({
-    ...el,
-    type: "human",
-    hydrophone: lookupFeedName(el.feedId!, feedList),
-    comments: el.description,
-    newCategory: el.category!,
-    timestampString: el.timestamp.toString(),
-  }));
+  const datasetHuman = useMemo(() => {
+    if (!feedList.length) return [];
+    return dedupeHuman.map((el) => ({
+      ...el,
+      type: "human",
+      hydrophone: lookupFeedName(el.feedId!, feedList),
+      comments: el.description,
+      newCategory: el.category!,
+      timestampString: el.timestamp.toString(),
+    }));
+  }, [dedupeHuman, feedList]);
 
   // combine global data into one object, to be passed into Data Provider for all child pages
   const dataset = useMemo(() => {

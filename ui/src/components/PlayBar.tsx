@@ -21,7 +21,7 @@ export default function PlayBar() {
   });
 
   useEffect(() => {
-    const candidateArray = nowPlaying.array;
+    const candidateArray = nowPlaying?.array;
     if (candidateArray && candidateArray.length > 0) {
       const firstDetection = candidateArray[candidateArray.length - 1];
       const lastDetection = candidateArray[0];
@@ -83,8 +83,8 @@ export default function PlayBar() {
   }, [nowPlaying]);
 
   const clipNode = useMemo(() => {
-    if (nowPlaying?.array) {
-      return nowPlaying?.array[0]?.hydrophone;
+    if (nowPlaying) {
+      return nowPlaying.hydrophone;
     } else {
       return "";
     }
@@ -111,7 +111,7 @@ export default function PlayBar() {
           width: "100%",
         }}
       >
-        {nowPlaying.array && playerProps.feed ? (
+        {nowPlaying?.array && playerProps.feed ? (
           <>
             <PlaybarPlayer
               feed={playerProps.feed}
@@ -124,7 +124,7 @@ export default function PlayBar() {
               clipNode={clipNode}
             />
           </>
-        ) : nowPlaying.array && playerProps.audioUri.length > 0 ? (
+        ) : nowPlaying?.array && playerProps.audioUri.length > 0 ? (
           <>
             <PlaybarAIPlayer
               image={playerProps.image?.toString()}
@@ -134,11 +134,11 @@ export default function PlayBar() {
               clipNode={clipNode}
             />
           </>
-        ) : !nowPlaying.array ||
-          (nowPlaying.array &&
+        ) : !nowPlaying?.array ||
+          (nowPlaying?.array &&
             !playerProps.feed &&
             !playerProps.audioUri.length) ? (
-          "Press play on any candidate to activate Play bar"
+          "Loading player..."
         ) : (
           "Something is wrong"
         )}

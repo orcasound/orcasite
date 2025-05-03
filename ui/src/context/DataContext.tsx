@@ -64,10 +64,13 @@ export const DataProvider = ({
   );
 
   // playbar queue
-  const { setQueue } = useNowPlaying();
+  const { setQueue, nowPlaying, setNowPlaying } = useNowPlaying();
   useEffect(() => {
+    if (nowPlaying === undefined || !Object.keys(nowPlaying).length) {
+      setNowPlaying(sortedCandidates[0]);
+    }
     setQueue(sortedCandidates);
-  }, [sortedCandidates, setQueue]);
+  }, [sortedCandidates, setQueue, nowPlaying, setNowPlaying]);
 
   return (
     <DataContext.Provider
