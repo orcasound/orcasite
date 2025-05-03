@@ -5,11 +5,10 @@ import { useRouter } from "next/router";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 import Header from "@/components/Header";
-import Player, { PlayerSpacer } from "@/components/Player";
 import { LayoutContext } from "@/context/LayoutContext";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
-import { displayMobileOnly } from "@/styles/responsive";
 
+import CandidatesTabs from "../CandidateList/CandidatesTabs";
 import { MasterDataLayout } from "./MasterDataLayout";
 
 const MapWithNoSSR = dynamic(() => import("@/components/Map"), {
@@ -56,12 +55,6 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     }
   }, [feed, map, currentFeed, firstOnlineFeed]);
 
-  useEffect(() => {
-    console.log("feed is " + feed);
-    console.log("current feed is " + currentFeed);
-    console.log("firstOnline feed is " + firstOnlineFeed);
-  }, [feed, map, currentFeed, firstOnlineFeed]);
-
   return (
     <Box
       sx={{
@@ -98,7 +91,8 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             // flex: "0 0 400px"
           }}
         >
-          {children}
+          <CandidatesTabs />
+          {/* {children} */}
         </Box>
 
         <Box
@@ -110,16 +104,19 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             position: "relative",
           }}
         >
-          <Box sx={{ flexGrow: 1 }}>
-            <MapWithNoSSR
-              setMap={setMap}
-              currentFeed={currentFeed}
-              feeds={feeds}
-            />
-          </Box>
-
-          <PlayerSpacer sx={displayMobileOnly} />
-          <Player currentFeed={currentFeed} />
+          {router.query.candidateId === undefined ? (
+            <Box sx={{ flexGrow: 1 }}>
+              <MapWithNoSSR
+                setMap={setMap}
+                currentFeed={currentFeed}
+                feeds={feeds}
+              />
+            </Box>
+          ) : (
+            // <PlayerSpacer sx={displayMobileOnly} />
+            // <Player currentFeed={currentFeed} />
+            children
+          )}
         </Box>
       </Box>
     </Box>

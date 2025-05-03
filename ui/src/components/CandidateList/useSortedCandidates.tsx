@@ -47,7 +47,7 @@ const createCandidates = (
   };
 
   const candidatesMap = candidates.map((candidate) => ({
-    id: `${candidate[0].id}-${candidate[candidate.length - 1].id}`,
+    id: `${candidate[0].timestampString}_${candidate[candidate.length - 1].timestampString}`,
     array: candidate,
     whale: countCategories(candidate, "whale"),
     vessel: countCategories(candidate, "vessel"),
@@ -62,12 +62,6 @@ const createCandidates = (
 
   return candidatesMap;
 };
-
-//   const candidates = useMemo(() => {
-//     return createCandidates(filteredData, filters.timeIncrement);
-//   }, [filteredData, filters.timeIncrement]);
-
-//   const [sortedCandidates, setSortedCandidates] = useState([...candidates]);
 
 const sortCandidates = (candidates: Candidate[], sortOrder: string) => {
   const handledGetTime = (date?: Date) => {

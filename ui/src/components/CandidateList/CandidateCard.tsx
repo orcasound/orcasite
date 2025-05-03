@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useRouter } from "next/router";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
@@ -38,6 +39,10 @@ export default function CandidateCard(props: {
 }) {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
     useNowPlaying();
+
+  // use these to set href on cards
+  const router = useRouter();
+  const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
 
   const { feeds } = useData();
   const feed = feeds.find(
@@ -81,6 +86,7 @@ export default function CandidateCard(props: {
       sx={{
         height: iconSize,
         width: iconSize,
+        cursor: "pointer",
       }}
     />
   );
@@ -91,6 +97,7 @@ export default function CandidateCard(props: {
       sx={{
         height: iconSize,
         width: iconSize,
+        cursor: "pointer",
       }}
     />
   );
@@ -113,19 +120,18 @@ export default function CandidateCard(props: {
           p: 2,
         }}
       >
-        {candidate.id !== nowPlaying.id
+        {candidate.id !== nowPlaying?.id
           ? playIcon
-          : masterPlayerStatus === "paused"
+          : masterPlayerStatus !== "playing"
             ? playIcon
             : pauseIcon}
       </Box>
       <Link
-        // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page
-        // href needs a slash before so it isn't relative to folder path
+        // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
         href={
           firstTimestamp === lastTimestamp
-            ? `/moderator/${firstTimestampString}`
-            : `/moderator/${firstTimestampString}_${lastTimestampString}`
+            ? `${basePath}/${firstTimestampString}`
+            : `${basePath}/${firstTimestampString}_${lastTimestampString}`
         }
         style={{ width: "100%", color: "inherit", textDecoration: "inherit" }}
       >

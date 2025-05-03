@@ -12,6 +12,7 @@ type SelectProps = {
   size?: "small" | "medium";
   variant?: "standard" | "outlined" | "filled";
   onChange: (event: SelectChangeEvent<unknown>) => void;
+  minWidth?: number;
   sx?: SxProps;
 };
 
@@ -22,9 +23,10 @@ export default function ChartSelect({
   size = "small",
   variant,
   onChange,
+  minWidth = 120,
 }: SelectProps) {
   return (
-    <Box sx={{ minWidth: 120, flex: 1 }}>
+    <Box sx={{ minWidth: minWidth, flex: 1 }}>
       <FormControl fullWidth size={size} variant={variant}>
         <Select
           id={`${name}-select`}

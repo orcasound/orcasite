@@ -46,9 +46,6 @@ export const NowPlayingProvider = ({
       if (queue[nextIndex]) {
         setNowPlaying(queue[nextIndex]);
       }
-      console.log("nowPlaying: " + JSON.stringify(nowPlaying, null, 2));
-      console.log("currentIndex in queue: " + currentIndex);
-      console.log("next up: " + queue[nextIndex]?.descriptions);
     };
   }, [queue, nowPlaying, setNowPlaying]);
 
