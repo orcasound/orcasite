@@ -16,8 +16,6 @@ import {
 import darkTheme from "@/styles/darkTheme";
 import { AIData } from "@/types/DataTypes";
 
-import PlayBar from "../PlayBar";
-
 const endpointOrcahello =
   "https://aifororcasdetections.azurewebsites.net/api/detections?";
 const daysAgo = 7;
@@ -302,10 +300,7 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       <NowPlayingProvider>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
-          <DataProvider data={dataset}>
-            {children}
-            <PlayBar />
-          </DataProvider>
+          <DataProvider data={dataset}>{children}</DataProvider>
         </ThemeProvider>
       </NowPlayingProvider>
     </Box>

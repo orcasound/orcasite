@@ -17,6 +17,7 @@ import { LayoutContext } from "@/context/LayoutContext";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { analytics } from "@/utils/analytics";
 
+import PlayBar from "../PlayBar";
 import { TopNav } from "./Devias-dashboard/vertical-layout/top-nav";
 import { MasterDataLayout } from "./MasterDataLayout";
 import navigationList from "./navigationList";
@@ -55,7 +56,7 @@ function Brand({ onClick }: { onClick?: () => void }) {
 }
 
 function LeftNavLayout({ children }: { children: React.ReactNode }) {
-  //// DATA
+  //// MOBILE
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
 
   //// COMPONENTS
@@ -136,7 +137,7 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
   interface NavDiv {
     title?: string;
     kind: string;
-    children?: NavItem[];
+    itemList?: NavItem[];
   }
 
   interface NavItem {
@@ -166,8 +167,8 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
               fontSize: "18px",
             }}
           >
-            {div.children &&
-              div.children.map((item, index) =>
+            {div.itemList &&
+              div.itemList.map((item, index) =>
                 listItem(
                   item.title,
                   item.path,
@@ -244,6 +245,7 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
 
         <Box sx={{ width: "100%", padding: 0, margin: 0 }}>{children}</Box>
       </Box>
+      <PlayBar />
     </Box>
   );
 }

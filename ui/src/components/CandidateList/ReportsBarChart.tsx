@@ -11,7 +11,7 @@ const chartSetting = {
       dataKey: "detections",
     },
   ],
-  height: 340,
+  height: 230,
   margin: {
     top: 10,
     right: 20,

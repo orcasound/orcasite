@@ -1,4 +1,11 @@
-import { Box } from "@mui/material";
+import { Earbuds, Mic } from "@mui/icons-material";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Box,
+  Theme,
+  useMediaQuery,
+} from "@mui/material";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -9,6 +16,7 @@ import { LayoutContext } from "@/context/LayoutContext";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 
 import CandidatesTabs from "../CandidateList/CandidatesTabs";
+import PlayBar from "../PlayBar";
 import { MasterDataLayout } from "./MasterDataLayout";
 
 const MapWithNoSSR = dynamic(() => import("@/components/Map"), {
@@ -29,6 +37,22 @@ const feedFromSlug = (feedSlug: string) => ({
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const slug = router.query.feed as string;
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+
+  const [menuTab, setMenuTab] = useState(0);
+  const menu = (
+    <BottomNavigation
+      showLabels
+      value={menuTab}
+      onChange={(event, newMenuTab) => {
+        setMenuTab(newMenuTab);
+      }}
+      sx={{ height: "69px" }}
+    >
+      <BottomNavigationAction label="Listen Live" icon={<Mic />} />
+      <BottomNavigationAction label="Recordings" icon={<Earbuds />} />
+    </BottomNavigation>
+  );
 
   const isDynamic = router.asPath.split("/")[1] === "dynamic";
   // don't make feed request if there's no feed slug or is dynamic
@@ -55,6 +79,12 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     }
   }, [feed, map, currentFeed, firstOnlineFeed]);
 
+  const mapBox = (
+    <Box sx={{ flexGrow: 1 }}>
+      <MapWithNoSSR setMap={setMap} currentFeed={currentFeed} feeds={feeds} />
+    </Box>
+  );
+
   return (
     <Box
       sx={{
@@ -80,20 +110,20 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           position: "relative",
         }}
       >
-        <Box
-          className="side-list"
-          sx={{
-            borderRightColor: "divider",
-            borderRightStyle: "solid",
-            borderRightWidth: 1,
-            width: "45%",
-            overflow: "auto",
-            // flex: "0 0 400px"
-          }}
-        >
-          <CandidatesTabs />
-          {/* {children} */}
-        </Box>
+        {!mdDown && (
+          <Box
+            className="side-list"
+            sx={{
+              borderRightColor: "divider",
+              borderRightStyle: "solid",
+              borderRightWidth: 1,
+              width: "45%",
+              overflow: "auto",
+            }}
+          >
+            <CandidatesTabs mapBox={mapBox} />
+          </Box>
+        )}
 
         <Box
           sx={{
@@ -104,21 +134,29 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             position: "relative",
           }}
         >
-          {router.query.candidateId === undefined ? (
-            <Box sx={{ flexGrow: 1 }}>
-              <MapWithNoSSR
-                setMap={setMap}
-                currentFeed={currentFeed}
-                feeds={feeds}
-              />
+          {!mdDown && router.query.candidateId === undefined ? (
+            mapBox
+          ) : mdDown &&
+            router.query.candidateId === undefined &&
+            menuTab === 0 ? (
+            <CandidatesTabs mapBox={mapBox} tab={"Listen Live"} />
+          ) : mdDown &&
+            router.query.candidateId === undefined &&
+            menuTab === 1 ? (
+            <Box
+              sx={{
+                width: "100%",
+                overflow: "auto",
+              }}
+            >
+              <CandidatesTabs mapBox={mapBox} tab={"Recordings"} />
             </Box>
           ) : (
-            // <PlayerSpacer sx={displayMobileOnly} />
-            // <Player currentFeed={currentFeed} />
             children
           )}
         </Box>
       </Box>
+      <PlayBar menu={menu} />
     </Box>
   );
 }

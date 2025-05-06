@@ -1,4 +1,4 @@
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, Theme, useMediaQuery } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
@@ -87,6 +87,7 @@ const categorySelect = [
 
 const CandidateListFilters = () => {
   const { feeds, filters, setFilters } = useData();
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   // dynamically create hydrophone options
   const feedList = feeds.map((el) => ({
@@ -147,7 +148,6 @@ const CandidateListFilters = () => {
       }}
     >
       <Stack direction="row" spacing={2} sx={{ maxWidth: "100%" }}>
-        <SearchBar />
         <ChartSelect
           name={"timeRange"}
           value={filters.timeRange}
@@ -160,7 +160,12 @@ const CandidateListFilters = () => {
       </Stack>
 
       {showFilters && (
-        <Stack direction="row" spacing={2} sx={{ maxWidth: "100%" }}>
+        <Stack
+          direction={mdDown ? "column" : "row"}
+          spacing={2}
+          sx={{ maxWidth: "100%" }}
+        >
+          <SearchBar />
           <ChartSelect
             name={"hydrophone"}
             value={filters.hydrophone}

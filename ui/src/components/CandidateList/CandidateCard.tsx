@@ -6,7 +6,9 @@ import {
   CardContent,
   Chip,
   Stack,
+  Theme,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useRouter } from "next/router";
 
@@ -40,9 +42,8 @@ export default function CandidateCard(props: {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
     useNowPlaying();
 
-  // use these to set href on cards
-  const router = useRouter();
-  const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const { feeds } = useData();
   const feed = feeds.find(
@@ -69,6 +70,14 @@ export default function CandidateCard(props: {
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
 
+  // use these to set href on cards
+  const router = useRouter();
+  const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
+  const candidateHref =
+    firstTimestamp === lastTimestamp
+      ? `${basePath}/${firstTimestampString}`
+      : `${basePath}/${firstTimestampString}_${lastTimestampString}`;
+
   const handlePlay = (candidate: Candidate) => {
     setNowPlaying(candidate);
     masterPlayerRef?.current?.play();
@@ -78,7 +87,7 @@ export default function CandidateCard(props: {
     masterPlayerRef?.current?.pause();
   };
 
-  const iconSize = "48px";
+  const iconSize = "40px";
 
   const playIcon = (
     <PlayCircle
@@ -87,6 +96,7 @@ export default function CandidateCard(props: {
         height: iconSize,
         width: iconSize,
         cursor: "pointer",
+        marginRight: "-8px",
       }}
     />
   );
@@ -98,6 +108,7 @@ export default function CandidateCard(props: {
         height: iconSize,
         width: iconSize,
         cursor: "pointer",
+        marginRight: "-8px",
       }}
     />
   );
@@ -113,7 +124,7 @@ export default function CandidateCard(props: {
         overflow: "hidden",
       }}
     >
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           alignItems: "flex-start",
@@ -125,116 +136,146 @@ export default function CandidateCard(props: {
           : masterPlayerStatus !== "playing"
             ? playIcon
             : pauseIcon}
-      </Box>
-      <Link
-        // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
-        href={
-          firstTimestamp === lastTimestamp
-            ? `${basePath}/${firstTimestampString}`
-            : `${basePath}/${firstTimestampString}_${lastTimestampString}`
-        }
-        style={{ width: "100%", color: "inherit", textDecoration: "inherit" }}
-      >
-        <CardActionArea>
-          <CardContent
+      </Box> */}
+
+      <CardActionArea>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexFlow: "column",
+            gap: "12px",
+            fontSize: smDown ? "14px" : "1rem",
+            padding: smDown ? "12px" : "1rem",
+          }}
+        >
+          <Box
             sx={{
               display: "flex",
-              flexFlow: "column",
-              gap: "1em",
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                gap: "1.5em",
-                alignItems: "center",
+            <Link
+              // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
+              href={candidateHref}
+              style={{
+                width: "100%",
+                color: "inherit",
+                textDecoration: "inherit",
               }}
             >
               <Box
                 sx={{
-                  backgroundImage: `url(${image})`,
-                  backgroundPosition: "center",
-                  backgroundSize: "cover",
-                  backgroundRepeat: "no-repeat",
-                  width: "60px",
-                  height: "60px",
-                  borderRadius: "4px",
+                  display: "flex",
+                  gap: "1rem",
+                  alignItems: "center",
                 }}
-              ></Box>
-              <Stack>
-                <Typography variant="h6" component="div">
-                  {new Date(lastTimestamp).toLocaleString()}
-                </Typography>
-                <Typography variant="body1">
-                  {candidate.hydrophone}
-                  {" • "}
-                  {candidate.array.length === 1
-                    ? candidate.array[0].type === "human"
-                      ? "30 seconds"
-                      : "1 minute"
-                    : Math.round(
-                          (Date.parse(lastTimestampString) -
-                            Date.parse(firstTimestampString)) /
-                            (1000 * 60),
-                        ) >= 1
-                      ? Math.round(
-                          (Date.parse(lastTimestampString) -
-                            Date.parse(firstTimestampString)) /
-                            (1000 * 60),
-                        ) + " minutes"
-                      : Math.round(
-                          (Date.parse(lastTimestampString) -
-                            Date.parse(firstTimestampString)) /
-                            (1000 * 60 * 60),
-                        ) + " seconds"}
-                </Typography>
-              </Stack>
-            </Box>
-            <Box>
-              <Typography variant="body1">
-                {["whale", "vessel", "other", "whale (AI)"]
-                  .map((item) =>
-                    candidate[item as keyof Candidate]
-                      ? candidate[item as keyof Candidate] + "  " + item
-                      : null,
-                  )
-                  .filter((candidate) => candidate !== null)
-                  .join(" • ")}
-                <span style={{ whiteSpace: "pre" }}> </span>
-                {candidate.descriptions ? (
-                  <span style={{ color: "rgba(255,255,255,.75)" }}>
-                    {candidate.descriptions}
-                  </span>
-                ) : (
-                  <br />
-                )}
-              </Typography>
-
-              {tagArray && (
+              >
                 <Box
                   sx={{
-                    display: "flex",
-                    gap: "10px",
-                    padding: "1rem 0",
-                    flexWrap: "wrap",
+                    backgroundImage: `url(${image})`,
+                    backgroundPosition: "center",
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    width: smDown ? "40px" : "60px",
+                    height: smDown ? "40px" : "60px",
+                    borderRadius: "4px",
                   }}
-                >
-                  {Object.entries(tagObject).map(([tag]) => (
-                    <Chip
-                      label={`${tag}`}
-                      key={tag}
-                      variant="filled"
-                      sx={{
-                        fontSize: "14px",
-                      }}
-                    />
-                  ))}
-                </Box>
-              )}
+                ></Box>
+                <Stack>
+                  <Typography
+                    variant="body1"
+                    component="div"
+                    sx={{ fontWeight: "bold", fontSize: "inherit" }}
+                  >
+                    {new Date(lastTimestamp).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontSize: "inherit" }}>
+                    {candidate.hydrophone}
+                    {" • "}
+                    {candidate.array.length === 1
+                      ? candidate.array[0].type === "human"
+                        ? "30 seconds"
+                        : "1 minute"
+                      : Math.round(
+                            (Date.parse(lastTimestampString) -
+                              Date.parse(firstTimestampString)) /
+                              (1000 * 60),
+                          ) >= 1
+                        ? Math.round(
+                            (Date.parse(lastTimestampString) -
+                              Date.parse(firstTimestampString)) /
+                              (1000 * 60),
+                          ) + " minutes"
+                        : Math.round(
+                            (Date.parse(lastTimestampString) -
+                              Date.parse(firstTimestampString)) /
+                              (1000 * 60 * 60),
+                          ) + " seconds"}
+                  </Typography>
+                </Stack>
+              </Box>
+            </Link>
+            <Box>
+              {candidate.id !== nowPlaying?.id
+                ? playIcon
+                : masterPlayerStatus !== "playing"
+                  ? playIcon
+                  : pauseIcon}
             </Box>
-          </CardContent>
-        </CardActionArea>
-      </Link>
+          </Box>
+          <Link
+            // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
+            href={candidateHref}
+            style={{
+              width: "100%",
+              color: "inherit",
+              textDecoration: "inherit",
+            }}
+          >
+            <Typography variant="body1" sx={{ fontSize: "inherit" }}>
+              {["whale", "vessel", "other", "whale (AI)"]
+                .map((item) =>
+                  candidate[item as keyof Candidate]
+                    ? candidate[item as keyof Candidate] + "  " + item
+                    : null,
+                )
+                .filter((candidate) => candidate !== null)
+                .join(" • ")}
+              <span style={{ whiteSpace: "pre" }}>{"  "}</span>
+              {candidate.descriptions ? (
+                <span style={{ color: "rgba(255,255,255,.75)" }}>
+                  {candidate.descriptions}
+                </span>
+              ) : (
+                <br />
+              )}
+            </Typography>
+
+            {tagArray && (
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "10px",
+                  padding: "1rem 0",
+                  flexWrap: "wrap",
+                }}
+              >
+                {Object.entries(tagObject).map(([tag]) => (
+                  <Chip
+                    label={`${tag}`}
+                    key={tag}
+                    variant="filled"
+                    sx={{
+                      fontSize: "14px",
+                    }}
+                  />
+                ))}
+              </Box>
+            )}
+          </Link>
+        </CardContent>
+      </CardActionArea>
     </Card>
   );
 }

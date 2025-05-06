@@ -1,6 +1,13 @@
 import "videojs-offset";
 
-import { Box, Slider, Typography } from "@mui/material";
+import {
+  Box,
+  Slider,
+  Stack,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -9,8 +16,8 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import { getHlsURI } from "@/hooks/useTimestampFetcher";
 
+import PlayBarPlayPauseButton from "./PlayBarPlayPauseButton";
 import { type PlayerStatus } from "./Player";
-import PlayPauseButton from "./PlayPauseButton";
 import { type VideoJSPlayer } from "./VideoJS";
 
 // dynamically import VideoJS to speed up initial page load
@@ -56,6 +63,8 @@ export function PlaybarPlayer({
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
+
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
@@ -225,72 +234,93 @@ export function PlaybarPlayer({
         // Keep player above the sliding drawer
         zIndex: theme.zIndex.drawer + 1,
         width: "100%",
+        flexFlow: smDown ? "row-reverse" : "row",
+        gap: smDown ? 2 : 3,
+        marginRight: smDown ? 0 : "2rem",
       })}
     >
       <Box display="none" id="video-js">
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      <Box ml={0} mr={3} id="play-pause-button">
-        <PlayPauseButton
+      <Box ml={0} id="play-pause-button">
+        <PlayBarPlayPauseButton
           playerStatus={playerStatus}
           onClick={handlePlayPauseClick}
           disabled={!feed}
         />
       </Box>
-      <Box
-        mr={4}
-        sx={{
-          backgroundImage: `url(${image})`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          width: "105px",
-          height: "60px",
-          borderRadius: "4px",
-        }}
-      ></Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          paddingRight: "2em",
-        }}
+      <Stack
+        direction="row"
+        width="100%"
+        spacing={smDown ? 2 : 3}
+        sx={{ overflow: "hidden" }}
       >
-        <Box width={"100%"} height={"42px"} id="slider">
-          <Typography component="h2">
-            <span style={{ fontWeight: "bold" }}>{clipDateTime}</span> •{" "}
+        <Box
+          sx={{
+            backgroundImage: `url(${image})`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            minWidth: smDown ? "40px" : "60px",
+            width: smDown ? "40px" : "60px",
+            height: smDown ? "40px" : "60px",
+            borderRadius: "4px",
+          }}
+        ></Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
+          <Typography
+            component="h2"
+            sx={{ whiteSpace: "nowrap", fontSize: smDown ? "14px" : "1rem" }}
+          >
+            <span style={{ fontWeight: "bold" }}>{clipDateTime}</span>
+            {smDown ? <br /> : " • "}
             {clipNode}
           </Typography>
-          <Slider
-            valueLabelDisplay="auto"
-            valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
-            step={0.1}
-            max={sliderMax}
-            value={sliderValue}
-            marks={marks}
-            onChange={handleSliderChange}
-            onChangeCommitted={handleSliderChangeCommitted}
-            size="small"
-            sx={{
-              padding: "9px 0",
-            }}
-          />
-        </Box>
 
-        <Box
-          id="formatted-seconds"
-          sx={{ display: "flex", justifyContent: "space-between" }}
-        >
-          <Typography component="p" variant="subtitle2">
-            {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
-          </Typography>
-          <Typography component="p" variant="subtitle2">
-            {"-" +
-              formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
-          </Typography>
+          <Box
+            width={"100%"}
+            height={"42px"}
+            id="slider"
+            sx={{ display: smDown ? "none" : "block" }}
+          >
+            <Slider
+              valueLabelDisplay="auto"
+              valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
+              step={0.1}
+              max={sliderMax}
+              value={sliderValue}
+              marks={marks}
+              onChange={handleSliderChange}
+              onChangeCommitted={handleSliderChangeCommitted}
+              size="small"
+              sx={{
+                padding: "10px 0!important",
+              }}
+            />
+            <Box
+              id="formatted-seconds"
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <Typography component="p" variant="subtitle2">
+                {formattedSeconds(
+                  Number((playerTime - startOffset).toFixed(0)),
+                )}
+              </Typography>
+              <Typography component="p" variant="subtitle2">
+                {"-" +
+                  formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
-      </Box>
+      </Stack>
     </Box>
   );
 }

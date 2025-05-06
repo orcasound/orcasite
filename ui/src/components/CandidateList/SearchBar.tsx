@@ -24,7 +24,7 @@ const SearchBar = () => {
           <OutlinedInput
             id="search-bar-input"
             onInput={handleInput}
-            placeholder="Search report descriptions..."
+            placeholder="Search..."
             size="small"
             startAdornment={
               <InputAdornment position="start">
