@@ -4,6 +4,7 @@ import {
   BottomNavigationAction,
   Box,
   Theme,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { type Map as LeafletMap } from "leaflet";
@@ -15,6 +16,7 @@ import Header from "@/components/Header";
 import { useData } from "@/context/DataContext";
 import { LayoutContext } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
+import { formatTimestamp } from "@/utils/time";
 
 import CandidatesTabs from "../CandidateList/CandidatesTabs";
 import PlayBar from "../PlayBar";
@@ -39,6 +41,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const slug = router.query.feed as string;
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlaying } = useNowPlaying();
   const { feeds } = useData();
   const nowPlayingFeed = useMemo(() => {
@@ -122,6 +125,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
         //   height: "100dvh",
         // },
         height: "100vh",
+        paddingBottom: smDown ? "56px" : "80px",
         display: "flex",
         flexDirection: "column",
         flexGrow: 1,
@@ -161,6 +165,17 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             position: "relative",
           }}
         >
+          <Typography
+            id="what"
+            sx={{
+              position: "absolute",
+              color: "black",
+              right: 0,
+              zIndex: 10000,
+            }}
+          >
+            {formatTimestamp(nowPlaying?.array?.[0].timestamp)}
+          </Typography>
           {!mdDown && router.query.candidateId === undefined ? (
             mapBox
           ) : mdDown &&

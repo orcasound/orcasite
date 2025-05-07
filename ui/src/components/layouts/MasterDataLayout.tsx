@@ -321,13 +321,6 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   }, [dedupeHuman, feedList]);
 
   // prepare Cascadia sightings data to join with Orcasound and Orcahello
-  useEffect(() => {
-    console.log("feeds: " + JSON.stringify(feedList, null, 2));
-    // console.log("orcahello url: " + constructUrl(endpointOrcahello, paramsOrcahello))
-    // console.log("cascadia url: " + constructUrl(endpointCascadia, paramsCascadia))
-    // console.log("dataCascadia: " + JSON.stringify(dataCascadia))
-    // console.log("dataOrcahello: " + JSON.stringify(dataOrcahello))
-  });
   const datasetCascadia = useMemo(() => {
     if (!Array.isArray(dataCascadia?.results)) return [];
     return dataCascadia.results.map((el: Sighting) => ({
@@ -336,8 +329,8 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       newCategory: "SIGHTINGS",
       hydrophone: assignSightingHydrophones(el),
       feedId: lookupFeedId(assignSightingHydrophones(el), feedList),
-      timestampString: el.created,
-      timestamp: new Date(el.created),
+      timestampString: el.created.replace(" ", "T") + "Z",
+      timestamp: new Date(el.created.replace(" ", "T") + "Z"),
     }));
   }, [dataCascadia, feedList]);
 
@@ -370,6 +363,16 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
     feedList,
     isSuccessOrcahello,
   ]);
+
+  useEffect(() => {
+    console.log("feeds: " + JSON.stringify(feedList, null, 2));
+    // console.log("datasetCascadia: " + JSON.stringify(datasetCascadia.find(el => el.hydrophone === "Bush Point"), null, 2))
+    // console.log("created.toLocaleDateString: " + datasetCascadia[0].timestamp)
+    // console.log("orcahello url: " + constructUrl(endpointOrcahello, paramsOrcahello))
+    // console.log("cascadia url: " + constructUrl(endpointCascadia, paramsCascadia))
+    // console.log("dataCascadia: " + JSON.stringify(dataCascadia))
+    // console.log("dataOrcahello: " + JSON.stringify(dataset.ai[0], null, 2))
+  });
 
   //// RENDER
 

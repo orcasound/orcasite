@@ -67,6 +67,7 @@ export interface CombinedData extends HumanData, AIData, Sighting {}
 export interface Dataset {
   human: HumanData[];
   ai: AIData[];
+  sightings: Sighting[];
   combined: CombinedData[];
   feeds: Feed[];
   isSuccessOrcahello: boolean;

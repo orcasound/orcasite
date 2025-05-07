@@ -5,11 +5,15 @@ import "leaflet-defaulticon-compatibility";
 import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 
+import { useData } from "@/context/DataContext";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed, FeedsQuery } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
+import { CombinedData } from "@/types/DataTypes";
 
 export default function Map({
   setMap,
@@ -21,6 +25,18 @@ export default function Map({
   feeds: FeedsQuery["feeds"];
 }) {
   const router = useRouter();
+  const { filteredData } = useData();
+  const { nowPlaying } = useNowPlaying();
+  const allSightings = filteredData.filter((el) => {
+    return el.newCategory === "SIGHTINGS";
+  });
+  const [sightings, setSightings] = useState<CombinedData[]>();
+  useEffect(() => {
+    const sightingsNow = nowPlaying?.array?.filter((el) => {
+      return el.newCategory === "SIGHTINGS";
+    });
+    setSightings(sightingsNow);
+  }, [nowPlaying]);
 
   const hydrophoneDefaultIcon = L.icon({
     iconUrl: hydrophoneDefaultIconImage.src,
@@ -33,8 +49,7 @@ export default function Map({
 
   return (
     <MapContainer
-      // center={[47.8, -122.75]}
-      // center={[48.1, -122.75]}
+      // center={[48.1, -122.75]} // this was formerly the center for the zoomed out but it overrides the first nowPlaying panTo in HalfMapLayout
       zoom={9}
       maxZoom={13}
       style={{ height: "100%", width: "100%" }}
@@ -49,7 +64,6 @@ export default function Map({
         url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
       />
       <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
-
       {feeds.map((feed) => (
         <Marker
           key={feed.slug}
@@ -64,6 +78,12 @@ export default function Map({
               router.push(`/listen/${feed.slug}`);
             },
           }}
+        />
+      ))}
+      {sightings?.map((sighting) => (
+        <Marker
+          key={sighting.id}
+          position={[sighting.latitude, sighting.longitude]}
         />
       ))}
     </MapContainer>

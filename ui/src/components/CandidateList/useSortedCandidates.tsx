@@ -68,7 +68,7 @@ const createCandidates = (
       .filter((el: string | null | undefined) => el !== null)
       .join(" • ")
       .replace(/•\s?$/, "") // removes any trailing bullets from empty space comments
-      .replace(/^\s?•\s?/, ""),
+      .replace(/^\s?•\s?/, ""), // removes any forward bullets from empty space comments
   }));
 
   return candidatesMap;

@@ -135,7 +135,7 @@ const CandidatePage: NextPageWithLayout = () => {
   }, [filteredData, feeds, startTime, endTime, startEnd]);
 
   return (
-    <div>
+    <div style={{ overflow: "scroll" }}>
       <Head>Report {candidateId} | Orcasound </Head>
       <Container
         maxWidth="xl"
