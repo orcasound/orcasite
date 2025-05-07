@@ -101,7 +101,7 @@ export default function CandidateCard(props: {
         height: iconSize,
         width: iconSize,
         cursor: "pointer",
-        marginRight: "-8px",
+        marginRight: smDown ? "-8px" : "-4px",
       }}
     />
   );
@@ -113,7 +113,7 @@ export default function CandidateCard(props: {
         height: iconSize,
         width: iconSize,
         cursor: "pointer",
-        marginRight: "-8px",
+        marginRight: smDown ? "-8px" : "-4px",
       }}
     />
   );
