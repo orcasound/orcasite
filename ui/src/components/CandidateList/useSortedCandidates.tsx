@@ -61,13 +61,14 @@ const createCandidates = (
     vessel: countCategories(candidate, "vessel"),
     other: countCategories(candidate, "other"),
     "whale (AI)": countCategories(candidate, "whale (ai)"),
-    sightings: countCategories(candidate, "sighting"),
+    sightings: countCategories(candidate, "sightings"),
     hydrophone: candidate[0].hydrophone,
     descriptions: candidate
       .map((el: CombinedData) => cleanSightingsDescription(el.comments))
       .filter((el: string | null | undefined) => el !== null)
       .join(" • ")
-      .replace(/•\s?$/, ""), // removes any trailing bullets from empty space comments
+      .replace(/•\s?$/, "") // removes any trailing bullets from empty space comments
+      .replace(/^\s?•\s?/, ""),
   }));
 
   return candidatesMap;

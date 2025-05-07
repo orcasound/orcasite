@@ -83,6 +83,10 @@ const categorySelect = [
     label: "Whale + Whale (AI)",
     value: "whale + whale (ai)",
   },
+  {
+    label: "Sightings",
+    value: "sightings",
+  },
 ];
 
 const CandidateListFilters = () => {

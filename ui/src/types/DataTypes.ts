@@ -90,6 +90,7 @@ export interface Candidate {
   vessel: number;
   other: number;
   "whale (AI)": number;
+  sightings: number;
   hydrophone: string;
   descriptions: string;
 }

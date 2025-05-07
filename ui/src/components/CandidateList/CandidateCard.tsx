@@ -64,10 +64,12 @@ export default function CandidateCard(props: {
 
   const candidate = props.candidate;
   const candidateArray = candidate.array;
-  const firstCandidate = candidateArray[candidateArray.length - 1];
-  const lastCandidate = candidateArray[0];
+  const firstCandidate = candidateArray[candidateArray.length - 1]; // firstCandidate is the earliest time, reports are sorted descending
+  const lastCandidate = candidateArray[0]; // lastCandidate is the most recent time
   const firstTimestamp = firstCandidate.timestamp;
   const lastTimestamp = lastCandidate.timestamp;
+  const allSameTime =
+    candidateArray.length > 1 && firstTimestamp === lastTimestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
   const candidateTitle = formatTimestamp(firstCandidate.timestamp);
@@ -184,7 +186,7 @@ export default function CandidateCard(props: {
                     {" • "}
                     {candidate.array.length === 1
                       ? candidate.array[0].type === "human" ||
-                        candidate.array[0].type === "sighting"
+                        candidate.array[0].type === "sightings"
                         ? "30 seconds"
                         : "1 minute"
                       : Math.round(

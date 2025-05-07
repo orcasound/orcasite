@@ -83,7 +83,8 @@ const lookupFeedId = (name: string, feedList: Feed[]) => {
   let id = "feed id not found";
   const standardizedName = standardizeFeedName(name);
   feedList.forEach((feed) => {
-    if (standardizedName === feed.name) {
+    const feedName = standardizeFeedName(feed.name);
+    if (standardizedName === feedName) {
       id = feed.id;
     }
   });
@@ -321,7 +322,7 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
 
   // prepare Cascadia sightings data to join with Orcasound and Orcahello
   useEffect(() => {
-    // console.log("feeds: " + JSON.stringify(feedList[0]))
+    console.log("feeds: " + JSON.stringify(feedList, null, 2));
     // console.log("orcahello url: " + constructUrl(endpointOrcahello, paramsOrcahello))
     // console.log("cascadia url: " + constructUrl(endpointCascadia, paramsCascadia))
     // console.log("dataCascadia: " + JSON.stringify(dataCascadia))
@@ -331,8 +332,8 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
     if (!Array.isArray(dataCascadia?.results)) return [];
     return dataCascadia.results.map((el: Sighting) => ({
       ...el,
-      type: "sighting",
-      newCategory: "SIGHTING",
+      type: "sightings",
+      newCategory: "SIGHTINGS",
       hydrophone: assignSightingHydrophones(el),
       feedId: lookupFeedId(assignSightingHydrophones(el), feedList),
       timestampString: el.created,
