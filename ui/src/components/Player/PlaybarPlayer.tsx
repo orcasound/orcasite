@@ -286,7 +286,7 @@ export function PlaybarPlayer({
 
           <Box
             width={"100%"}
-            height={"42px"}
+            // height={"42px"}
             id="slider"
             sx={{ display: smDown ? "none" : "block" }}
           >

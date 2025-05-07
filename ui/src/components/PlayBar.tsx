@@ -74,6 +74,7 @@ export default function PlayBar({ menu }: { menu?: React.ReactNode }) {
         }));
       }
     }
+    console.log("playerProps: " + JSON.stringify(playerProps, null, 2));
   }, [nowPlaying, feeds]);
 
   const clipDateTime = useMemo(() => {

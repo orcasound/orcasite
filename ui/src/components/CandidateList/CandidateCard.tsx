@@ -16,6 +16,7 @@ import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Candidate } from "@/types/DataTypes";
+import { formatTimestamp } from "@/utils/time";
 
 const tagRegex = [
   "s[0-9]+",
@@ -69,6 +70,7 @@ export default function CandidateCard(props: {
   const lastTimestamp = lastCandidate.timestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
+  const candidateTitle = formatTimestamp(firstCandidate.timestamp);
 
   // use these to set href on cards
   const router = useRouter();
@@ -124,20 +126,6 @@ export default function CandidateCard(props: {
         overflow: "hidden",
       }}
     >
-      {/* <Box
-        sx={{
-          display: "flex",
-          alignItems: "flex-start",
-          p: 2,
-        }}
-      >
-        {candidate.id !== nowPlaying?.id
-          ? playIcon
-          : masterPlayerStatus !== "playing"
-            ? playIcon
-            : pauseIcon}
-      </Box> */}
-
       <CardActionArea>
         <CardContent
           sx={{
@@ -188,13 +176,15 @@ export default function CandidateCard(props: {
                     component="div"
                     sx={{ fontWeight: "bold", fontSize: "inherit" }}
                   >
-                    {new Date(lastTimestamp).toLocaleString()}
+                    {candidateTitle}
+                    {/* {new Date(lastTimestamp).toLocaleString()} */}
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
                     {candidate.hydrophone}
                     {" • "}
                     {candidate.array.length === 1
-                      ? candidate.array[0].type === "human"
+                      ? candidate.array[0].type === "human" ||
+                        candidate.array[0].type === "sighting"
                         ? "30 seconds"
                         : "1 minute"
                       : Math.round(
@@ -234,7 +224,7 @@ export default function CandidateCard(props: {
             }}
           >
             <Typography variant="body1" sx={{ fontSize: "inherit" }}>
-              {["whale", "vessel", "other", "whale (AI)"]
+              {["whale", "vessel", "other", "whale (AI)", "sightings"]
                 .map((item) =>
                   candidate[item as keyof Candidate]
                     ? candidate[item as keyof Candidate] + "  " + item

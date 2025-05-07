@@ -237,7 +237,7 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
     return response.json();
   };
 
-  const { data, isSuccess } = useQuery({
+  const { data: dataOrcahello, isSuccess: isSuccessOrcahello } = useQuery({
     queryKey: ["ai-detections"],
     queryFn: fetchOrcahelloData,
   });
@@ -263,16 +263,19 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccessOrcahello && dataOrcahello) {
       try {
-        localStorage.setItem(AI_DETECTIONS_CACHE_KEY, JSON.stringify(data));
+        localStorage.setItem(
+          AI_DETECTIONS_CACHE_KEY,
+          JSON.stringify(dataOrcahello),
+        );
       } catch (e) {
         console.log("Failed to save AI detections to localStorage", e);
       }
     }
-  }, [isSuccess, data]);
+  }, [isSuccessOrcahello, dataOrcahello]);
 
-  const aiDetections = data ?? cachedAIDetections;
+  const aiDetections = dataOrcahello ?? cachedAIDetections;
 
   // deduplicate data on human detections
   const dedupeHuman = humanDetections.filter(
@@ -312,9 +315,9 @@ function ModeratorLayout({ children }: { children: React.ReactNode }) {
       ai: datasetAI,
       combined: [...datasetHuman, ...datasetAI],
       feeds: feedList,
-      isSuccess: isSuccess,
+      isSuccessOrcahello: isSuccessOrcahello,
     };
-  }, [datasetHuman, aiDetections, feedList, isSuccess]);
+  }, [datasetHuman, aiDetections, feedList, isSuccessOrcahello]);
 
   //// COMPONENTS
 

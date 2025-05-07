@@ -6,38 +6,45 @@ import {
   Theme,
   useMediaQuery,
 } from "@mui/material";
-import type { Map as LeafletMap } from "leaflet";
+import { type Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ReactElement, ReactNode, useEffect, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
 
 import Header from "@/components/Header";
+import { useData } from "@/context/DataContext";
 import { LayoutContext } from "@/context/LayoutContext";
-import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 
 import CandidatesTabs from "../CandidateList/CandidatesTabs";
 import PlayBar from "../PlayBar";
 import { MasterDataLayout } from "./MasterDataLayout";
 
-const MapWithNoSSR = dynamic(() => import("@/components/Map"), {
+const MapWithNoSSR = dynamic(() => import("@/components/NewMap"), {
   ssr: false,
 });
 
-const feedFromSlug = (feedSlug: string) => ({
-  id: feedSlug,
-  name: feedSlug,
-  slug: feedSlug,
-  nodeName: feedSlug,
-  // TODO: pass in bucket from dynamic feed instead of env/hardcoding
-  bucket: process.env.NEXT_PUBLIC_S3_BUCKET ?? "audio-orcasound-net",
-  // TODO: figure out which coordinates to use for dynamic feeds
-  latLng: { lat: 48.6, lng: -122.3 },
-});
+// const feedFromSlug = (feedSlug: string) => ({
+//   id: feedSlug,
+//   name: feedSlug,
+//   slug: feedSlug,
+//   nodeName: feedSlug,
+//   // TODO: pass in bucket from dynamic feed instead of env/hardcoding
+//   bucket: process.env.NEXT_PUBLIC_S3_BUCKET ?? "audio-orcasound-net",
+//   // TODO: figure out which coordinates to use for dynamic feeds
+//   latLng: { lat: 48.6, lng: -122.3 },
+// });
 
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const slug = router.query.feed as string;
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const { nowPlaying } = useNowPlaying();
+  const { feeds } = useData();
+  const nowPlayingFeed = useMemo(() => {
+    if (!nowPlaying?.array?.[0]) return undefined;
+    return feeds.find((feed) => feed.id === nowPlaying.array[0].feedId);
+  }, [nowPlaying]);
 
   const [menuTab, setMenuTab] = useState(0);
   const menu = (
@@ -54,34 +61,54 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     </BottomNavigation>
   );
 
-  const isDynamic = router.asPath.split("/")[1] === "dynamic";
-  // don't make feed request if there's no feed slug or is dynamic
-  const feedFromQuery = useFeedQuery(
-    { slug: slug },
-    { enabled: !!slug || isDynamic },
-  ).data?.feed;
-  const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery;
+  // const isDynamic = router.asPath.split("/")[1] === "dynamic";
+  // // don't make feed request if there's no feed slug or is dynamic
+  // const feedFromQuery = useFeedQuery(
+  //   { slug: slug },
+  //   { enabled: !!slug || isDynamic },
+  // ).data?.feed;
+  // const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery;
 
-  const [currentFeed, setCurrentFeed] = useState(feed);
   const [map, setMap] = useState<LeafletMap>();
-  const feeds = useFeedsQuery().data?.feeds ?? [];
+  // const feeds = useFeedsQuery().data?.feeds ?? [];
   const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
+  const [currentFeed, setCurrentFeed] = useState(
+    nowPlayingFeed ? nowPlayingFeed : firstOnlineFeed,
+  );
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
-    if (feed && feed.slug !== currentFeed?.slug) {
-      setCurrentFeed(feed);
-      map?.setZoom(4);
-      map?.panTo(feed.latLng);
+    // console.log("nowPlaying: " + JSON.stringify(nowPlaying, null, 2))
+    // console.log("currentFeed: " + JSON.stringify(currentFeed, null, 2))
+    // console.log("nowPlayingFeed: " + JSON.stringify(nowPlayingFeed, null, 2))
+    if (
+      nowPlayingFeed
+      // && feed.slug !== currentFeed?.slug
+    ) {
+      // setCurrentFeed(currentFeed);
+      map?.setZoom(12);
+      // map?.panTo(nowPlayingFeed.latLng);
+    } else {
+      map?.setZoom(8);
     }
-    if (!feed && !currentFeed && firstOnlineFeed) {
-      setCurrentFeed(firstOnlineFeed);
+    // if (!feed && !currentFeed && firstOnlineFeed) {
+    //   setCurrentFeed(firstOnlineFeed);
+    // }
+  }, [map, currentFeed, firstOnlineFeed, nowPlaying, nowPlayingFeed]);
+
+  useEffect(() => {
+    if (nowPlayingFeed) {
+      map?.panTo(nowPlayingFeed.latLng);
     }
-  }, [feed, map, currentFeed, firstOnlineFeed]);
+  }, [nowPlayingFeed]);
 
   const mapBox = (
     <Box sx={{ flexGrow: 1 }}>
-      <MapWithNoSSR setMap={setMap} currentFeed={currentFeed} feeds={feeds} />
+      <MapWithNoSSR
+        setMap={setMap}
+        currentFeed={nowPlayingFeed}
+        feeds={feeds}
+      />
     </Box>
   );
 

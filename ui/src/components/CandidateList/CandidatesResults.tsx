@@ -11,7 +11,8 @@ export function CandidatesResults({
   viewType: "list" | "chart";
   layout?: string;
 }) {
-  const { setFilters, sortedCandidates, filters, isSuccess } = useData();
+  const { setFilters, sortedCandidates, filters, isSuccessOrcahello } =
+    useData();
 
   const chartSelect = (
     <ChartSelect
@@ -76,7 +77,7 @@ export function CandidatesResults({
       {layout !== "grid" && (
         <Typography sx={{ fontSize: "14px" }}>
           Showing {sortedCandidates.length}{" "}
-          {!isSuccess ? "results, checking Orcahello..." : "results"}
+          {!isSuccessOrcahello ? "results, checking Orcahello..." : "results"}
         </Typography>
       )}
 
