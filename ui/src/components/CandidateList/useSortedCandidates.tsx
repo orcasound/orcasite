@@ -45,6 +45,14 @@ const createCandidates = (
   const countCategories = (arr: { newCategory: string }[], cat: string) => {
     return arr.filter((d) => d.newCategory.toLowerCase() === cat).length;
   };
+  const cleanSightingsDescription = (
+    description: string | null | undefined,
+  ) => {
+    if (!description) return;
+    const removeBracket = description.replace(/^\[[^\]]*\]\s*/, "");
+    const removeBreak = removeBracket.replace(/<br>[^•]*/g, "");
+    return removeBreak;
+  };
 
   const candidatesMap = candidates.map((candidate) => ({
     id: `${candidate[0].timestampString}_${candidate[candidate.length - 1].timestampString}`,
@@ -53,11 +61,14 @@ const createCandidates = (
     vessel: countCategories(candidate, "vessel"),
     other: countCategories(candidate, "other"),
     "whale (AI)": countCategories(candidate, "whale (ai)"),
+    sightings: countCategories(candidate, "sightings"),
     hydrophone: candidate[0].hydrophone,
     descriptions: candidate
-      .map((el: CombinedData) => el.comments)
+      .map((el: CombinedData) => cleanSightingsDescription(el.comments))
       .filter((el: string | null | undefined) => el !== null)
-      .join(" • "),
+      .join(" • ")
+      .replace(/•\s?$/, "") // removes any trailing bullets from empty space comments
+      .replace(/^\s?•\s?/, ""), // removes any forward bullets from empty space comments
   }));
 
   return candidatesMap;

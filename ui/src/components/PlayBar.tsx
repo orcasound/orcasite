@@ -1,5 +1,5 @@
-import { AppBar, Toolbar } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { AppBar, Stack, Theme, Toolbar, useMediaQuery } from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
@@ -7,9 +7,11 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 import { PlaybarAIPlayer } from "./Player/PlaybarAIPlayer";
 import { PlaybarPlayer } from "./Player/PlaybarPlayer";
 
-export default function PlayBar() {
+export default function PlayBar({ menu }: { menu?: React.ReactNode }) {
   const { nowPlaying } = useNowPlaying();
   const { feeds } = useData();
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const [playerProps, setPlayerProps] = useState({
     feed: feeds.length > 0 ? feeds[0] : null,
@@ -91,58 +93,69 @@ export default function PlayBar() {
   }, [nowPlaying]);
 
   return (
-    <AppBar
-      position="fixed"
-      color="base"
+    <Stack
+      direction="column"
       sx={{
-        // Keep header above the side drawer
-        zIndex: (theme) => theme.zIndex.drawer + 1,
+        position: "fixed",
         bottom: 0,
-        top: "auto",
-        height: "87px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: (theme) => theme.palette.base.main,
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        width: "100%",
       }}
     >
-      <Toolbar
+      <AppBar
+        position="relative"
+        color="base"
         sx={{
-          width: "100%",
+          // Keep header above the side drawer
+          // zIndex: (theme) => theme.zIndex.drawer + 1,
+          // bottom: 0,
+          top: "auto",
+          height: smDown ? "56px" : "87px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: (theme) => theme.palette.base.main,
         }}
       >
-        {nowPlaying?.array && playerProps.feed ? (
-          <>
-            <PlaybarPlayer
-              feed={playerProps.feed}
-              image={playerProps.image?.toString()}
-              playlistTimestamp={playerProps.playlist}
-              startOffset={playerProps.startOffset}
-              endOffset={playerProps.endOffset}
-              key={playerProps.startOffset + "-" + playerProps.endOffset}
-              clipDateTime={clipDateTime}
-              clipNode={clipNode}
-            />
-          </>
-        ) : nowPlaying?.array && playerProps.audioUri.length > 0 ? (
-          <>
-            <PlaybarAIPlayer
-              image={playerProps.image?.toString()}
-              audioUri={playerProps.audioUri}
-              key={playerProps.audioUri}
-              clipDateTime={clipDateTime}
-              clipNode={clipNode}
-            />
-          </>
-        ) : !nowPlaying?.array ||
-          (nowPlaying?.array &&
-            !playerProps.feed &&
-            !playerProps.audioUri.length) ? (
-          "Loading player..."
-        ) : (
-          "Something is wrong"
-        )}
-      </Toolbar>
-    </AppBar>
+        <Toolbar
+          sx={{
+            width: "100%",
+          }}
+        >
+          {nowPlaying?.array && playerProps.feed ? (
+            <>
+              <PlaybarPlayer
+                feed={playerProps.feed}
+                image={playerProps.image?.toString()}
+                playlistTimestamp={playerProps.playlist}
+                startOffset={playerProps.startOffset}
+                endOffset={playerProps.endOffset}
+                key={playerProps.startOffset + "-" + playerProps.endOffset}
+                clipDateTime={clipDateTime}
+                clipNode={clipNode}
+              />
+            </>
+          ) : nowPlaying?.array && playerProps.audioUri.length > 0 ? (
+            <>
+              <PlaybarAIPlayer
+                image={playerProps.image?.toString()}
+                audioUri={playerProps.audioUri}
+                key={playerProps.audioUri}
+                clipDateTime={clipDateTime}
+                clipNode={clipNode}
+              />
+            </>
+          ) : !nowPlaying?.array ||
+            (nowPlaying?.array &&
+              !playerProps.feed &&
+              !playerProps.audioUri.length) ? (
+            "Loading player..."
+          ) : (
+            "Something is wrong"
+          )}
+        </Toolbar>
+      </AppBar>
+      {menu && mdDown && menu}
+    </Stack>
   );
 }

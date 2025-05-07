@@ -3,7 +3,7 @@ import { ThemeProvider } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 import * as React from "react";
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { DataProvider } from "@/context/DataContext";
 import { NowPlayingProvider } from "@/context/NowPlayingContext";
@@ -14,25 +14,39 @@ import {
   useFeedsQuery,
 } from "@/graphql/generated";
 import darkTheme from "@/styles/darkTheme";
-import { AIData } from "@/types/DataTypes";
+import { AIData, Sighting } from "@/types/DataTypes";
 
-import PlayBar from "../PlayBar";
+const now = new Date();
+const todayUTC = {
+  yyyy: now.getUTCFullYear(),
+  mm: String(now.getUTCMonth() + 1).padStart(2, "0"), // e.g. month as "05"
+  dd: String(now.getUTCDate()).padStart(2, "0"),
+};
+const apiTodayUTC = `${todayUTC.yyyy}-${todayUTC.mm}-${todayUTC.dd}`;
 
 const endpointOrcahello =
-  "https://aifororcasdetections.azurewebsites.net/api/detections?";
-const daysAgo = 7;
+  "https://aifororcasdetections.azurewebsites.net/api/detections";
+const startDateOrcahello = "2025-01-01";
 const paramsOrcahello = {
   page: 1,
   sortBy: "timestamp",
   sortOrder: "desc",
   timeframe: "all",
-  dateFrom: new Date(new Date().setDate(new Date().getDate() - daysAgo))
-    .toLocaleDateString()
-    .replaceAll(/\//g, "%2F"),
-  dateTo: new Date().toLocaleDateString().replaceAll(/\//g, "%2F"),
+  dateFrom: startDateOrcahello,
+  dateTo: apiTodayUTC,
   location: "all",
   recordsPerPage: 100,
 };
+
+const endpointCascadia =
+  "https://maplify.com/waseak/php/search-all-sightings.php";
+const startDateCascadia = "2025-01-01";
+const paramsCascadia = {
+  BBOX: "-136,36,-120,54",
+  start: startDateCascadia,
+  end: apiTodayUTC,
+};
+
 function constructUrl(endpoint: string, paramsObj: object) {
   let params = "";
   const entries = Object.entries(paramsObj);
@@ -40,8 +54,9 @@ function constructUrl(endpoint: string, paramsObj: object) {
     const str = [key, value].join("=") + "&";
     params += str;
   }
-  return endpoint + params;
+  return endpoint + "?" + params;
 }
+
 const standardizeFeedName = (name: string) => {
   switch (name) {
     case "Beach Camp at Sunset Bay":
@@ -68,7 +83,8 @@ const lookupFeedId = (name: string, feedList: Feed[]) => {
   let id = "feed id not found";
   const standardizedName = standardizeFeedName(name);
   feedList.forEach((feed) => {
-    if (standardizedName === feed.name) {
+    const feedName = standardizeFeedName(feed.name);
+    if (standardizedName === feedName) {
       id = feed.id;
     }
   });
@@ -129,15 +145,19 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       }
     }
   `;
-  // running this without using live data endpoint to see if performance improves
+  // ability to toggle between live API data vs seed data
   const [useLiveData, setUseLiveData] = useState(true);
+
+  // live data call for Detections
   type LiveDataResponse = {
     detections: {
       results: Detection[];
     };
   };
+
   const fetchLiveDetections = (): Promise<LiveDataResponse> =>
     request(endpoint, detectionsGQL);
+
   const {
     data: liveDetectionData,
     // isLoading: isLoadingLive,
@@ -147,11 +167,15 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
     queryFn: fetchLiveDetections,
     enabled: useLiveData,
   });
+
+  // live data call for Feeds
   type LiveFeedsResponse = {
     feeds: Feed[];
   };
+
   const fetchLiveFeeds = (): Promise<LiveFeedsResponse> =>
     request(endpoint, feedsGQL);
+
   const {
     data: liveFeedsData,
     // isLoading: isLoadingFeedsLive,
@@ -177,6 +201,8 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   }, [useLiveData, liveFeedsData, feedsData]);
 
   // get data on AI detections
+  // TODO: provide a type for OrcahelloResponse
+
   const fetchOrcahelloData = async () => {
     const response = await fetch(
       constructUrl(endpointOrcahello, paramsOrcahello),
@@ -187,12 +213,12 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
     return response.json();
   };
 
-  const { data, isSuccess } = useQuery({
+  const { data: dataOrcahello, isSuccess: isSuccessOrcahello } = useQuery({
     queryKey: ["ai-detections"],
     queryFn: fetchOrcahelloData,
   });
 
-  // // LocalStorage key name
+  // // LocalStorage key name for AI detections
   const AI_DETECTIONS_CACHE_KEY = "orcahello-ai-detections";
 
   const [cachedAIDetections, setCachedAIDetections] = useState<AIData[] | null>(
@@ -213,16 +239,34 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccessOrcahello && dataOrcahello) {
       try {
-        localStorage.setItem(AI_DETECTIONS_CACHE_KEY, JSON.stringify(data));
+        localStorage.setItem(
+          AI_DETECTIONS_CACHE_KEY,
+          JSON.stringify(dataOrcahello),
+        );
       } catch (e) {
         console.log("Failed to save AI detections to localStorage", e);
       }
     }
-  }, [isSuccess, data]);
+  }, [isSuccessOrcahello, dataOrcahello]);
 
-  const aiDetections = data ?? cachedAIDetections;
+  const aiDetections = dataOrcahello ?? cachedAIDetections;
+
+  const fetchCascadiaData = async () => {
+    const response = await fetch(
+      constructUrl(endpointCascadia, paramsCascadia),
+    );
+    if (!response.ok) {
+      throw new Error("Network response from Orcahello was not ok");
+    }
+    return response.json();
+  };
+
+  const { data: dataCascadia } = useQuery({
+    queryKey: ["sightings"],
+    queryFn: fetchCascadiaData,
+  });
 
   // deduplicate data on human detections
   const dedupeHuman = humanDetections.filter(
@@ -246,6 +290,52 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
     }));
   }, [dedupeHuman, feedList]);
 
+  // prepare Cascadia sightings data to join with Orcasound and Orcahello
+  const datasetCascadia = useMemo(() => {
+    const radius = 3;
+    const addLat = radius / 69;
+    const addLong = (lat: number) =>
+      radius / (69 * Math.cos((lat * Math.PI) / 180));
+
+    const feedCoordinates = feedList.map((feed) => ({
+      name: feed.name,
+      lat: feed.latLng.lat,
+      lng: feed.latLng.lng,
+      minLat: feed.latLng.lat - addLat,
+      maxLat: feed.latLng.lat + addLat,
+      minLng: feed.latLng.lng - addLong(feed.latLng.lat),
+      maxLng: feed.latLng.lng + addLong(feed.latLng.lat),
+    }));
+
+    const assignSightingHydrophones = (sighting: Sighting) => {
+      let hydrophone: string = "out of range";
+      feedCoordinates.forEach((feed) => {
+        const inLatRange =
+          sighting.latitude >= feed.minLat && sighting.latitude <= feed.maxLat;
+        const inLngRange =
+          sighting.longitude >= feed.minLng &&
+          sighting.longitude <= feed.maxLng;
+        if (inLatRange && inLngRange) {
+          hydrophone = feed.name;
+        }
+      });
+      hydrophone = standardizeFeedName(hydrophone);
+      return hydrophone;
+    };
+
+    if (!Array.isArray(dataCascadia?.results)) return [];
+
+    return dataCascadia.results.map((el: Sighting) => ({
+      ...el,
+      type: "sightings",
+      newCategory: "SIGHTINGS",
+      hydrophone: assignSightingHydrophones(el),
+      feedId: lookupFeedId(assignSightingHydrophones(el), feedList),
+      timestampString: el.created.replace(" ", "T") + "Z",
+      timestamp: new Date(el.created.replace(" ", "T") + "Z"),
+    }));
+  }, [dataCascadia, feedList]);
+
   // combine global data into one object, to be passed into Data Provider for all child pages
   const dataset = useMemo(() => {
     const truePositives = aiDetections?.filter(
@@ -256,18 +346,35 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
         ...el,
         type: "ai",
         hydrophone: standardizeFeedName(el.location.name),
-        feedId: lookupFeedId(el.location.name, feedList),
+        feedId: lookupFeedId(standardizeFeedName(el.location.name), feedList),
         newCategory: "WHALE (AI)",
         timestampString: el.timestamp.toString(),
       })) ?? [];
     return {
       human: datasetHuman,
       ai: datasetAI,
-      combined: [...datasetHuman, ...datasetAI],
+      sightings: datasetCascadia,
+      combined: [...datasetHuman, ...datasetAI, ...datasetCascadia],
       feeds: feedList,
-      isSuccess: isSuccess,
+      isSuccessOrcahello: isSuccessOrcahello,
     };
-  }, [datasetHuman, aiDetections, feedList, isSuccess]);
+  }, [
+    datasetHuman,
+    aiDetections,
+    datasetCascadia,
+    feedList,
+    isSuccessOrcahello,
+  ]);
+
+  useEffect(() => {
+    // console.log("feeds: " + JSON.stringify(feedList, null, 2));
+    // console.log("datasetCascadia: " + JSON.stringify(datasetCascadia.find(el => el.hydrophone === "Bush Point"), null, 2))
+    // console.log("created.toLocaleDateString: " + datasetCascadia[0].timestamp)
+    // console.log("orcahello url: " + constructUrl(endpointOrcahello, paramsOrcahello))
+    // console.log("cascadia url: " + constructUrl(endpointCascadia, paramsCascadia))
+    // console.log("dataCascadia: " + JSON.stringify(dataCascadia))
+    // console.log("dataOrcahello: " + JSON.stringify(dataset.ai[0], null, 2))
+  });
 
   //// RENDER
 
@@ -302,16 +409,14 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       <NowPlayingProvider>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
-          <DataProvider data={dataset}>
-            {children}
-            <PlayBar />
-          </DataProvider>
+          <DataProvider data={dataset}>{children}</DataProvider>
         </ThemeProvider>
       </NowPlayingProvider>
     </Box>
   );
 }
 
-export function getMasterDataLayout(page: ReactElement) {
-  return <MasterDataLayout>{page}</MasterDataLayout>;
-}
+// Not using this currently, removing to satisfy ES Lint
+// export function getMasterDataLayout(page: ReactElement) {
+//   return <MasterDataLayout>{page}</MasterDataLayout>;
+// }

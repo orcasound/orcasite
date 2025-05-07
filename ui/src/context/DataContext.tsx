@@ -28,7 +28,7 @@ interface DataContextType {
   sortedCandidates: Candidate[];
   filters: CandidateFilters;
   setFilters: React.Dispatch<React.SetStateAction<CandidateFilters>>;
-  isSuccess: boolean;
+  isSuccessOrcahello: boolean;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -41,7 +41,7 @@ export const DataProvider = ({
   data: Dataset;
 }) => {
   const feeds = data.feeds;
-  const isSuccess = data.isSuccess;
+  const isSuccessOrcahello = data.isSuccessOrcahello;
 
   const [filters, setFilters] = useState<CandidateFilters>({
     timeRange: defaultRange,
@@ -80,7 +80,7 @@ export const DataProvider = ({
         sortedCandidates,
         filters,
         setFilters,
-        isSuccess,
+        isSuccessOrcahello,
       }}
     >
       {children}

@@ -11,6 +11,7 @@ type SelectProps = {
   list: { label: string; value: string | number }[];
   size?: "small" | "medium";
   variant?: "standard" | "outlined" | "filled";
+  fontSize?: string | number;
   onChange: (event: SelectChangeEvent<unknown>) => void;
   minWidth?: number;
   sx?: SxProps;
@@ -22,8 +23,9 @@ export default function ChartSelect({
   list,
   size = "small",
   variant,
+  fontSize,
   onChange,
-  minWidth = 120,
+  minWidth = 100,
 }: SelectProps) {
   return (
     <Box sx={{ minWidth: minWidth, flex: 1 }}>
@@ -47,6 +49,7 @@ export default function ChartSelect({
               },
               "& .MuiSelect-select": {
                 padding: 0,
+                fontSize: { fontSize },
               },
             }),
           }}

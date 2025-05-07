@@ -11,13 +11,15 @@ export function CandidatesResults({
   viewType: "list" | "chart";
   layout?: string;
 }) {
-  const { setFilters, sortedCandidates, filters, isSuccess } = useData();
+  const { setFilters, sortedCandidates, filters, isSuccessOrcahello } =
+    useData();
 
   const chartSelect = (
     <ChartSelect
       name="chartView"
       value={filters.chartLegend}
       variant="standard"
+      fontSize="14px"
       list={[
         { label: "By category", value: "category" },
         { label: "By hydrophone", value: "hydrophone" },
@@ -43,6 +45,7 @@ export function CandidatesResults({
       name="sortOrder"
       value={filters.sortOrder}
       variant="standard"
+      fontSize="14px"
       list={[
         { label: "Newest first", value: "desc" },
         { label: "Oldest first", value: "asc" },
@@ -72,9 +75,9 @@ export function CandidatesResults({
       }}
     >
       {layout !== "grid" && (
-        <Typography>
+        <Typography sx={{ fontSize: "14px" }}>
           Showing {sortedCandidates.length}{" "}
-          {!isSuccess ? "results, checking Orcahello..." : "results"}
+          {!isSuccessOrcahello ? "results, checking Orcahello..." : "results"}
         </Typography>
       )}
 

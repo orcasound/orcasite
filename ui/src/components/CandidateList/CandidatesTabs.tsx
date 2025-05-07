@@ -1,5 +1,13 @@
-import { Box, Container, Tab, Tabs } from "@mui/material";
-import { useState } from "react";
+import {
+  Box,
+  Container,
+  Stack,
+  Tab,
+  Tabs,
+  Theme,
+  useMediaQuery,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 
 import ReportsBarChart from "@/components/CandidateList/ReportsBarChart";
 
@@ -7,7 +15,46 @@ import CandidateListFilters from "./CandidateListFilters";
 import CandidatesList from "./CandidatesList";
 import { CandidatesResults } from "./CandidatesResults";
 
-export default function CandidatesTabs() {
+export const CandidatesStack = () => {
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  return (
+    <Stack>
+      <CandidateListFilters />
+      <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
+        <CandidatesResults viewType="list" />
+        <Box sx={{ paddingTop: "1.5rem" }}></Box>
+        <CandidatesList />
+      </Box>
+    </Stack>
+  );
+};
+
+export const VisualizationsStack = () => {
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  return (
+    <Stack>
+      <CandidateListFilters />
+      <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
+        <CandidatesResults viewType="chart" />
+        <Box sx={{ paddingTop: "1.5rem" }}></Box>
+        <ReportsBarChart />
+      </Box>
+    </Stack>
+  );
+};
+
+export default function CandidatesTabs({
+  navOption,
+}: {
+  navOption?: "Listen Live" | "Recordings";
+}) {
+  console.log("rendering CandidatesTabs");
+  useEffect(() => {
+    console.log("tab: " + navOption);
+  }, [navOption]);
+
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+
   // tabs
   interface TabProps {
     index: number;
@@ -34,6 +81,7 @@ export default function CandidatesTabs() {
         hidden={value !== index}
         id={`simple-tabpanel-${index}`}
         aria-labelledby={`simple-tab-${index}`}
+        style={{ marginTop: "24px" }}
         {...other}
       >
         {value === index && <Box sx={{ p: 0 }}>{children}</Box>}
@@ -48,45 +96,59 @@ export default function CandidatesTabs() {
     };
   }
 
-  const [tabValue, setTabValue] = useState(0);
+  const initialTabValue = navOption === "Recordings" ? 1 : 0;
+  const [tabValue, setTabValue] = useState(initialTabValue);
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
+
+  const desktopTabs = (
+    <Stack>
+      <Tabs
+        value={tabValue}
+        onChange={handleChange}
+        aria-label="navigation tabs"
+        centered={mdDown ? true : false}
+      >
+        <Tab label="Candidates" {...a11yProps(0)} />
+        <Tab label="Visualizations" {...a11yProps(1)} />
+        <Tab label="Hydrophones" {...a11yProps(2)} />
+      </Tabs>
+      <CustomTabPanel value={tabValue} index={0}>
+        <CandidatesStack />
+      </CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={1}>
+        <VisualizationsStack />
+      </CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={2}>
+        {/* add hydrophone list */}
+      </CustomTabPanel>
+    </Stack>
+  );
 
   return (
     <Container
       maxWidth="xl"
       sx={{
         px: { xs: 1, sm: 2, md: 3 },
+        pb: "200px",
       }}
     >
       <Box
-        sx={{ borderBottom: 0, borderColor: "accent1", margin: "1rem 0 24px" }}
+        sx={{
+          borderBottom: 0,
+          borderColor: "accent1",
+          marginTop: mdDown ? 0 : "1rem",
+        }}
       >
-        <Tabs
-          value={tabValue}
-          onChange={handleChange}
-          aria-label="navigation tabs"
-        >
-          <Tab label="Candidates" {...a11yProps(0)} />
-          <Tab label="Visualizations" {...a11yProps(1)} />
-          <Tab label="Hydrophones" {...a11yProps(2)} />
-        </Tabs>
+        {desktopTabs}
+        {/* {mdDown && navOption === "Listen Live"
+          ? listenLiveTabs
+          : mdDown && navOption === "Recordings"
+            ? recordingsTabs
+            : desktopTabs} */}
       </Box>
-      <CustomTabPanel value={tabValue} index={0}>
-        <CandidateListFilters />
-        <Box sx={{ paddingTop: "1.5rem" }}></Box>
-        <CandidatesResults viewType="list" />
-        <Box sx={{ paddingTop: "1.5rem" }}></Box>
-        <CandidatesList />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={1}>
-        <CandidateListFilters />
-        <Box sx={{ paddingTop: "1.5rem" }}></Box>
-        <CandidatesResults viewType="chart" />
-        <Box sx={{ paddingTop: "1.5rem" }}></Box>
-        <ReportsBarChart />
-      </CustomTabPanel>
     </Container>
   );
 }
