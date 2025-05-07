@@ -137,7 +137,7 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
   interface NavDiv {
     title?: string;
     kind: string;
-    itemList?: NavItem[];
+    children?: NavItem[];
   }
 
   interface NavItem {
@@ -167,8 +167,8 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
               fontSize: "18px",
             }}
           >
-            {div.itemList &&
-              div.itemList.map((item, index) =>
+            {div.children &&
+              div.children.map((item, index) =>
                 listItem(
                   item.title,
                   item.path,
