@@ -3,7 +3,7 @@ import { ThemeProvider } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 import * as React from "react";
-import { ReactElement, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { DataProvider } from "@/context/DataContext";
 import { NowPlayingProvider } from "@/context/NowPlayingContext";
@@ -200,36 +200,6 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       : ((feedsData ?? []) as Feed[]);
   }, [useLiveData, liveFeedsData, feedsData]);
 
-  const radius = 3;
-  const addLat = radius / 69;
-  const addLong = (lat: number) =>
-    radius / (69 * Math.cos((lat * Math.PI) / 180));
-
-  const feedCoordinates = feedList.map((feed) => ({
-    name: feed.name,
-    lat: feed.latLng.lat,
-    lng: feed.latLng.lng,
-    minLat: feed.latLng.lat - addLat,
-    maxLat: feed.latLng.lat + addLat,
-    minLng: feed.latLng.lng - addLong(feed.latLng.lat),
-    maxLng: feed.latLng.lng + addLong(feed.latLng.lat),
-  }));
-
-  const assignSightingHydrophones = (sighting: Sighting) => {
-    let hydrophone: string = "out of range";
-    feedCoordinates.forEach((feed) => {
-      const inLatRange =
-        sighting.latitude >= feed.minLat && sighting.latitude <= feed.maxLat;
-      const inLngRange =
-        sighting.longitude >= feed.minLng && sighting.longitude <= feed.maxLng;
-      if (inLatRange && inLngRange) {
-        hydrophone = feed.name;
-      }
-    });
-    hydrophone = standardizeFeedName(hydrophone);
-    return hydrophone;
-  };
-
   // get data on AI detections
   // TODO: provide a type for OrcahelloResponse
 
@@ -293,7 +263,7 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
     return response.json();
   };
 
-  const { data: dataCascadia, isSuccess: isSuccessCascadia } = useQuery({
+  const { data: dataCascadia } = useQuery({
     queryKey: ["sightings"],
     queryFn: fetchCascadiaData,
   });
@@ -322,7 +292,39 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
 
   // prepare Cascadia sightings data to join with Orcasound and Orcahello
   const datasetCascadia = useMemo(() => {
+    const radius = 3;
+    const addLat = radius / 69;
+    const addLong = (lat: number) =>
+      radius / (69 * Math.cos((lat * Math.PI) / 180));
+
+    const feedCoordinates = feedList.map((feed) => ({
+      name: feed.name,
+      lat: feed.latLng.lat,
+      lng: feed.latLng.lng,
+      minLat: feed.latLng.lat - addLat,
+      maxLat: feed.latLng.lat + addLat,
+      minLng: feed.latLng.lng - addLong(feed.latLng.lat),
+      maxLng: feed.latLng.lng + addLong(feed.latLng.lat),
+    }));
+
+    const assignSightingHydrophones = (sighting: Sighting) => {
+      let hydrophone: string = "out of range";
+      feedCoordinates.forEach((feed) => {
+        const inLatRange =
+          sighting.latitude >= feed.minLat && sighting.latitude <= feed.maxLat;
+        const inLngRange =
+          sighting.longitude >= feed.minLng &&
+          sighting.longitude <= feed.maxLng;
+        if (inLatRange && inLngRange) {
+          hydrophone = feed.name;
+        }
+      });
+      hydrophone = standardizeFeedName(hydrophone);
+      return hydrophone;
+    };
+
     if (!Array.isArray(dataCascadia?.results)) return [];
+
     return dataCascadia.results.map((el: Sighting) => ({
       ...el,
       type: "sightings",
@@ -414,6 +416,7 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function getMasterDataLayout(page: ReactElement) {
-  return <MasterDataLayout>{page}</MasterDataLayout>;
-}
+// Not using this currently, removing to satisfy ES Lint
+// export function getMasterDataLayout(page: ReactElement) {
+//   return <MasterDataLayout>{page}</MasterDataLayout>;
+// }

@@ -43,7 +43,7 @@ export default function CandidateCard(props: {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
     useNowPlaying();
 
-  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const { feeds } = useData();
@@ -68,8 +68,9 @@ export default function CandidateCard(props: {
   const lastCandidate = candidateArray[0]; // lastCandidate is the most recent time
   const firstTimestamp = firstCandidate.timestamp;
   const lastTimestamp = lastCandidate.timestamp;
-  const allSameTime =
-    candidateArray.length > 1 && firstTimestamp === lastTimestamp;
+  // TODO: need to handle the case where a candidate consists of reports (esp. sightings) that are all at the same time, leading to a zero duration clip
+  // const allSameTime =
+  //   candidateArray.length > 1 && firstTimestamp === lastTimestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
   const candidateTitle = formatTimestamp(firstCandidate.timestamp);

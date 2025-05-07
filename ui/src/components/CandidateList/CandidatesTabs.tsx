@@ -7,35 +7,54 @@ import {
   Theme,
   useMediaQuery,
 } from "@mui/material";
-import type { Map as LeafletMap } from "leaflet";
-import dynamic from "next/dynamic";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import ReportsBarChart from "@/components/CandidateList/ReportsBarChart";
-import { Feed } from "@/graphql/generated";
-import { Candidate } from "@/types/DataTypes";
 
 import CandidateListFilters from "./CandidateListFilters";
 import CandidatesList from "./CandidatesList";
 import { CandidatesResults } from "./CandidatesResults";
 
-const MapWithNoSSR = dynamic(() => import("@/components/NewMap"), {
-  ssr: false,
-});
+export const CandidatesStack = () => {
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  return (
+    <Stack>
+      <CandidateListFilters />
+      <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
+        <CandidatesResults viewType="list" />
+        <Box sx={{ paddingTop: "1.5rem" }}></Box>
+        <CandidatesList />
+      </Box>
+    </Stack>
+  );
+};
+
+export const VisualizationsStack = () => {
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  return (
+    <Stack>
+      <CandidateListFilters />
+      <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
+        <CandidatesResults viewType="chart" />
+        <Box sx={{ paddingTop: "1.5rem" }}></Box>
+        <ReportsBarChart />
+      </Box>
+    </Stack>
+  );
+};
 
 export default function CandidatesTabs({
-  nowPlaying,
-  feeds,
   navOption,
 }: {
-  nowPlaying?: Candidate;
-  feeds: Feed[];
   navOption?: "Listen Live" | "Recordings";
 }) {
   console.log("rendering CandidatesTabs");
   useEffect(() => {
     console.log("tab: " + navOption);
   }, [navOption]);
+
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+
   // tabs
   interface TabProps {
     index: number;
@@ -47,31 +66,6 @@ export default function CandidatesTabs({
     index: number;
     value: number;
   }
-
-  const nowPlayingFeed = useMemo(() => {
-    if (!nowPlaying?.array?.[0]) return undefined;
-    return feeds?.find((feed) => feed.id === nowPlaying.array[0].feedId);
-  }, [nowPlaying, feeds]);
-
-  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const [map, setMap] = useState<LeafletMap>();
-  // const firstOnlineFeed = feeds?.filter(({ online }) => online)[0];
-  // const [currentFeed, setCurrentFeed] = useState(
-  //   nowPlayingFeed ? nowPlayingFeed : firstOnlineFeed,
-  // );
-
-  const mapBox = useMemo(
-    () => (
-      <Box sx={{ flexGrow: 1 }}>
-        <MapWithNoSSR
-          setMap={setMap}
-          currentFeed={nowPlayingFeed}
-          feeds={feeds}
-        />
-      </Box>
-    ),
-    [feeds, nowPlayingFeed],
-  );
 
   // couldn't make this work, need to revisit
   function _CustomTab(props: TabProps) {
@@ -109,26 +103,6 @@ export default function CandidatesTabs({
     setTabValue(newValue);
   };
 
-  const candidateList = (
-    <Stack>
-      <CandidateListFilters />
-      <Box sx={{ paddingTop: "1.5rem" }}></Box>
-      <CandidatesResults viewType="list" />
-      <Box sx={{ paddingTop: "1.5rem" }}></Box>
-      <CandidatesList />
-    </Stack>
-  );
-
-  const visualizations = (
-    <Stack>
-      <CandidateListFilters />
-      <Box sx={{ paddingTop: "1.5rem" }}></Box>
-      <CandidatesResults viewType="chart" />
-      <Box sx={{ paddingTop: "1.5rem" }}></Box>
-      <ReportsBarChart />
-    </Stack>
-  );
-
   const desktopTabs = (
     <Stack>
       <Tabs
@@ -142,55 +116,13 @@ export default function CandidatesTabs({
         <Tab label="Hydrophones" {...a11yProps(2)} />
       </Tabs>
       <CustomTabPanel value={tabValue} index={0}>
-        {candidateList}
+        <CandidatesStack />
       </CustomTabPanel>
       <CustomTabPanel value={tabValue} index={1}>
-        {visualizations}
+        <VisualizationsStack />
       </CustomTabPanel>
       <CustomTabPanel value={tabValue} index={2}>
         {/* add hydrophone list */}
-      </CustomTabPanel>
-    </Stack>
-  );
-
-  const listenLiveTabs = (
-    <Stack>
-      <Tabs
-        value={tabValue}
-        onChange={handleChange}
-        aria-label="navigation tabs"
-        centered={mdDown ? true : false}
-      >
-        <Tab label="Hydrophones" {...a11yProps(0)} />
-        <Tab label="Map" {...a11yProps(1)} />
-      </Tabs>
-      <CustomTabPanel value={tabValue} index={0}></CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={1}>
-        {/* add hydrophone list */}
-      </CustomTabPanel>
-    </Stack>
-  );
-
-  const recordingsTabs = (
-    <Stack>
-      <Tabs
-        value={tabValue}
-        onChange={handleChange}
-        aria-label="navigation tabs"
-        centered={mdDown ? true : false}
-      >
-        <Tab label="Candidates" {...a11yProps(0)} />
-        <Tab label="Visualizations" {...a11yProps(1)} />
-        <Tab label="Map" {...a11yProps(2)} />
-      </Tabs>
-      <CustomTabPanel value={tabValue} index={0}>
-        {candidateList}
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={1}>
-        {visualizations}
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={2}>
-        {tabValue === 2 && mapBox}
       </CustomTabPanel>
     </Stack>
   );
@@ -210,11 +142,12 @@ export default function CandidatesTabs({
           marginTop: mdDown ? 0 : "1rem",
         }}
       >
-        {mdDown && navOption === "Listen Live"
+        {desktopTabs}
+        {/* {mdDown && navOption === "Listen Live"
           ? listenLiveTabs
           : mdDown && navOption === "Recordings"
             ? recordingsTabs
-            : desktopTabs}
+            : desktopTabs} */}
       </Box>
     </Container>
   );

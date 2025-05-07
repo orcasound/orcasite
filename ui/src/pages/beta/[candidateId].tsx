@@ -6,9 +6,7 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  Theme,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -29,8 +27,6 @@ const CandidatePage: NextPageWithLayout = () => {
   const startTime = new Date(startEnd[0]).getTime();
   const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
 
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-
   const { filteredData, feeds } = useData();
 
   type DetectionStats = {
@@ -41,16 +37,17 @@ const CandidatePage: NextPageWithLayout = () => {
     startTime: string;
   };
 
-  const [playerProps, setPlayerProps] = useState({
-    clipDateTime: "",
-    clipNode: "",
-    feed: feeds.length > 0 ? feeds[0] : null,
-    image: feeds.length > 0 ? feeds[0].imageUrl : "",
-    playlist: 0,
-    startOffset: 0,
-    endOffset: 0,
-    audioUri: "",
-  });
+  // REMOVING PLAYER --- don't need one in the detail page bc there is already the Playbar, but saving to re-evaluate with spectogram editor
+  // const [playerProps, setPlayerProps] = useState({
+  //   clipDateTime: "",
+  //   clipNode: "",
+  //   feed: feeds.length > 0 ? feeds[0] : null,
+  //   image: feeds.length > 0 ? feeds[0].imageUrl : "",
+  //   playlist: 0,
+  //   startOffset: 0,
+  //   endOffset: 0,
+  //   audioUri: "",
+  // });
 
   const [detections, setDetections] = useState<DetectionStats>({
     all: [],
@@ -87,51 +84,51 @@ const CandidatePage: NextPageWithLayout = () => {
       hydrophone: arr[0]?.hydrophone,
       startTime: new Date(startEnd[0]).toLocaleString(),
     });
-    const startTimestamp = humanArr.length ? humanArr[0].playlistTimestamp : 0;
+    // const startTimestamp = humanArr.length ? humanArr[0].playlistTimestamp : 0;
 
-    const offsetPadding = 15;
-    const minOffset = Math.min(...humanArr.map((d) => +d.playerOffset));
+    // const offsetPadding = 15;
+    // const minOffset = Math.min(...humanArr.map((d) => +d.playerOffset));
     // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
 
     // ensures that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
-    const firstPlaylist = humanArr.filter(
-      (d) => +d.playlistTimestamp === startTimestamp,
-    );
+    // const firstPlaylist = humanArr.filter(
+    //   (d) => +d.playlistTimestamp === startTimestamp,
+    // );
 
-    const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
+    // const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
 
-    const startOffset = Math.max(0, minOffset - offsetPadding);
-    const endOffset = maxOffset + offsetPadding;
+    // const startOffset = Math.max(0, minOffset - offsetPadding);
+    // const endOffset = maxOffset + offsetPadding;
 
-    const feed = humanArr.length
-      ? feeds.find((f) => f.id === humanArr[0]?.feedId)
-      : feeds.find((f) => f.name === aiArr[0]?.hydrophone);
+    // const feed = humanArr.length
+    //   ? feeds.find((f) => f.id === humanArr[0]?.feedId)
+    //   : feeds.find((f) => f.name === aiArr[0]?.hydrophone);
 
     // use feed and start/end for the player if there are any human detections
-    if (humanArr.length) {
-      setPlayerProps({
-        clipDateTime: new Date(humanArr[0]?.timestamp).toLocaleString(),
-        clipNode: feed ? feed.name : "",
-        feed: feed ? feed : feeds[0],
-        image: feed ? feed.imageUrl : "",
-        playlist: startTimestamp,
-        startOffset: startOffset,
-        endOffset: endOffset,
-        audioUri: "",
-      });
-      // otherwise, grab the audio clip from the first AI detection
-    } else if (aiArr.length) {
-      setPlayerProps({
-        clipDateTime: new Date(aiArr[0]?.timestamp).toLocaleString(),
-        clipNode: feed ? feed.name : "",
-        feed: null,
-        image: feed ? feed.imageUrl : "",
-        playlist: 0,
-        startOffset: 0,
-        endOffset: 0,
-        audioUri: aiArr[0]?.audioUri,
-      });
-    }
+    // if (humanArr.length) {
+    //   setPlayerProps({
+    //     clipDateTime: new Date(humanArr[0]?.timestamp).toLocaleString(),
+    //     clipNode: feed ? feed.name : "",
+    //     feed: feed ? feed : feeds[0],
+    //     image: feed ? feed.imageUrl : "",
+    //     playlist: startTimestamp,
+    //     startOffset: startOffset,
+    //     endOffset: endOffset,
+    //     audioUri: "",
+    //   });
+    //   // otherwise, grab the audio clip from the first AI detection
+    // } else if (aiArr.length) {
+    //   setPlayerProps({
+    //     clipDateTime: new Date(aiArr[0]?.timestamp).toLocaleString(),
+    //     clipNode: feed ? feed.name : "",
+    //     feed: null,
+    //     image: feed ? feed.imageUrl : "",
+    //     playlist: 0,
+    //     startOffset: 0,
+    //     endOffset: 0,
+    //     audioUri: aiArr[0]?.audioUri,
+    //   });
+    // }
   }, [filteredData, feeds, startTime, endTime, startEnd]);
 
   return (

@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 
-import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed, FeedsQuery } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
@@ -26,11 +25,14 @@ export default function Map({
 }) {
   console.log("rendering NewMap");
   const router = useRouter();
-  const { filteredData } = useData();
   const { nowPlaying } = useNowPlaying();
-  const allSightings = filteredData.filter((el) => {
-    return el.newCategory === "SIGHTINGS";
-  });
+
+  // TODO: where would it make sense to show all sightings in a longer time range?
+  // const { filteredData } = useData();
+  // const allSightings = filteredData.filter((el) => {
+  //   return el.newCategory === "SIGHTINGS";
+  // });
+
   const [sightings, setSightings] = useState<CombinedData[]>();
   useEffect(() => {
     const sightingsNow = nowPlaying?.array?.filter((el) => {

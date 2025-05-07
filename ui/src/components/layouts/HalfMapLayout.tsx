@@ -3,6 +3,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
+  Container,
   Theme,
   Typography,
   useMediaQuery,
@@ -18,9 +19,11 @@ import { LayoutContext } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { formatTimestamp } from "@/utils/time";
 
-import CandidatesList from "../CandidateList/CandidatesList";
 import CandidatesTabs from "../CandidateList/CandidatesTabs";
-import ReportsBarChart from "../CandidateList/ReportsBarChart";
+import {
+  CandidatesStack,
+  VisualizationsStack,
+} from "../CandidateList/CandidatesTabs";
 import PlayBar from "../PlayBar";
 import { MasterDataLayout } from "./MasterDataLayout";
 
@@ -28,6 +31,7 @@ const MapWithNoSSR = dynamic(() => import("@/components/NewMap"), {
   ssr: false,
 });
 
+// TODO: need a URL that shows candidate map closeup, without the detail overlay
 // const feedFromSlug = (feedSlug: string) => ({
 //   id: feedSlug,
 //   name: feedSlug,
@@ -41,15 +45,16 @@ const MapWithNoSSR = dynamic(() => import("@/components/NewMap"), {
 
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const slug = router.query.feed as string;
+  // const slug = router.query.feed as string;
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlaying } = useNowPlaying();
   const { feeds } = useData();
+
   const nowPlayingFeed = useMemo(() => {
     if (!nowPlaying?.array?.[0]) return undefined;
     return feeds.find((feed) => feed.id === nowPlaying.array[0].feedId);
-  }, [nowPlaying]);
+  }, [nowPlaying, feeds]);
 
   const [menuTab, setMenuTab] = useState(0);
   const menu = (
@@ -65,7 +70,38 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
       <BottomNavigationAction label="Listen Live" icon={<Mic />} />
     </BottomNavigation>
   );
-  console.log("menuTab " + menuTab);
+
+  type MobileContainerProps = {
+    children: React.ReactNode;
+  };
+
+  const MobileContainer = ({ children }: MobileContainerProps) => {
+    return (
+      <Container
+        maxWidth="xl"
+        sx={{
+          px: { xs: 1, sm: 2, md: 3 },
+        }}
+      >
+        {children}
+      </Container>
+    );
+  };
+
+  const mapTitle = (
+    <Typography
+      id="map-title"
+      sx={{
+        position: "absolute",
+        color: "black",
+        right: 0,
+        zIndex: 10000,
+      }}
+    >
+      {formatTimestamp(nowPlaying?.array?.[0].timestamp)}
+    </Typography>
+  );
+
   // const isDynamic = router.asPath.split("/")[1] === "dynamic";
   // // don't make feed request if there's no feed slug or is dynamic
   // const feedFromQuery = useFeedQuery(
@@ -77,9 +113,9 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const [map, setMap] = useState<LeafletMap>();
   // const feeds = useFeedsQuery().data?.feeds ?? [];
   const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
-  const [currentFeed, setCurrentFeed] = useState(
-    nowPlayingFeed ? nowPlayingFeed : firstOnlineFeed,
-  );
+  const currentFeed = useMemo(() => {
+    return nowPlayingFeed ? nowPlayingFeed : firstOnlineFeed;
+  }, [nowPlayingFeed, firstOnlineFeed]);
   const [tabValue, setTabValue] = useState(0);
 
   const handleChange = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -110,10 +146,11 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     if (nowPlayingFeed) {
       map?.panTo(nowPlayingFeed.latLng);
     }
-  }, [nowPlayingFeed]);
+  }, [nowPlayingFeed, map]);
 
   const mapBox = (
     <Box sx={{ flexGrow: 1 }}>
+      {mapTitle}
       <MapWithNoSSR
         setMap={setMap}
         currentFeed={nowPlayingFeed}
@@ -160,47 +197,42 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
               overflow: "auto",
             }}
           >
-            <CandidatesTabs nowPlaying={nowPlaying} feeds={feeds} />
+            <CandidatesTabs />
           </Box>
         )}
-        {mdDown && menuTab === 0 && (
-          <Box
-            sx={{
-              minHeight: "40px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "2rem",
-            }}
-          >
-            <Box id="0" onClick={handleChange}>
-              Map
-            </Box>
-            <Box id="1" onClick={handleChange}>
-              Candidates
-            </Box>
-            <Box id="2" onClick={handleChange}>
-              Visualizations
-            </Box>
-          </Box>
-        )}
-        {mdDown && menuTab === 1 && (
-          <Box
-            sx={{
-              minHeight: "40px",
-              display: "flex",
-              justifyContent: "space-around",
-              alignItems: "center",
-            }}
-          >
-            <Box id="0" onClick={handleChange}>
-              Hydrophones
-            </Box>
-            <Box id="1" onClick={handleChange}>
-              Map
-            </Box>
-          </Box>
-        )}
+        <Box
+          sx={{
+            minHeight: "44px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "2rem",
+          }}
+        >
+          {mdDown && menuTab === 0 && (
+            <>
+              <Box id="0" onClick={handleChange}>
+                Map
+              </Box>
+              <Box id="1" onClick={handleChange}>
+                Candidates
+              </Box>
+              <Box id="2" onClick={handleChange}>
+                Visualizations
+              </Box>
+            </>
+          )}
+          {mdDown && menuTab === 1 && (
+            <>
+              <Box id="0" onClick={handleChange}>
+                Hydrophones
+              </Box>
+              <Box id="1" onClick={handleChange}>
+                Map
+              </Box>
+            </>
+          )}
+        </Box>
         <Box
           className="main-panel"
           sx={{
@@ -211,18 +243,6 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             position: "relative",
           }}
         >
-          <Typography
-            id="map-title"
-            sx={{
-              position: "absolute",
-              color: "black",
-              right: 0,
-              zIndex: 10000,
-            }}
-          >
-            {formatTimestamp(nowPlaying?.array?.[0].timestamp)}
-          </Typography>
-
           {
             // desktop index page, show map
             !mdDown && router.query.candidateId === undefined ? (
@@ -233,9 +253,13 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
               tabValue === 0 ? (
                 mapBox
               ) : tabValue === 1 ? (
-                <CandidatesList />
+                <MobileContainer>
+                  <CandidatesStack />
+                </MobileContainer>
               ) : (
-                <ReportsBarChart />
+                <MobileContainer>
+                  <VisualizationsStack />
+                </MobileContainer>
               )
             ) : // mobile index page, listen live
             mdDown &&
@@ -244,7 +268,17 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
               tabValue === 1 ? (
                 mapBox
               ) : (
-                "hydrophone list"
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  hydrophone list
+                </div>
               )
             ) : (
               // detail page content, mobile or desktop
