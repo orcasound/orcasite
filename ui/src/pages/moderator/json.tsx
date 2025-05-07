@@ -1,4 +1,4 @@
-import { getModeratorLayout } from "@/components/layouts/ModeratorLayout";
+import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import { useData } from "@/context/DataContext";
 import type { NextPageWithLayout } from "@/pages/_app";
 
@@ -13,6 +13,6 @@ const JSONPage: NextPageWithLayout = () => {
   );
 };
 
-JSONPage.getLayout = getModeratorLayout;
+JSONPage.getLayout = getLeftNavLayout;
 
 export default JSONPage;
