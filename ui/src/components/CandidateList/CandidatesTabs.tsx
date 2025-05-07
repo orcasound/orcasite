@@ -9,26 +9,33 @@ import {
 } from "@mui/material";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import ReportsBarChart from "@/components/CandidateList/ReportsBarChart";
-import { useData } from "@/context/DataContext";
+import { Feed } from "@/graphql/generated";
+import { Candidate } from "@/types/DataTypes";
 
 import CandidateListFilters from "./CandidateListFilters";
 import CandidatesList from "./CandidatesList";
 import { CandidatesResults } from "./CandidatesResults";
 
-const MapWithNoSSR = dynamic(() => import("@/components/Map"), {
+const MapWithNoSSR = dynamic(() => import("@/components/NewMap"), {
   ssr: false,
 });
 
 export default function CandidatesTabs({
-  mapBox,
-  tab,
+  nowPlaying,
+  feeds,
+  navOption,
 }: {
-  mapBox?: React.ReactNode;
-  tab?: "Listen Live" | "Recordings";
+  nowPlaying?: Candidate;
+  feeds: Feed[];
+  navOption?: "Listen Live" | "Recordings";
 }) {
+  console.log("rendering CandidatesTabs");
+  useEffect(() => {
+    console.log("tab: " + navOption);
+  }, [navOption]);
   // tabs
   interface TabProps {
     index: number;
@@ -41,9 +48,30 @@ export default function CandidatesTabs({
     value: number;
   }
 
+  const nowPlayingFeed = useMemo(() => {
+    if (!nowPlaying?.array?.[0]) return undefined;
+    return feeds?.find((feed) => feed.id === nowPlaying.array[0].feedId);
+  }, [nowPlaying, feeds]);
+
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const [map, setMap] = useState<LeafletMap>();
-  const { feeds } = useData();
+  // const firstOnlineFeed = feeds?.filter(({ online }) => online)[0];
+  // const [currentFeed, setCurrentFeed] = useState(
+  //   nowPlayingFeed ? nowPlayingFeed : firstOnlineFeed,
+  // );
+
+  const mapBox = useMemo(
+    () => (
+      <Box sx={{ flexGrow: 1 }}>
+        <MapWithNoSSR
+          setMap={setMap}
+          currentFeed={nowPlayingFeed}
+          feeds={feeds}
+        />
+      </Box>
+    ),
+    [feeds, nowPlayingFeed],
+  );
 
   // couldn't make this work, need to revisit
   function _CustomTab(props: TabProps) {
@@ -74,7 +102,9 @@ export default function CandidatesTabs({
     };
   }
 
-  const [tabValue, setTabValue] = useState(0);
+  const initialTabValue = navOption === "Recordings" ? 1 : 0;
+  const [tabValue, setTabValue] = useState(initialTabValue);
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
@@ -159,7 +189,9 @@ export default function CandidatesTabs({
       <CustomTabPanel value={tabValue} index={1}>
         {visualizations}
       </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={2}></CustomTabPanel>
+      <CustomTabPanel value={tabValue} index={2}>
+        {tabValue === 2 && mapBox}
+      </CustomTabPanel>
     </Stack>
   );
 
@@ -178,9 +210,9 @@ export default function CandidatesTabs({
           marginTop: mdDown ? 0 : "1rem",
         }}
       >
-        {mdDown && tab === "Listen Live"
+        {mdDown && navOption === "Listen Live"
           ? listenLiveTabs
-          : mdDown && tab === "Recordings"
+          : mdDown && navOption === "Recordings"
             ? recordingsTabs
             : desktopTabs}
       </Box>

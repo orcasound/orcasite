@@ -365,7 +365,7 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   ]);
 
   useEffect(() => {
-    console.log("feeds: " + JSON.stringify(feedList, null, 2));
+    // console.log("feeds: " + JSON.stringify(feedList, null, 2));
     // console.log("datasetCascadia: " + JSON.stringify(datasetCascadia.find(el => el.hydrophone === "Bush Point"), null, 2))
     // console.log("created.toLocaleDateString: " + datasetCascadia[0].timestamp)
     // console.log("orcahello url: " + constructUrl(endpointOrcahello, paramsOrcahello))

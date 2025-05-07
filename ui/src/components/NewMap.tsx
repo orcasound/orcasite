@@ -22,8 +22,9 @@ export default function Map({
 }: {
   setMap?: (map: LeafletMap) => void;
   currentFeed?: Pick<Feed, "slug" | "latLng">;
-  feeds: FeedsQuery["feeds"];
+  feeds?: FeedsQuery["feeds"];
 }) {
+  console.log("rendering NewMap");
   const router = useRouter();
   const { filteredData } = useData();
   const { nowPlaying } = useNowPlaying();
@@ -64,7 +65,7 @@ export default function Map({
         url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
       />
       <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
-      {feeds.map((feed) => (
+      {feeds?.map((feed) => (
         <Marker
           key={feed.slug}
           position={feed.latLng}

@@ -69,13 +69,6 @@ export const DataProvider = ({
     if (nowPlaying === undefined || !Object.keys(nowPlaying).length) {
       setNowPlaying(sortedCandidates[0]);
     }
-    console.log(
-      JSON.stringify(
-        sortedCandidates.find((el) => el.array[0].type === "sightings"),
-        null,
-        2,
-      ),
-    );
     setQueue(sortedCandidates);
   }, [sortedCandidates, setQueue, nowPlaying, setNowPlaying]);
 
