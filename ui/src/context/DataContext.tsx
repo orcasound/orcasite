@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { defaultRange } from "@/components/CandidateList/CandidateListFilters";
 import useFilteredData from "@/components/CandidateList/useFilteredData";
-import useSortedCandidates from "@/components/CandidateList/useSortedCandidates";
+import { useSortedCandidates } from "@/components/CandidateList/useSortedCandidates";
 import { Feed } from "@/graphql/generated";
 import { Candidate, CombinedData, Dataset } from "@/types/DataTypes";
 

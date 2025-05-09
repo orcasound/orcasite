@@ -37,18 +37,6 @@ const CandidatePage: NextPageWithLayout = () => {
     startTime: string;
   };
 
-  // REMOVING PLAYER --- don't need one in the detail page bc there is already the Playbar, but saving to re-evaluate with spectogram editor
-  // const [playerProps, setPlayerProps] = useState({
-  //   clipDateTime: "",
-  //   clipNode: "",
-  //   feed: feeds.length > 0 ? feeds[0] : null,
-  //   image: feeds.length > 0 ? feeds[0].imageUrl : "",
-  //   playlist: 0,
-  //   startOffset: 0,
-  //   endOffset: 0,
-  //   audioUri: "",
-  // });
-
   const [detections, setDetections] = useState<DetectionStats>({
     all: [],
     human: [],
@@ -61,11 +49,6 @@ const CandidatePage: NextPageWithLayout = () => {
   const aiName = "Orcahello AI";
 
   useEffect(() => {
-    console.log("router.query: " + JSON.stringify(router.query, null, 2));
-    console.log("router.query.candidateId: " + router.query.candidateId);
-  }, [router]);
-
-  useEffect(() => {
     // select the detection array that matches the start/end times in the page URL
     const arr: CombinedData[] = [];
     filteredData.forEach((d) => {
@@ -74,65 +57,24 @@ const CandidatePage: NextPageWithLayout = () => {
         arr.push(d);
       }
     });
+    const sortedArr = arr.sort(
+      (a, b) => Date.parse(a.timestampString) - Date.parse(b.timestampString),
+    );
+
     // store the array and separate human vs ai
-    const humanArr = arr.filter((d) => d.newCategory !== "WHALE (AI)");
-    const aiArr = arr.filter((d) => d.newCategory === "WHALE (AI)");
+    const humanArr = sortedArr.filter((d) => d.newCategory !== "WHALE (AI)");
+    const aiArr = sortedArr.filter((d) => d.newCategory === "WHALE (AI)");
     setDetections({
-      all: arr,
+      all: sortedArr,
       human: humanArr,
       ai: aiArr,
-      hydrophone: arr[0]?.hydrophone,
+      hydrophone: sortedArr[0]?.hydrophone,
       startTime: new Date(startEnd[0]).toLocaleString(),
     });
-    // const startTimestamp = humanArr.length ? humanArr[0].playlistTimestamp : 0;
-
-    // const offsetPadding = 15;
-    // const minOffset = Math.min(...humanArr.map((d) => +d.playerOffset));
-    // const maxOffset = Math.max(...candidateArray.map((d) => +d.playerOffset));
-
-    // ensures that the last offset is still in the same playlist -- future iteration may pull a second playlist if needed
-    // const firstPlaylist = humanArr.filter(
-    //   (d) => +d.playlistTimestamp === startTimestamp,
-    // );
-
-    // const maxOffset = Math.max(...firstPlaylist.map((d) => +d.playerOffset));
-
-    // const startOffset = Math.max(0, minOffset - offsetPadding);
-    // const endOffset = maxOffset + offsetPadding;
-
-    // const feed = humanArr.length
-    //   ? feeds.find((f) => f.id === humanArr[0]?.feedId)
-    //   : feeds.find((f) => f.name === aiArr[0]?.hydrophone);
-
-    // use feed and start/end for the player if there are any human detections
-    // if (humanArr.length) {
-    //   setPlayerProps({
-    //     clipDateTime: new Date(humanArr[0]?.timestamp).toLocaleString(),
-    //     clipNode: feed ? feed.name : "",
-    //     feed: feed ? feed : feeds[0],
-    //     image: feed ? feed.imageUrl : "",
-    //     playlist: startTimestamp,
-    //     startOffset: startOffset,
-    //     endOffset: endOffset,
-    //     audioUri: "",
-    //   });
-    //   // otherwise, grab the audio clip from the first AI detection
-    // } else if (aiArr.length) {
-    //   setPlayerProps({
-    //     clipDateTime: new Date(aiArr[0]?.timestamp).toLocaleString(),
-    //     clipNode: feed ? feed.name : "",
-    //     feed: null,
-    //     image: feed ? feed.imageUrl : "",
-    //     playlist: 0,
-    //     startOffset: 0,
-    //     endOffset: 0,
-    //     audioUri: aiArr[0]?.audioUri,
-    //   });
-    // }
   }, [filteredData, feeds, startTime, endTime, startEnd]);
 
   return (
-    <div style={{ overflow: "scroll" }}>
+    <div style={{ overflowY: "scroll" }}>
       <Head>Report {candidateId} | Orcasound </Head>
       <Container
         maxWidth="xl"
@@ -218,9 +160,7 @@ const CandidatePage: NextPageWithLayout = () => {
                   <ListItemAvatar sx={{ display: "flex", opacity: "0.9" }}>
                     <Edit />
                     <Box sx={{ padding: "0 8px" }} />
-                    {/* <ThumbUpOffAlt /> */}
                     <Box sx={{ padding: "0 8px" }} />
-                    {/* <ThumbDownOffAlt /> */}
                   </ListItemAvatar>
                 </ListItemButton>
               ))}

@@ -2,13 +2,29 @@ import { useMemo } from "react";
 
 import { Candidate, CombinedData } from "@/types/DataTypes";
 
+const countCategories = (arr: { newCategory: string }[], cat: string) => {
+  return arr.filter((d) => d.newCategory.toLowerCase() === cat).length;
+};
+const cleanSightingsDescription = (description: string | null | undefined) => {
+  if (!description) return;
+  const removeBracket = description.replace(/^\[[^\]]*\]\s*/, "");
+  const removeBreak = removeBracket.replace(/<br>[^•]*/g, "");
+  const removeLinks = removeBreak
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/\s+•/g, " •")
+    .trim();
+
+  return removeLinks.trim();
+};
+
 const createCandidates = (
   dataset: CombinedData[],
   interval: number,
 ): Candidate[] => {
   const candidates: Array<Array<CombinedData>> = [];
-  const sort = dataset.sort(
-    (a, b) => Date.parse(b.timestampString) - Date.parse(a.timestampString),
+  // sorting reports in ascending order from earliest to latest
+  const sort = [...dataset].sort(
+    (a, b) => Date.parse(a.timestampString) - Date.parse(b.timestampString),
   );
   sort.forEach((el: CombinedData) => {
     if (!candidates.length) {
@@ -42,34 +58,25 @@ const createCandidates = (
       }
     }
   });
-  const countCategories = (arr: { newCategory: string }[], cat: string) => {
-    return arr.filter((d) => d.newCategory.toLowerCase() === cat).length;
-  };
-  const cleanSightingsDescription = (
-    description: string | null | undefined,
-  ) => {
-    if (!description) return;
-    const removeBracket = description.replace(/^\[[^\]]*\]\s*/, "");
-    const removeBreak = removeBracket.replace(/<br>[^•]*/g, "");
-    return removeBreak;
-  };
 
-  const candidatesMap = candidates.map((candidate) => ({
-    id: `${candidate[0].timestampString}_${candidate[candidate.length - 1].timestampString}`,
-    array: candidate,
-    whale: countCategories(candidate, "whale"),
-    vessel: countCategories(candidate, "vessel"),
-    other: countCategories(candidate, "other"),
-    "whale (AI)": countCategories(candidate, "whale (ai)"),
-    sightings: countCategories(candidate, "sightings"),
-    hydrophone: candidate[0].hydrophone,
-    descriptions: candidate
-      .map((el: CombinedData) => cleanSightingsDescription(el.comments))
-      .filter((el: string | null | undefined) => el !== null)
-      .join(" • ")
-      .replace(/•\s?$/, "") // removes any trailing bullets from empty space comments
-      .replace(/^\s?•\s?/, ""), // removes any forward bullets from empty space comments
-  }));
+  const candidatesMap = candidates.map((candidate) => {
+    return {
+      id: `${candidate[0].timestampString}_${candidate[candidate.length - 1].timestampString}`,
+      array: candidate,
+      whale: countCategories(candidate, "whale"),
+      vessel: countCategories(candidate, "vessel"),
+      other: countCategories(candidate, "other"),
+      "whale (AI)": countCategories(candidate, "whale (ai)"),
+      sightings: countCategories(candidate, "sightings"),
+      hydrophone: candidate[0].hydrophone,
+      descriptions: candidate
+        .map((el: CombinedData) => cleanSightingsDescription(el.comments))
+        .filter((el: string | null | undefined) => el !== null)
+        .join(" • ")
+        .replace(/•\s?$/, "") // removes any trailing bullets from empty space comments
+        .replace(/^\s?•\s?/, ""), // removes any forward bullets from empty space comments
+    };
+  });
 
   return candidatesMap;
 };
@@ -103,7 +110,7 @@ const sortCandidates = (candidates: Candidate[], sortOrder: string) => {
   return sorted;
 };
 
-export default function useSortedCandidates(
+export function useSortedCandidates(
   rawData: CombinedData[],
   timeIncrement: number,
   sortOrder: string,
