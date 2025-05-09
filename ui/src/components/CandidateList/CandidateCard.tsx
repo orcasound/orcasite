@@ -15,8 +15,10 @@ import { useRouter } from "next/router";
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
-import { Candidate } from "@/types/DataTypes";
+import { Candidate, CombinedData } from "@/types/DataTypes";
 import { formatTimestamp } from "@/utils/time";
+
+import { useComputedPlaybackFields } from "./useComputedPlaybackFields";
 
 const tagRegex = [
   "s[0-9]+",
@@ -51,6 +53,39 @@ export default function CandidateCard(props: {
     (feed) => feed.id === props.candidate.array[0].feedId,
   );
 
+  const { startOffset, endOffset } = useComputedPlaybackFields(
+    props.candidate.array,
+    feed?.id,
+  );
+  const duration = endOffset - startOffset;
+
+  function formatDuration(seconds: number): string {
+    const minutesRound = Math.round(seconds / 60);
+    const minutesDown = Math.floor(seconds / 60);
+    const remainder = seconds % 60;
+    if (seconds === 0) {
+      return "audio unavailable";
+    } else if (seconds < 60) {
+      return `${seconds} second${seconds === 1 ? "" : "s"}`;
+    } else if (seconds < 600) {
+      return `${minutesDown} minute${minutesDown === 1 ? "" : "s"} ${remainder} second${remainder === 1 ? "" : "s"}`;
+    } else {
+      return `${minutesRound} minutes`;
+    }
+  }
+
+  function extractHttpLinks(detectionArray: CombinedData[]): string[] {
+    const urlRegex = /https?:\/\/\S+/g;
+    const sightingsArray = detectionArray.filter((d) => d.type === "sightings");
+    return sightingsArray.flatMap((detection) => {
+      if (!detection.comments) return [];
+      const matches = detection.comments.match(urlRegex);
+      return matches || [];
+    });
+  }
+
+  const imageLinks = extractHttpLinks(props.candidate.array);
+
   const image = feed ? feed.imageUrl : "";
   const { descriptions } = props.candidate;
   const tagArray = descriptions.match(new RegExp(tagRegex.join("|"), "gi"));
@@ -64,8 +99,8 @@ export default function CandidateCard(props: {
 
   const candidate = props.candidate;
   const candidateArray = candidate.array;
-  const firstCandidate = candidateArray[candidateArray.length - 1]; // firstCandidate is the earliest time, reports are sorted descending
-  const lastCandidate = candidateArray[0]; // lastCandidate is the most recent time
+  const firstCandidate = candidateArray[0]; // firstCandidate is the earliest time, reports are sorted descending
+  const lastCandidate = candidateArray[candidateArray.length - 1]; // lastCandidate is the most recent time
   const firstTimestamp = firstCandidate.timestamp;
   const lastTimestamp = lastCandidate.timestamp;
   // TODO: need to handle the case where a candidate consists of reports (esp. sightings) that are all at the same time, leading to a zero duration clip
@@ -185,7 +220,8 @@ export default function CandidateCard(props: {
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
                     {candidate.hydrophone}
                     {" • "}
-                    {candidate.array.length === 1
+                    {formatDuration(duration)}
+                    {/* {candidate.array.length === 1
                       ? candidate.array[0].type === "human" ||
                         candidate.array[0].type === "sightings"
                         ? "30 seconds"
@@ -204,7 +240,7 @@ export default function CandidateCard(props: {
                             (Date.parse(lastTimestampString) -
                               Date.parse(firstTimestampString)) /
                               (1000 * 60 * 60),
-                          ) + " seconds"}
+                          ) + " seconds"} */}
                   </Typography>
                 </Stack>
               </Box>
@@ -263,6 +299,28 @@ export default function CandidateCard(props: {
                       fontSize: "14px",
                     }}
                   />
+                ))}
+              </Box>
+            )}
+            {imageLinks && (
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "10px",
+                  padding: "1rem 0",
+                  flexWrap: "wrap",
+                }}
+              >
+                {imageLinks.map((link) => (
+                  <Box
+                    key={link}
+                    sx={{
+                      height: "100px",
+                      width: "100px",
+                      backgroundImage: `url(${link})`,
+                      backgroundSize: "cover",
+                    }}
+                  ></Box>
                 ))}
               </Box>
             )}

@@ -23,7 +23,6 @@ export default function Map({
   currentFeed?: Pick<Feed, "slug" | "latLng">;
   feeds?: FeedsQuery["feeds"];
 }) {
-  console.log("rendering NewMap");
   const router = useRouter();
   const { nowPlaying } = useNowPlaying();
 

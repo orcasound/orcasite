@@ -287,7 +287,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           }
         </Box>
       </Box>
-      <PlayBar menu={menu} />
+      <PlayBar mobileMenu={menu} />
     </Box>
   );
 }

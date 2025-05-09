@@ -7,7 +7,7 @@ import {
   Theme,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import ReportsBarChart from "@/components/CandidateList/ReportsBarChart";
 
@@ -48,11 +48,6 @@ export default function CandidatesTabs({
 }: {
   navOption?: "Listen Live" | "Recordings";
 }) {
-  console.log("rendering CandidatesTabs");
-  useEffect(() => {
-    console.log("tab: " + navOption);
-  }, [navOption]);
-
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   // tabs
