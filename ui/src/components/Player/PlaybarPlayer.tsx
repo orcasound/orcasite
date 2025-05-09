@@ -7,9 +7,17 @@ import {
   Theme,
   Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { useNowPlaying } from "@/context/NowPlayingContext";
 // import { useData } from "@/context/DataContext";
@@ -34,30 +42,21 @@ export function PlaybarPlayer({
   startOffset,
   endOffset,
   onAudioPlay,
-  // changeListState,
-  // index,
-  // command,
   onPlayerInit,
   onPlay,
-  // onPlayerEnd,
 }: {
   clipDateTime?: string;
   clipNode?: string;
   feed: Feed;
   image: string | undefined;
-  marks?: { label: string; value: number }[];
+  marks?: { label: string | ReactNode; value: number }[];
   playlistTimestamp: number;
   startOffset: number;
   endOffset: number;
   onAudioPlay?: () => void;
-  // changeListState?: (value: number, status: string) => void;
-  // index?: number;
-  // command?: string;
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
-  // onPlayerEnd?: () => void;
 }) {
-  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
   const { masterPlayerRef, setMasterPlayerStatus, onPlayerEnd } =
     useNowPlaying();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
@@ -65,6 +64,8 @@ export function PlaybarPlayer({
   const [playerTime, setPlayerTime] = useState(startOffset);
 
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
+  const theme = useTheme();
 
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
@@ -253,7 +254,7 @@ export function PlaybarPlayer({
         direction="row"
         width="100%"
         spacing={smDown ? 2 : 3}
-        sx={{ overflow: "hidden" }}
+        sx={{ overflow: "visible" }}
       >
         <Box
           sx={{
@@ -291,8 +292,10 @@ export function PlaybarPlayer({
             sx={{ display: smDown ? "none" : "block" }}
           >
             <Slider
-              valueLabelDisplay="auto"
-              valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}
+              // valueLabelDisplay="auto"
+              // valueLabelFormat={(v) => `${formattedSeconds(
+              //   Number((v).toFixed(0)),
+              // )}`}
               step={0.1}
               max={sliderMax}
               value={sliderValue}
@@ -302,6 +305,20 @@ export function PlaybarPlayer({
               size="small"
               sx={{
                 padding: "10px 0!important",
+                display: "flex",
+                flexDirection: "column",
+                gap: 0,
+                "& .MuiSlider-markLabel": {
+                  display: "block",
+                  top: 0,
+                },
+                "& .MuiSlider-mark": {
+                  backgroundColor: theme.palette.accent3.main,
+                  height: "10px",
+                },
+                "&.MuiSlider-root": {
+                  marginBottom: "0px",
+                },
               }}
             />
             <Box

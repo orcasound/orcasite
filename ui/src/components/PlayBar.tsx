@@ -1,5 +1,12 @@
-import { AppBar, Stack, Theme, Toolbar, useMediaQuery } from "@mui/material";
-import React, { useMemo } from "react";
+import {
+  AppBar,
+  Stack,
+  Theme,
+  Toolbar,
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
+import React, { useEffect, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
@@ -21,7 +28,7 @@ export default function PlayBar({
   const hydrophone = nowPlaying?.hydrophone;
   const feed = feeds.find((feed) => feed.id === detections?.[0]?.feedId);
 
-  const { playlistTimestamp, startOffset, endOffset } =
+  const { playlistTimestamp, playlistStartTime, startOffset, endOffset } =
     useComputedPlaybackFields(nowPlaying?.array, feed?.id);
 
   const clipDateTime = useMemo(() => {
@@ -31,6 +38,105 @@ export default function PlayBar({
       return "";
     }
   }, [nowPlaying]);
+
+  function calcMarkValue(
+    playlistStartTime: string | Date,
+    startOffset: number,
+    detectionTimestamp: string | Date,
+  ): number {
+    const startTime =
+      typeof playlistStartTime === "string"
+        ? new Date(playlistStartTime)
+        : playlistStartTime;
+    const targetTime =
+      typeof detectionTimestamp === "string"
+        ? new Date(detectionTimestamp)
+        : detectionTimestamp;
+    const startTimeSeconds = startTime.getTime() / 1000;
+    const targetTimeSeconds = targetTime.getTime() / 1000;
+    const seconds = targetTimeSeconds - startTimeSeconds - startOffset;
+    return +seconds.toFixed(1);
+  }
+
+  useEffect(() => {
+    console.log("detections: " + JSON.stringify(detections));
+    console.log(
+      "detections[0].description: " +
+        JSON.stringify(detections[0].description === undefined),
+    );
+    console.log(
+      "detections[0].comments: " + JSON.stringify(detections[0].comments),
+    );
+    console.log("playlistStartTime: " + playlistStartTime);
+    console.log("startOffset: " + startOffset);
+    console.log(
+      "mark values from feedStream: " +
+        detections?.map((d) =>
+          playlistStartTime
+            ? calcMarkValue(
+                playlistStartTime.toString(),
+                startOffset,
+                d.timestamp,
+              )
+            : 0,
+        ),
+    );
+    console.log(
+      "mark values from detection: " +
+        detections?.map((d) =>
+          Number((+d.playerOffset - +startOffset).toFixed(1)),
+        ),
+    );
+  }, [detections, playlistStartTime, startOffset]);
+
+  const marks = useMemo(() => {
+    return detections?.map((d) => ({
+      label: (
+        <Tooltip
+          title={`
+            ${d.newCategory} 
+            ${
+              d.description !== null && d.description !== undefined
+                ? d.description
+                : d.comments
+                  ? d.comments
+                  : ""
+            }`}
+          arrow
+          placement="bottom"
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -10],
+                  },
+                },
+              ],
+            },
+          }}
+        >
+          <span
+            style={{
+              width: "20px",
+              display: "block",
+              height: "10px",
+              paddingTop: "10px",
+            }}
+          >
+            {""}
+          </span>
+        </Tooltip>
+      ),
+      value: playlistStartTime
+        ? calcMarkValue(playlistStartTime.toString(), startOffset, d.timestamp)
+        : 0,
+      // value: detections?.map(d => playlistStartTime
+      //   ? calcMarkValue(playlistStartTime.toString(), startOffset, d.timestamp)
+      //   : 0),
+    }));
+  }, [playlistStartTime, startOffset, detections]);
 
   return (
     <Stack
@@ -70,6 +176,7 @@ export default function PlayBar({
                 key={`${startOffset}-${endOffset}`}
                 clipDateTime={clipDateTime}
                 clipNode={hydrophone || ""}
+                marks={marks}
               />
             )}
           </>
