@@ -108,6 +108,7 @@ export const useComputedPlaybackFields = (
 
   if (!firstDetection || !lastDetection) {
     return {
+      playlistStartTime: 0,
       playlistTimestamp: 0,
       startOffset: 0,
       endOffset: 0,
@@ -117,6 +118,7 @@ export const useComputedPlaybackFields = (
   }
 
   return {
+    playlistStartTime: stream?.startTime,
     playlistTimestamp,
     startOffset,
     endOffset,
