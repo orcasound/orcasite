@@ -6,7 +6,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
@@ -57,37 +57,6 @@ export default function PlayBar({
     const seconds = targetTimeSeconds - startTimeSeconds - startOffset;
     return +seconds.toFixed(1);
   }
-
-  useEffect(() => {
-    console.log("detections: " + JSON.stringify(detections));
-    console.log(
-      "detections[0].description: " +
-        JSON.stringify(detections[0].description === undefined),
-    );
-    console.log(
-      "detections[0].comments: " + JSON.stringify(detections[0].comments),
-    );
-    console.log("playlistStartTime: " + playlistStartTime);
-    console.log("startOffset: " + startOffset);
-    console.log(
-      "mark values from feedStream: " +
-        detections?.map((d) =>
-          playlistStartTime
-            ? calcMarkValue(
-                playlistStartTime.toString(),
-                startOffset,
-                d.timestamp,
-              )
-            : 0,
-        ),
-    );
-    console.log(
-      "mark values from detection: " +
-        detections?.map((d) =>
-          Number((+d.playerOffset - +startOffset).toFixed(1)),
-        ),
-    );
-  }, [detections, playlistStartTime, startOffset]);
 
   const marks = useMemo(() => {
     return detections?.map((d) => ({
