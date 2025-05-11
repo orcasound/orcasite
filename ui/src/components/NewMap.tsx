@@ -60,7 +60,7 @@ export default function Map({
       //TODO: Disable attribution on mobile only
       attributionControl={false}
     >
-      <ZoomControl position="topleft" />
+      <ZoomControl position="topright" />
       <TileLayer
         attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
         url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"

@@ -87,6 +87,8 @@ interface Annotation {
 export interface Candidate {
   id: string;
   array: CombinedData[];
+  startTimestamp: string;
+  endTimestamp: string;
   whale: number;
   vessel: number;
   other: number;

@@ -6,7 +6,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { MutableRefObject, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
@@ -16,20 +16,26 @@ import { PlaybarPlayer } from "./Player/PlaybarPlayer";
 
 export default function PlayBar({
   mobileMenu,
+  masterPlayerTimeRef,
 }: {
   mobileMenu?: React.ReactNode;
+  masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
   const { nowPlaying } = useNowPlaying();
-  const { feeds } = useData();
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const detections = nowPlaying?.array;
   const hydrophone = nowPlaying?.hydrophone;
+
+  const { feeds } = useData();
   const feed = feeds.find((feed) => feed.id === detections?.[0]?.feedId);
 
   const { playlistTimestamp, playlistStartTime, startOffset, endOffset } =
-    useComputedPlaybackFields(nowPlaying?.array, feed?.id);
+    useComputedPlaybackFields(nowPlaying, feed?.id);
+
+  console.log("nowPlaying.startTimestamp: " + nowPlaying?.startTimestamp);
+  console.log("nowPlaying.endTimestamp: " + nowPlaying?.endTimestamp);
 
   const clipDateTime = useMemo(() => {
     if (nowPlaying?.array) {
@@ -57,37 +63,6 @@ export default function PlayBar({
     const seconds = targetTimeSeconds - startTimeSeconds - startOffset;
     return +seconds.toFixed(1);
   }
-
-  useEffect(() => {
-    console.log("detections: " + JSON.stringify(detections));
-    console.log(
-      "detections[0].description: " +
-        JSON.stringify(detections[0].description === undefined),
-    );
-    console.log(
-      "detections[0].comments: " + JSON.stringify(detections[0].comments),
-    );
-    console.log("playlistStartTime: " + playlistStartTime);
-    console.log("startOffset: " + startOffset);
-    console.log(
-      "mark values from feedStream: " +
-        detections?.map((d) =>
-          playlistStartTime
-            ? calcMarkValue(
-                playlistStartTime.toString(),
-                startOffset,
-                d.timestamp,
-              )
-            : 0,
-        ),
-    );
-    console.log(
-      "mark values from detection: " +
-        detections?.map((d) =>
-          Number((+d.playerOffset - +startOffset).toFixed(1)),
-        ),
-    );
-  }, [detections, playlistStartTime, startOffset]);
 
   const marks = useMemo(() => {
     return detections?.map((d) => ({
@@ -177,6 +152,7 @@ export default function PlayBar({
                 clipDateTime={clipDateTime}
                 clipNode={hydrophone || ""}
                 marks={marks}
+                masterPlayerTimeRef={masterPlayerTimeRef}
               />
             )}
           </>

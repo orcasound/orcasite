@@ -54,7 +54,7 @@ export default function CandidateCard(props: {
   );
 
   const { startOffset, endOffset } = useComputedPlaybackFields(
-    props.candidate.array,
+    props.candidate,
     feed?.id,
   );
   const duration = endOffset - startOffset;

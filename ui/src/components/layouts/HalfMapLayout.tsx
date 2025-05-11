@@ -5,25 +5,31 @@ import {
   Box,
   Container,
   Theme,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { type Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import Header from "@/components/Header";
 import { useData } from "@/context/DataContext";
 import { LayoutContext } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
-import { formatTimestamp } from "@/utils/time";
 
 import CandidatesTabs from "../CandidateList/CandidatesTabs";
 import {
   CandidatesStack,
   VisualizationsStack,
 } from "../CandidateList/CandidatesTabs";
+import PlayerTimeDisplay from "../CandidateList/PlayerTimeDisplay";
 import PlayBar from "../PlayBar";
 import { MasterDataLayout } from "./MasterDataLayout";
 
@@ -50,11 +56,15 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlaying } = useNowPlaying();
   const { feeds } = useData();
+  console.log("rendering halfmap");
 
   const nowPlayingFeed = useMemo(() => {
     if (!nowPlaying?.array?.[0]) return undefined;
     return feeds.find((feed) => feed.id === nowPlaying.array[0].feedId);
   }, [nowPlaying, feeds]);
+
+  const masterPlayerTimeRef = useRef(0);
+  // const [masterPlayerTime, setMasterPlayerTime] = useState(0);
 
   const [menuTab, setMenuTab] = useState(0);
   const menu = (
@@ -89,18 +99,38 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   };
 
   const mapTitle = (
-    <Typography
-      id="map-title"
+    <Box
       sx={{
         position: "absolute",
-        color: "black",
-        right: 0,
+        top: 20,
+        left: 20,
+        width: "300px",
         zIndex: 10000,
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
       }}
     >
-      {formatTimestamp(nowPlaying?.array?.[0].timestamp)}
-    </Typography>
+      <PlayerTimeDisplay
+        nowPlaying={nowPlaying}
+        masterPlayerTimeRef={masterPlayerTimeRef}
+      />
+    </Box>
   );
+
+  // const mapTitle = (
+  //   <Typography
+  //     id="map-title"
+  //     sx={{
+  //       position: "absolute",
+  //       color: "black",
+  //       right: 0,
+  //       zIndex: 10000,
+  //     }}
+  //   >
+  //     {formatTimestamp(nowPlaying?.array?.[0].timestamp)}
+  //   </Typography>
+  // );
 
   // const isDynamic = router.asPath.split("/")[1] === "dynamic";
   // // don't make feed request if there's no feed slug or is dynamic
@@ -287,7 +317,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           }
         </Box>
       </Box>
-      <PlayBar mobileMenu={menu} />
+      <PlayBar mobileMenu={menu} masterPlayerTimeRef={masterPlayerTimeRef} />
     </Box>
   );
 }

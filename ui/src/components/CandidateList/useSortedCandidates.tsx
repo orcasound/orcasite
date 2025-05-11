@@ -17,6 +17,24 @@ const cleanSightingsDescription = (description: string | null | undefined) => {
   return removeLinks.trim();
 };
 
+const offsetPadding = 15;
+
+const addSeconds = (dateString: string, secondsToAdd: number) => {
+  const originalDate = new Date(dateString);
+  originalDate.setMilliseconds(
+    originalDate.getMilliseconds() + secondsToAdd * 1000,
+  );
+  return originalDate?.toISOString();
+};
+
+const subtractSeconds = (dateString: string, secondsToAdd: number) => {
+  const originalDate = new Date(dateString);
+  originalDate.setMilliseconds(
+    originalDate.getMilliseconds() - secondsToAdd * 1000,
+  );
+  return originalDate?.toISOString();
+};
+
 const createCandidates = (
   dataset: CombinedData[],
   interval: number,
@@ -60,15 +78,23 @@ const createCandidates = (
   });
 
   const candidatesMap = candidates.map((candidate) => {
+    const hydrophone = candidate[0].hydrophone;
+    const firstReport = candidate[0].timestampString;
+    const lastReport = candidate[candidate.length - 1].timestampString;
+    const startTimestamp = subtractSeconds(firstReport, offsetPadding);
+    const endTimestamp = addSeconds(lastReport, offsetPadding);
+
     return {
-      id: `${candidate[0].timestampString}_${candidate[candidate.length - 1].timestampString}`,
+      id: `${startTimestamp}_${endTimestamp}`,
       array: candidate,
+      startTimestamp: startTimestamp,
+      endTimestamp: endTimestamp,
       whale: countCategories(candidate, "whale"),
       vessel: countCategories(candidate, "vessel"),
       other: countCategories(candidate, "other"),
       "whale (AI)": countCategories(candidate, "whale (ai)"),
       sightings: countCategories(candidate, "sightings"),
-      hydrophone: candidate[0].hydrophone,
+      hydrophone: hydrophone,
       descriptions: candidate
         .map((el: CombinedData) => cleanSightingsDescription(el.comments))
         .filter((el: string | null | undefined) => el !== null)

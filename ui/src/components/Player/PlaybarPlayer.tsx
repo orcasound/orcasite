@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import dynamic from "next/dynamic";
 import {
+  MutableRefObject,
   ReactNode,
   useCallback,
   useEffect,
@@ -44,6 +45,7 @@ export function PlaybarPlayer({
   onAudioPlay,
   onPlayerInit,
   onPlay,
+  masterPlayerTimeRef,
 }: {
   clipDateTime?: string;
   clipNode?: string;
@@ -56,6 +58,7 @@ export function PlaybarPlayer({
   onAudioPlay?: () => void;
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
+  masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
   const { masterPlayerRef, setMasterPlayerStatus, onPlayerEnd } =
     useNowPlaying();
@@ -69,6 +72,7 @@ export function PlaybarPlayer({
 
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
+  // const sliderValue = playerTimeRef.current - startOffset;
 
   const hlsURI = getHlsURI(feed.bucket, feed.nodeName, playlistTimestamp);
 
@@ -135,11 +139,13 @@ export function PlaybarPlayer({
         const currentTime = player.currentTime() ?? 0;
         if (currentTime > endOffset) {
           player.currentTime(startOffset);
+          if (masterPlayerTimeRef) masterPlayerTimeRef.current = startOffset;
           setPlayerTime(startOffset);
           player.pause();
           if (onPlayerEnd) onPlayerEnd();
         } else {
           setPlayerTime(currentTime);
+          if (masterPlayerTimeRef) masterPlayerTimeRef.current = currentTime;
         }
       });
       player.on("loadedmetadata", () => {
@@ -155,6 +161,7 @@ export function PlaybarPlayer({
       onPlayerInit,
       masterPlayerRef,
       setMasterPlayerStatus,
+      masterPlayerTimeRef,
     ],
   );
 
@@ -241,7 +248,11 @@ export function PlaybarPlayer({
       })}
     >
       <Box display="none" id="video-js">
-        <VideoJS options={playerOptions} onReady={handleReady} />
+        <VideoJS
+          options={playerOptions}
+          onReady={handleReady}
+          key={`${startOffset}-${endOffset}`}
+        />
       </Box>
       <Box ml={0} id="play-pause-button">
         <PlayBarPlayPauseButton
