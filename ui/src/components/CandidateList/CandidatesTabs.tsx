@@ -18,7 +18,7 @@ import { CandidatesResults } from "./CandidatesResults";
 export const CandidatesStack = () => {
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   return (
-    <Stack>
+    <Stack sx={{ paddingTop: "8px" }}>
       <CandidateListFilters />
       <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
         <CandidatesResults viewType="list" />

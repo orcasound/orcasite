@@ -10,6 +10,7 @@ import React, { MutableRefObject, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
+import { formatTimestamp } from "@/utils/time";
 
 import { useComputedPlaybackFields } from "./CandidateList/useComputedPlaybackFields";
 import { PlaybarPlayer } from "./Player/PlaybarPlayer";
@@ -21,12 +22,13 @@ export default function PlayBar({
   mobileMenu?: React.ReactNode;
   masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
-  const { nowPlaying } = useNowPlaying();
+  const { nowPlaying, setNowPlaying, queue } = useNowPlaying();
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const detections = nowPlaying?.array;
   const hydrophone = nowPlaying?.hydrophone;
+  const clipCount = nowPlaying?.clipCount;
 
   const { feeds } = useData();
   const feed = feeds.find((feed) => feed.id === detections?.[0]?.feedId);
@@ -34,12 +36,23 @@ export default function PlayBar({
   const { playlistTimestamp, playlistStartTime, startOffset, endOffset } =
     useComputedPlaybackFields(nowPlaying, feed?.id);
 
-  console.log("nowPlaying.startTimestamp: " + nowPlaying?.startTimestamp);
-  console.log("nowPlaying.endTimestamp: " + nowPlaying?.endTimestamp);
+  // // skip the track if there is no audio -- this was causing strange rendering behavior
+  // useEffect(() => {
+  //   if(!nowPlaying) return
+  //   const duration = endOffset - startOffset;
+  //   const currentIndex = queue.findIndex(
+  //   (candidate) => candidate.id === nowPlaying?.id,
+  // );
+  // const nextIndex = currentIndex + 1;
+  // if (duration === 0) {
+  //       setNowPlaying(queue[nextIndex]);
+  // }
+  // }, [nowPlaying, setNowPlaying])
 
   const clipDateTime = useMemo(() => {
     if (nowPlaying?.array) {
-      return new Date(nowPlaying?.array[0].timestamp).toLocaleString();
+      const timestamp = new Date(nowPlaying?.array[0].timestamp);
+      return formatTimestamp(timestamp);
     } else {
       return "";
     }
@@ -63,6 +76,10 @@ export default function PlayBar({
     const seconds = targetTimeSeconds - startTimeSeconds - startOffset;
     return +seconds.toFixed(1);
   }
+
+  const duration = useMemo(() => {
+    return nowPlaying?.duration;
+  }, [nowPlaying]);
 
   const marks = useMemo(() => {
     return detections?.map((d) => ({
@@ -128,7 +145,8 @@ export default function PlayBar({
         color="base"
         sx={{
           top: "auto",
-          height: smDown ? "56px" : "87px",
+          height: smDown ? "auto" : "87px",
+          padding: "8px 0",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -148,9 +166,11 @@ export default function PlayBar({
                 playlistTimestamp={playlistTimestamp}
                 startOffset={startOffset}
                 endOffset={endOffset}
+                duration={duration}
                 key={`${startOffset}-${endOffset}`}
                 clipDateTime={clipDateTime}
                 clipNode={hydrophone || ""}
+                clipCount={clipCount}
                 marks={marks}
                 masterPlayerTimeRef={masterPlayerTimeRef}
               />

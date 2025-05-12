@@ -45,6 +45,8 @@ export default function CandidateCard(props: {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
     useNowPlaying();
 
+  const candidate = props.candidate;
+  const active = candidate.id === nowPlaying?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
@@ -73,6 +75,8 @@ export default function CandidateCard(props: {
       return `${minutesRound} minutes`;
     }
   }
+  if (nowPlaying && duration > 0)
+    nowPlaying.duration = formatDuration(duration);
 
   function extractHttpLinks(detectionArray: CombinedData[]): string[] {
     const urlRegex = /https?:\/\/\S+/g;
@@ -97,7 +101,6 @@ export default function CandidateCard(props: {
     tagObject[tag] = count;
   });
 
-  const candidate = props.candidate;
   const candidateArray = candidate.array;
   const firstCandidate = candidateArray[0]; // firstCandidate is the earliest time, reports are sorted descending
   const lastCandidate = candidateArray[candidateArray.length - 1]; // lastCandidate is the most recent time
@@ -141,6 +144,17 @@ export default function CandidateCard(props: {
     />
   );
 
+  const playIconDisabled = (
+    <PlayCircle
+      sx={{
+        opacity: 0.33,
+        height: iconSize,
+        width: iconSize,
+        marginRight: smDown ? "-8px" : "-4px",
+      }}
+    />
+  );
+
   const pauseIcon = (
     <PauseCircle
       onClick={() => handlePause()}
@@ -162,6 +176,10 @@ export default function CandidateCard(props: {
         width: "100%",
         maxWidth: "100%",
         overflow: "hidden",
+        backgroundColor: active
+          ? (theme) => theme.palette.base.main
+          : "default",
+        // border: active ? "1px solid rgba(255,255,255,.25)" : "none",
       }}
     >
       <CardActionArea>
@@ -212,7 +230,11 @@ export default function CandidateCard(props: {
                   <Typography
                     variant="body1"
                     component="div"
-                    sx={{ fontWeight: "bold", fontSize: "inherit" }}
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "inherit",
+                      // color: active ? theme.palette.accent3.main : "inherit",
+                    }}
                   >
                     {candidateTitle}
                     {/* {new Date(lastTimestamp).toLocaleString()} */}
@@ -221,36 +243,18 @@ export default function CandidateCard(props: {
                     {candidate.hydrophone}
                     {" • "}
                     {formatDuration(duration)}
-                    {/* {candidate.array.length === 1
-                      ? candidate.array[0].type === "human" ||
-                        candidate.array[0].type === "sightings"
-                        ? "30 seconds"
-                        : "1 minute"
-                      : Math.round(
-                            (Date.parse(lastTimestampString) -
-                              Date.parse(firstTimestampString)) /
-                              (1000 * 60),
-                          ) >= 1
-                        ? Math.round(
-                            (Date.parse(lastTimestampString) -
-                              Date.parse(firstTimestampString)) /
-                              (1000 * 60),
-                          ) + " minutes"
-                        : Math.round(
-                            (Date.parse(lastTimestampString) -
-                              Date.parse(firstTimestampString)) /
-                              (1000 * 60 * 60),
-                          ) + " seconds"} */}
                   </Typography>
                 </Stack>
               </Box>
             </Link>
             <Box>
-              {candidate.id !== nowPlaying?.id
-                ? playIcon
-                : masterPlayerStatus !== "playing"
+              {duration > 0
+                ? !active
                   ? playIcon
-                  : pauseIcon}
+                  : masterPlayerStatus !== "playing"
+                    ? playIcon
+                    : pauseIcon
+                : playIconDisabled}
             </Box>
           </Box>
           <Link
@@ -263,14 +267,7 @@ export default function CandidateCard(props: {
             }}
           >
             <Typography variant="body1" sx={{ fontSize: "inherit" }}>
-              {["whale", "vessel", "other", "whale (AI)", "sightings"]
-                .map((item) =>
-                  candidate[item as keyof Candidate]
-                    ? candidate[item as keyof Candidate] + "  " + item
-                    : null,
-                )
-                .filter((candidate) => candidate !== null)
-                .join(" • ")}
+              {candidate.clipCount}
               <span style={{ whiteSpace: "pre" }}>{"  "}</span>
               {candidate.descriptions ? (
                 <span style={{ color: "rgba(255,255,255,.75)" }}>
@@ -286,7 +283,7 @@ export default function CandidateCard(props: {
                 sx={{
                   display: "flex",
                   gap: "10px",
-                  padding: "1rem 0",
+                  padding: "1rem 0 0",
                   flexWrap: "wrap",
                 }}
               >
@@ -302,7 +299,7 @@ export default function CandidateCard(props: {
                 ))}
               </Box>
             )}
-            {imageLinks && (
+            {imageLinks.length > 0 && (
               <Box
                 sx={{
                   display: "flex",

@@ -73,8 +73,10 @@ export const useComputedPlaybackFields = (
       playlistTimestamp: 0,
       startOffset: 0,
       endOffset: 0,
-      isLoading: false,
-      error: null,
+      feedSegmentsLoading: false,
+      feedSegmentsError: null,
+      feedStreamsLoading: false,
+      feedStreamsError: null,
     };
   }
 

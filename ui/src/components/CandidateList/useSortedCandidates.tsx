@@ -79,10 +79,19 @@ const createCandidates = (
 
   const candidatesMap = candidates.map((candidate) => {
     const hydrophone = candidate[0].hydrophone;
+    const feedId = candidate[0].feedId?.toString();
     const firstReport = candidate[0].timestampString;
     const lastReport = candidate[candidate.length - 1].timestampString;
     const startTimestamp = subtractSeconds(firstReport, offsetPadding);
     const endTimestamp = addSeconds(lastReport, offsetPadding);
+
+    const countString = ["whale", "whale (AI)", "vessel", "other", "sightings"]
+      .map((type) => {
+        if (countCategories(candidate, type) === 0) return;
+        return `${countCategories(candidate, type)} ${type}`;
+      })
+      .filter((c) => c)
+      .join(" • ");
 
     return {
       id: `${startTimestamp}_${endTimestamp}`,
@@ -95,6 +104,9 @@ const createCandidates = (
       "whale (AI)": countCategories(candidate, "whale (ai)"),
       sightings: countCategories(candidate, "sightings"),
       hydrophone: hydrophone,
+      feedId: feedId,
+      clipCount: countString,
+      duration: "",
       descriptions: candidate
         .map((el: CombinedData) => cleanSightingsDescription(el.comments))
         .filter((el: string | null | undefined) => el !== null)

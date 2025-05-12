@@ -30,6 +30,7 @@ import {
   VisualizationsStack,
 } from "../CandidateList/CandidatesTabs";
 import PlayerTimeDisplay from "../CandidateList/PlayerTimeDisplay";
+import { useComputedPlaybackFields } from "../CandidateList/useComputedPlaybackFields";
 import PlayBar from "../PlayBar";
 import { MasterDataLayout } from "./MasterDataLayout";
 
@@ -62,6 +63,11 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     if (!nowPlaying?.array?.[0]) return undefined;
     return feeds.find((feed) => feed.id === nowPlaying.array[0].feedId);
   }, [nowPlaying, feeds]);
+
+  const { startOffset } = useComputedPlaybackFields(
+    nowPlaying,
+    nowPlayingFeed?.id,
+  );
 
   const masterPlayerTimeRef = useRef(0);
   // const [masterPlayerTime, setMasterPlayerTime] = useState(0);
@@ -102,9 +108,9 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     <Box
       sx={{
         position: "absolute",
-        top: 20,
-        left: 20,
-        width: "300px",
+        top: 8,
+        left: 16,
+        width: smDown ? "250px" : "300px",
         zIndex: 10000,
         display: "flex",
         flexDirection: "column",
@@ -114,31 +120,10 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
       <PlayerTimeDisplay
         nowPlaying={nowPlaying}
         masterPlayerTimeRef={masterPlayerTimeRef}
+        startOffset={startOffset}
       />
     </Box>
   );
-
-  // const mapTitle = (
-  //   <Typography
-  //     id="map-title"
-  //     sx={{
-  //       position: "absolute",
-  //       color: "black",
-  //       right: 0,
-  //       zIndex: 10000,
-  //     }}
-  //   >
-  //     {formatTimestamp(nowPlaying?.array?.[0].timestamp)}
-  //   </Typography>
-  // );
-
-  // const isDynamic = router.asPath.split("/")[1] === "dynamic";
-  // // don't make feed request if there's no feed slug or is dynamic
-  // const feedFromQuery = useFeedQuery(
-  //   { slug: slug },
-  //   { enabled: !!slug || isDynamic },
-  // ).data?.feed;
-  // const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery;
 
   const [map, setMap] = useState<LeafletMap>();
   // const feeds = useFeedsQuery().data?.feeds ?? [];
@@ -154,22 +139,11 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
-    // console.log("nowPlaying: " + JSON.stringify(nowPlaying, null, 2))
-    // console.log("currentFeed: " + JSON.stringify(currentFeed, null, 2))
-    // console.log("nowPlayingFeed: " + JSON.stringify(nowPlayingFeed, null, 2))
-    if (
-      nowPlayingFeed
-      // && feed.slug !== currentFeed?.slug
-    ) {
-      // setCurrentFeed(currentFeed);
+    if (nowPlayingFeed) {
       map?.setZoom(12);
-      // map?.panTo(nowPlayingFeed.latLng);
     } else {
       map?.setZoom(8);
     }
-    // if (!feed && !currentFeed && firstOnlineFeed) {
-    //   setCurrentFeed(firstOnlineFeed);
-    // }
   }, [map, currentFeed, firstOnlineFeed, nowPlaying, nowPlayingFeed]);
 
   useEffect(() => {
@@ -199,7 +173,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
         //   height: "100dvh",
         // },
         height: "100vh",
-        paddingBottom: smDown ? "125px" : "80px",
+        paddingBottom: smDown ? "155px" : "80px",
         display: "flex",
         flexDirection: "column",
         flexGrow: 1,
@@ -271,6 +245,8 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             flexDirection: "column",
             minWidth: 0,
             position: "relative",
+            height: "100%",
+            overflow: "scroll",
           }}
         >
           {

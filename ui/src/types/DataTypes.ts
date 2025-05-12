@@ -95,5 +95,8 @@ export interface Candidate {
   "whale (AI)": number;
   sightings: number;
   hydrophone: string;
+  feedId: string | undefined;
+  clipCount: string;
+  duration: string;
   descriptions: string;
 }
