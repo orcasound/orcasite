@@ -2,15 +2,15 @@ import { Dispatch, SetStateAction } from "react";
 
 import { Detection, Feed, Scalars } from "@/graphql/generated";
 
-interface HumanData extends Omit<Detection, "candidate"> {
-  type: string;
+export interface HumanData extends Omit<Detection, "candidate"> {
+  type: "human";
   hydrophone: string;
   comments: string | null | undefined;
-  newCategory: string;
+  newCategory: "WHALE" | "VESSEL" | "OTHER";
   timestampString: string;
 }
 
-interface AIDetection {
+export interface AIDetection {
   id: string;
   audioUri: string;
   spectrogramUri: string;
@@ -26,13 +26,14 @@ interface AIDetection {
   tags: string;
 }
 export interface AIData extends AIDetection {
-  type: string;
+  type: "ai";
   hydrophone: string;
-  newCategory: string;
+  feedId: string;
+  newCategory: "WHALE (AI)";
   timestampString: string;
 }
 
-interface CascadiaSighting {
+export interface CascadiaSighting {
   id: string;
   type: string; // e.g., "sighting"
   project_id: number;
@@ -56,13 +57,14 @@ interface CascadiaSighting {
 }
 
 export interface Sighting extends CascadiaSighting {
-  type: string;
-  hydrophones: string[];
-  newCategory: string;
+  type: "sightings";
+  hydrophone: string;
+  feedId: string;
+  newCategory: "SIGHTINGS";
   timestampString: string;
 }
 
-export interface CombinedData extends HumanData, AIData, Sighting {}
+export type CombinedData = HumanData | AIData | Sighting;
 
 export interface Dataset {
   human: HumanData[];
@@ -87,11 +89,16 @@ interface Annotation {
 export interface Candidate {
   id: string;
   array: CombinedData[];
+  startTimestamp: string;
+  endTimestamp: string;
   whale: number;
   vessel: number;
   other: number;
   "whale (AI)": number;
   sightings: number;
   hydrophone: string;
+  feedId: string | undefined;
+  clipCount: string;
+  duration: string;
   descriptions: string;
 }

@@ -6,34 +6,53 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import React, { useMemo } from "react";
+import React, { MutableRefObject, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
+import formatDuration from "@/utils/masterDataHelpers";
+import { formatTimestamp } from "@/utils/time";
 
-import { useComputedPlaybackFields } from "./CandidateList/useComputedPlaybackFields";
+import { useComputedPlaybackFields } from "../hooks/useComputedPlaybackFields";
 import { PlaybarPlayer } from "./Player/PlaybarPlayer";
 
 export default function PlayBar({
   mobileMenu,
+  masterPlayerTimeRef,
 }: {
   mobileMenu?: React.ReactNode;
+  masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
   const { nowPlaying } = useNowPlaying();
-  const { feeds } = useData();
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const detections = nowPlaying?.array;
   const hydrophone = nowPlaying?.hydrophone;
+
+  const { feeds } = useData();
   const feed = feeds.find((feed) => feed.id === detections?.[0]?.feedId);
 
   const { playlistTimestamp, playlistStartTime, startOffset, endOffset } =
-    useComputedPlaybackFields(nowPlaying?.array, feed?.id);
+    useComputedPlaybackFields(nowPlaying, feed?.id);
+
+  // // skip the track if there is no audio -- this was causing strange rendering behavior
+  // useEffect(() => {
+  //   if(!nowPlaying) return
+  //   const duration = endOffset - startOffset;
+  //   const currentIndex = queue.findIndex(
+  //   (candidate) => candidate.id === nowPlaying?.id,
+  // );
+  // const nextIndex = currentIndex + 1;
+  // if (duration === 0) {
+  //       setNowPlaying(queue[nextIndex]);
+  // }
+  // }, [nowPlaying, setNowPlaying])
 
   const clipDateTime = useMemo(() => {
     if (nowPlaying?.array) {
-      return new Date(nowPlaying?.array[0].timestamp).toLocaleString();
+      const timestamp = new Date(nowPlaying?.array[0].timestampString);
+      return formatTimestamp(timestamp);
     } else {
       return "";
     }
@@ -58,19 +77,15 @@ export default function PlayBar({
     return +seconds.toFixed(1);
   }
 
+  const duration = formatDuration(startOffset, endOffset);
+
   const marks = useMemo(() => {
     return detections?.map((d) => ({
       label: (
         <Tooltip
           title={`
             ${d.newCategory} 
-            ${
-              d.description !== null && d.description !== undefined
-                ? d.description
-                : d.comments
-                  ? d.comments
-                  : ""
-            }`}
+            ${d.comments}`}
           arrow
           placement="bottom"
           slotProps={{
@@ -99,7 +114,11 @@ export default function PlayBar({
         </Tooltip>
       ),
       value: playlistStartTime
-        ? calcMarkValue(playlistStartTime.toString(), startOffset, d.timestamp)
+        ? calcMarkValue(
+            playlistStartTime.toString(),
+            startOffset,
+            d.timestampString,
+          )
         : 0,
       // value: detections?.map(d => playlistStartTime
       //   ? calcMarkValue(playlistStartTime.toString(), startOffset, d.timestamp)
@@ -122,7 +141,8 @@ export default function PlayBar({
         color="base"
         sx={{
           top: "auto",
-          height: smDown ? "56px" : "87px",
+          height: smDown ? "auto" : "87px",
+          padding: "8px 0",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -142,10 +162,12 @@ export default function PlayBar({
                 playlistTimestamp={playlistTimestamp}
                 startOffset={startOffset}
                 endOffset={endOffset}
+                duration={duration}
                 key={`${startOffset}-${endOffset}`}
                 clipDateTime={clipDateTime}
                 clipNode={hydrophone || ""}
                 marks={marks}
+                masterPlayerTimeRef={masterPlayerTimeRef}
               />
             )}
           </>

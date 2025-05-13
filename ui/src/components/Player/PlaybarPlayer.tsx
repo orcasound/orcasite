@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import dynamic from "next/dynamic";
 import {
+  MutableRefObject,
   ReactNode,
   useCallback,
   useEffect,
@@ -41,9 +42,11 @@ export function PlaybarPlayer({
   playlistTimestamp,
   startOffset,
   endOffset,
+  duration,
   onAudioPlay,
   onPlayerInit,
   onPlay,
+  masterPlayerTimeRef,
 }: {
   clipDateTime?: string;
   clipNode?: string;
@@ -53,9 +56,11 @@ export function PlaybarPlayer({
   playlistTimestamp: number;
   startOffset: number;
   endOffset: number;
+  duration?: string;
   onAudioPlay?: () => void;
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
+  masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
   const { masterPlayerRef, setMasterPlayerStatus, onPlayerEnd } =
     useNowPlaying();
@@ -69,6 +74,7 @@ export function PlaybarPlayer({
 
   const sliderMax = endOffset - startOffset;
   const sliderValue = playerTime - startOffset;
+  // const sliderValue = playerTimeRef.current - startOffset;
 
   const hlsURI = getHlsURI(feed.bucket, feed.nodeName, playlistTimestamp);
 
@@ -116,7 +122,6 @@ export function PlaybarPlayer({
           player.currentTime(startOffset);
         }
         if (onPlay) onPlay();
-        // if (setNowPlaying && candidate) setNowPlaying(candidate);
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
@@ -135,11 +140,13 @@ export function PlaybarPlayer({
         const currentTime = player.currentTime() ?? 0;
         if (currentTime > endOffset) {
           player.currentTime(startOffset);
+          if (masterPlayerTimeRef) masterPlayerTimeRef.current = startOffset;
           setPlayerTime(startOffset);
           player.pause();
           if (onPlayerEnd) onPlayerEnd();
         } else {
           setPlayerTime(currentTime);
+          if (masterPlayerTimeRef) masterPlayerTimeRef.current = currentTime;
         }
       });
       player.on("loadedmetadata", () => {
@@ -155,6 +162,7 @@ export function PlaybarPlayer({
       onPlayerInit,
       masterPlayerRef,
       setMasterPlayerStatus,
+      masterPlayerTimeRef,
     ],
   );
 
@@ -222,123 +230,130 @@ export function PlaybarPlayer({
     playerRef?.current?.play();
   };
 
-  return (
-    <Box
-      sx={(theme) => ({
-        minHeight: theme.spacing(10),
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        px: [0, 2],
-        position: "relative",
-        // className: "candidate-card-player",
-        // Keep player above the sliding drawer
-        zIndex: theme.zIndex.drawer + 1,
-        width: "100%",
-        flexFlow: smDown ? "row-reverse" : "row",
-        gap: smDown ? 2 : 3,
-        marginRight: smDown ? 0 : "2rem",
-      })}
-    >
-      <Box display="none" id="video-js">
-        <VideoJS options={playerOptions} onReady={handleReady} />
-      </Box>
-      <Box ml={0} id="play-pause-button">
-        <PlayBarPlayPauseButton
-          playerStatus={playerStatus}
-          onClick={handlePlayPauseClick}
-          disabled={!feed}
-        />
-      </Box>
-      <Stack
-        direction="row"
-        width="100%"
-        spacing={smDown ? 2 : 3}
-        sx={{ overflow: "visible" }}
+  const slider = (
+    <Box width={"100%"} id="slider">
+      <Slider
+        // valueLabelDisplay="auto"
+        // valueLabelFormat={(v) => `${formattedSeconds(
+        //   Number((v).toFixed(0)),
+        // )}`}
+        step={0.1}
+        max={sliderMax}
+        value={sliderValue}
+        marks={marks}
+        onChange={handleSliderChange}
+        onChangeCommitted={handleSliderChangeCommitted}
+        size="small"
+        sx={{
+          padding: "10px 0!important",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0,
+          "& .MuiSlider-markLabel": {
+            display: "block",
+            top: 0,
+          },
+          "& .MuiSlider-mark": {
+            backgroundColor: theme.palette.accent3.main,
+            height: "10px",
+          },
+          "&.MuiSlider-root": {
+            marginBottom: "0px",
+          },
+        }}
+      />
+      <Box
+        id="formatted-seconds"
+        sx={{
+          display: smDown ? "none" : "flex",
+          justifyContent: "space-between",
+        }}
       >
-        <Box
-          sx={{
-            backgroundImage: `url(${image})`,
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            minWidth: smDown ? "40px" : "60px",
-            width: smDown ? "40px" : "60px",
-            height: smDown ? "40px" : "60px",
-            borderRadius: "4px",
-          }}
-        ></Box>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            justifyContent: "center",
-          }}
-        >
-          <Typography
-            component="h2"
-            sx={{ whiteSpace: "nowrap", fontSize: smDown ? "14px" : "1rem" }}
-          >
-            <span style={{ fontWeight: "bold" }}>{clipDateTime}</span>
-            {smDown ? <br /> : " • "}
-            {clipNode}
-          </Typography>
-
-          <Box
-            width={"100%"}
-            // height={"42px"}
-            id="slider"
-            sx={{ display: smDown ? "none" : "block" }}
-          >
-            <Slider
-              // valueLabelDisplay="auto"
-              // valueLabelFormat={(v) => `${formattedSeconds(
-              //   Number((v).toFixed(0)),
-              // )}`}
-              step={0.1}
-              max={sliderMax}
-              value={sliderValue}
-              marks={marks}
-              onChange={handleSliderChange}
-              onChangeCommitted={handleSliderChangeCommitted}
-              size="small"
-              sx={{
-                padding: "10px 0!important",
-                display: "flex",
-                flexDirection: "column",
-                gap: 0,
-                "& .MuiSlider-markLabel": {
-                  display: "block",
-                  top: 0,
-                },
-                "& .MuiSlider-mark": {
-                  backgroundColor: theme.palette.accent3.main,
-                  height: "10px",
-                },
-                "&.MuiSlider-root": {
-                  marginBottom: "0px",
-                },
-              }}
-            />
-            <Box
-              id="formatted-seconds"
-              sx={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Typography component="p" variant="subtitle2">
-                {formattedSeconds(
-                  Number((playerTime - startOffset).toFixed(0)),
-                )}
-              </Typography>
-              <Typography component="p" variant="subtitle2">
-                {"-" +
-                  formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </Stack>
+        <Typography component="p" variant="subtitle2">
+          {formattedSeconds(Number((playerTime - startOffset).toFixed(0)))}
+        </Typography>
+        <Typography component="p" variant="subtitle2">
+          {"-" + formattedSeconds(Number((endOffset - playerTime).toFixed(0)))}
+        </Typography>
+      </Box>
     </Box>
+  );
+
+  return (
+    <Stack spacing={1} sx={{ width: "100%" }}>
+      <Box
+        sx={(theme) => ({
+          minHeight: smDown ? 0 : theme.spacing(10),
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: [0, 2],
+          position: "relative",
+          // className: "candidate-card-player",
+          // Keep player above the sliding drawer
+          zIndex: theme.zIndex.drawer + 1,
+          width: "100%",
+          flexFlow: smDown ? "row-reverse" : "row",
+          gap: smDown ? 2 : 3,
+          marginRight: smDown ? 0 : "2rem",
+        })}
+      >
+        <Box display="none" id="video-js">
+          <VideoJS
+            options={playerOptions}
+            onReady={handleReady}
+            key={`${startOffset}-${endOffset}`}
+          />
+        </Box>
+        <Box ml={0} id="play-pause-button">
+          <PlayBarPlayPauseButton
+            playerStatus={playerStatus}
+            onClick={handlePlayPauseClick}
+            disabled={!feed}
+          />
+        </Box>
+        <Stack
+          direction="row"
+          width="100%"
+          spacing={smDown ? 2 : 3}
+          sx={{ overflow: "hidden" }}
+        >
+          <Box
+            sx={{
+              backgroundImage: `url(${image})`,
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              minWidth: smDown ? "40px" : "60px",
+              width: smDown ? "40px" : "60px",
+              height: smDown ? "40px" : "60px",
+              borderRadius: "4px",
+            }}
+          ></Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <Typography
+              component="h2"
+              sx={{ whiteSpace: "nowrap", fontSize: smDown ? "14px" : "1rem" }}
+            >
+              <span style={{ fontWeight: "bold" }}>{clipDateTime}</span>
+              {smDown ? <br /> : " • "}
+              {clipNode}
+              {" • "}
+              {duration}
+            </Typography>
+            {!smDown && slider}
+          </Box>
+        </Stack>
+      </Box>
+      {smDown && slider}
+    </Stack>
   );
 }
 

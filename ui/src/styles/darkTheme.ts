@@ -33,7 +33,8 @@ const darkTheme = createTheme({
     },
     base: theme.palette.augmentColor({
       color: {
-        main: "#3D3F49",
+        // main: "#3D3F49",
+        main: "#323f52",
         contrastText: "#ffffff",
       },
       name: "darkgrey",

@@ -16,7 +16,7 @@ import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout";
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { CombinedData } from "@/types/DataTypes";
+import { AIData, CombinedData, HumanData, Sighting } from "@/types/DataTypes";
 
 const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -31,8 +31,9 @@ const CandidatePage: NextPageWithLayout = () => {
 
   type DetectionStats = {
     all: CombinedData[];
-    human: CombinedData[];
-    ai: CombinedData[];
+    human: HumanData[];
+    ai: AIData[];
+    sightings: Sighting[];
     hydrophone: string;
     startTime: string;
   };
@@ -41,6 +42,7 @@ const CandidatePage: NextPageWithLayout = () => {
     all: [],
     human: [],
     ai: [],
+    sightings: [],
     hydrophone: "",
     startTime: "",
   });
@@ -52,7 +54,7 @@ const CandidatePage: NextPageWithLayout = () => {
     // select the detection array that matches the start/end times in the page URL
     const arr: CombinedData[] = [];
     filteredData.forEach((d) => {
-      const time = new Date(d.timestamp).getTime();
+      const time = new Date(d.timestampString).getTime();
       if (time >= startTime && time <= endTime) {
         arr.push(d);
       }
@@ -62,12 +64,14 @@ const CandidatePage: NextPageWithLayout = () => {
     );
 
     // store the array and separate human vs ai
-    const humanArr = sortedArr.filter((d) => d.newCategory !== "WHALE (AI)");
-    const aiArr = sortedArr.filter((d) => d.newCategory === "WHALE (AI)");
+    const humanArr = sortedArr.filter((d) => d.type === "human");
+    const aiArr = sortedArr.filter((d) => d.type === "ai");
+    const sightingsArr = sortedArr.filter((d) => d.type === "sightings");
     setDetections({
       all: sortedArr,
       human: humanArr,
       ai: aiArr,
+      sightings: sightingsArr,
       hydrophone: sortedArr[0]?.hydrophone,
       startTime: new Date(startEnd[0]).toLocaleString(),
     });
@@ -149,7 +153,7 @@ const CandidatePage: NextPageWithLayout = () => {
                     primary={
                       (el.newCategory !== "WHALE (AI)" ? userName : aiName) +
                       " • " +
-                      new Date(el.timestamp).toLocaleTimeString()
+                      new Date(el.timestampString).toLocaleTimeString()
                     }
                     secondary={
                       el.newCategory !== "WHALE (AI)"
