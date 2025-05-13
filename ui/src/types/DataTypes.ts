@@ -6,7 +6,7 @@ export interface HumanData extends Omit<Detection, "candidate"> {
   type: "human";
   hydrophone: string;
   comments: string | null | undefined;
-  newCategory: "HUMAN";
+  newCategory: "WHALE" | "VESSEL" | "OTHER";
   timestampString: string;
 }
 
