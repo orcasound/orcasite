@@ -6,7 +6,10 @@ import { useMemo } from "react";
 import { CandidateFilters } from "@/context/DataContext";
 import { CombinedData } from "@/types/DataTypes";
 
-import { allTime, customRange } from "./CandidateListFilters";
+import {
+  allTime,
+  customRange,
+} from "../components/CandidateList/CandidateListFilters";
 
 // dayjs plugin for date pickers
 dayjs.extend(isSameOrBefore);
@@ -36,8 +39,8 @@ export default function useFilteredData(
           filters.timeRange === customRange ||
           Date.parse(el.timestampString) >= min) &&
         (!filters.startDate ||
-          dayjs(el.timestamp).isSameOrAfter(filters.startDate, "day")) &&
-        dayjs(el.timestamp).isSameOrBefore(filters.endDate, "day") &&
+          dayjs(el.timestampString).isSameOrAfter(filters.startDate, "day")) &&
+        dayjs(el.timestampString).isSameOrBefore(filters.endDate, "day") &&
         (searchQuery === "" ||
           (el.comments && el.comments.toLowerCase().includes(searchQuery)) ||
           el.newCategory.toLowerCase().includes(searchQuery) ||

@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { MutableRefObject, useEffect, useState } from "react";
 
-import { useData } from "@/context/DataContext";
 import { Candidate, CombinedData } from "@/types/DataTypes";
 import { formatTimestamp } from "@/utils/time";
 
@@ -23,12 +22,10 @@ export default function PlayerTimeDisplay(props: {
   >(undefined);
   const startTime = props.nowPlaying?.startTimestamp; // ISO timestamp for the start of the candidate
 
-  const feedId = props.nowPlaying?.feedId;
-  const { feeds } = useData();
-  const feed = feeds.find((feed) => feed.id === feedId);
+  const hydrophone = props.nowPlaying?.hydrophone;
 
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const addMilliseconds = (dateString: string, secondsToAdd: number) => {
     const originalDate = new Date(dateString);
@@ -94,25 +91,34 @@ export default function PlayerTimeDisplay(props: {
     update();
 
     return () => cancelAnimationFrame(frameId);
-  }, [props.masterPlayerTimeRef, props.nowPlaying, props.startOffset]);
+  }, [
+    props.masterPlayerTimeRef,
+    props.nowPlaying,
+    props.startOffset,
+    startTime,
+  ]);
 
   return (
     <Box>
       {!mdDown && (
         <Typography id="map-title">
-          <mark
-            style={{
-              backgroundColor: "rgba(0,0,0,.95)",
-              color: "white",
-              padding: "4px 12px",
-              fontSize: mdDown ? "20px" : "24px",
-              borderRadius: "4px",
-              width: "100%",
-              display: "block",
-            }}
-          >
-            {displayTimestamp}
-          </mark>
+          {
+            <mark
+              style={{
+                backgroundColor: "rgba(0,0,0,.95)",
+                color: "white",
+                padding: "0 12px 4px",
+                fontSize: mdDown ? "20px" : "24px",
+                borderRadius: "4px",
+                width: "100%",
+                display: "block",
+              }}
+            >
+              <span style={{ fontSize: "16px" }}>{hydrophone}</span>
+              <br />
+              {displayTimestamp}
+            </mark>
+          }
         </Typography>
       )}
       {
@@ -130,7 +136,7 @@ export default function PlayerTimeDisplay(props: {
                     style={{
                       // display: "inline-block",
                       marginTop: "6px",
-                      padding: "4px 12px",
+                      padding: "6px 12px",
                       background: "rgba(0,0,0,.9)",
                       borderRadius: "4px",
                       color: "white",

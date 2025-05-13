@@ -2,9 +2,9 @@ import dayjs, { Dayjs } from "dayjs";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { defaultRange } from "@/components/CandidateList/CandidateListFilters";
-import useFilteredData from "@/components/CandidateList/useFilteredData";
-import { useSortedCandidates } from "@/components/CandidateList/useSortedCandidates";
 import { Feed } from "@/graphql/generated";
+import useFilteredData from "@/hooks/useFilteredData";
+import { useSortedCandidates } from "@/hooks/useSortedCandidates";
 import { Candidate, CombinedData, Dataset } from "@/types/DataTypes";
 
 import { useNowPlaying } from "./NowPlayingContext";

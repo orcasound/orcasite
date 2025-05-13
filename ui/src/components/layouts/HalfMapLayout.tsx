@@ -24,13 +24,13 @@ import { useData } from "@/context/DataContext";
 import { LayoutContext } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 
+import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
 import CandidatesTabs from "../CandidateList/CandidatesTabs";
 import {
   CandidatesStack,
   VisualizationsStack,
 } from "../CandidateList/CandidatesTabs";
 import PlayerTimeDisplay from "../CandidateList/PlayerTimeDisplay";
-import { useComputedPlaybackFields } from "../CandidateList/useComputedPlaybackFields";
 import PlayBar from "../PlayBar";
 import { MasterDataLayout } from "./MasterDataLayout";
 

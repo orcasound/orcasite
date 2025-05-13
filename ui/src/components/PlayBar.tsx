@@ -10,9 +10,10 @@ import React, { MutableRefObject, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
+import formatDuration from "@/utils/masterDataHelpers";
 import { formatTimestamp } from "@/utils/time";
 
-import { useComputedPlaybackFields } from "./CandidateList/useComputedPlaybackFields";
+import { useComputedPlaybackFields } from "../hooks/useComputedPlaybackFields";
 import { PlaybarPlayer } from "./Player/PlaybarPlayer";
 
 export default function PlayBar({
@@ -22,7 +23,7 @@ export default function PlayBar({
   mobileMenu?: React.ReactNode;
   masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
-  const { nowPlaying, setNowPlaying, queue } = useNowPlaying();
+  const { nowPlaying } = useNowPlaying();
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
@@ -77,9 +78,7 @@ export default function PlayBar({
     return +seconds.toFixed(1);
   }
 
-  const duration = useMemo(() => {
-    return nowPlaying?.duration;
-  }, [nowPlaying]);
+  const duration = formatDuration(startOffset, endOffset);
 
   const marks = useMemo(() => {
     return detections?.map((d) => ({

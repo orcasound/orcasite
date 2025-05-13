@@ -18,7 +18,8 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Candidate, CombinedData } from "@/types/DataTypes";
 import { formatTimestamp } from "@/utils/time";
 
-import { useComputedPlaybackFields } from "./useComputedPlaybackFields";
+import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
+import formatDuration from "../../utils/masterDataHelpers";
 
 const tagRegex = [
   "s[0-9]+",
@@ -59,24 +60,37 @@ export default function CandidateCard(props: {
     props.candidate,
     feed?.id,
   );
-  const duration = endOffset - startOffset;
 
-  function formatDuration(seconds: number): string {
-    const minutesRound = Math.round(seconds / 60);
-    const minutesDown = Math.floor(seconds / 60);
-    const remainder = seconds % 60;
-    if (seconds === 0) {
-      return "audio unavailable";
-    } else if (seconds < 60) {
-      return `${seconds} second${seconds === 1 ? "" : "s"}`;
-    } else if (seconds < 600) {
-      return `${minutesDown} minute${minutesDown === 1 ? "" : "s"} ${remainder} second${remainder === 1 ? "" : "s"}`;
-    } else {
-      return `${minutesRound} minutes`;
-    }
-  }
-  if (nowPlaying && duration > 0)
-    nowPlaying.duration = formatDuration(duration);
+  const duration = endOffset - startOffset;
+  const durationString = formatDuration(startOffset, endOffset);
+  // const duration = endOffset - startOffset;
+
+  // function formatDuration(seconds: number): string {
+  //   const minutesRound = Math.round(seconds / 60);
+  //   const minutesDown = Math.floor(seconds / 60);
+  //   const remainder = seconds % 60;
+  //   if (seconds === 0) {
+  //     return "audio unavailable";
+  //   } else if (seconds < 60) {
+  //     return `${seconds} second${seconds === 1 ? "" : "s"}`;
+  //   } else if (seconds < 600) {
+  //     return `${minutesDown} minute${minutesDown === 1 ? "" : "s"} ${remainder} second${remainder === 1 ? "" : "s"}`;
+  //   } else {
+  //     return `${minutesRound} minutes`;
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (nowPlaying && duration > 0) {
+  //     nowPlaying.duration = durationString;
+  //     console.log("nowPlaying.duration " + nowPlaying?.duration)
+  //     setNowPlaying(nowPlaying);
+  //   }
+  // }, [nowPlaying, duration])
+
+  // useEffect(() => {
+  //   console.log("nowPlaying.duration after: " + nowPlaying?.duration)
+  // }, [nowPlaying])
 
   function extractHttpLinks(detectionArray: CombinedData[]): string[] {
     const urlRegex = /https?:\/\/\S+/g;
@@ -104,14 +118,14 @@ export default function CandidateCard(props: {
   const candidateArray = candidate.array;
   const firstCandidate = candidateArray[0]; // firstCandidate is the earliest time, reports are sorted descending
   const lastCandidate = candidateArray[candidateArray.length - 1]; // lastCandidate is the most recent time
-  const firstTimestamp = firstCandidate.timestamp;
-  const lastTimestamp = lastCandidate.timestamp;
+  const firstTimestamp = firstCandidate.timestampString;
+  const lastTimestamp = lastCandidate.timestampString;
   // TODO: need to handle the case where a candidate consists of reports (esp. sightings) that are all at the same time, leading to a zero duration clip
   // const allSameTime =
   //   candidateArray.length > 1 && firstTimestamp === lastTimestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
-  const candidateTitle = formatTimestamp(firstCandidate.timestamp);
+  const candidateTitle = formatTimestamp(firstCandidate.timestampString);
 
   // use these to set href on cards
   const router = useRouter();
@@ -242,7 +256,7 @@ export default function CandidateCard(props: {
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
                     {candidate.hydrophone}
                     {" • "}
-                    {formatDuration(duration)}
+                    {durationString}
                   </Typography>
                 </Stack>
               </Box>

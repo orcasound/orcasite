@@ -3,7 +3,8 @@ import { useMemo } from "react";
 import { Candidate, CombinedData } from "@/types/DataTypes";
 
 const countCategories = (arr: { newCategory: string }[], cat: string) => {
-  return arr.filter((d) => d.newCategory.toLowerCase() === cat).length;
+  return arr.filter((d) => d.newCategory.toLowerCase() === cat.toLowerCase())
+    .length;
 };
 const cleanSightingsDescription = (description: string | null | undefined) => {
   if (!description) return;
@@ -127,8 +128,8 @@ const sortCandidates = (candidates: Candidate[], sortOrder: string) => {
   const sortDescending = (array: Candidate[]) => {
     const sort = array.sort(
       (a, b) =>
-        handledGetTime(b.array[0].timestamp) -
-        handledGetTime(a.array[0].timestamp),
+        handledGetTime(new Date(b.array[0].timestampString)) -
+        handledGetTime(new Date(a.array[0].timestampString)),
     );
     return sort;
   };
@@ -136,8 +137,8 @@ const sortCandidates = (candidates: Candidate[], sortOrder: string) => {
   const sortAscending = (array: Candidate[]) => {
     const sort = array.sort(
       (a, b) =>
-        handledGetTime(a.array[0].timestamp) -
-        handledGetTime(b.array[0].timestamp),
+        handledGetTime(new Date(a.array[0].timestampString)) -
+        handledGetTime(new Date(b.array[0].timestampString)),
     );
     return sort;
   };

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 
 import { Detection, Feed, Scalars } from "@/graphql/generated";
 
-interface HumanData extends Omit<Detection, "candidate"> {
+export interface HumanData extends Omit<Detection, "candidate"> {
   type: string;
   hydrophone: string;
   comments: string | null | undefined;
@@ -10,7 +10,7 @@ interface HumanData extends Omit<Detection, "candidate"> {
   timestampString: string;
 }
 
-interface AIDetection {
+export interface AIDetection {
   id: string;
   audioUri: string;
   spectrogramUri: string;
@@ -28,11 +28,12 @@ interface AIDetection {
 export interface AIData extends AIDetection {
   type: string;
   hydrophone: string;
+  feedId: string;
   newCategory: string;
   timestampString: string;
 }
 
-interface CascadiaSighting {
+export interface CascadiaSighting {
   id: string;
   type: string; // e.g., "sighting"
   project_id: number;
@@ -57,12 +58,13 @@ interface CascadiaSighting {
 
 export interface Sighting extends CascadiaSighting {
   type: string;
-  hydrophones: string[];
+  hydrophone: string;
+  feedId: string;
   newCategory: string;
   timestampString: string;
 }
 
-export interface CombinedData extends HumanData, AIData, Sighting {}
+export type CombinedData = HumanData | AIData | Sighting;
 
 export interface Dataset {
   human: HumanData[];

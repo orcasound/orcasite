@@ -36,7 +36,6 @@ const VideoJS = dynamic(() => import("./VideoJS"));
 export function PlaybarPlayer({
   clipDateTime,
   clipNode,
-  clipCount,
   feed,
   image,
   marks,
@@ -51,14 +50,13 @@ export function PlaybarPlayer({
 }: {
   clipDateTime?: string;
   clipNode?: string;
-  clipCount?: string;
   feed: Feed;
   image: string | undefined;
   marks?: { label: string | ReactNode; value: number }[];
   playlistTimestamp: number;
   startOffset: number;
   endOffset: number;
-  duration: string;
+  duration?: string;
   onAudioPlay?: () => void;
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
