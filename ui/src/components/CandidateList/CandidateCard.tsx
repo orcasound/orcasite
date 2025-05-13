@@ -37,12 +37,7 @@ const tagRegex = [
   "bigg's",
 ];
 
-export default function CandidateCard(props: {
-  candidate: Candidate;
-  // index: number;
-  // players: MutableRefObject<{ [index: number]: VideoJSPlayer }>;
-  // feeds: Feed[];
-}) {
+export default function CandidateCard(props: { candidate: Candidate }) {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
     useNowPlaying();
 
@@ -56,10 +51,7 @@ export default function CandidateCard(props: {
     (feed) => feed.id === props.candidate.array[0].feedId,
   );
 
-  const { startOffset, endOffset } = useComputedPlaybackFields(
-    props.candidate,
-    feed?.id,
-  );
+  const { startOffset, endOffset } = useComputedPlaybackFields(props.candidate);
 
   const duration = endOffset - startOffset;
   const durationString = formatDuration(startOffset, endOffset);
@@ -120,9 +112,6 @@ export default function CandidateCard(props: {
   const lastCandidate = candidateArray[candidateArray.length - 1]; // lastCandidate is the most recent time
   const firstTimestamp = firstCandidate.timestampString;
   const lastTimestamp = lastCandidate.timestampString;
-  // TODO: need to handle the case where a candidate consists of reports (esp. sightings) that are all at the same time, leading to a zero duration clip
-  // const allSameTime =
-  //   candidateArray.length > 1 && firstTimestamp === lastTimestamp;
   const firstTimestampString = firstCandidate.timestampString;
   const lastTimestampString = lastCandidate.timestampString;
   const candidateTitle = formatTimestamp(firstCandidate.timestampString);

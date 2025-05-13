@@ -1,7 +1,7 @@
 import { ErrorOutline, Pause, PlayArrow } from "@mui/icons-material";
 import { Box, CircularProgress, Tooltip } from "@mui/material";
 
-import { type PlayerStatus } from "./Player";
+import { type PlayerStatus } from "../Player/Player";
 
 export default function PlayBarPlayPauseButton({
   playerStatus,

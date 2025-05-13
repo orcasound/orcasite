@@ -25,13 +25,13 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import { getHlsURI } from "@/hooks/useTimestampFetcher";
 
+import { type PlayerStatus } from "../Player/Player";
+import { type VideoJSPlayer } from "../Player/VideoJS";
 import PlayBarPlayPauseButton from "./PlayBarPlayPauseButton";
-import { type PlayerStatus } from "./Player";
-import { type VideoJSPlayer } from "./VideoJS";
 
 // dynamically import VideoJS to speed up initial page load
 
-const VideoJS = dynamic(() => import("./VideoJS"));
+const VideoJS = dynamic(() => import("../Player/VideoJS"));
 
 export function PlaybarPlayer({
   clipDateTime,

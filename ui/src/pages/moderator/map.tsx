@@ -1,4 +1,4 @@
-import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout";
+import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout/HalfMapLayout";
 import type { NextPageWithLayout } from "@/pages/_app";
 import DetectionsPage from "@/pages/reports";
 

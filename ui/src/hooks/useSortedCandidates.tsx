@@ -88,8 +88,13 @@ const createCandidates = (
 
     const countString = ["whale", "whale (AI)", "vessel", "other", "sightings"]
       .map((type) => {
-        if (countCategories(candidate, type) === 0) return;
-        return `${countCategories(candidate, type)} ${type}`;
+        const count = countCategories(candidate, type);
+        let mutableType = type;
+        if (count === 0) return;
+        if (type === "sightings" && count === 1) {
+          mutableType = mutableType.slice(0, -1);
+        }
+        return `${count} ${mutableType}`;
       })
       .filter((c) => c)
       .join(" • ");

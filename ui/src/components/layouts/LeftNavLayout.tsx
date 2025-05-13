@@ -17,7 +17,7 @@ import { LayoutContext } from "@/context/LayoutContext";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { analytics } from "@/utils/analytics";
 
-import PlayBar from "../PlayBar";
+import PlayBar from "../PlayBar/PlayBar";
 import { TopNav } from "./Devias-dashboard/vertical-layout/top-nav";
 import { MasterDataLayout } from "./MasterDataLayout";
 import navigationList from "./navigationList";
