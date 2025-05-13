@@ -37,12 +37,7 @@ const tagRegex = [
   "bigg's",
 ];
 
-export default function CandidateCard(props: {
-  candidate: Candidate;
-  // index: number;
-  // players: MutableRefObject<{ [index: number]: VideoJSPlayer }>;
-  // feeds: Feed[];
-}) {
+export default function CandidateCard(props: { candidate: Candidate }) {
   const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
     useNowPlaying();
 

@@ -12,7 +12,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
-import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout";
+import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout/HalfMapLayout";
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import type { NextPageWithLayout } from "@/pages/_app";

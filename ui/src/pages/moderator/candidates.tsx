@@ -1,7 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 
 import CandidatesGrid from "@/components/CandidateList/CandidatesGrid";
-import CandidatesTabs from "@/components/CandidateList/CandidatesTabs";
+import CandidatesTabs from "@/components/CandidateList/DesktopTabs";
 import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import { LayoutContext } from "@/context/LayoutContext";
 import type { NextPageWithLayout } from "@/pages/_app";

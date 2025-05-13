@@ -9,39 +9,9 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 
-import ReportsBarChart from "@/components/CandidateList/ReportsBarChart";
-
-import CandidateListFilters from "./CandidateListFilters";
-import CandidatesList from "./CandidatesList";
-import { CandidatesResults } from "./CandidatesResults";
-
-export const CandidatesStack = () => {
-  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  return (
-    <Stack sx={{ paddingTop: "8px" }}>
-      <CandidateListFilters />
-      <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
-        <CandidatesResults viewType="list" />
-        <Box sx={{ paddingTop: "1.5rem" }}></Box>
-        <CandidatesList />
-      </Box>
-    </Stack>
-  );
-};
-
-export const VisualizationsStack = () => {
-  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  return (
-    <Stack>
-      <CandidateListFilters />
-      <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
-        <CandidatesResults viewType="chart" />
-        <Box sx={{ paddingTop: "1.5rem" }}></Box>
-        <ReportsBarChart />
-      </Box>
-    </Stack>
-  );
-};
+import { CandidatesStack } from "./CandidatesStack";
+import { HydrophonesStack } from "./HydrophonesStack";
+import { VisualizationsStack } from "./VisualizationsStack";
 
 export default function CandidatesTabs({
   navOption,
@@ -68,7 +38,7 @@ export default function CandidatesTabs({
     return <Tab label={label} {...a11yProps(index)} />;
   }
 
-  function CustomTabPanel(props: TabPanelProps) {
+  function DesktopTabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
     return (
       <div
@@ -110,15 +80,15 @@ export default function CandidatesTabs({
         <Tab label="Visualizations" {...a11yProps(1)} />
         <Tab label="Hydrophones" {...a11yProps(2)} />
       </Tabs>
-      <CustomTabPanel value={tabValue} index={0}>
+      <DesktopTabPanel value={tabValue} index={0}>
         <CandidatesStack />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={1}>
+      </DesktopTabPanel>
+      <DesktopTabPanel value={tabValue} index={1}>
         <VisualizationsStack />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={2}>
-        {/* add hydrophone list */}
-      </CustomTabPanel>
+      </DesktopTabPanel>
+      <DesktopTabPanel value={tabValue} index={2}>
+        <HydrophonesStack />
+      </DesktopTabPanel>
     </Stack>
   );
 

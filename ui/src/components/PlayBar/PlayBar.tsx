@@ -1,11 +1,4 @@
-import {
-  AppBar,
-  Stack,
-  Theme,
-  Toolbar,
-  Tooltip,
-  useMediaQuery,
-} from "@mui/material";
+import { AppBar, Theme, Toolbar, Tooltip, useMediaQuery } from "@mui/material";
 import React, { MutableRefObject, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
@@ -13,18 +6,15 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 import formatDuration from "@/utils/masterDataHelpers";
 import { formatTimestamp } from "@/utils/time";
 
-import { useComputedPlaybackFields } from "../hooks/useComputedPlaybackFields";
-import { PlaybarPlayer } from "./Player/PlaybarPlayer";
+import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
+import { PlaybarPlayer } from "./PlaybarPlayer";
 
 export default function PlayBar({
-  mobileMenu,
   masterPlayerTimeRef,
 }: {
-  mobileMenu?: React.ReactNode;
   masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
   const { nowPlaying } = useNowPlaying();
-  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const detections = nowPlaying?.array;
@@ -127,53 +117,42 @@ export default function PlayBar({
   }, [playlistStartTime, startOffset, detections]);
 
   return (
-    <Stack
-      direction="column"
+    <AppBar
+      position="relative"
+      color="base"
       sx={{
-        position: "fixed",
-        bottom: 0,
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-        width: "100%",
+        top: "auto",
+        height: smDown ? "auto" : "87px",
+        padding: "8px 0",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: (theme) => theme.palette.base.main,
       }}
     >
-      <AppBar
-        position="relative"
-        color="base"
+      <Toolbar
         sx={{
-          top: "auto",
-          height: smDown ? "auto" : "87px",
-          padding: "8px 0",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: (theme) => theme.palette.base.main,
+          width: "100%",
         }}
       >
-        <Toolbar
-          sx={{
-            width: "100%",
-          }}
-        >
-          <>
-            {nowPlaying?.array && feed && (
-              <PlaybarPlayer
-                feed={feed}
-                image={feed.imageUrl || ""}
-                playlistTimestamp={playlistTimestamp}
-                startOffset={startOffset}
-                endOffset={endOffset}
-                duration={duration}
-                key={`${startOffset}-${endOffset}`}
-                clipDateTime={clipDateTime}
-                clipNode={hydrophone || ""}
-                marks={marks}
-                masterPlayerTimeRef={masterPlayerTimeRef}
-              />
-            )}
-          </>
-        </Toolbar>
-      </AppBar>
-      {mobileMenu && mdDown && mobileMenu}
-    </Stack>
+        <>
+          {nowPlaying?.array && feed && (
+            <PlaybarPlayer
+              feed={feed}
+              image={feed.imageUrl || ""}
+              playlistTimestamp={playlistTimestamp}
+              startOffset={startOffset}
+              endOffset={endOffset}
+              duration={duration}
+              key={`${startOffset}-${endOffset}`}
+              clipDateTime={clipDateTime}
+              clipNode={hydrophone || ""}
+              marks={marks}
+              masterPlayerTimeRef={masterPlayerTimeRef}
+            />
+          )}
+        </>
+      </Toolbar>
+    </AppBar>
   );
 }
