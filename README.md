@@ -1,14 +1,13 @@
-## Redesigned Orcasound Listening Experience
+## Orcasound Listening Experience
 
-This prototype is part of my work with [Orcasound](https://www.orcasound.net/), an open-source citizen science project that streams live underwater audio from hydrophones in the Salish Sea to detect orcas and reduce ship noise when they're nearby.
+React prototype: [https://orcasound-dashboard.vercel.app/beta](https://orcasound-dashboard.vercel.app/beta)
 
-Over the past year, I’ve contributed UX research, product strategy, and front-end development to help Orcasound evolve from a passive listening tool into a more engaging, informative, and conservation-oriented platform.
+UX case study: [https://www.adriandesigner.com/orcasound-listening-experience](https://www.adriandesigner.com/orcasound-listening-experience)
 
-### What We Noticed
-- Most listeners visit only after receiving orca alert notifications.
-- Historical audio data is difficult to access, search, or explore.
-- The AI model currently underperforms compared to the Orcasound community.
-- Users don’t receive feedback on their contributions or have ways to deepen engagement with orca conservation.
+___
+
+![After - candidate screens](https://github.com/user-attachments/assets/d8cf3850-785d-453e-bea3-cf2d97df6e6a)
+
 
 ### Design Goals
 We set out to:
@@ -17,17 +16,6 @@ We set out to:
 - Start integrating AI detections to support learning and research.
 - Build a foundation for richer conservation tools and community feedback.
 
----
-
-### Before
-
-The existing site allowed real-time listening and manual reporting, but had limited historical context and minimal interactivity:
-
-![Before - candidate screens](https://github.com/user-attachments/assets/e7adc8a1-0c02-47af-87ab-6ddfaaa17494)
-
----
-
-### After
 
 The redesigned prototype introduces:
 
@@ -35,8 +23,6 @@ The redesigned prototype introduces:
 - Integrated spectrogram viewer and audio player for quick review and annotation.
 - Previewable detection markers tied to audio segments for easier analysis.
 - A responsive layout optimized for both desktop and mobile use.
-
-![After - candidate screens](https://github.com/user-attachments/assets/d8cf3850-785d-453e-bea3-cf2d97df6e6a)
 
 ---
 
