@@ -12,11 +12,8 @@ function calcOffsetInSeconds(
   return (targetTime.getTime() - startTime.getTime()) / 1000;
 }
 
-export const useComputedPlaybackFields = (
-  candidate: Candidate,
-  feedId: string | undefined,
-) => {
-  const { startTimestamp, endTimestamp } = candidate ?? "";
+export const useComputedPlaybackFields = (candidate: Candidate) => {
+  const { startTimestamp, endTimestamp, feedId } = candidate ?? "";
 
   const {
     data: feedSegments,

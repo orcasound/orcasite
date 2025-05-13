@@ -34,7 +34,7 @@ export default function PlayBar({
   const feed = feeds.find((feed) => feed.id === detections?.[0]?.feedId);
 
   const { playlistTimestamp, playlistStartTime, startOffset, endOffset } =
-    useComputedPlaybackFields(nowPlaying, feed?.id);
+    useComputedPlaybackFields(nowPlaying);
 
   // // skip the track if there is no audio -- this was causing strange rendering behavior
   // useEffect(() => {

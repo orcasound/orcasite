@@ -38,21 +38,8 @@ const MapWithNoSSR = dynamic(() => import("@/components/NewMap"), {
   ssr: false,
 });
 
-// TODO: need a URL that shows candidate map closeup, without the detail overlay
-// const feedFromSlug = (feedSlug: string) => ({
-//   id: feedSlug,
-//   name: feedSlug,
-//   slug: feedSlug,
-//   nodeName: feedSlug,
-//   // TODO: pass in bucket from dynamic feed instead of env/hardcoding
-//   bucket: process.env.NEXT_PUBLIC_S3_BUCKET ?? "audio-orcasound-net",
-//   // TODO: figure out which coordinates to use for dynamic feeds
-//   latLng: { lat: 48.6, lng: -122.3 },
-// });
-
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  // const slug = router.query.feed as string;
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlaying } = useNowPlaying();
@@ -60,14 +47,11 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   console.log("rendering halfmap");
 
   const nowPlayingFeed = useMemo(() => {
-    if (!nowPlaying?.array?.[0]) return undefined;
-    return feeds.find((feed) => feed.id === nowPlaying.array[0].feedId);
+    if (!nowPlaying) return undefined;
+    return feeds.find((feed) => feed.id === nowPlaying.feedId);
   }, [nowPlaying, feeds]);
 
-  const { startOffset } = useComputedPlaybackFields(
-    nowPlaying,
-    nowPlayingFeed?.id,
-  );
+  const { startOffset } = useComputedPlaybackFields(nowPlaying);
 
   const masterPlayerTimeRef = useRef(0);
   // const [masterPlayerTime, setMasterPlayerTime] = useState(0);
@@ -213,6 +197,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             gap: "2rem",
           }}
         >
+          {/* // mobile tabs */}
           {mdDown && menuTab === 0 && (
             <>
               <Box id="0" onClick={handleChange}>
@@ -267,8 +252,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
                   <VisualizationsStack />
                 </MobileContainer>
               )
-            ) : // mobile index page, listen live
-            mdDown &&
+            ) : mdDown &&
               router.query.candidateId === undefined &&
               menuTab === 1 ? (
               tabValue === 1 ? (
