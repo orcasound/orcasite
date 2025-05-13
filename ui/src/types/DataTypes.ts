@@ -57,7 +57,7 @@ export interface CascadiaSighting {
 }
 
 export interface Sighting extends CascadiaSighting {
-  type: "sighting";
+  type: "sightings";
   hydrophone: string;
   feedId: string;
   newCategory: "SIGHTINGS";
