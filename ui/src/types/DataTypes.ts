@@ -3,10 +3,10 @@ import { Dispatch, SetStateAction } from "react";
 import { Detection, Feed, Scalars } from "@/graphql/generated";
 
 export interface HumanData extends Omit<Detection, "candidate"> {
-  type: string;
+  type: "human";
   hydrophone: string;
   comments: string | null | undefined;
-  newCategory: string;
+  newCategory: "HUMAN";
   timestampString: string;
 }
 
@@ -26,10 +26,10 @@ export interface AIDetection {
   tags: string;
 }
 export interface AIData extends AIDetection {
-  type: string;
+  type: "ai";
   hydrophone: string;
   feedId: string;
-  newCategory: string;
+  newCategory: "WHALE (AI)";
   timestampString: string;
 }
 
@@ -57,10 +57,10 @@ export interface CascadiaSighting {
 }
 
 export interface Sighting extends CascadiaSighting {
-  type: string;
+  type: "sighting";
   hydrophone: string;
   feedId: string;
-  newCategory: string;
+  newCategory: "SIGHTINGS";
   timestampString: string;
 }
 

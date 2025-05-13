@@ -82,12 +82,15 @@ export default function Map({
           }}
         />
       ))}
-      {sightings?.map((sighting) => (
-        <Marker
-          key={sighting.id}
-          position={[sighting.latitude, sighting.longitude]}
-        />
-      ))}
+      {sightings?.map((sighting) => {
+        if (sighting.newCategory !== "SIGHTINGS") return null;
+        return (
+          <Marker
+            key={sighting.id}
+            position={[sighting.latitude, sighting.longitude]}
+          />
+        );
+      })}
     </MapContainer>
   );
 }
