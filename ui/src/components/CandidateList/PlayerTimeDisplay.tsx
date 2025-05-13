@@ -147,11 +147,7 @@ export default function PlayerTimeDisplay(props: {
                       {getDetectionTime(d.timestampString, startTime)}
                     </span>
                     {" " + d.newCategory + " "}
-                    {d.description !== null && d.description !== undefined
-                      ? d.description
-                      : d.comments
-                        ? d.comments
-                        : ""}
+                    {d.comments}
                   </mark>
                 </ListItem>
               );
