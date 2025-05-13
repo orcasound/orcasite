@@ -29,7 +29,6 @@ export default function PlayBar({
 
   const detections = nowPlaying?.array;
   const hydrophone = nowPlaying?.hydrophone;
-  const clipCount = nowPlaying?.clipCount;
 
   const { feeds } = useData();
   const feed = feeds.find((feed) => feed.id === detections?.[0]?.feedId);
@@ -52,7 +51,7 @@ export default function PlayBar({
 
   const clipDateTime = useMemo(() => {
     if (nowPlaying?.array) {
-      const timestamp = new Date(nowPlaying?.array[0].timestamp);
+      const timestamp = new Date(nowPlaying?.array[0].timestampString);
       return formatTimestamp(timestamp);
     } else {
       return "";
@@ -86,13 +85,7 @@ export default function PlayBar({
         <Tooltip
           title={`
             ${d.newCategory} 
-            ${
-              d.description !== null && d.description !== undefined
-                ? d.description
-                : d.comments
-                  ? d.comments
-                  : ""
-            }`}
+            ${d.comments}`}
           arrow
           placement="bottom"
           slotProps={{
@@ -121,7 +114,11 @@ export default function PlayBar({
         </Tooltip>
       ),
       value: playlistStartTime
-        ? calcMarkValue(playlistStartTime.toString(), startOffset, d.timestamp)
+        ? calcMarkValue(
+            playlistStartTime.toString(),
+            startOffset,
+            d.timestampString,
+          )
         : 0,
       // value: detections?.map(d => playlistStartTime
       //   ? calcMarkValue(playlistStartTime.toString(), startOffset, d.timestamp)
@@ -169,7 +166,6 @@ export default function PlayBar({
                 key={`${startOffset}-${endOffset}`}
                 clipDateTime={clipDateTime}
                 clipNode={hydrophone || ""}
-                clipCount={clipCount}
                 marks={marks}
                 masterPlayerTimeRef={masterPlayerTimeRef}
               />
