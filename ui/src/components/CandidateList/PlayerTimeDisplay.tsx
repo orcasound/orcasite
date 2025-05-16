@@ -1,83 +1,56 @@
-import {
-  Box,
-  List,
-  ListItem,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, List, ListItem } from "@mui/material";
 import { MutableRefObject, useEffect, useState } from "react";
 
 import { Candidate, CombinedData } from "@/types/DataTypes";
-import { formatTimestamp } from "@/utils/time";
+import {
+  addMilliseconds,
+  subtractMilliseconds,
+} from "@/utils/masterDataHelpers";
 
-export default function PlayerTimeDisplay(props: {
+export default function PlayerTimeDisplay({
+  startOffset = 0,
+  masterPlayerTimeRef,
+  nowPlaying,
+}: {
   masterPlayerTimeRef: MutableRefObject<number>;
-  nowPlaying: Candidate;
-  startOffset: number;
+  nowPlaying: Candidate | null;
+  startOffset?: number;
 }) {
-  const [displayTimestamp, setDisplayTimestamp] = useState("");
+  // const [displayTimestamp, setDisplayTimestamp] = useState("");
   const [currentDetections, setCurrentDetections] = useState<
     CombinedData[] | undefined
   >(undefined);
-  const startTime = props.nowPlaying?.startTimestamp; // ISO timestamp for the start of the candidate
+  const startTime = nowPlaying?.startTimestamp; // ISO timestamp for the start of the candidate
 
-  const hydrophone = props.nowPlaying?.hydrophone;
+  // const hydrophone = nowPlaying?.hydrophone;
 
-  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-
-  const addMilliseconds = (dateString: string, secondsToAdd: number) => {
-    const originalDate = new Date(dateString);
-    originalDate.setMilliseconds(originalDate.getMilliseconds() + secondsToAdd);
-    return originalDate?.toISOString();
-  };
-
-  const subtractMilliseconds = (dateString: string, secondsToAdd: number) => {
-    const originalDate = new Date(dateString);
-    originalDate.setMilliseconds(originalDate.getMilliseconds() - secondsToAdd);
-    return originalDate?.toISOString();
-  };
-
-  const formattedSeconds = (seconds: number) => {
-    const mm = Math.floor(seconds / 60);
-    const ss = seconds % 60;
-    return `${Number(mm).toString().padStart(2, "0")}:${ss
-      .toFixed(0)
-      .padStart(2, "0")}`;
-  };
-
-  const getDetectionTime = (dateString: string, startTime: string) => {
-    const detectionTime = new Date(dateString).getTime();
-    const zeroTime = new Date(startTime).getTime();
-    const seconds = detectionTime - zeroTime;
-    return formattedSeconds(seconds / 1000);
-  };
 
   useEffect(() => {
     let frameId: number;
 
     const update = () => {
-      const detections = props.nowPlaying?.array;
-      const masterPlayerTime = props.masterPlayerTimeRef.current;
+      const detections = nowPlaying?.array;
+      const masterPlayerTime = masterPlayerTimeRef.current;
       if (!startTime) {
         return;
       }
 
-      const currentSeconds = (masterPlayerTime - props.startOffset) * 1000; // seconds from the start
+      const currentSeconds = (masterPlayerTime - startOffset) * 1000; // seconds from the start
       const currentTimestamp = startTime
         ? addMilliseconds(startTime, currentSeconds)
         : "";
       if (!currentTimestamp) return;
 
-      setDisplayTimestamp(formatTimestamp(currentTimestamp));
+      // setDisplayTimestamp(formatTimestamp(currentTimestamp));
 
       const currentRange = [
         subtractMilliseconds(currentTimestamp, 15000),
         addMilliseconds(currentTimestamp, 15000),
       ];
 
-      const detectionsInRange = detections.filter((d) => {
+      const detectionsInRange = detections?.filter((d) => {
         return (
           d.timestampString >= currentRange[0] &&
           d.timestampString <= currentRange[1]
@@ -91,16 +64,11 @@ export default function PlayerTimeDisplay(props: {
     update();
 
     return () => cancelAnimationFrame(frameId);
-  }, [
-    props.masterPlayerTimeRef,
-    props.nowPlaying,
-    props.startOffset,
-    startTime,
-  ]);
+  }, [masterPlayerTimeRef, nowPlaying, startOffset, startTime]);
 
   return (
     <Box>
-      {!mdDown && (
+      {/* {!mdDown && (
         <Typography id="map-title">
           {
             <mark
@@ -120,7 +88,7 @@ export default function PlayerTimeDisplay(props: {
             </mark>
           }
         </Typography>
-      )}
+      )} */}
       {
         <List
           id="report-list"
@@ -130,6 +98,17 @@ export default function PlayerTimeDisplay(props: {
         >
           {currentDetections &&
             currentDetections.map((d) => {
+              const detectionTimestamp = new Date(d.timestampString);
+              const detectionTime = detectionTimestamp.toLocaleString(
+                undefined,
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  // timeZoneName: "short",
+                },
+              );
+
               return (
                 <ListItem key={d.id} id={d.timestampString} sx={{ m: 0, p: 0 }}>
                   <mark
@@ -144,7 +123,8 @@ export default function PlayerTimeDisplay(props: {
                     }}
                   >
                     <span>
-                      {getDetectionTime(d.timestampString, startTime)}
+                      {detectionTime}
+                      {/* {startTime && getTimeElapsed(d.timestampString, startTime)} */}
                     </span>
                     {" " + d.newCategory + " "}
                     {d.comments}
