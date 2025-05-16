@@ -68,3 +68,39 @@ const todayUTC = {
   dd: String(now.getUTCDate()).padStart(2, "0"),
 };
 export const apiTodayUTC = `${todayUTC.yyyy}-${todayUTC.mm}-${todayUTC.dd}`;
+
+export const sevenDays = 7 * 24 * 60 * 60 * 1000;
+export const threeDays = 3 * 24 * 60 * 60 * 1000;
+export const oneDay = 24 * 60 * 60 * 1000;
+export const allTime = -1;
+export const customRange = -2;
+
+export const addMilliseconds = (dateString: string, secondsToAdd: number) => {
+  const originalDate = new Date(dateString);
+  originalDate.setMilliseconds(originalDate.getMilliseconds() + secondsToAdd);
+  return originalDate?.toISOString();
+};
+
+export const subtractMilliseconds = (
+  dateString: string,
+  secondsToAdd: number,
+) => {
+  const originalDate = new Date(dateString);
+  originalDate.setMilliseconds(originalDate.getMilliseconds() - secondsToAdd);
+  return originalDate?.toISOString();
+};
+
+export const formattedSeconds = (seconds: number) => {
+  const mm = Math.floor(seconds / 60);
+  const ss = seconds % 60;
+  return `${Number(mm).toString().padStart(2, "0")}:${ss
+    .toFixed(0)
+    .padStart(2, "0")}`;
+};
+
+const getTimeElapsed = (dateString: string, startTime: string) => {
+  const detectionTime = new Date(dateString).getTime();
+  const zeroTime = new Date(startTime).getTime();
+  const seconds = detectionTime - zeroTime;
+  return formattedSeconds(seconds / 1000);
+};
