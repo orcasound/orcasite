@@ -8,17 +8,22 @@ import React, {
 } from "react";
 
 import { VideoJSPlayer } from "@/components/Player/VideoJS";
+import { Feed } from "@/graphql/generated";
 import { Candidate } from "@/types/DataTypes";
 
 interface NowPlayingContextType {
-  nowPlaying: Candidate;
-  setNowPlaying: React.Dispatch<React.SetStateAction<Candidate>>;
+  nowPlayingCandidate: Candidate | null;
+  setNowPlayingCandidate: React.Dispatch<
+    React.SetStateAction<Candidate | null>
+  >;
+  nowPlayingFeed: Feed | null;
+  setNowPlayingFeed: React.Dispatch<React.SetStateAction<Feed | null>>;
   masterPlayerRef: React.MutableRefObject<VideoJSPlayer | null>;
   masterPlayerStatus: string;
   setMasterPlayerStatus: React.Dispatch<React.SetStateAction<string>>;
-  queue: Candidate[];
-  setQueue: React.Dispatch<React.SetStateAction<Candidate[]>>;
-  onPlayerEnd: () => void;
+  queue?: Candidate[];
+  setQueue?: React.Dispatch<React.SetStateAction<Candidate[]>>;
+  onPlayerEnd?: () => void;
 }
 
 const NowPlayingContext = createContext<NowPlayingContextType | undefined>(
@@ -30,24 +35,33 @@ export const NowPlayingProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [nowPlaying, setNowPlaying] = useState<Candidate>({} as Candidate);
+  const [nowPlayingCandidate, setNowPlayingCandidate] =
+    useState<Candidate | null>(null);
+  const [nowPlayingFeed, setNowPlayingFeed] = useState<Feed | null>(null);
+
   const [masterPlayerStatus, setMasterPlayerStatus] = useState("empty");
   const masterPlayerRef = useRef<VideoJSPlayer | null>(null);
-  const [queue, setQueue] = useState<Candidate[]>([]);
 
+  const [queue, setQueue] = useState<Candidate[]>([]);
   const onPlayerEndRef = useRef<(() => void) | undefined>(undefined);
 
   useEffect(() => {
-    onPlayerEndRef.current = () => {
-      const currentIndex = queue.findIndex(
-        (candidate) => candidate.id === nowPlaying.id,
-      );
-      const nextIndex = currentIndex + 1;
-      if (queue[nextIndex]) {
-        setNowPlaying(queue[nextIndex]);
-      }
-    };
-  }, [queue, nowPlaying, setNowPlaying]);
+    if (nowPlayingCandidate) {
+      onPlayerEndRef.current = () => {
+        const currentIndex = queue.findIndex(
+          (candidate) => candidate.id === nowPlayingCandidate.id,
+        );
+        const nextIndex = currentIndex + 1;
+        if (queue[nextIndex]) {
+          setNowPlayingCandidate(queue[nextIndex]);
+        }
+      };
+    } else {
+      onPlayerEndRef.current = undefined;
+    }
+    console.log("nowPlayingCandidate: " + JSON.stringify(nowPlayingCandidate));
+    console.log("nowPlayingFeed: " + JSON.stringify(nowPlayingFeed));
+  }, [queue, nowPlayingCandidate, setNowPlayingCandidate, nowPlayingFeed]);
 
   const onPlayerEnd = useCallback(() => {
     onPlayerEndRef.current?.();
@@ -56,8 +70,10 @@ export const NowPlayingProvider = ({
   return (
     <NowPlayingContext.Provider
       value={{
-        nowPlaying,
-        setNowPlaying,
+        nowPlayingCandidate,
+        setNowPlayingCandidate,
+        nowPlayingFeed,
+        setNowPlayingFeed,
         masterPlayerRef,
         masterPlayerStatus,
         setMasterPlayerStatus,

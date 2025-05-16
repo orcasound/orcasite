@@ -7,24 +7,27 @@ import formatDuration from "@/utils/masterDataHelpers";
 import { formatTimestamp } from "@/utils/time";
 
 import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
-import { PlaybarPlayer } from "./PlaybarPlayer";
+import { PlaybarPlayer } from "./CandidatePlayer";
+import LivePlayer from "./LivePlayer";
 
 export default function PlayBar({
   masterPlayerTimeRef,
 }: {
   masterPlayerTimeRef?: MutableRefObject<number>;
 }) {
-  const { nowPlaying } = useNowPlaying();
+  const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
-  const detections = nowPlaying?.array;
-  const hydrophone = nowPlaying?.hydrophone;
+  const detections = nowPlayingCandidate?.array;
+  const hydrophone = nowPlayingCandidate?.hydrophone;
 
   const { feeds } = useData();
-  const feed = feeds.find((feed) => feed.id === detections?.[0]?.feedId);
+  const CandidateFeed = feeds.find(
+    (feed) => feed.id === nowPlayingCandidate?.feedId,
+  );
 
   const { playlistTimestamp, playlistStartTime, startOffset, endOffset } =
-    useComputedPlaybackFields(nowPlaying);
+    useComputedPlaybackFields(nowPlayingCandidate);
 
   // // skip the track if there is no audio -- this was causing strange rendering behavior
   // useEffect(() => {
@@ -40,13 +43,13 @@ export default function PlayBar({
   // }, [nowPlaying, setNowPlaying])
 
   const clipDateTime = useMemo(() => {
-    if (nowPlaying?.array) {
-      const timestamp = new Date(nowPlaying?.array[0].timestampString);
+    if (nowPlayingCandidate && nowPlayingCandidate.startTimestamp) {
+      const timestamp = new Date(nowPlayingCandidate?.startTimestamp);
       return formatTimestamp(timestamp);
     } else {
       return "";
     }
-  }, [nowPlaying]);
+  }, [nowPlayingCandidate]);
 
   function calcMarkValue(
     playlistStartTime: string | Date,
@@ -136,10 +139,10 @@ export default function PlayBar({
         }}
       >
         <>
-          {nowPlaying?.array && feed && (
+          {nowPlayingCandidate && CandidateFeed && (
             <PlaybarPlayer
-              feed={feed}
-              image={feed.imageUrl || ""}
+              feed={CandidateFeed}
+              image={CandidateFeed.imageUrl || ""}
               playlistTimestamp={playlistTimestamp}
               startOffset={startOffset}
               endOffset={endOffset}
@@ -151,6 +154,7 @@ export default function PlayBar({
               masterPlayerTimeRef={masterPlayerTimeRef}
             />
           )}
+          {nowPlayingFeed && <LivePlayer currentFeed={nowPlayingFeed} />}
         </>
       </Toolbar>
     </AppBar>

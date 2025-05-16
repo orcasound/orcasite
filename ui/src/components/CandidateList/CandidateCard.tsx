@@ -38,11 +38,15 @@ const tagRegex = [
 ];
 
 export default function CandidateCard(props: { candidate: Candidate }) {
-  const { nowPlaying, setNowPlaying, masterPlayerRef, masterPlayerStatus } =
-    useNowPlaying();
-
+  const {
+    nowPlayingCandidate,
+    setNowPlayingCandidate,
+    setNowPlayingFeed,
+    masterPlayerRef,
+    masterPlayerStatus,
+  } = useNowPlaying();
   const candidate = props.candidate;
-  const active = candidate.id === nowPlaying?.id;
+  const active = candidate.id === nowPlayingCandidate?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
@@ -55,34 +59,6 @@ export default function CandidateCard(props: { candidate: Candidate }) {
 
   const duration = endOffset - startOffset;
   const durationString = formatDuration(startOffset, endOffset);
-  // const duration = endOffset - startOffset;
-
-  // function formatDuration(seconds: number): string {
-  //   const minutesRound = Math.round(seconds / 60);
-  //   const minutesDown = Math.floor(seconds / 60);
-  //   const remainder = seconds % 60;
-  //   if (seconds === 0) {
-  //     return "audio unavailable";
-  //   } else if (seconds < 60) {
-  //     return `${seconds} second${seconds === 1 ? "" : "s"}`;
-  //   } else if (seconds < 600) {
-  //     return `${minutesDown} minute${minutesDown === 1 ? "" : "s"} ${remainder} second${remainder === 1 ? "" : "s"}`;
-  //   } else {
-  //     return `${minutesRound} minutes`;
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (nowPlaying && duration > 0) {
-  //     nowPlaying.duration = durationString;
-  //     console.log("nowPlaying.duration " + nowPlaying?.duration)
-  //     setNowPlaying(nowPlaying);
-  //   }
-  // }, [nowPlaying, duration])
-
-  // useEffect(() => {
-  //   console.log("nowPlaying.duration after: " + nowPlaying?.duration)
-  // }, [nowPlaying])
 
   function extractHttpLinks(detectionArray: CombinedData[]): string[] {
     const urlRegex = /https?:\/\/\S+/g;
@@ -121,11 +97,12 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
   const candidateHref =
     firstTimestamp === lastTimestamp
-      ? `${basePath}/${firstTimestampString}`
-      : `${basePath}/${firstTimestampString}_${lastTimestampString}`;
+      ? `${basePath}/candidate/${firstTimestampString}`
+      : `${basePath}/candidate/${firstTimestampString}_${lastTimestampString}`;
 
   const handlePlay = (candidate: Candidate) => {
-    setNowPlaying(candidate);
+    setNowPlayingCandidate(candidate);
+    setNowPlayingFeed(null);
     masterPlayerRef?.current?.play();
   };
 
@@ -142,7 +119,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
         height: iconSize,
         width: iconSize,
         cursor: "pointer",
-        marginRight: smDown ? "-8px" : "-4px",
+        // marginRight: smDown ? "-8px" : "-4px",
       }}
     />
   );
@@ -153,7 +130,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
         opacity: 0.33,
         height: iconSize,
         width: iconSize,
-        marginRight: smDown ? "-8px" : "-4px",
+        // marginRight: smDown ? "-8px" : "-4px",
       }}
     />
   );
@@ -165,7 +142,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
         height: iconSize,
         width: iconSize,
         cursor: "pointer",
-        marginRight: smDown ? "-8px" : "-4px",
+        // marginRight: smDown ? "-8px" : "-4px",
       }}
     />
   );
@@ -179,9 +156,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
         width: "100%",
         maxWidth: "100%",
         overflow: "hidden",
-        backgroundColor: active
-          ? (theme) => theme.palette.base.main
-          : "default",
+        backgroundColor: active ? "rgba(255,255,255,.1)" : "default",
         // border: active ? "1px solid rgba(255,255,255,.25)" : "none",
       }}
     >
@@ -236,11 +211,10 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                     sx={{
                       fontWeight: "bold",
                       fontSize: "inherit",
-                      // color: active ? theme.palette.accent3.main : "inherit",
+                      // color: active ? (theme) => "antiquewhite" : "default",
                     }}
                   >
                     {candidateTitle}
-                    {/* {new Date(lastTimestamp).toLocaleString()} */}
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
                     {candidate.hydrophone}

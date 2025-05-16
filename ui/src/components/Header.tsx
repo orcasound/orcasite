@@ -35,8 +35,8 @@ export default function Header({
 }) {
   return (
     <AppBar
-      // position="static"
-      position="sticky"
+      // position="sticky"
+      position="fixed" // needed this to be fixed to avoid issue with 100vh preventing scroll on mobile
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,

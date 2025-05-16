@@ -1,21 +1,14 @@
 import { Box } from "@mui/material";
-import { MutableRefObject, useState } from "react";
-
-import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
-import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
-import { VisualizationsStack } from "@/components/CandidateList/VisualizationsStack";
-
-import { MapWrapper } from "../layouts/HalfMapLayout/MapWrapper";
-import { MobileContainer } from "../layouts/HalfMapLayout/MobileContainer";
+import { Dispatch, SetStateAction } from "react";
 
 type Props = {
   menuTab: number;
-  masterPlayerTimeRef: MutableRefObject<number>;
+  tabValue: number;
+  setTabValue: Dispatch<SetStateAction<number>>;
+  // masterPlayerTimeRef: MutableRefObject<number>;
 };
 
-export function MobileTabs({ menuTab, masterPlayerTimeRef }: Props) {
-  const [tabValue, setTabValue] = useState(0);
-
+export function MobileTabs({ menuTab, tabValue, setTabValue }: Props) {
   const handleChange = (event: React.MouseEvent<HTMLDivElement>) => {
     setTabValue(Number(event.currentTarget.id));
   };
@@ -26,18 +19,21 @@ export function MobileTabs({ menuTab, masterPlayerTimeRef }: Props) {
   const makeTabs = (array: string[]) => {
     return (
       <Box
+        className={"mobile-tabs"}
         sx={{
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
           gap: "1rem",
           borderBottom: "1px solid rgba(255,255,255,.3)",
+          height: "36px",
         }}
       >
         {array.map((tab: string, index: number) => {
           return (
             <Box
               id={index.toString()}
+              className={"mobile-tab"}
               key={tab}
               onClick={handleChange}
               sx={{
@@ -58,47 +54,56 @@ export function MobileTabs({ menuTab, masterPlayerTimeRef }: Props) {
       </Box>
     );
   };
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-        height: "100%",
-        // overflowY: "auto",
-      }}
-    >
-      {menuTab === 0 && (
-        <Box
-          sx={{
-            height: "100%",
-          }}
-        >
-          {makeTabs(recordingsTabs)}
-          {tabValue === 0 && (
-            <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
-          )}
-          {tabValue === 1 && (
-            <MobileContainer>
-              <CandidatesStack />
-            </MobileContainer>
-          )}
-          {tabValue === 2 && (
-            <MobileContainer>
-              <VisualizationsStack />
-            </MobileContainer>
-          )}
-        </Box>
-      )}
-      {menuTab === 1 && (
-        <>
-          {makeTabs(listenLiveTabs)}
-          {tabValue === 0 && (
-            <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
-          )}
-          {tabValue === 1 && <HydrophonesStack />}
-        </>
-      )}
-    </Box>
-  );
+
+  return menuTab == 0 ? makeTabs(recordingsTabs) : makeTabs(listenLiveTabs);
+
+  //   return (
+  //     <>
+  //     <Box
+  //       sx={{
+  //         display: "flex",
+  //         flexDirection: "column",
+  //         flex: 1,
+  //         height: "100%",
+  //         // overflowY: "auto",
+  //       }}
+  //     >
+  //       {menuTab === 0 && (
+  //         <Box
+  //           sx={{
+  //             height: "100%",
+  //             display: "flex",
+  //             flexDirection: "column"
+  //           }}
+  //         >
+  //           {/* {makeTabs(recordingsTabs)} */}
+  //           {tabValue === 0 && (
+  //             <>
+  //             <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
+  //             </>
+  //           )}
+  //           {tabValue === 1 && (
+  //             <MobileContainer>
+  //               <CandidatesStack />
+  //             </MobileContainer>
+  //           )}
+  //           {tabValue === 2 && (
+  //             <MobileContainer>
+  //               <VisualizationsStack />
+  //             </MobileContainer>
+  //           )}
+  //         </Box>
+  //       )}
+  //       {menuTab === 1 && (
+  //         <>
+  //           {/* {makeTabs(listenLiveTabs)} */}
+  //           {tabValue === 0 && (
+  //             <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
+  //           )}
+  //           {tabValue === 1 && <HydrophonesStack />}
+  //         </>
+  //       )}
+  //     </Box>
+  //     </>
+  //   );
 }

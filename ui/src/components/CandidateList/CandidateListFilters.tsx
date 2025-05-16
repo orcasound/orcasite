@@ -4,16 +4,18 @@ import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 
 import { useData } from "@/context/DataContext";
+import {
+  allTime,
+  customRange,
+  oneDay,
+  sevenDays,
+  threeDays,
+} from "@/utils/masterDataHelpers";
 
 import ChartSelect from "./ChartSelect";
 import { CustomDatePicker } from "./CustomDatePicker";
 import SearchBar from "./SearchBar";
 
-const sevenDays = 7 * 24 * 60 * 60 * 1000;
-const threeDays = 3 * 24 * 60 * 60 * 1000;
-const oneDay = 24 * 60 * 60 * 1000;
-export const allTime = -1;
-export const customRange = -2;
 export const defaultRange = sevenDays;
 
 const timeRangeSelect = [
