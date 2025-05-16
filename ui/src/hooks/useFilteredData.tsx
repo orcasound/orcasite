@@ -5,11 +5,7 @@ import { useMemo } from "react";
 
 import { CandidateFilters } from "@/context/DataContext";
 import { CombinedData } from "@/types/DataTypes";
-
-import {
-  allTime,
-  customRange,
-} from "../components/CandidateList/CandidateListFilters";
+import { allTime, customRange } from "@/utils/masterDataHelpers";
 
 // dayjs plugin for date pickers
 dayjs.extend(isSameOrBefore);

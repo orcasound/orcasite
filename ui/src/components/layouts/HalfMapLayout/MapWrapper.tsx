@@ -21,25 +21,25 @@ export function MapWrapper({
   masterPlayerTimeRef: React.MutableRefObject<number>;
 }) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  const { nowPlaying } = useNowPlaying();
+  const { nowPlayingCandidate } = useNowPlaying();
   const { feeds } = useData();
 
-  const nowPlayingFeed = useMemo(() => {
-    if (!nowPlaying) return undefined;
-    return feeds.find((feed) => feed.id === nowPlaying.feedId);
-  }, [nowPlaying, feeds]);
+  const CandidateFeed = useMemo(() => {
+    if (!nowPlayingCandidate) return undefined;
+    return feeds.find((feed) => feed.id === nowPlayingCandidate.feedId);
+  }, [nowPlayingCandidate, feeds]);
 
-  const { startOffset } = useComputedPlaybackFields(nowPlaying);
+  const { startOffset } = useComputedPlaybackFields(nowPlayingCandidate);
   const [map, setMap] = useState<LeafletMap>();
 
   useEffect(() => {
-    if (nowPlayingFeed) {
+    if (CandidateFeed) {
       map?.setZoom(12);
-      map?.panTo(nowPlayingFeed.latLng);
+      map?.panTo(CandidateFeed.latLng);
     } else {
       map?.setZoom(8);
     }
-  }, [map, nowPlayingFeed]);
+  }, [map, CandidateFeed]);
 
   return (
     <Box className={"map-wrapper"} sx={{ flexGrow: 1, position: "relative" }}>
@@ -47,7 +47,7 @@ export function MapWrapper({
         className="map-title"
         sx={{
           position: "absolute",
-          top: 8,
+          top: 16,
           left: 16,
           width: smDown ? "250px" : "300px",
           zIndex: 10000,
@@ -56,17 +56,15 @@ export function MapWrapper({
           gap: "4px",
         }}
       >
-        <PlayerTimeDisplay
-          nowPlaying={nowPlaying}
-          masterPlayerTimeRef={masterPlayerTimeRef}
-          startOffset={startOffset}
-        />
+        {nowPlayingCandidate && (
+          <PlayerTimeDisplay
+            nowPlaying={nowPlayingCandidate}
+            masterPlayerTimeRef={masterPlayerTimeRef}
+            startOffset={startOffset}
+          />
+        )}
       </Box>
-      <MapWithNoSSR
-        setMap={setMap}
-        currentFeed={nowPlayingFeed}
-        feeds={feeds}
-      />
+      <MapWithNoSSR setMap={setMap} currentFeed={CandidateFeed} feeds={feeds} />
     </Box>
   );
 }
