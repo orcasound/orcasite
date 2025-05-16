@@ -24,7 +24,7 @@ export default function Map({
   feeds?: FeedsQuery["feeds"];
 }) {
   const router = useRouter();
-  const { nowPlaying } = useNowPlaying();
+  const { nowPlayingCandidate } = useNowPlaying();
 
   // TODO: where would it make sense to show all sightings in a longer time range?
   // const { filteredData } = useData();
@@ -34,11 +34,11 @@ export default function Map({
 
   const [sightings, setSightings] = useState<CombinedData[]>();
   useEffect(() => {
-    const sightingsNow = nowPlaying?.array?.filter((el) => {
+    const sightingsNow = nowPlayingCandidate?.array?.filter((el) => {
       return el.newCategory === "SIGHTINGS";
     });
     setSightings(sightingsNow);
-  }, [nowPlaying]);
+  }, [nowPlayingCandidate]);
 
   const hydrophoneDefaultIcon = L.icon({
     iconUrl: hydrophoneDefaultIconImage.src,
