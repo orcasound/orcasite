@@ -22,7 +22,7 @@ const config: CodegenConfig = {
         exposeFetcher: true,
         exposeQueryKeys: true,
         exposeMutationKeys: true,
-        enumsAsConst: true,
+        enumsAsTypes: true,
         strictScalars: true,
         scalars: {
           // TODO: Choose a decimal library and use that type instead

@@ -1,8 +1,0 @@
-query bout($id: ID!) {
-  bout(id: $id) {
-    ...BoutParts
-    feed {
-      ...FeedParts
-    }
-  }
-}
