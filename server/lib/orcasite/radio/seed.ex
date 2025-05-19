@@ -26,7 +26,7 @@ defmodule Orcasite.Radio.Seed do
 
     attribute :start_time, :utc_datetime_usec, allow_nil?: false, public?: true
     attribute :end_time, :utc_datetime_usec, allow_nil?: false, public?: true
-    attribute :seeded, :integer, public?: true
+    attribute :seeded_count, :integer, public?: true
   end
 
   code_interface do

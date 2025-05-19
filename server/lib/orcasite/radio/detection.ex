@@ -24,7 +24,7 @@ defmodule Orcasite.Radio.Detection do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "det", public?: true
+    uuid_attribute :id, prefix: "det", public?: true, writable?: true
 
     attribute :source_ip, :string, public?: true
     attribute :playlist_timestamp, :integer, allow_nil?: false, public?: true
