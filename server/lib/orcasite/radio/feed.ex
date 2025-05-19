@@ -112,6 +112,11 @@ defmodule Orcasite.Radio.Feed do
     end
   end
 
+  code_interface do
+    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
+  end
+
   actions do
     defaults [:read, :destroy]
 
@@ -174,6 +179,9 @@ defmodule Orcasite.Radio.Feed do
 
     create :create do
       primary? true
+      upsert? true
+      upsert_identity :unique_slug
+      skip_unknown_inputs :id
 
       accept [
         :name,
@@ -186,7 +194,22 @@ defmodule Orcasite.Radio.Feed do
         :bucket_region,
         :cloudfront_url,
         :dataplicity_id,
-        :orcahello_id
+        :orcahello_id,
+        :location_point
+      ]
+
+      upsert_fields [
+        :name,
+        :node_name,
+        :intro_html,
+        :image_url,
+        :visible,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :dataplicity_id,
+        :orcahello_id,
+        :location_point
       ]
 
       argument :lat_lng_string, :string do
@@ -253,11 +276,6 @@ defmodule Orcasite.Radio.Feed do
                )
              end)
     end
-  end
-
-  code_interface do
-    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
-    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end
 
   admin do
