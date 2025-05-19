@@ -26,7 +26,7 @@ defmodule Orcasite.Radio.FeedSegment do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdseg", public?: true
+    uuid_attribute :id, prefix: "fdseg", public?: true, writable?: true
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true

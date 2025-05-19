@@ -26,7 +26,7 @@ defmodule Orcasite.Radio.FeedStream do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdstrm", public?: true
+    uuid_attribute :id, prefix: "fdstrm", public?: true, writable?: true
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
@@ -81,6 +81,10 @@ defmodule Orcasite.Radio.FeedStream do
       public? true
       through Orcasite.Radio.BoutFeedStream
     end
+  end
+
+  code_interface do
+    define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
   end
 
   actions do
@@ -445,10 +449,6 @@ defmodule Orcasite.Radio.FeedStream do
                end
              end)
     end
-  end
-
-  code_interface do
-    define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
   end
 
   json_api do

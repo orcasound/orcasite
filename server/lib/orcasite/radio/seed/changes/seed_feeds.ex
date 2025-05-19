@@ -18,7 +18,7 @@ defmodule Orcasite.Radio.Seed.Changes.SeedFeeds do
       |> case do
         %{status: :success} ->
           change
-          |> Ash.Changeset.force_change_attribute(:seeded, count)
+          |> Ash.Changeset.force_change_attribute(:seeded_count, count)
 
         %{errors: errors} ->
           change
