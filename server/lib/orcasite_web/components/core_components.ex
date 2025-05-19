@@ -17,7 +17,7 @@ defmodule OrcasiteWeb.CoreComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import OrcasiteWeb.Gettext
+  use Gettext, backend: OrcasiteWeb.Gettext
 
   @doc """
   Renders a modal.

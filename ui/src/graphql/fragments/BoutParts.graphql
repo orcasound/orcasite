@@ -1,0 +1,7 @@
+fragment BoutParts on Bout {
+  id
+  category
+  duration
+  endTime
+  startTime
+}
