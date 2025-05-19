@@ -22,7 +22,7 @@ defmodule Orcasite.Radio.Candidate do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "cand", public?: true
+    uuid_attribute :id, prefix: "cand", public?: true, writable?: true
 
     attribute :detection_count, :integer, public?: true
     attribute :min_time, :utc_datetime_usec, allow_nil?: false, public?: true

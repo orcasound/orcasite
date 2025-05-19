@@ -28,7 +28,7 @@ defmodule Orcasite.Radio.Feed do
   end
 
   attributes do
-    uuid_attribute :id, public?: true
+    uuid_attribute :id, public?: true, writable?: true
 
     attribute :name, :string, allow_nil?: false, public?: true
     attribute :node_name, :string, allow_nil?: false, public?: true
@@ -181,9 +181,9 @@ defmodule Orcasite.Radio.Feed do
       primary? true
       upsert? true
       upsert_identity :unique_slug
-      skip_unknown_inputs :id
 
       accept [
+        :id,
         :name,
         :node_name,
         :slug,
