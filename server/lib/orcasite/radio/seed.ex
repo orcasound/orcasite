@@ -36,9 +36,9 @@ defmodule Orcasite.Radio.Seed do
   validations do
     validate {Orcasite.Radio.Validations.MaxTimeDiff,
               [
-                earlier_date_attr: :start_time,
-                later_date_attr: :end_time,
-                max_time: :timer.hours(1)
+                from_date_attr: :start_time,
+                to_date_attr: :end_time,
+                max_interval: :timer.hours(1)
               ]}
 
     validate fn _change, _context ->
@@ -60,7 +60,12 @@ defmodule Orcasite.Radio.Seed do
     end
 
     create :non_feed do
-      accept [:resource, :start_time, :end_time]
+      accept [:start_time, :end_time]
+
+      argument :resource, :atom do
+        constraints one_of: [:feed_stream, :feed_segment, :candidate, :detection, :audio_image]
+        allow_nil? false
+      end
 
       argument :feed_id, :string do
         allow_nil? false

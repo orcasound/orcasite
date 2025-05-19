@@ -45,10 +45,9 @@ defmodule Orcasite.GlobalSetup do
   def populate_feed_streams_range(feed, from_time, to_time) do
     if Application.get_env(:orcasite, :env) != :prod do
       # Get prod feed id for feed
-      {:ok, feed_resp} = Orcasite.Radio.GraphqlClient.get_feed(feed.slug)
+      %{"id" => prod_feed_id} = Orcasite.Radio.GraphqlClient.get_feed(feed.slug)
 
-      feed_resp
-      |> get_in(["data", "feed", "id"])
+      prod_feed_id
       |> case do
         nil ->
           {:error, :feed_not_found}
