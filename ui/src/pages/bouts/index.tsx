@@ -10,7 +10,7 @@ import Head from "next/head";
 import { useCallback, useMemo, useState } from "react";
 
 import FeedItem from "@/components/Bouts/FeedItem";
-import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
+import { getReportsLayout } from "@/components/layouts/ReportsLayout";
 import { useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
@@ -88,6 +88,6 @@ const BoutsPage: NextPageWithLayout = () => {
   );
 };
 
-BoutsPage.getLayout = getSimpleLayout;
+BoutsPage.getLayout = getReportsLayout;
 
 export default BoutsPage;

@@ -20,13 +20,13 @@ defmodule Orcasite.Radio.Bout do
   attributes do
     uuid_attribute :id, prefix: "bout", public?: true
 
-    attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
+    attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
+    attribute :ongoing, :boolean, public?: true
 
     attribute :category, Orcasite.Types.AudioCategory do
       public? true
-      allow_nil? false
     end
 
     create_timestamp :inserted_at
@@ -36,15 +36,11 @@ defmodule Orcasite.Radio.Bout do
   relationships do
     belongs_to :created_by_user, Orcasite.Accounts.User
 
-    belongs_to :feed, Orcasite.Radio.Feed do
-      public? true
-    end
-
+    belongs_to :feed, Orcasite.Radio.Feed
     has_many :bout_feed_streams, Orcasite.Radio.BoutFeedStream
 
     many_to_many :feed_streams, Orcasite.Radio.FeedStream do
       through Orcasite.Radio.BoutFeedStream
-      public? true
     end
   end
 
@@ -67,7 +63,7 @@ defmodule Orcasite.Radio.Bout do
   end
 
   actions do
-    defaults [:read, :destroy]
+    defaults [:read, :update, :destroy]
 
     read :index do
       pagination do
@@ -78,35 +74,11 @@ defmodule Orcasite.Radio.Bout do
 
       argument :feed_id, :string
 
-      filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
+      filter expr(if not is_nil(^arg(:feed_id), do: feed_id == ^arg(:feed_id)), else: true)
     end
 
     create :create do
       primary? true
-      accept [:category, :start_time, :end_time]
-
-      argument :feed_id, :string, allow_nil?: false
-
-      change fn changeset, _ ->
-        changeset
-        |> Ash.Changeset.manage_relationship(
-          :feed,
-          %{id: Ash.Changeset.get_argument(changeset, :feed_id)},
-          type: :append
-        )
-      end
-
-      change fn changeset, _ ->
-        end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
-        start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
-
-        if start_time && end_time do
-          changeset
-          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
-        else
-          changeset
-        end
-      end
 
       change fn
         changeset, %{actor: %Orcasite.Accounts.User{} = actor} ->
@@ -117,37 +89,17 @@ defmodule Orcasite.Radio.Bout do
           changeset
       end
     end
-
-    update :update do
-      primary? true
-      accept [:category, :start_time, :end_time]
-
-      change fn changeset, _ ->
-        end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
-        start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
-
-        if start_time && end_time do
-          changeset
-          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
-        else
-          changeset
-        end
-      end
-    end
   end
 
   graphql do
     type :bout
-    attribute_types [feed_id: :id, feed_stream_id: :id]
 
     queries do
       list :bouts, :index
-      get :bout, :read
     end
 
     mutations do
       create :create_bout, :create
-      update :update_bout, :update
     end
   end
 end

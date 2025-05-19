@@ -14,7 +14,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
+import { getReportsLayout } from "@/components/layouts/ReportsLayout";
 import {
   CandidatesQuery,
   useCandidatesQuery,
@@ -163,6 +163,6 @@ const DetectionsPage: NextPageWithLayout = () => {
   );
 };
 
-DetectionsPage.getLayout = getSimpleLayout;
+DetectionsPage.getLayout = getReportsLayout;
 
 export default DetectionsPage;
