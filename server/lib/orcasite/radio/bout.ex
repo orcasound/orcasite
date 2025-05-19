@@ -43,10 +43,11 @@ defmodule Orcasite.Radio.Bout do
   end
 
   calculations do
-    calculate :export_json, :string, Orcasite.Radio.Calculations.BoutExportJson do
+    calculate :export_json, :string, __MODULE__.Calculations.BoutExportJson do
       public? true
       description "JSON file for exporting the bout and its feed segments"
     end
+    calculate :export_script, :string
   end
 
   relationships do

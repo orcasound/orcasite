@@ -10,6 +10,7 @@ defmodule Orcasite.Radio.Calculations.BoutExportJson do
 
       bout
       |> Map.take([:id, :name, :start_time, :end_time, :duration, :category])
+      |> Map.put(:feed_segments_count, Enum.count(segments))
       |> Map.put(
         :feed_segments,
         segments
