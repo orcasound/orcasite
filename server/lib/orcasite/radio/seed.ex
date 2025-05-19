@@ -26,6 +26,11 @@ defmodule Orcasite.Radio.Seed do
 
     attribute :start_time, :utc_datetime_usec, allow_nil?: false, public?: true
     attribute :end_time, :utc_datetime_usec, allow_nil?: false, public?: true
+    attribute :seeded, :integer, public?: true
+  end
+
+  code_interface do
+    define :feeds
   end
 
   validations do
@@ -47,7 +52,11 @@ defmodule Orcasite.Radio.Seed do
 
   actions do
     create :feeds do
-      accept [:resource, :start_time, :end_time]
+      change set_attribute(:resource, :feed)
+      change set_attribute(:start_time, &DateTime.utc_now/0)
+      change set_attribute(:end_time, &DateTime.utc_now/0)
+
+      change {__MODULE__.Changes.SeedFeeds, []}
     end
 
     create :non_feed do
