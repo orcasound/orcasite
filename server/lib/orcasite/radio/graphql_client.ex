@@ -4,8 +4,8 @@ defmodule Orcasite.Radio.GraphqlClient do
       :feed -> get_feeds()
       :feed_stream -> feed_streams(feed_id, from_time, to_time)
       :feed_segment -> get_feed_streams_with_segments(feed_id, from_time, to_time)
-      :candidate -> get_candidates(feed_id, from_time, to_time)
-      :detection -> get_candidates_with_detections(feed_id, from_time, to_time)
+      :candidate -> get_candidates_with_detections(feed_id, from_time, to_time)
+      :detection -> get_detections_with_candidates(feed_id, from_time, to_time)
     end
   end
 
@@ -215,6 +215,44 @@ defmodule Orcasite.Radio.GraphqlClient do
     |
     |> submit()
     |> parse_response(["data", "candidates", "results"])
+  end
+
+  def get_detections_with_candidates(feed_id, from_datetime, to_datetime) do
+    feed_slug = get_feed_slug(feed_id)
+    candidate_attrs = camelized_public_attrs(Orcasite.Radio.Candidate)
+    detection_attrs = camelized_public_attrs(Orcasite.Radio.Detection)
+
+    ~s|
+      {
+        detections (filter: {
+          feed: {slug: {eq: "#{feed_slug}"}},
+          and: [
+            {
+              timestamp: {lessThanOrEqual: "#{DateTime.to_iso8601(to_datetime)}"}
+            },
+            {
+              timestamp: {greaterThanOrEqual: "#{DateTime.to_iso8601(from_datetime)}"}
+            }
+          ]
+        }) {
+          results {
+            #{detection_attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+            candidate {
+              #{candidate_attrs |> Enum.join(", ")}
+
+              feed {
+                id
+              }
+            }
+          }
+        }
+      }
+    |
+    |> submit()
+    |> parse_response(["data", "detections", "results"])
   end
 
   defp get_feed_slug(feed_id) do
