@@ -26,7 +26,10 @@ defmodule Orcasite.Radio.FeedStream do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdstrm", public?: true, writable?: true
+    uuid_attribute :id,
+      prefix: "fdstrm",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true

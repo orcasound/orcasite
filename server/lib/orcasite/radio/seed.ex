@@ -10,18 +10,9 @@ defmodule Orcasite.Radio.Seed do
   attributes do
     uuid_primary_key :id
 
-    attribute :resource, :atom do
+    attribute :resource, __MODULE__.Types.Resource do
       public? true
       allow_nil? false
-
-      constraints one_of: [
-                    :feed,
-                    :feed_stream,
-                    :feed_segment,
-                    :candidate,
-                    :detection,
-                    :audio_image
-                  ]
     end
 
     attribute :start_time, :utc_datetime_usec, allow_nil?: false, public?: true
@@ -60,10 +51,12 @@ defmodule Orcasite.Radio.Seed do
     end
 
     create :non_feed do
-      accept [:start_time, :end_time]
+      argument :start_time, :utc_datetime_usec,
+        default: fn -> DateTime.add(DateTime.utc_now(), -1, :hour) end
 
-      argument :resource, :atom do
-        constraints one_of: [:feed_stream, :feed_segment, :candidate, :detection, :audio_image]
+      argument :end_time, :utc_datetime_usec, default: &DateTime.utc_now/0
+
+      argument :resource, __MODULE__.Types.Resource do
         allow_nil? false
       end
 
@@ -71,6 +64,10 @@ defmodule Orcasite.Radio.Seed do
         allow_nil? false
         description "Local/dev server feed ID to seed relationship"
       end
+
+      change set_attribute(:resource, arg(:resource))
+      change set_attribute(:start_time, arg(:start_time))
+      change set_attribute(:end_time, arg(:end_time))
     end
   end
 

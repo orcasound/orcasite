@@ -95,6 +95,4 @@ if config_env() == :prod do
       System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "audio-deriv-orcasound-net"),
     audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
 
-  config :orcasite,
-    disable_prod_seed: System.get_env("DISABLE_PROD_SEED", "false") == "true"
 end

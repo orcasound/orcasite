@@ -1,4 +1,12 @@
 defmodule Orcasite.Radio.GraphqlClient do
+  def get_resource(resource_name, feed_id, from_time, to_time) do
+    case resource_name do
+      :feed -> get_feeds()
+      :feed_stream -> feed_streams(feed_id, from_time, to_time)
+      :feed_segment -> get_feed_streams_with_segments(feed_id, from_time, to_time)
+    end
+  end
+
   def submit(query) do
     Finch.build(
       :post,
@@ -106,6 +114,9 @@ defmodule Orcasite.Radio.GraphqlClient do
   def get_feed_streams_with_segments(feed_id, from_datetime, to_datetime) do
     day_before = from_datetime |> DateTime.add(-1, :day)
 
+    feed_stream_attrs = camelized_public_attrs(Orcasite.Radio.FeedStream)
+    feed_seg_attrs = camelized_public_attrs(Orcasite.Radio.FeedSegment)
+
     ~s|
       {
         feedStreams(
@@ -122,16 +133,7 @@ defmodule Orcasite.Radio.GraphqlClient do
         ) {
           count
           results {
-            id
-            startTime
-            endTime
-            duration
-            bucket
-            bucketRegion
-            cloudfrontUrl
-            playlistTimestamp
-            playlistPath
-            playlistM3u8Path
+            #{feed_stream_attrs}
 
             feedSegments(
               filter: {
@@ -143,22 +145,27 @@ defmodule Orcasite.Radio.GraphqlClient do
               },
               sort: {field: START_TIME, order: DESC},
             ) {
-              startTime
-              endTime
-              duration
-              bucket
-              bucketRegion
-              cloudfrontUrl
-              fileName
-              playlistM3u8Path
-              playlistPath
-              playlistTimestamp
-              segmentPath
+              #{feed_seg_attrs}
+
+              feed {
+                id
+              }
             }
           }
         }
       }
     |
     |> submit()
+  end
+
+  def get_candidates(feed_id, from_datetime, to_datetime) do
+    attrs = camelized_public_attrs(Orcasite.Radio.Candidate)
+
+    ~s|
+      {
+         candidate
+      }
+    |
+
   end
 end
