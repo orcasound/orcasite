@@ -1,4 +1,4 @@
-defmodule Orcasite.Radio.Seed.SeedResource do
+defmodule Orcasite.Radio.Seed.Changes.SeedResource do
   use Ash.Resource.Change
 
   alias Orcasite.Radio.Seed.Utils
@@ -7,7 +7,6 @@ defmodule Orcasite.Radio.Seed.SeedResource do
   @impl true
   def change(changeset, _opts, _context) do
     resource_name = Ash.Changeset.get_argument(changeset, :resource)
-    resource = Resource.to_module(resource_name)
 
     changeset
     |> Ash.Changeset.before_action(fn change ->
@@ -16,16 +15,19 @@ defmodule Orcasite.Radio.Seed.SeedResource do
       from_date = change |> Ash.Changeset.get_argument(:start_time)
       to_date = change |> Ash.Changeset.get_argument(:end_time)
 
+      bulk_resource = resource_name |> bulk_create_resource_name() |> Resource.to_module()
+      bulk_action = resource_name |> bulk_create_action()
+
       inputs =
         Orcasite.Radio.GraphqlClient.get_resource(resource_name, feed_id, from_date, to_date)
-        |> Utils.prepare_results(resource)
+        |> Utils.prepare_results(bulk_resource)
 
       count = Enum.count(inputs)
 
       inputs
       |> Ash.bulk_create(
-        resource |> bulk_create_resource_name() |> Resource.to_module(),
-        resource |> bulk_create_action(),
+        bulk_resource,
+        bulk_action,
         return_errors?: true,
         authorize?: false
       )
@@ -56,7 +58,9 @@ defmodule Orcasite.Radio.Seed.SeedResource do
   def bulk_create_action(resource_name) do
     case resource_name do
       :feed_segment -> :populate_with_segments
-      _ -> :creaet
+      :candidate -> :seed
+      :detection -> :seed
+      _ -> :create
     end
   end
 end

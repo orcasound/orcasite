@@ -4,6 +4,8 @@ defmodule Orcasite.Radio.GraphqlClient do
       :feed -> get_feeds()
       :feed_stream -> feed_streams(feed_id, from_time, to_time)
       :feed_segment -> get_feed_streams_with_segments(feed_id, from_time, to_time)
+      :candidate -> get_candidates(feed_id, from_time, to_time)
+      :detection -> get_candidates_with_detections(feed_id, from_time, to_time)
     end
   end
 
@@ -159,13 +161,65 @@ defmodule Orcasite.Radio.GraphqlClient do
   end
 
   def get_candidates(feed_id, from_datetime, to_datetime) do
+    feed_slug = get_feed_slug(feed_id)
     attrs = camelized_public_attrs(Orcasite.Radio.Candidate)
 
     ~s|
       {
-         candidate
+        candidates (filter: {
+          feed: {slug: {eq: "#{feed_slug}"}},
+          minTime: {lessThanOrEqual: "#{DateTime.to_iso8601(to_datetime)}"},
+          maxTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(from_datetime)}"}
+        }) {
+          results {
+            #{attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+          }
+        }
       }
     |
+    |> submit()
+    |> parse_response(["data", "candidates", "results"])
+  end
 
+  def get_candidates_with_detections(feed_id, from_datetime, to_datetime) do
+    feed_slug = get_feed_slug(feed_id)
+    candidate_attrs = camelized_public_attrs(Orcasite.Radio.Candidate)
+    detection_attrs = camelized_public_attrs(Orcasite.Radio.Detection)
+
+    ~s|
+      {
+        candidates (filter: {
+          feed: {slug: {eq: "#{feed_slug}"}},
+          minTime: {lessThanOrEqual: "#{DateTime.to_iso8601(to_datetime)}"},
+          maxTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(from_datetime)}"}
+        }) {
+          results {
+            #{candidate_attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+
+            detections {
+              #{detection_attrs |> Enum.join(", ")}
+
+              feed {
+                id
+              }
+            }
+          }
+        }
+      }
+    |
+    |> submit()
+    |> parse_response(["data", "candidates", "results"])
+  end
+
+  defp get_feed_slug(feed_id) do
+    # Need this until we figure out how to add `eq` query to AshUUID.UUID types
+    %{slug: slug} = Orcasite.Radio.Feed |> Ash.get!(feed_id, authorize?: false)
+    slug
   end
 end

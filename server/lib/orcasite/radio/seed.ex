@@ -68,6 +68,8 @@ defmodule Orcasite.Radio.Seed do
       change set_attribute(:resource, arg(:resource))
       change set_attribute(:start_time, arg(:start_time))
       change set_attribute(:end_time, arg(:end_time))
+
+      change {__MODULE__.Changes.SeedResource, []}
     end
   end
 
