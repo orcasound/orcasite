@@ -18,7 +18,7 @@ defmodule Orcasite.Radio.Bout do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "bout", public?: true, writable?: true
+    uuid_attribute :id, prefix: "bout", public?: true
 
     attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false

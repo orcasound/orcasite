@@ -28,7 +28,7 @@ defmodule Orcasite.Radio.Feed do
   end
 
   attributes do
-    uuid_attribute :id, public?: true, writable?: true
+    uuid_attribute :id, public?: true, writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :name, :string, allow_nil?: false, public?: true
     attribute :node_name, :string, allow_nil?: false, public?: true
