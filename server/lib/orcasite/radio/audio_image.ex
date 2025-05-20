@@ -3,7 +3,8 @@ defmodule Orcasite.Radio.AudioImage do
     otp_app: :orcasite,
     domain: Orcasite.Radio,
     extensions: [AshGraphql.Resource, AshUUID],
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    notifiers: [Ash.Notifier.PubSub]
 
   postgres do
     table "audio_images"
@@ -78,6 +79,34 @@ defmodule Orcasite.Radio.AudioImage do
   actions do
     defaults [:read, :destroy, create: :*, update: :*]
 
+    read :for_feed do
+      argument :feed_id, :string, allow_nil?: false
+      argument :start_time, :utc_datetime_usec, allow_nil?: false
+      argument :end_time, :utc_datetime_usec, allow_nil?: false
+
+      pagination do
+        offset? true
+        countable true
+        default_limit 100
+      end
+
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 (fragment(
+                    "(?) between (?) and (?)",
+                    start_time,
+                    ^arg(:start_time),
+                    ^arg(:end_time)
+                  ) or
+                    fragment(
+                      "(?) between (?) and (?)",
+                      end_time,
+                      ^arg(:start_time),
+                      ^arg(:end_time)
+                    ))
+             )
+    end
+
     create :for_feed_segment do
       upsert? true
       upsert_identity :unique_audio_image
@@ -110,7 +139,7 @@ defmodule Orcasite.Radio.AudioImage do
                |> case do
                  {:ok, feed_segment} ->
                    change
-                   |> Ash.Changeset.change_attributes(%{
+                   |> Ash.Changeset.force_change_attributes(%{
                      start_time: feed_segment.start_time,
                      end_time: feed_segment.end_time
                    })
@@ -157,12 +186,16 @@ defmodule Orcasite.Radio.AudioImage do
                prepend?: true
              )
 
-      change after_action(fn _change, record, _context ->
-               %{audio_image_id: record.id}
-               |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
-               |> Oban.insert()
+      change after_action(fn
+               _change, %{status: :complete} = record, _context ->
+                 {:ok, record}
 
-               {:ok, record}
+               _change, record, _context ->
+                 %{audio_image_id: record.id}
+                 |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
+                 |> Oban.insert()
+
+                 {:ok, record}
              end)
     end
 
@@ -170,55 +203,60 @@ defmodule Orcasite.Radio.AudioImage do
       require_atomic? false
       change set_attribute(:status, :processing)
 
-      change after_action(
-               fn _change, image, _context ->
-                 # Only one feed segment at a time for now
-                 [feed_segment] = image |> Ash.load!(:feed_segments) |> Map.get(:feed_segments)
+      change after_action(fn _change, image, _context ->
+               # Only one feed segment at a time for now
+               [feed_segment] = image |> Ash.load!(:feed_segments) |> Map.get(:feed_segments)
 
-                 timeout = :timer.minutes(2)
+               %{
+                 image_id: image.id,
+                 audio_bucket: feed_segment.bucket,
+                 audio_key: feed_segment.segment_path,
+                 image_bucket: image.bucket,
+                 image_key: image.object_path
+               }
+               |> Orcasite.Radio.AwsClient.generate_spectrogram()
+               |> case do
+                 {:ok, %{file_size: image_size} = resp} ->
+                   image
+                   |> Ash.Changeset.for_update(:update, %{
+                     status: :complete,
+                     image_size: image_size,
+                     parameters: Map.get(resp, :parameters, %{})
+                   })
+                   |> Ash.Changeset.force_change_attribute(:last_error, nil)
+                   |> Ash.update(authorize?: false)
 
-                 Task.Supervisor.async_nolink(
-                   Orcasite.TaskSupervisor,
-                   fn ->
-                     %{
-                       image_id: image.id,
-                       audio_bucket: feed_segment.bucket,
-                       audio_key: feed_segment.segment_path,
-                       image_bucket: image.bucket,
-                       image_key: image.object_path
-                     }
-                     |> Orcasite.Radio.AwsClient.generate_spectrogram()
-                     |> case do
-                       {:ok, %{file_size: image_size}} ->
-                         image
-                         |> Ash.Changeset.for_update(:update, %{
-                           status: :complete,
-                           image_size: image_size
-                         })
-                         |> Ash.Changeset.force_change_attribute(:last_error, nil)
-                         |> Ash.update(authorize?: false)
+                 {:error, error} ->
+                   image
+                   |> Ash.Changeset.for_update(:update, %{
+                     status: :errored
+                   })
+                   |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
+                   |> Ash.update(authorize?: false)
+               end
+             end)
+    end
 
-                       {:error, error} ->
-                         image
-                         |> Ash.Changeset.for_update(:update, %{
-                           status: :failed
-                         })
-                         |> Ash.Changeset.force_change_attribute(:last_error, inspect(error))
-                         |> Ash.update(authorize?: false)
-                     end
-                   end,
-                   timeout: timeout
-                 )
-
-                 {:ok, image}
-               end,
-               prepend?: true
-             )
+    update :set_failed do
+      change set_attribute(:status, :failed)
     end
   end
 
   graphql do
     type :audio_image
-    attribute_types [feed_id: :id]
+    attribute_types feed_id: :id
+
+    queries do
+      list :audio_images, :for_feed
+    end
+
+    subscriptions do
+      pubsub OrcasiteWeb.Endpoint
+
+      subscribe :audio_image_updated do
+        read_action :for_feed
+        actions [:for_feed_segment, :update]
+      end
+    end
   end
 end

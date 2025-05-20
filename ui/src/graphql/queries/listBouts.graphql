@@ -1,0 +1,24 @@
+query bouts(
+  $feedId: String
+  $filter: BoutFilterInput
+  $limit: Int = 100
+  $offset: Int
+  $sort: [BoutSortInput]
+) {
+  bouts(
+    feedId: $feedId
+    filter: $filter
+    limit: $limit
+    offset: $offset
+    sort: $sort
+  ) {
+    count
+    hasNextPage
+    results {
+      ...BoutParts
+      feed {
+        ...FeedParts
+      }
+    }
+  }
+}

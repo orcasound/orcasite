@@ -1,7 +1,7 @@
 import { Channel, Presence } from "phoenix";
 import { useEffect, useState } from "react";
 
-import socket from "@/utils/socket";
+import useSocket from "./useSocket";
 
 /**
  * Hook to use Phoenix Presence for a specific feed
@@ -10,6 +10,8 @@ import socket from "@/utils/socket";
  */
 export default function useFeedPresence(feedId?: string) {
   const [feedPresence, setFeedPresence] = useState<Record<string, unknown[]>>();
+
+  const socket = useSocket();
 
   useEffect(() => {
     let channel: Channel | undefined;
@@ -31,13 +33,14 @@ export default function useFeedPresence(feedId?: string) {
     return () => {
       channel?.leave();
     };
-  }, [feedId]);
+  }, [feedId, socket]);
 
   return feedPresence;
 }
 
 export function useListenerCount(feedSlug: string) {
   const [listenerCount, setListenerCount] = useState<number>();
+  const socket = useSocket();
 
   useEffect(() => {
     let channel: Channel | undefined;
@@ -56,7 +59,7 @@ export function useListenerCount(feedSlug: string) {
     return () => {
       channel?.leave();
     };
-  }, [feedSlug]);
+  }, [socket, feedSlug]);
 
   return listenerCount;
 }

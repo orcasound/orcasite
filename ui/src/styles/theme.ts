@@ -1,6 +1,7 @@
 // Self-hosted fonts using https://fontsource.org/
 import "@fontsource/mukta";
 import "@fontsource/montserrat";
+import "@fontsource/noto-mono"; // Monospace
 
 import { createTheme } from "@mui/material/styles";
 
@@ -35,9 +36,28 @@ declare module "@mui/material/Fab" {
   }
 }
 
+declare module "@mui/material/styles" {
+  interface TypographyVariants {
+    monospace: React.CSSProperties;
+  }
+
+  // allow configuration using `createTheme`
+  interface TypographyVariantsOptions {
+    monospace?: React.CSSProperties;
+  }
+}
+
+// Update the Typography's variant prop options
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    monospace: true;
+  }
+}
+
 // Fonts with fallbacks
 const mukta = "Mukta, Helvetica, Arial, sans-serif";
 const montserrat = "Montserrat, Helvetica, Arial, sans-serif";
+const notoMono = "'Noto Mono', monospace;"; // pretty good
 
 // Hack to get access to theme helpers
 // see https://github.com/mui/material-ui/issues/35895#issuecomment-1401579770
@@ -101,6 +121,9 @@ const theme = createTheme({
     },
     body2: {
       fontFamily: montserrat,
+    },
+    monospace: {
+      fontFamily: notoMono,
     },
   },
 });

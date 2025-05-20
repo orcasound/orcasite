@@ -1,0 +1,5 @@
+query searchTags($query: String!) {
+  searchTags(query: $query) {
+    ...TagParts
+  }
+}

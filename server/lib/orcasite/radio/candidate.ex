@@ -73,12 +73,7 @@ defmodule Orcasite.Radio.Candidate do
   end
 
   actions do
-    defaults [:destroy]
-
-    read :read do
-      primary? true
-      prepare build(load: [:uuid], sort: [inserted_at: :desc])
-    end
+    defaults [:read, :destroy]
 
     read :index do
       pagination do

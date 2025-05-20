@@ -158,7 +158,7 @@ defmodule Orcasite.Radio.FeedSegment do
       ]
 
       argument :feed, :map, allow_nil?: false
-      argument :feed_stream, :map, allow_nil?: false
+      argument :feed_stream, :map
 
       argument :segment_path, :string do
         allow_nil? false

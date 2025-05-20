@@ -39,7 +39,7 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
       end
       |> Enum.filter(&(&1.id != notification_id))
 
-    :ok = continue?()
+    :ok = Orcasite.RateLimiter.continue?("ses_email", 1_000, 14)
 
     %{meta: params}
     |> Map.merge(%{
@@ -81,6 +81,9 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
   defp email_for_notif(params, "confirmed_candidate"),
     do: Orcasite.Notifications.Email.confirmed_candidate_email(params)
 
+  defp email_for_notif(params, "live_bout"),
+    do: Orcasite.Notifications.Email.confirmed_candidate_email(params)
+
   defp stringify(name) when is_atom(name), do: Atom.to_string(name)
   defp stringify(name), do: name
 
@@ -95,14 +98,4 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     end)
   end
 
-  def continue?() do
-    case Hammer.check_rate("ses_email", 1_000, 14) do
-      {:allow, _count} ->
-        :ok
-
-      {:deny, _limit} ->
-        Process.sleep(250)
-        continue?()
-    end
-  end
 end

@@ -1,5 +1,6 @@
 defmodule OrcasiteWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :orcasite
+  use AshGraphql.Subscription.Endpoint
 
   @session_options [
     store: :cookie,
@@ -8,7 +9,7 @@ defmodule OrcasiteWeb.Endpoint do
     same_site: "Lax"
   ]
 
-  if Mix.env == :dev do
+  if Mix.env() == :dev do
     use Plug.Debugger, otp_app: :orcasite
   end
 
@@ -18,14 +19,16 @@ defmodule OrcasiteWeb.Endpoint do
 
   socket "/socket", OrcasiteWeb.UserSocket,
     websocket: [
-      timeout: 45_000 # Timeout for Heroku
-  ]
-
+      # Timeout for Heroku
+      timeout: 45_000,
+      connect_info: [:user_agent, session: @session_options]
+    ]
 
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [
       connect_info: [:user_agent, session: @session_options],
-      timeout: 45_000 # Timeout for Heroku
+      # Timeout for Heroku
+      timeout: 45_000
     ]
 
   # Serve at "/" the static files from "priv/static" directory.

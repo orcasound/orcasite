@@ -51,7 +51,10 @@ defmodule Orcasite.Radio.Detection do
 
   relationships do
     belongs_to :candidate, Candidate, public?: true
-    belongs_to :feed, Feed, public?: true
+
+    belongs_to :feed, Feed do
+      public? true
+    end
 
     belongs_to :user, Orcasite.Accounts.User
   end
@@ -93,8 +96,12 @@ defmodule Orcasite.Radio.Detection do
     end
   end
 
+  code_interface do
+    define :submit_detection
+  end
+
   actions do
-    defaults [:destroy]
+    defaults [:read, :destroy]
 
     read :index do
       pagination do
@@ -103,11 +110,9 @@ defmodule Orcasite.Radio.Detection do
         default_limit 100
       end
 
-      prepare build(load: [:uuid], sort: [inserted_at: :desc])
-    end
+      argument :feed_id, :string
 
-    read :read do
-      primary? true
+      filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
     end
 
@@ -291,6 +296,39 @@ defmodule Orcasite.Radio.Detection do
           {:ok, detection}
         end)
       end
+
+      change after_action(fn _change, detection, _context ->
+               Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
+                 feed = detection |> Ash.load!(:feed) |> Map.get(:feed)
+
+                 # minutes
+                 buffer = 5
+                 now = DateTime.utc_now()
+
+                 start_time = detection.timestamp |> DateTime.add(-buffer, :minute)
+
+                 plus_buffer =
+                   detection.timestamp
+                   |> DateTime.add(buffer, :minute)
+
+                 end_time =
+                   plus_buffer
+                   |> DateTime.compare(now)
+                   |> case do
+                     :gt -> now
+                     _ -> plus_buffer
+                   end
+
+                 feed
+                 |> Ash.Changeset.for_update(:generate_spectrogram, %{
+                   start_time: start_time,
+                   end_time: end_time
+                 })
+                 |> Ash.update(authorize?: false)
+               end)
+
+               {:ok, detection}
+             end)
     end
   end
 
@@ -305,10 +343,6 @@ defmodule Orcasite.Radio.Detection do
       :candidate_id,
       :inserted_at
     ]
-  end
-
-  code_interface do
-    define :submit_detection
   end
 
   json_api do
@@ -336,7 +370,7 @@ defmodule Orcasite.Radio.Detection do
 
   graphql do
     type :detection
-    attribute_types [candidate_id: :id, feed_id: :id]
+    attribute_types candidate_id: :id, feed_id: :id
 
     queries do
       get :detection, :read

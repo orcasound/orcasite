@@ -11,6 +11,8 @@ defmodule Orcasite.Radio do
     resource Orcasite.Radio.FeedSegment
     resource Orcasite.Radio.AudioImage
     resource Orcasite.Radio.AudioImageFeedSegment
+    resource Orcasite.Radio.Tag
+    resource Orcasite.Radio.ItemTag
   end
 
   admin do

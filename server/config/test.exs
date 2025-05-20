@@ -37,6 +37,7 @@ config :hammer,
 
 config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"
 config :ash_graphql, :policies, show_policy_breakdowns?: true
+config :ash, :pub_sub, debug?: true
 config :orcasite, Orcasite.Radio, graphql: [show_raised_errors?: true]
 config :orcasite, Orcasite.Accounts, graphql: [show_raised_errors?: true]
 
@@ -51,3 +52,5 @@ config :ex_aws,
     :instance_role
   ],
   region: "us-west-2"
+
+config :orcasite, :env, :test

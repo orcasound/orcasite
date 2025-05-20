@@ -65,7 +65,28 @@ defmodule Orcasite.Notifications.Notification do
       authorize_if action(:notify_confirmed_candidate)
       authorize_if action(:cancel_notification)
       authorize_if action(:for_candidate)
+      authorize_if action(:for_bout)
     end
+  end
+
+  code_interface do
+    define :notify_new_detection,
+      action: :notify_new_detection,
+      args: [:detection_id, :node, :description, :listener_count, :candidate_id]
+
+    define :notify_confirmed_candidate,
+      action: :notify_confirmed_candidate,
+      args: [:candidate_id]
+
+    define :increment_notified_count
+  end
+
+  resource do
+    description """
+    Notification for a specific event type. Once created, all Subscriptions that match this Notification's
+    event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
+    channel settings (email, browser notification, webhooks).
+    """
   end
 
   actions do
@@ -76,6 +97,32 @@ defmodule Orcasite.Notifications.Notification do
       argument :notification_id, :uuid
 
       manual Orcasite.Notifications.ManualReadNotificationsSince
+    end
+
+    read :for_bout do
+      prepare build(sort: [inserted_at: :desc])
+      argument :bout_id, :string, allow_nil?: false
+
+      argument :event_type, Orcasite.Types.NotificationEventType
+
+      argument :active, :boolean
+
+      filter expr(
+               fragment("(? @> ?)", meta, expr(%{bout_id: ^arg(:bout_id)})) and
+                 if(not is_nil(^arg(:event_type)),
+                   do: event_type == ^arg(:event_type),
+                   else: true
+                 ) and
+                 if(not is_nil(^arg(:active)),
+                   do: active == ^arg(:active),
+                   else: true
+                 )
+             )
+
+      prepare fn query, context ->
+        query
+      end
+
     end
 
     read :for_candidate do
@@ -129,6 +176,39 @@ defmodule Orcasite.Notifications.Notification do
       change atomic_update(:notified_count_updated_at, expr(now()))
     end
 
+    create :notify_bout do
+      description "Create a notification for a live bout"
+      argument :bout_id, :string, allow_nil?: false
+
+      argument :message, :string do
+        description """
+        What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
+        and clicks can be heard at Orcasound Lab!')
+        """
+
+        allow_nil? false
+      end
+
+      change set_attribute(:event_type, :confirmed_candidate)
+
+      change before_action(fn changeset, _context ->
+               bout_id =
+                 Ash.Changeset.get_argument(changeset, :bout_id)
+
+               bout =
+                 Orcasite.Radio.Bout
+                 |> Ash.get(bout_id)
+                 |> Ash.load!(:feed)
+
+               changeset
+               |> Ash.Changeset.force_change_attribute(:meta, %{
+                 bout_id: bout_id,
+                 node: bout.feed.slug,
+                 message: Ash.Changeset.get_argument(changeset, :message)
+               })
+             end)
+    end
+
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       argument :candidate_id, :string, allow_nil?: false
@@ -162,6 +242,39 @@ defmodule Orcasite.Notifications.Notification do
              end)
     end
 
+    create :notify_live_bout do
+      description "Create a notification for live bout"
+      argument :bout_id, :string, allow_nil?: false
+
+      argument :message, :string do
+        description """
+        What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
+        and clicks can be heard at Orcasound Lab!')
+        """
+
+        allow_nil? false
+      end
+
+      change set_attribute(:event_type, :live_bout)
+
+      change before_action(fn changeset, _context ->
+               bout_id =
+                 Ash.Changeset.get_argument(changeset, :bout_id)
+
+               bout =
+                 Orcasite.Radio.Bout
+                 |> Ash.get(bout_id)
+                 |> Ash.load!(:feed)
+
+               changeset
+               |> Ash.Changeset.force_change_attribute(:meta, %{
+                 bout_id: bout_id,
+                 node: bout.feed.slug,
+                 message: Ash.Changeset.get_argument(changeset, :message)
+               })
+             end)
+    end
+
     create :notify_new_detection do
       description "Create a notification for a new detection (e.g. button push from user)."
       argument :detection_id, :string
@@ -183,36 +296,6 @@ defmodule Orcasite.Notifications.Notification do
           candidate_id: Ash.Changeset.get_argument(changeset, :candidate_id)
         })
       end
-    end
-  end
-
-  code_interface do
-    define :notify_new_detection,
-      action: :notify_new_detection,
-      args: [:detection_id, :node, :description, :listener_count, :candidate_id]
-
-    define :notify_confirmed_candidate,
-      action: :notify_confirmed_candidate,
-      args: [:candidate_id]
-
-    define :increment_notified_count
-  end
-
-  resource do
-    description """
-    Notification for a specific event type. Once created, all Subscriptions that match this Notification's
-    event type (new detection, confirmed candidate, etc.) will be notified using the Subscription's particular
-    channel settings (email, browser notification, webhooks).
-    """
-  end
-
-  admin do
-    table_columns [:id, :meta, :event_type, :inserted_at]
-
-    format_fields meta: {Jason, :encode!, []}
-
-    form do
-      field :event_type, type: :default
     end
   end
 
@@ -253,16 +336,37 @@ defmodule Orcasite.Notifications.Notification do
     prepare build(load: [:progress, :finished])
   end
 
+  admin do
+    table_columns [:id, :meta, :event_type, :inserted_at]
+
+    format_fields meta: {Jason, :encode!, []}
+
+    form do
+      field :event_type, type: :default
+    end
+  end
+
   graphql do
     type :notification
 
     queries do
       list :notifications_for_candidate, :for_candidate
+      list :notifications_for_bout, :for_bout
     end
 
     mutations do
       create :notify_confirmed_candidate, :notify_confirmed_candidate
+      create :notify_live_bout, :notify_live_bout
       update :cancel_notification, :cancel_notification
+    end
+
+    subscriptions do
+      pubsub OrcasiteWeb.Endpoint
+
+      subscribe :bout_notification_sent do
+        read_action :for_bout
+        actions [:increment_notified_count]
+      end
     end
   end
 end

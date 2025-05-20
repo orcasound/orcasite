@@ -72,6 +72,16 @@ defmodule Orcasite.Notifications.Subscriber do
     end
   end
 
+  code_interface do
+    define :by_email, args: [:email]
+  end
+
+  resource do
+    description """
+    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
+    """
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
 
@@ -99,13 +109,10 @@ defmodule Orcasite.Notifications.Subscriber do
       end
     end
 
-    create :confirmed_candidate_subscribe do
+    create :live_calls_subscribe do
       argument :name, :string
       argument :email, :string
       argument :response_data, :map
-
-      # TODO: Remove this argument once we deploy to production.
-      argument :active_subscription, :boolean, default: true
 
       change set_attribute(:name, arg(:name))
       change set_attribute(:subscriber_type, :individual)
@@ -125,40 +132,29 @@ defmodule Orcasite.Notifications.Subscriber do
         |> Ash.Changeset.change_attribute(:meta, meta)
         |> Ash.Changeset.manage_relationship(
           :subscriptions,
-          %{
-            name: Ash.Changeset.get_argument(changeset, :name),
-            event_type: "confirmed_candidate",
-            meta: %{
-              email: Ash.Changeset.get_argument(changeset, :email),
+          [
+            %{
               name: Ash.Changeset.get_argument(changeset, :name),
-              channel: :email
+              event_type: "confirmed_candidate",
+              meta: %{
+                email: Ash.Changeset.get_argument(changeset, :email),
+                name: Ash.Changeset.get_argument(changeset, :name),
+                channel: :email
+              }
             },
-            # TODO: Remove this active field once we deploy to production.
-            active: Ash.Changeset.get_argument(changeset, :active_subscription)
-          },
+            %{
+              name: Ash.Changeset.get_argument(changeset, :name),
+              event_type: "live_bout",
+              meta: %{
+                email: Ash.Changeset.get_argument(changeset, :email),
+                name: Ash.Changeset.get_argument(changeset, :name),
+                channel: :email
+              }
+            }
+          ],
           type: :create
         )
       end
-    end
-  end
-
-  code_interface do
-    define :by_email, args: [:email]
-  end
-
-  resource do
-    description """
-    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
-    """
-  end
-
-  admin do
-    table_columns [:id, :name, :meta, :inserted_at]
-    read_actions [:read, :by_email]
-    format_fields meta: {Jason, :encode!, []}
-
-    form do
-      field :event_type, type: :default
     end
   end
 
@@ -179,13 +175,23 @@ defmodule Orcasite.Notifications.Subscriber do
     end
   end
 
+  admin do
+    table_columns [:id, :name, :meta, :inserted_at]
+    read_actions [:read, :by_email]
+    format_fields meta: {Jason, :encode!, []}
+
+    form do
+      field :event_type, type: :default
+    end
+  end
+
   json_api do
     type "subscriber"
 
     routes do
       base "/subscribers"
 
-      post :confirmed_candidate_subscribe
+      post :live_calls_subscribe
     end
   end
 end

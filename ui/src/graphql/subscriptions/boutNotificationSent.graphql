@@ -1,0 +1,7 @@
+subscription boutNotificationSent($boutId: String!) {
+  boutNotificationSent(boutId: $boutId) {
+    updated {
+      ...NotificationParts
+    }
+  }
+}

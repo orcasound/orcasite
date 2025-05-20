@@ -1,0 +1,17 @@
+mutation generateFeedSpectrograms(
+  $feedId: ID!
+  $startTime: DateTime!
+  $endTime: DateTime!
+) {
+  generateFeedSpectrograms(
+    id: $feedId
+    input: { startTime: $startTime, endTime: $endTime }
+  ) {
+    result {
+      ...FeedParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}

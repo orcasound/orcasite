@@ -16,7 +16,12 @@ defmodule Orcasite.Repo do
       "postgis",
       AshUUID.PostgresExtension,
       "pg_stat_statements",
-      "ash-functions"
+      "ash-functions",
+      "pg_trgm"
     ]
+  end
+
+  def min_pg_version() do
+    %Version{major: 14, minor: 0, patch: 0}
   end
 end

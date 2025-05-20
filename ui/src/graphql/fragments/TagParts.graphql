@@ -1,0 +1,6 @@
+fragment TagParts on Tag {
+  id
+  name
+  description
+  slug
+}

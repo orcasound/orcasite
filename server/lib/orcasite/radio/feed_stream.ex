@@ -288,6 +288,42 @@ defmodule Orcasite.Radio.FeedStream do
       end
     end
 
+    create :populate_with_segments do
+      upsert? true
+      upsert_identity :playlist_m3u8_path
+
+      accept [
+        :start_time,
+        :end_time,
+        :duration,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :playlist_path,
+        :playlist_timestamp,
+        :playlist_m3u8_path
+      ]
+
+      upsert_fields [
+        :start_time,
+        :end_time,
+        :duration,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :playlist_path,
+        :playlist_timestamp,
+        :playlist_m3u8_path,
+        :updated_at
+      ]
+
+      argument :feed_segments, {:array, :map}
+      argument :feed, :map
+
+      change manage_relationship(:feed_segments, type: :create)
+      change manage_relationship(:feed, type: :append)
+    end
+
     update :update_segments do
       description "Pulls contents of m3u8 file and creates a FeedSegment per new entry"
       require_atomic? false

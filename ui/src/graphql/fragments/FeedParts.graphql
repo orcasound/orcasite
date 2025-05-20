@@ -1,0 +1,15 @@
+fragment FeedParts on Feed {
+  id
+  name
+  slug
+  nodeName
+  latLng {
+    lat
+    lng
+  }
+  introHtml
+  thumbUrl
+  imageUrl
+  mapUrl
+  bucket
+}
