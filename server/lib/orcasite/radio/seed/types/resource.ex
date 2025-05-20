@@ -6,5 +6,5 @@ defmodule Orcasite.Radio.Seed.Types.Resource do
 
   def non_feed_resources(), do: @non_feed_resources
 
-  def to_module(type), do: Orcasite.Radio |> Macro.concat(Macro.camelize(to_string(type)))
+  def to_module(type), do: Orcasite.Radio |> Module.concat(Macro.camelize(to_string(type)))
 end

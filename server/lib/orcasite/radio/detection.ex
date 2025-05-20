@@ -23,8 +23,15 @@ defmodule Orcasite.Radio.Detection do
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
   end
 
+  identities do
+    identity :id, [:id]
+  end
+
   attributes do
-    uuid_attribute :id, prefix: "det", public?: true, writable?: Orcasite.Config.seeding_enabled?()
+    uuid_attribute :id,
+      prefix: "det",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :source_ip, :string, public?: true
     attribute :playlist_timestamp, :integer, allow_nil?: false, public?: true
@@ -181,6 +188,40 @@ defmodule Orcasite.Radio.Detection do
       argument :feed, :map
 
       change manage_relationship(:candidate, type: :append)
+      change manage_relationship(:feed, type: :append)
+    end
+
+    create :seed do
+      upsert? true
+      upsert_identity :id
+
+      skip_unknown_inputs :*
+
+      accept [
+        :id,
+        :source_ip,
+        :playlist_timestamp,
+        :player_offset,
+        :listener_count,
+        :timestamp,
+        :description,
+        :visible,
+        :category
+      ]
+
+      upsert_fields [
+        :source_ip,
+        :playlist_timestamp,
+        :player_offset,
+        :listener_count,
+        :timestamp,
+        :description,
+        :visible,
+        :category
+      ]
+
+      argument :feed, :map
+
       change manage_relationship(:feed, type: :append)
     end
 
