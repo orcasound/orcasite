@@ -50,7 +50,6 @@ defmodule Orcasite.Radio.Seed.Changes.SeedResource do
   def bulk_create_resource_name(resource_name) do
     case resource_name do
       :feed_segment -> :feed_stream
-      :detection -> :candidate
       name -> name
     end
   end

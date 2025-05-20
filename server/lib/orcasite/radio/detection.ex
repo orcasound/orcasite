@@ -221,8 +221,10 @@ defmodule Orcasite.Radio.Detection do
       ]
 
       argument :feed, :map
+      argument :candidate, :map
 
       change manage_relationship(:feed, type: :append)
+      change manage_relationship(:candidate, on_lookup: :relate, on_no_match: {:create, :seed})
     end
 
     create :submit_detection do
