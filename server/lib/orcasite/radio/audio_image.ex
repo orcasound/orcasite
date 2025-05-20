@@ -25,7 +25,7 @@ defmodule Orcasite.Radio.AudioImage do
   end
 
   attributes do
-    uuid_primary_key :id, writable?: true
+    uuid_primary_key :id, writable?: Orcasite.Config.seeding_enabled?()
     attribute :image_type, Orcasite.Types.ImageType, public?: true
 
     attribute :status, Orcasite.Types.AudioImageStatus do
