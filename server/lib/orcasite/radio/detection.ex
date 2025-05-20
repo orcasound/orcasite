@@ -283,11 +283,9 @@ defmodule Orcasite.Radio.Detection do
           if Ash.Changeset.get_argument(changeset, :send_notifications) do
             Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
               Orcasite.Notifications.Notification.notify_new_detection(
-                detection.id,
-                detection.feed.slug,
-                detection.description,
-                detection.listener_count,
-                detection.candidate.id,
+                detection,
+                detection.candidate,
+                detection.feed,
                 authorize?: false
               )
             end)

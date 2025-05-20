@@ -491,6 +491,7 @@ export type CancelNotificationResult = {
 
 export type Candidate = {
   __typename?: "Candidate";
+  audioCategory?: Maybe<AudioCategory>;
   category?: Maybe<DetectionCategory>;
   detectionCount?: Maybe<Scalars["Int"]["output"]>;
   detections: Array<Detection>;
@@ -507,6 +508,17 @@ export type CandidateDetectionsArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   sort?: InputMaybe<Array<InputMaybe<DetectionSortInput>>>;
+};
+
+export type CandidateFilterAudioCategory = {
+  eq?: InputMaybe<AudioCategory>;
+  greaterThan?: InputMaybe<AudioCategory>;
+  greaterThanOrEqual?: InputMaybe<AudioCategory>;
+  in?: InputMaybe<Array<AudioCategory>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<AudioCategory>;
+  lessThanOrEqual?: InputMaybe<AudioCategory>;
+  notEq?: InputMaybe<AudioCategory>;
 };
 
 export type CandidateFilterCategory = {
@@ -541,6 +553,7 @@ export type CandidateFilterId = {
 
 export type CandidateFilterInput = {
   and?: InputMaybe<Array<CandidateFilterInput>>;
+  audioCategory?: InputMaybe<CandidateFilterAudioCategory>;
   category?: InputMaybe<CandidateFilterCategory>;
   detectionCount?: InputMaybe<CandidateFilterDetectionCount>;
   detections?: InputMaybe<DetectionFilterInput>;
@@ -588,6 +601,7 @@ export type CandidateFilterVisible = {
 };
 
 export const CandidateSortField = {
+  AudioCategory: "AUDIO_CATEGORY",
   Category: "CATEGORY",
   DetectionCount: "DETECTION_COUNT",
   FeedId: "FEED_ID",

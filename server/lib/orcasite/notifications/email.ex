@@ -51,6 +51,11 @@ defmodule Orcasite.Notifications.Email do
             Review here: <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}?utm_source=email&utm_medium=email&utm_campaign=notifications">{{ meta["candidate_id"] }}</a>
           </mj-text>
         {{/if}}
+        {{#if node && meta["start_time"] && meta["category"] }}
+          <mj-text font-size="20px" font-family="helvetica">
+            <a href="https://live.orcasound.net/bouts/new/{{ node }}?time={{ meta["start_time"] }}&category={{ meta["category"] }}&utm_source=email&utm_medium=email&utm_campaign=notifications">Start a new bout</a>
+          </mj-text>
+        {{/if}}
 
         {{#if notifications_since_count > 0}}
           <mj-text font-size="20px" font-family="helvetica">
