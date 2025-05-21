@@ -92,18 +92,13 @@ defmodule Orcasite.Radio.AudioImage do
 
       filter expr(
                feed_id == ^arg(:feed_id) and
-                 (fragment(
-                    "(?) between (?) and (?)",
-                    start_time,
-                    ^arg(:start_time),
-                    ^arg(:end_time)
-                  ) or
-                    fragment(
-                      "(?) between (?) and (?)",
-                      end_time,
-                      ^arg(:start_time),
-                      ^arg(:end_time)
-                    ))
+                 fragment(
+                   "(?) <= (?) AND (?) >= (?)",
+                   start_time,
+                   ^arg(:end_time),
+                   end_time,
+                   ^arg(:start_time)
+                 )
              )
     end
 
