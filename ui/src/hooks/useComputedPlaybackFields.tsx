@@ -1,4 +1,5 @@
 import { Candidate } from "@/types/DataTypes";
+import formatDuration from "@/utils/masterDataHelpers";
 
 import { useFeedSegments } from "./useFeedSegments";
 import { useFeedStreams } from "./useFeedStreams";
@@ -64,12 +65,17 @@ export const useComputedPlaybackFields = (candidate: Candidate | null) => {
     }
   }
 
+  const duration = endOffset - startOffset;
+  const durationString = formatDuration(startOffset, endOffset);
+
   if (!startTimestamp || !endTimestamp || !candidate) {
     return {
       playlistStartTime: 0,
       playlistTimestamp: 0,
       startOffset: 0,
       endOffset: 0,
+      duration: 0,
+      durationString: "",
       feedSegmentsLoading: false,
       feedSegmentsError: null,
       feedStreamsLoading: false,
@@ -82,6 +88,8 @@ export const useComputedPlaybackFields = (candidate: Candidate | null) => {
     playlistTimestamp,
     startOffset,
     endOffset,
+    duration,
+    durationString,
     feedSegmentsLoading,
     feedSegmentsError,
     feedStreamsLoading,

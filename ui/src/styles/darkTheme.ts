@@ -139,6 +139,14 @@ darkTheme.components = {
       },
     },
   },
+  MuiButton: {
+    styleOverrides: {
+      outlined: {
+        color: "#fff",
+        borderColor: "rgba(255,255,255,.5)",
+      },
+    },
+  },
 };
 
 export default darkTheme;

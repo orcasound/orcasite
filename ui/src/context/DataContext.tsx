@@ -1,5 +1,12 @@
 import dayjs, { Dayjs } from "dayjs";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import React, {
+  createContext,
+  MutableRefObject,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 import { defaultRange } from "@/components/CandidateList/CandidateListFilters";
 import { Feed } from "@/graphql/generated";
@@ -29,6 +36,7 @@ interface DataContextType {
   filters: CandidateFilters;
   setFilters: React.Dispatch<React.SetStateAction<CandidateFilters>>;
   isSuccessOrcahello: boolean;
+  autoPlayOnReady: MutableRefObject<boolean>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -69,19 +77,39 @@ export const DataProvider = ({
     nowPlayingCandidate,
     setNowPlayingCandidate,
     nowPlayingFeed,
+    masterPlayerRef,
   } = useNowPlaying();
-  useEffect(() => {
-    if (!nowPlayingCandidate && !nowPlayingFeed) {
-      setNowPlayingCandidate(sortedCandidates[0]);
+
+  // on first load, if there isn't a feed or candidate selected
+  const autoPlayOnReady = useRef(true);
+  const router = useRouter();
+
+  const tabSlugs = ["hydrophones", "candidates", "visualizations"];
+  const slug = router.route.replace("/beta/", "");
+
+  function getTabIndexFromPath(path: string): number {
+    const slug = path.replace("/beta/", "");
+    if (tabSlugs.includes(slug)) {
+      return tabSlugs.indexOf(slug);
+    } else {
+      return 0;
     }
-    if (setQueue) setQueue(sortedCandidates);
-  }, [
-    sortedCandidates,
-    setQueue,
-    nowPlayingCandidate,
-    setNowPlayingCandidate,
-    nowPlayingFeed,
-  ]);
+  }
+
+  // useEffect(() => {
+  //   if (!nowPlayingCandidate && !nowPlayingFeed) {
+  //     autoPlayOnReady.current = false;
+  //     setNowPlayingCandidate(sortedCandidates[0]);
+  //   }
+
+  //   if (setQueue) setQueue(sortedCandidates);
+  // }, [
+  //   sortedCandidates,
+  //   setQueue,
+  //   nowPlayingCandidate,
+  //   setNowPlayingCandidate,
+  //   nowPlayingFeed,
+  // ]);
 
   return (
     <DataContext.Provider
@@ -92,6 +120,7 @@ export const DataProvider = ({
         filters,
         setFilters,
         isSuccessOrcahello,
+        autoPlayOnReady,
       }}
     >
       {children}

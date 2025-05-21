@@ -1,26 +1,31 @@
 import { Box, List, ListItem } from "@mui/material";
 import { MutableRefObject, useEffect, useState } from "react";
 
-import { Candidate, CombinedData } from "@/types/DataTypes";
+import { useNowPlaying } from "@/context/NowPlayingContext";
+import { useComputedPlaybackFields } from "@/hooks/useComputedPlaybackFields";
+import { CombinedData } from "@/types/DataTypes";
 import {
   addMilliseconds,
   subtractMilliseconds,
 } from "@/utils/masterDataHelpers";
 
 export default function PlayerTimeDisplay({
-  startOffset = 0,
+  // startOffset = 0,
   masterPlayerTimeRef,
-  nowPlaying,
+  // nowPlaying,
 }: {
   masterPlayerTimeRef: MutableRefObject<number>;
-  nowPlaying: Candidate | null;
-  startOffset?: number;
+  // nowPlaying: Candidate | null;
+  // startOffset?: number;
 }) {
+  const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
+  const { startOffset } = useComputedPlaybackFields(nowPlayingCandidate);
+
   // const [displayTimestamp, setDisplayTimestamp] = useState("");
   const [currentDetections, setCurrentDetections] = useState<
     CombinedData[] | undefined
   >(undefined);
-  const startTime = nowPlaying?.startTimestamp; // ISO timestamp for the start of the candidate
+  const startTime = nowPlayingCandidate?.startTimestamp; // ISO timestamp for the start of the candidate
 
   // const hydrophone = nowPlaying?.hydrophone;
 
@@ -31,7 +36,7 @@ export default function PlayerTimeDisplay({
     let frameId: number;
 
     const update = () => {
-      const detections = nowPlaying?.array;
+      const detections = nowPlayingCandidate?.array;
       const masterPlayerTime = masterPlayerTimeRef.current;
       if (!startTime) {
         return;
@@ -64,7 +69,7 @@ export default function PlayerTimeDisplay({
     update();
 
     return () => cancelAnimationFrame(frameId);
-  }, [masterPlayerTimeRef, nowPlaying, startOffset, startTime]);
+  }, [masterPlayerTimeRef, nowPlayingCandidate, startOffset, startTime]);
 
   return (
     <Box>

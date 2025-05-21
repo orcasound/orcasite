@@ -112,7 +112,6 @@ const createCandidates = (
       hydrophone: hydrophone,
       feedId: feedId,
       clipCount: countString,
-      duration: "",
       descriptions: candidate
         .map((el: CombinedData) => cleanSightingsDescription(el.comments))
         .filter((el: string | null | undefined) => el !== null)
