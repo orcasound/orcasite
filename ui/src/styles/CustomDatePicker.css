@@ -1,0 +1,56 @@
+/* datepicker-mui.css */
+
+/* Prevent wrapper from interfering with layout */
+.react-datepicker-wrapper {
+  width: 100%;
+  display: block;
+}
+
+/* Prevent nesting container from adding layout issues */
+.react-datepicker__input-container {
+  width: 100%;
+  display: block;
+  margin: 0;
+}
+
+/* Match font and field height to MUI small variant */
+.react-datepicker__input-container input {
+  font-size: 1rem;
+  padding: 8.5px 14px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+/* Popper styles for better elevation */
+.react-datepicker-popper {
+  z-index: 1300 !important;
+}
+
+/* Calendar styles (optional polish) */
+.react-datepicker {
+  font-family: Roboto, sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 0.8125rem;
+}
+
+.react-datepicker__day,
+.react-datepicker__day-name {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  margin: 0.2rem;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #1976d2;
+  color: white;
+  border-radius: 50%;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(25, 118, 210, 0.12);
+  border-radius: 50%;
+}
