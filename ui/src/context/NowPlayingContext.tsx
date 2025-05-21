@@ -59,8 +59,6 @@ export const NowPlayingProvider = ({
     } else {
       onPlayerEndRef.current = undefined;
     }
-    console.log("nowPlayingCandidate: " + JSON.stringify(nowPlayingCandidate));
-    console.log("nowPlayingFeed: " + JSON.stringify(nowPlayingFeed));
   }, [queue, nowPlayingCandidate, setNowPlayingCandidate, nowPlayingFeed]);
 
   const onPlayerEnd = useCallback(() => {

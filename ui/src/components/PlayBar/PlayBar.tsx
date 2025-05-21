@@ -1,5 +1,16 @@
-import { AppBar, Theme, Toolbar, Tooltip, useMediaQuery } from "@mui/material";
-import React, { MutableRefObject, useMemo } from "react";
+import { useTheme } from "@emotion/react";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  AppBar,
+  IconButton,
+  Theme,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import React, { MutableRefObject, SetStateAction, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
@@ -12,11 +23,17 @@ import LivePlayer from "./LivePlayer";
 
 export default function PlayBar({
   masterPlayerTimeRef,
+  playbarExpanded,
+  setPlaybarExpanded,
 }: {
   masterPlayerTimeRef?: MutableRefObject<number>;
+  playbarExpanded: boolean;
+  setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 }) {
-  const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const theme = useTheme();
+
+  const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
 
   const detections = nowPlayingCandidate?.array;
   const hydrophone = nowPlayingCandidate?.hydrophone;
@@ -123,6 +140,7 @@ export default function PlayBar({
     <AppBar
       position="relative"
       color="base"
+      onClick={smDown ? () => setPlaybarExpanded(!playbarExpanded) : undefined}
       sx={{
         top: "auto",
         height: smDown ? "auto" : "87px",
@@ -156,6 +174,18 @@ export default function PlayBar({
           )}
           {nowPlayingFeed && <LivePlayer currentFeed={nowPlayingFeed} />}
         </>
+        {!smDown && (
+          <IconButton
+            color="inherit"
+            sx={{ background: "black", height: "70px", borderRadius: "10px" }}
+            onClick={() => setPlaybarExpanded(!playbarExpanded)}
+          >
+            <Typography sx={{ fontSize: "16px" }}>
+              {playbarExpanded ? "Close audio analyzer" : "Open audio analyzer"}
+            </Typography>
+            {playbarExpanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+          </IconButton>
+        )}
       </Toolbar>
     </AppBar>
   );

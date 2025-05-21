@@ -12,6 +12,7 @@ import {
 
 import { type PlayerStatus } from "@/components/Player/Player";
 import { type VideoJSPlayer } from "@/components/Player/VideoJS";
+import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 // import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
@@ -57,6 +58,7 @@ export function PlaybarPlayer({
     setMasterPlayerStatus,
     onPlayerEnd,
   } = useNowPlaying();
+  const { autoPlayOnReady } = useData();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
@@ -104,12 +106,12 @@ export function PlaybarPlayer({
       // auto-play the player when it mounts -- mounting is triggered in Playbar based on nowPlaying
       if (playerRef.current) {
         masterPlayerRef.current = playerRef.current;
-        player.play();
+        if (autoPlayOnReady.current) player.play();
       }
-      if (onPlayerInit) onPlayerInit(player);
       player.on("playing", () => {
         setPlayerStatus("playing");
         setMasterPlayerStatus("playing");
+        autoPlayOnReady.current = true;
         const currentTime = player.currentTime() ?? 0;
         if (currentTime < startOffset || currentTime > endOffset) {
           player.currentTime(startOffset);
@@ -212,13 +214,13 @@ export function PlaybarPlayer({
       playerOptions={playerOptions}
       startOffset={startOffset}
       endOffset={endOffset}
+      duration={duration}
       handleReady={handleReady}
       playerStatus={playerStatus}
       feed={feed}
       image={image}
       playerTitle={clipDateTime}
       playerSubtitle={clipNode}
-      duration={duration}
       marks={marks}
       playerRef={playerRef}
       playerTime={playerTime}

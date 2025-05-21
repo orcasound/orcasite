@@ -33,6 +33,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dotenv-cli": "^7.4.2",
+    "framer-motion": "^12.12.1",
     "graphql": "^16.9.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",

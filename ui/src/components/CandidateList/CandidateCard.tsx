@@ -10,7 +10,6 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useRouter } from "next/router";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
@@ -19,7 +18,6 @@ import { Candidate, CombinedData } from "@/types/DataTypes";
 import { formatTimestamp } from "@/utils/time";
 
 import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
-import formatDuration from "../../utils/masterDataHelpers";
 
 const tagRegex = [
   "s[0-9]+",
@@ -50,15 +48,14 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
-  const { feeds } = useData();
+  const { feeds, autoPlayOnReady } = useData();
   const feed = feeds.find(
     (feed) => feed.id === props.candidate.array[0].feedId,
   );
 
-  const { startOffset, endOffset } = useComputedPlaybackFields(props.candidate);
-
-  const duration = endOffset - startOffset;
-  const durationString = formatDuration(startOffset, endOffset);
+  const { duration, durationString } = useComputedPlaybackFields(
+    props.candidate,
+  );
 
   function extractHttpLinks(detectionArray: CombinedData[]): string[] {
     const urlRegex = /https?:\/\/\S+/g;
@@ -93,14 +90,15 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const candidateTitle = formatTimestamp(firstCandidate.timestampString);
 
   // use these to set href on cards
-  const router = useRouter();
-  const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
-  const candidateHref =
-    firstTimestamp === lastTimestamp
-      ? `${basePath}/candidate/${firstTimestampString}`
-      : `${basePath}/candidate/${firstTimestampString}_${lastTimestampString}`;
+  // const router = useRouter();
+  // const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
+  const candidateHref = `/beta/${feed?.slug}/${candidate.id}`;
+  // firstTimestamp === lastTimestamp
+  //   ? `/beta/candidate/${feed?.slug}/${firstTimestampString}`
+  //   : `/beta/candidate/${feed?.slug}/${firstTimestampString}_${lastTimestampString}`;
 
   const handlePlay = (candidate: Candidate) => {
+    autoPlayOnReady.current = true;
     setNowPlayingCandidate(candidate);
     setNowPlayingFeed(null);
     masterPlayerRef?.current?.play();
@@ -180,6 +178,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
             <Link
               // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
               href={candidateHref}
+              onClick={() => (autoPlayOnReady.current = false)}
               style={{
                 width: "100%",
                 color: "inherit",
@@ -237,6 +236,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
           <Link
             // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
             href={candidateHref}
+            onClick={() => (autoPlayOnReady.current = false)}
             style={{
               width: "100%",
               color: "inherit",

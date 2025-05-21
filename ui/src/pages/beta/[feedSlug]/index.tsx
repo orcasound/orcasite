@@ -15,19 +15,31 @@ import { useEffect, useMemo, useState } from "react";
 import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout/HalfMapLayout";
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { AIData, CombinedData, HumanData, Sighting } from "@/types/DataTypes";
+import { sevenDays, subtractMilliseconds } from "@/utils/masterDataHelpers";
 
-const CandidatePage: NextPageWithLayout = () => {
+const HydrophonePage: NextPageWithLayout = () => {
   const router = useRouter();
-  const { candidateId } = router.query;
-  const startEnd = useMemo(() => {
-    return typeof candidateId === "string" ? candidateId?.split("_") : [];
-  }, [candidateId]);
-  const startTime = new Date(startEnd[0]).getTime();
-  const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
+  const { feedSlug } = router.query;
 
+  const startTimestamp = useMemo(() => {
+    return subtractMilliseconds(new Date().toISOString(), sevenDays);
+  }, [sevenDays]); // seven days ago
+  const startTime = useMemo(
+    () => new Date(startTimestamp).getTime(),
+    [startTimestamp],
+  );
+  const endTimestamp = useMemo(() => new Date().toISOString(), []); // now
+  const endTime = useMemo(
+    () => new Date(endTimestamp).getTime(),
+    [endTimestamp],
+  );
+
+  const { setNowPlayingFeed, setNowPlayingCandidate } = useNowPlaying();
   const { filteredData, feeds } = useData();
+  const feed = feeds.find((feed) => feed.slug === feedSlug);
 
   type DetectionStats = {
     all: CombinedData[];
@@ -35,7 +47,7 @@ const CandidatePage: NextPageWithLayout = () => {
     ai: AIData[];
     sightings: Sighting[];
     hydrophone: string;
-    startTime: string;
+    // startTime: string;
   };
 
   const [detections, setDetections] = useState<DetectionStats>({
@@ -44,7 +56,7 @@ const CandidatePage: NextPageWithLayout = () => {
     ai: [],
     sightings: [],
     hydrophone: "",
-    startTime: "",
+    // startTime: "",
   });
 
   const userName = "UserProfile123";
@@ -73,13 +85,21 @@ const CandidatePage: NextPageWithLayout = () => {
       ai: aiArr,
       sightings: sightingsArr,
       hydrophone: sortedArr[0]?.hydrophone,
-      startTime: new Date(startEnd[0]).toLocaleString(),
+      //   startTime: new Date(startEnd[0]).toLocaleString(),
     });
-  }, [filteredData, feeds, startTime, endTime, startEnd]);
+  }, [filteredData, feeds, endTime, startTime]);
+
+  // load the feed into nowPlaying on page load
+  useEffect(() => {
+    if (feed) {
+      setNowPlayingFeed(feed);
+      setNowPlayingCandidate(null);
+    }
+  }, [feed, setNowPlayingCandidate, setNowPlayingFeed]);
 
   return (
-    <div style={{ overflowY: "scroll" }}>
-      <Head>Report {candidateId} | Orcasound </Head>
+    <div>
+      <Head>Report {feedSlug} | Orcasound </Head>
       <Container
         maxWidth="xl"
         sx={{
@@ -96,42 +116,13 @@ const CandidatePage: NextPageWithLayout = () => {
             }}
           >
             <Box>
+              <Typography variant="h4">{`Last seven days`}</Typography>
               <Typography variant="h6">{detections.hydrophone}</Typography>
-              <Typography variant="h4">{detections.startTime}</Typography>
             </Box>
-            <Link href="./">
+            <Link href="/beta">
               <Close />
             </Link>
           </Box>
-          <Box p={2} />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              overflowX: "auto",
-              width: "100%",
-              height: 300,
-              border: detections.ai.length
-                ? "none"
-                : "1px solid rgba(255,255,255,.25)",
-            }}
-          >
-            {detections.ai.length
-              ? detections?.ai?.map((d) => (
-                  <Box
-                    key={d.spectrogramUri}
-                    component="img"
-                    src={d.spectrogramUri}
-                    sx={{
-                      width: "100%",
-                      flexBasis: 0,
-                    }}
-                  />
-                ))
-              : "spectrogram to come"}
-          </div>
-          <Box p={2} />
           <Box
             sx={{
               display: "flex",
@@ -176,6 +167,6 @@ const CandidatePage: NextPageWithLayout = () => {
   );
 };
 
-CandidatePage.getLayout = getHalfMapLayout;
+HydrophonePage.getLayout = getHalfMapLayout;
 
-export default CandidatePage;
+export default HydrophonePage;
