@@ -26,7 +26,8 @@ defmodule Orcasite.Application do
         if(Application.get_env(:orcasite, :feed_stream_queue_url) not in [nil, ""],
           do: {Orcasite.Radio.FeedStreamQueue, []}
         ),
-        OrcasiteWeb.Endpoint
+        OrcasiteWeb.Endpoint,
+        {Absinthe.Subscription, OrcasiteWeb.Endpoint}
       ]
       |> Enum.filter(&Function.identity/1)
 

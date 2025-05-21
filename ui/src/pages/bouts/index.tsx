@@ -9,9 +9,10 @@ import {
 import Head from "next/head";
 import { useCallback, useMemo, useState } from "react";
 
+import BoutItem from "@/components/Bouts/BoutItem";
 import FeedItem from "@/components/Bouts/FeedItem";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
-import { useFeedsQuery } from "@/graphql/generated";
+import { useBoutsQuery, useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const BoutsPage: NextPageWithLayout = () => {
@@ -22,6 +23,17 @@ const BoutsPage: NextPageWithLayout = () => {
 
   const feeds = useFeedsQuery({ sort: [{ field: "NAME", order: "ASC" }] }).data
     ?.feeds;
+
+  const currentBouts =
+    useBoutsQuery({
+      filter: { endTime: { isNil: true } },
+      sort: { field: "START_TIME" },
+    }).data?.bouts?.results ?? [];
+  const pastBouts =
+    useBoutsQuery({
+      filter: { endTime: { isNil: false } },
+      sort: { field: "START_TIME" },
+    }).data?.bouts?.results ?? [];
 
   const handleStatUpdate = useCallback(
     (feedId: string, stat: string, value: number) => {
@@ -57,6 +69,23 @@ const BoutsPage: NextPageWithLayout = () => {
       </Head>
 
       <main>
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          m={{ md: 2 }}
+        >
+          <h2>Current Bouts</h2>
+          <Box>
+            <List>
+              {currentBouts.map((bout) => (
+                <ListItem key={bout.id}>
+                  <BoutItem bout={bout} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Box>
         <Box display="flex" justifyContent="space-between" m={2}>
           <h2>Feeds</h2>
           <Box>
@@ -83,6 +112,24 @@ const BoutsPage: NextPageWithLayout = () => {
             </ListItem>
           ))}
         </List>
+
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          m={2}
+        >
+          <h2>Bouts</h2>
+          <Box>
+            <List>
+              {pastBouts.map((bout) => (
+                <ListItem key={bout.id}>
+                  <BoutItem bout={bout} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Box>
       </main>
     </div>
   );

@@ -97,7 +97,9 @@ config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 
 config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"
+config :ash, :policies, show_policy_breakdowns?: true, log_policy_breakdowns: :debug
 config :ash_graphql, :policies, show_policy_breakdowns?: true
+config :ash, :pub_sub, debug?: true
 config :orcasite, Orcasite.Radio, graphql: [show_raised_errors?: true]
 config :orcasite, Orcasite.Accounts, graphql: [show_raised_errors?: true]
 

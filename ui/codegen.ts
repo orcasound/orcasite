@@ -22,6 +22,7 @@ const config: CodegenConfig = {
         exposeFetcher: true,
         exposeQueryKeys: true,
         exposeMutationKeys: true,
+        exposeSubscriptionKeys: true,
         enumsAsConst: true,
         strictScalars: true,
         scalars: {

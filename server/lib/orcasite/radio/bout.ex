@@ -20,6 +20,7 @@ defmodule Orcasite.Radio.Bout do
   attributes do
     uuid_attribute :id, prefix: "bout", public?: true
 
+    attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
     attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
@@ -44,6 +45,15 @@ defmodule Orcasite.Radio.Bout do
 
     many_to_many :feed_streams, Orcasite.Radio.FeedStream do
       through Orcasite.Radio.BoutFeedStream
+      public? true
+    end
+
+    has_many :item_tags, Orcasite.Radio.ItemTag do
+      public? true
+    end
+
+    many_to_many :tags, Orcasite.Radio.Tag do
+      through Orcasite.Radio.ItemTag
       public? true
     end
   end
@@ -83,7 +93,7 @@ defmodule Orcasite.Radio.Bout do
 
     create :create do
       primary? true
-      accept [:category, :start_time, :end_time]
+      accept [:category, :start_time, :end_time, :name]
 
       argument :feed_id, :string, allow_nil?: false
 
@@ -102,7 +112,10 @@ defmodule Orcasite.Radio.Bout do
 
         if start_time && end_time do
           changeset
-          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
+          |> Ash.Changeset.change_attribute(
+            :duration,
+            DateTime.diff(end_time, start_time, :millisecond) / 1000
+          )
         else
           changeset
         end
@@ -120,15 +133,20 @@ defmodule Orcasite.Radio.Bout do
 
     update :update do
       primary? true
-      accept [:category, :start_time, :end_time]
+      accept [:category, :start_time, :end_time, :name]
+      require_atomic? false
 
+      change debug_log()
       change fn changeset, _ ->
         end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
         start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
 
         if start_time && end_time do
           changeset
-          |> Ash.Changeset.change_attribute(:duration, DateTime.diff(end_time, start_time, :millisecond) / 1000)
+          |> Ash.Changeset.change_attribute(
+            :duration,
+            DateTime.diff(end_time, start_time, :millisecond) / 1000
+          )
         else
           changeset
         end
@@ -138,7 +156,7 @@ defmodule Orcasite.Radio.Bout do
 
   graphql do
     type :bout
-    attribute_types [feed_id: :id, feed_stream_id: :id]
+    attribute_types feed_id: :id, feed_stream_id: :id
 
     queries do
       list :bouts, :index

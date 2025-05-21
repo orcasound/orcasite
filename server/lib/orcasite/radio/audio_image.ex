@@ -3,7 +3,8 @@ defmodule Orcasite.Radio.AudioImage do
     otp_app: :orcasite,
     domain: Orcasite.Radio,
     extensions: [AshGraphql.Resource, AshUUID],
-    data_layer: AshPostgres.DataLayer
+    data_layer: AshPostgres.DataLayer,
+    notifiers: [Ash.Notifier.PubSub]
 
   postgres do
     table "audio_images"
@@ -80,6 +81,8 @@ defmodule Orcasite.Radio.AudioImage do
 
     read :for_feed do
       argument :feed_id, :string, allow_nil?: false
+      argument :start_time, :utc_datetime_usec, allow_nil?: false
+      argument :end_time, :utc_datetime_usec, allow_nil?: false
 
       pagination do
         offset? true
@@ -87,7 +90,16 @@ defmodule Orcasite.Radio.AudioImage do
         default_limit 100
       end
 
-      filter expr(feed_id == ^arg(:feed_id))
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 fragment(
+                   "(?) <= (?) AND (?) >= (?)",
+                   start_time,
+                   ^arg(:end_time),
+                   end_time,
+                   ^arg(:start_time)
+                 )
+             )
     end
 
     create :for_feed_segment do
@@ -122,7 +134,7 @@ defmodule Orcasite.Radio.AudioImage do
                |> case do
                  {:ok, feed_segment} ->
                    change
-                   |> Ash.Changeset.change_attributes(%{
+                   |> Ash.Changeset.force_change_attributes(%{
                      start_time: feed_segment.start_time,
                      end_time: feed_segment.end_time
                    })
@@ -169,12 +181,16 @@ defmodule Orcasite.Radio.AudioImage do
                prepend?: true
              )
 
-      change after_action(fn _change, record, _context ->
-               %{audio_image_id: record.id}
-               |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
-               |> Oban.insert()
+      change after_action(fn
+               _change, %{status: :complete} = record, _context ->
+                 {:ok, record}
 
-               {:ok, record}
+               _change, record, _context ->
+                 %{audio_image_id: record.id}
+                 |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
+                 |> Oban.insert()
+
+                 {:ok, record}
              end)
     end
 
@@ -195,11 +211,12 @@ defmodule Orcasite.Radio.AudioImage do
                }
                |> Orcasite.Radio.AwsClient.generate_spectrogram()
                |> case do
-                 {:ok, %{file_size: image_size}} ->
+                 {:ok, %{file_size: image_size} = resp} ->
                    image
                    |> Ash.Changeset.for_update(:update, %{
                      status: :complete,
-                     image_size: image_size
+                     image_size: image_size,
+                     parameters: Map.get(resp, :parameters, %{})
                    })
                    |> Ash.Changeset.force_change_attribute(:last_error, nil)
                    |> Ash.update(authorize?: false)
@@ -226,6 +243,15 @@ defmodule Orcasite.Radio.AudioImage do
 
     queries do
       list :audio_images, :for_feed
+    end
+
+    subscriptions do
+      pubsub OrcasiteWeb.Endpoint
+
+      subscribe :audio_image_updated do
+        read_action :for_feed
+        actions [:for_feed_segment, :update]
+      end
     end
   end
 end

@@ -4,30 +4,27 @@ import {
   GraphicEq,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  Launch,
   Notifications,
   Start,
+  Tag,
   ZoomIn,
   ZoomOut,
 } from "@mui/icons-material";
 import {
   Alert,
   Button,
-  Chip,
+  CircularProgress,
   Fade,
   FormControl,
   FormHelperText,
   IconButton,
+  Input,
   InputLabel,
+  Link,
   ListItemIcon,
   MenuItem,
   Select,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Tabs,
   useMediaQuery,
   useTheme,
@@ -36,9 +33,15 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { addMinutes, format, max, min, subDays, subMinutes } from "date-fns";
 import _ from "lodash";
-import Image from "next/legacy/image";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import SpectrogramTimeline, {
   SpectrogramControls,
@@ -48,18 +51,24 @@ import {
   AudioCategory,
   BoutQuery,
   FeedQuery,
+  useAudioImagesQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
+  useGenerateFeedSpectrogramsMutation,
   useGetCurrentUserQuery,
   useListFeedStreamsQuery,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
-import vesselIconImage from "@/public/icons/vessel-purple.svg";
-import wavesIconImage from "@/public/icons/water-waves-blue.svg";
-import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
-import { formatTimestamp, roundToNearest } from "@/utils/time";
+import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
+import { roundToNearest } from "@/utils/time";
 
+import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
+import { BoutDetectionsTable } from "./BoutDetectionsTable";
+import { BoutNotifications } from "./BoutNotifications";
+import BoutScrubBar from "./BoutScrubBar";
+import { BoutTags } from "./BoutTags";
+import CategoryIcon from "./CategoryIcon";
 
 export default function BoutPage({
   isNew,
@@ -77,11 +86,12 @@ export default function BoutPage({
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const router = useRouter();
-  const now = useMemo(() => new Date(), []);
+  const [now] = useState(() => new Date());
   targetTime =
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
 
   const [boutSaved, setBoutSaved] = useState(false);
+  const [spectrogramProcessing, setSpectrogramProcessing] = useState(false);
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
   const playerTime = useRef<Date>(targetTime);
@@ -89,9 +99,27 @@ export default function BoutPage({
     (time: Date) => (playerTime.current = time),
     [],
   );
-  const [playerControls, setPlayerControls] = useState<PlayerControls>();
+  const playerControls = useRef<PlayerControls>();
+  const setPlayerControls = useCallback(
+    (controls: PlayerControls) => (playerControls.current = controls),
+    [],
+  );
   const spectrogramControls = useRef<SpectrogramControls>();
 
+  const [cachedPlayerTime, setCachedPlayerTime] = useState<Date>(targetTime);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCachedPlayerTime(playerTime.current);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const [boutName, setBoutName] = useState<string | undefined>(
+    bout?.name ?? feed.name,
+  );
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
     bout?.startTime && new Date(bout.startTime),
   );
@@ -118,18 +146,27 @@ export default function BoutPage({
     min([
       now,
       roundToNearest(
-        max([targetTime, addMinutes(targetTime, timeBuffer)]),
+        max([targetTime, addMinutes(bout?.endTime ?? targetTime, timeBuffer)]),
         nearestMinutes * 60 * 1000,
         "ceil",
       ),
     ]),
   );
 
+  // With the current implementation of the spectrogram, the play head is
+  // fixed at the center of the spectrogram. The timeline start and end are about the full
+  // window length, but the playable limit is at the play head's time when the spectrogram
+  // is scrolled to the ends.
+  const [playableLimits, setPlayableLimits] = useState<{
+    min: Date;
+    max: Date;
+  }>({ min: timelineStartTime, max: timelineEndTime });
+
   const expandTimelineStart = useCallback(() => {
     setTimelineStartTime((timelineStartTime) =>
       roundToNearest(
         subMinutes(timelineStartTime, timeBuffer),
-        nearestMinutes,
+        nearestMinutes * 60 * 1000,
         "floor",
       ),
     );
@@ -142,7 +179,7 @@ export default function BoutPage({
           currentTime,
           roundToNearest(
             addMinutes(timelineEndTime, timeBuffer),
-            nearestMinutes,
+            nearestMinutes * 60 * 1000,
             "ceil",
           ),
         ]),
@@ -155,43 +192,51 @@ export default function BoutPage({
   // If feed is present, and there's no pre-set time,
   // get latest stream and last <timeBuffer> minutes of segments.
   // Set time to end of last segment
-  const feedStreamQueryResult = useListFeedStreamsQuery(
-    {
-      feedId: feed?.id,
-      fromDateTime: timelineStartTime,
-      toDateTime: timelineEndTime,
-      dayBeforeFromDateTime: timelineStartTimeMinusADay,
-    },
-    { enabled: !!feed?.id },
-  );
+  const feedStreamQueryResult = useListFeedStreamsQuery({
+    feedId: feed.id,
+    fromDateTime: timelineStartTime,
+    toDateTime: timelineEndTime,
+    dayBeforeFromDateTime: timelineStartTimeMinusADay,
+  });
 
-  // Get detections at current time plus or minus 1 hour
-  const minDetectionsTime = subMinutes(targetTime, 60);
-  const maxDetectionsTime = addMinutes(targetTime, 60);
-  const detectionQueryResult = useDetectionsQuery(
-    {
-      feedId: feed?.id,
-      filter: {
-        timestamp: {
-          greaterThanOrEqual: minDetectionsTime,
-          lessThanOrEqual: maxDetectionsTime,
-        },
+  const detectionQueryResult = useDetectionsQuery({
+    feedId: feed.id,
+    filter: {
+      timestamp: {
+        greaterThanOrEqual: playableLimits.min,
+        lessThanOrEqual: playableLimits.max,
       },
     },
-    { enabled: !!feed?.id },
-  );
+  });
 
   const feedStreams = useMemo(
     () => feedStreamQueryResult.data?.feedStreams?.results ?? [],
     [feedStreamQueryResult],
   );
   const feedStream = feedStreams[0];
-  const feedSegments = useMemo(
-    () => feedStreams.flatMap(({ feedSegments }) => feedSegments),
-    [feedStreams],
-  );
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
+
+  const updatedAudioImages = useAudioImageUpdatedSubscription(
+    feed.id,
+    timelineStartTime,
+    timelineEndTime,
+  );
+
+  const audioImagesQueryResult = useAudioImagesQuery({
+    feedId: feed.id,
+    startTime: timelineStartTime,
+    endTime: timelineEndTime,
+  });
+  const initialAudioImages =
+    audioImagesQueryResult.data?.audioImages?.results ?? [];
+  const audioImages = _.uniqBy(
+    [...updatedAudioImages, ...initialAudioImages].filter(
+      (audioImage) => audioImage !== undefined && audioImage !== null,
+    ),
+    ({ id }) => id,
+  );
+
   const [boutForm, setBoutForm] = useState<{
     errors: Record<string, string>;
     isSaving: boolean;
@@ -205,6 +250,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -213,6 +259,7 @@ export default function BoutPage({
           },
         }));
       } else if (result) {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         router.push(`/bouts/${result.id}`);
       }
     },
@@ -224,6 +271,7 @@ export default function BoutPage({
         console.error(errors);
         setBoutForm((form) => ({
           ...form,
+          isSaving: false,
           errors: {
             ...form.errors,
             ...Object.fromEntries(
@@ -232,8 +280,10 @@ export default function BoutPage({
           },
         }));
       } else {
+        setBoutForm((form) => ({ ...form, isSaving: false }));
         setBoutSaved(true);
         setTimeout(() => {
+          // Remove 'bout saved' message after 5 seconds
           setBoutSaved(false);
         }, 5000);
       }
@@ -258,7 +308,6 @@ export default function BoutPage({
           category: audioCategory,
         });
       }
-      setBoutForm((form) => ({ ...form, isSaving: false }));
     } else {
       const errors: Record<string, string> = {};
       if (!audioCategory) {
@@ -267,9 +316,18 @@ export default function BoutPage({
       if (!boutStartTime) {
         errors["startTime"] = "Bout start time required";
       }
-      setBoutForm((form) => ({ ...form, isSaving: false, errors }));
+      setBoutForm((form) => ({ ...form, errors }));
     }
   };
+
+  const generateFeedSpectrograms = useGenerateFeedSpectrogramsMutation({
+    onMutate: () => {
+      setSpectrogramProcessing(true);
+      setTimeout(() => {
+        setSpectrogramProcessing(false);
+      }, 30000);
+    },
+  });
 
   return (
     <>
@@ -281,9 +339,25 @@ export default function BoutPage({
       >
         <Box>
           <Typography variant="overline" sx={{ fontSize: 18 }}>
-            Bout
+            <Link
+              sx={{
+                color: "black",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                "&:hover": { color: (theme) => theme.palette.accent2.main },
+              }}
+              href={"/bouts"}
+            >
+              <KeyboardDoubleArrowLeft />
+              Bouts
+            </Link>
           </Typography>
-          <Typography variant="h4">{feed.name}</Typography>
+          <BoutName
+            feedName={feed.name}
+            boutName={boutName}
+            setBoutName={setBoutName}
+          />
         </Box>
         <Box
           display="flex"
@@ -347,10 +421,24 @@ export default function BoutPage({
             >
               -{nearestMinutes} min
             </Button>
-            {format(timelineStartTime, "h:mm:ss a")}
+            {format(playableLimits.min, "h:mm:ss a")}
+          </Box>
+
+          <Box flexGrow={1} sx={{ mx: 2 }}>
+            {feedStream?.startTime && (
+              <BoutScrubBar
+                feedStreamStartTimeNum={feedStream.startTime.valueOf()}
+                detections={detections}
+                playerTimeRef={playerTime}
+                playerControls={playerControls}
+                minTimeNum={playableLimits.min.valueOf()}
+                maxTimeNum={playableLimits.max.valueOf()}
+                spectrogramControls={spectrogramControls}
+              />
+            )}
           </Box>
           <Box>
-            {format(timelineEndTime, "h:mm:ss a")}
+            {format(playableLimits.max, "h:mm:ss a")}
             <Button
               endIcon={<KeyboardDoubleArrowRight />}
               variant="outlined"
@@ -369,13 +457,14 @@ export default function BoutPage({
           timelineStartTime={timelineStartTime}
           timelineEndTime={timelineEndTime}
           playerControls={playerControls}
-          feedSegments={feedSegments}
           boutStartTime={boutStartTime}
           boutEndTime={boutEndTime}
+          spectrogramControls={spectrogramControls}
+          audioImages={audioImages}
           setBoutStartTime={setBoutStartTime}
           setBoutEndTime={setBoutEndTime}
-          spectrogramControls={spectrogramControls}
-        ></SpectrogramTimeline>
+          setPlayableLimits={setPlayableLimits}
+        />
 
         <Box
           display="flex"
@@ -391,6 +480,7 @@ export default function BoutPage({
                 feed={feed}
                 targetTime={targetTime}
                 feedStream={feedStream}
+                maxTimeNum={playableLimits.max.valueOf()}
                 onPlayerTimeUpdate={setPlayerTime}
                 setPlayerTimeRef={setPlayerTime}
                 onPlayerInit={setPlayerControls}
@@ -505,6 +595,50 @@ export default function BoutPage({
               </Box>
             )}
           </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            minWidth={120}
+          >
+            <Box>
+              <Typography variant="overline">Share bout</Typography>
+            </Box>
+            <Box>
+              <CopyToClipboardButton text={shareUrl(cachedPlayerTime)} />
+            </Box>
+          </Box>
+          {currentUser?.moderator && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              minWidth={120}
+            >
+              <Box>
+                <Typography variant="overline">Create spectrograms</Typography>
+              </Box>
+              <Box>
+                <IconButton
+                  disabled={spectrogramProcessing}
+                  onClick={() => {
+                    generateFeedSpectrograms.mutate({
+                      feedId: feed.id,
+                      startTime: timelineStartTime,
+                      endTime: timelineEndTime,
+                    });
+                  }}
+                  title="Create spectrograms"
+                >
+                  {spectrogramProcessing ? (
+                    <CircularProgress size={16} />
+                  ) : (
+                    <GraphicEq />
+                  )}
+                </IconButton>
+              </Box>
+            </Box>
+          )}
 
           {currentUser?.moderator && (
             <Box display="flex" alignItems="center" ml={{ sm: 0, md: "auto" }}>
@@ -540,7 +674,7 @@ export default function BoutPage({
                           },
                         }}
                       >
-                        <CategoryIcon audioCategory={category} />
+                        <CategoryIcon audioCategory={category} size={15} />
                       </ListItemIcon>
                       {_.startCase(_.toLower(category))}
                     </MenuItem>
@@ -574,106 +708,34 @@ export default function BoutPage({
             onChange={(_event, value) => setCurrentTab(value)}
           >
             <Tab icon={<GraphicEq />} label="Detections" />
-            {currentUser?.moderator && (
+            {bout && <Tab icon={<Tag />} label="Tags" />}
+            {currentUser?.moderator && bout && (
               <Tab icon={<Notifications />} label="Notifications" />
             )}
           </Tabs>
           <TabPanel value={currentTab} index={0}>
-            <Box sx={{ overflowX: "auto" }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell align="right">Timestamp</TableCell>
-                    <TableCell align="right">Candidate</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {detections.map((det, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Typography variant="caption">{det.id}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip label={det.category} />
-                      </TableCell>
-                      <TableCell>{det.description}</TableCell>
-                      <TableCell align="right" title={det.timestamp.toString()}>
-                        {formatTimestamp(det.timestamp)}
-                      </TableCell>
-                      <TableCell align="right">
-                        {det?.candidate?.id && (
-                          <IconButton
-                            href={`/reports/${det?.candidate?.id}`}
-                            target="_blank"
-                            size="small"
-                            sx={{ transform: "scale(0.8)" }}
-                          >
-                            <Launch />
-                          </IconButton>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-
-                  {detections.length < 1 && (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        <Typography textAlign="center">
-                          No detections submitted from{" "}
-                          {format(minDetectionsTime, "h:mm a")} to{" "}
-                          {format(maxDetectionsTime, "h:mm a")}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </Box>
+            <BoutDetectionsTable
+              detections={detections}
+              minDetectionsTime={playableLimits.min}
+              maxDetectionsTime={playableLimits.max}
+              playerControls={playerControls}
+              spectrogramControls={spectrogramControls}
+            />
           </TabPanel>
+          {bout && (
+            <TabPanel value={currentTab} index={1}>
+              <BoutTags bout={bout} />
+            </TabPanel>
+          )}
+          {bout && currentUser?.moderator && (
+            <TabPanel value={currentTab} index={2}>
+              <BoutNotifications bout={bout} />
+            </TabPanel>
+          )}
         </Box>
       </Box>
     </>
   );
-}
-
-function CategoryIcon({
-  audioCategory,
-  size,
-}: {
-  audioCategory: AudioCategory;
-  size?: number;
-}) {
-  size = size ?? 15;
-  if (audioCategory === "BIOPHONY")
-    return (
-      <Image
-        src={whaleFlukeIconImage.src}
-        width={size}
-        height={size}
-        alt="Whale fluke icon"
-      />
-    );
-  if (audioCategory === "ANTHROPHONY")
-    return (
-      <Image
-        src={vesselIconImage.src}
-        width={size}
-        height={size}
-        alt="Vessel icon"
-      />
-    );
-  if (audioCategory === "GEOPHONY")
-    return (
-      <Image
-        src={wavesIconImage.src}
-        width={size}
-        height={size}
-        alt="Waves icon"
-      />
-    );
 }
 
 function TabPanel(props: {
@@ -693,5 +755,57 @@ function TabPanel(props: {
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
+  );
+}
+
+function shareUrl(time: Date) {
+  const formattedTime = time.toISOString();
+
+  const currentUrl = new URL(window.location.href);
+  currentUrl.searchParams.set("time", formattedTime);
+  return currentUrl.toString();
+}
+
+// Shows current name and if user is a moderator, allows setting bout name
+function BoutName({
+  feedName,
+  boutName,
+  setBoutName,
+}: {
+  feedName: string;
+  boutName?: string;
+  setBoutName: (value: SetStateAction<string | undefined>) => void;
+}) {
+  const theme = useTheme();
+
+  const { moderator } = useGetCurrentUserQuery().data?.currentUser ?? {
+    moderator: false,
+  };
+
+  return (
+    <Box>
+      {!moderator && (
+        <Typography variant="h4" my={1}>
+          {boutName ?? feedName}
+        </Typography>
+      )}
+
+      {moderator && (
+        <Input
+          sx={{ ...theme.typography.h4 }}
+          disableUnderline={true}
+          type="text"
+          value={boutName ?? feedName}
+          onBlur={(event) =>
+            setBoutName(
+              (event.target.value ?? "").length > 0
+                ? event.target.value
+                : feedName,
+            )
+          }
+          onChange={(event) => setBoutName(event.target.value ?? feedName)}
+        />
+      )}
+    </Box>
   );
 }

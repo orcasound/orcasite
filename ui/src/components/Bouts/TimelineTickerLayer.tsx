@@ -14,18 +14,21 @@ import { roundToNearest } from "@/utils/time";
 import { TICKER_HEIGHT, timeToOffset } from "./SpectrogramTimeline";
 
 export function TimelineTickerLayer({
-  timelineStartTime,
+  timelineStartTimeNum,
   pixelsPerMinute,
-  windowStartTime,
-  windowEndTime,
+  windowStartTimeNum,
+  windowEndTimeNum,
   zIndex,
 }: {
-  timelineStartTime: Date;
-  windowStartTime: Date;
-  windowEndTime: Date;
+  timelineStartTimeNum: number;
+  windowStartTimeNum: number;
+  windowEndTimeNum: number;
   pixelsPerMinute: number;
   zIndex: number;
 }) {
+  const timelineStartTime = new Date(timelineStartTimeNum);
+  const windowStartTime = new Date(windowStartTimeNum);
+  const windowEndTime = new Date(windowEndTimeNum);
   const windowRange = differenceInMilliseconds(windowEndTime, windowStartTime);
   const ticksPerWindow = 20;
   const labelsPerWindow = 8;

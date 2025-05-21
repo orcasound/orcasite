@@ -15,4 +15,7 @@ defmodule OrcasiteWeb.Schema do
   mutation do
     import_fields :accounts_user_mutations
   end
+
+  subscription do
+  end
 end

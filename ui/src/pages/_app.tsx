@@ -14,7 +14,14 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { ReactElement, ReactNode, useState } from "react";
+import { Socket } from "phoenix";
+import {
+  createContext,
+  ReactElement,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 import React from "react";
 import ReactGA from "react-ga4";
 
@@ -40,11 +47,17 @@ const ReactQueryDevtoolsProd = React.lazy(() =>
   })),
 );
 
+export const SocketContext = createContext<{
+  socket?: Socket;
+  setSocket?: React.Dispatch<SetStateAction<Socket | undefined>>;
+}>({});
+
 // App needs to be customized in order to make MUI work with SSR
 // https://mui.com/material-ui/integrations/nextjs/#pages-router
 // https://github.com/mui/material-ui/blob/master/examples/material-ui-nextjs-pages-router-ts/pages/_app.tsx
 export default function OrcasiteApp(props: AppPropsWithLayout) {
   const { Component, pageProps } = props;
+  const [socket, setSocket] = useState<Socket>();
 
   // Allow pages to define custom per-page layout
   // Based on https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript
@@ -76,19 +89,21 @@ export default function OrcasiteApp(props: AppPropsWithLayout) {
   return (
     <QueryClientProvider client={queryClient}>
       <HydrationBoundary state={pageProps.dehydratedState}>
-        <AppCacheProvider {...props}>
-          <Head>
-            <title>Orcasound</title>
-            <meta
-              name="viewport"
-              content="initial-scale=1, width=device-width"
-            />
-          </Head>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {getLayout(<Component {...pageProps} />)}
-          </ThemeProvider>
-        </AppCacheProvider>
+        <SocketContext.Provider value={{ socket, setSocket }}>
+          <AppCacheProvider {...props}>
+            <Head>
+              <title>Orcasound</title>
+              <meta
+                name="viewport"
+                content="initial-scale=1, width=device-width"
+              />
+            </Head>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              {getLayout(<Component {...pageProps} />)}
+            </ThemeProvider>
+          </AppCacheProvider>
+        </SocketContext.Provider>
       </HydrationBoundary>
       {showReactQueryDevtoolsProd && (
         <React.Suspense fallback={null}>

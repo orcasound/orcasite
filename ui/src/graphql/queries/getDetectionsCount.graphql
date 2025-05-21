@@ -1,0 +1,13 @@
+query detectionsCount(
+  $feedId: String!
+  $fromTime: DateTime!
+  $toTime: DateTime
+  $category: DetectionCategory
+) {
+  feedDetectionsCount(
+    feedId: $feedId
+    fromTime: $fromTime
+    toTime: $toTime
+    category: $category
+  )
+}

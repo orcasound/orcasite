@@ -34,9 +34,6 @@ query listFeedStreams(
         sort: { field: START_TIME, order: ASC }
       ) {
         ...FeedSegmentParts
-        audioImages(filter: { status: { eq: "complete" } }) {
-          ...AudioImageParts
-        }
       }
     }
   }

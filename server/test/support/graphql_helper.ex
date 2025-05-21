@@ -25,6 +25,11 @@ defmodule OrcasiteWeb.TestSupport.GraphqlHelper do
           result {
             id
             email
+            admin
+            moderator
+            username
+            firstName
+            lastName
           }
         }
       }

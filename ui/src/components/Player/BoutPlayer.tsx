@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { differenceInSeconds, format } from "date-fns";
+import { differenceInSeconds, format, isAfter } from "date-fns";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -27,6 +27,7 @@ export function BoutPlayer({
   feed,
   feedStream,
   targetTime,
+  maxTimeNum,
   onPlayerInit,
   onPlayerTimeUpdate,
   setPlayerTimeRef,
@@ -34,6 +35,7 @@ export function BoutPlayer({
   feed: Pick<Feed, "bucket" | "nodeName">;
   feedStream: Pick<FeedStream, "bucket" | "playlistTimestamp">;
   targetTime: Date;
+  maxTimeNum: number;
   onPlayerInit?: (playerControls: PlayerControls) => void;
   onPlayerTimeUpdate?: (time: Date) => void;
   setPlayerTimeRef?: (time: Date) => void;
@@ -49,7 +51,7 @@ export function BoutPlayer({
     [playlistTimestamp],
   );
 
-  const now = useMemo(() => new Date(), []);
+  const [now] = useState(() => new Date());
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const targetOffset = useMemo(
@@ -130,7 +132,7 @@ export function BoutPlayer({
             const offset = differenceInSeconds(time, playlistDatetime);
             player.currentTime(offset);
             setPlayerOffset(offset);
-            if (setPlayerTimeRef) setPlayerTimeRef(time);
+            setPlayerTimeRef && setPlayerTimeRef(time);
           },
         });
       }
@@ -149,6 +151,10 @@ export function BoutPlayer({
           );
           if (onPlayerTimeUpdate !== undefined) {
             onPlayerTimeUpdate(playerDateTime);
+          }
+          // Pause on hitting max time
+          if (isAfter(playerDateTime, new Date(maxTimeNum))) {
+            player.pause();
           }
         }, 10);
       });
@@ -185,6 +191,7 @@ export function BoutPlayer({
       targetOffset,
       intervalRef,
       setPlayerTimeRef,
+      maxTimeNum,
     ],
   );
   const handlePlayPauseClick = () => {
@@ -235,9 +242,12 @@ export function BoutPlayer({
           </Box>
           <Typography variant="body1" fontWeight={"bold"}>
             {playerDateTime !== undefined &&
-              format(playerDateTime, "h:mm:ss a O")}
+              format(playerDateTime, "h:mm:ss a")}
           </Typography>
-          <Typography variant="subtitle2">
+          <Typography variant="subtitle2" textAlign="center">
+            {playerDateTime !== undefined && format(playerDateTime, "O")}
+          </Typography>
+          <Typography variant="subtitle1">
             {playerDateTime !== undefined &&
               playerDateTime.toLocaleDateString()}
           </Typography>

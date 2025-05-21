@@ -1,0 +1,14 @@
+subscription audioImageUpdated(
+  $feedId: String!
+  $startTime: DateTime!
+  $endTime: DateTime!
+) {
+  audioImageUpdated(feedId: $feedId, startTime: $startTime, endTime: $endTime) {
+    created {
+      ...AudioImageParts
+    }
+    updated {
+      ...AudioImageParts
+    }
+  }
+}

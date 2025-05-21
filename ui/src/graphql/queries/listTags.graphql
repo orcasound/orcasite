@@ -1,0 +1,14 @@
+query tags(
+  $limit: Int
+  $offset: Int
+  $filter: TagFilterInput
+  $sort: [TagSortInput]
+) {
+  tags(limit: $limit, offset: $offset, filter: $filter, sort: $sort) {
+    count
+    hasNextPage
+    results {
+      ...TagParts
+    }
+  }
+}
