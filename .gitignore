@@ -4,3 +4,5 @@
 !.vscode/*.default*
 !.vscode/*.shared*
 !.vscode/*.example*
+# and allow recommended extensions as well
+!.vscode/extensions.json
