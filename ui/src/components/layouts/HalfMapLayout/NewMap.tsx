@@ -5,35 +5,14 @@ import "leaflet-defaulticon-compatibility";
 import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { useRouter } from "next/router";
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
-import {
-  MapContainer,
-  Marker,
-  TileLayer,
-  useMap,
-  ZoomControl,
-} from "react-leaflet";
+import { useEffect, useMemo, useState } from "react";
+import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
 import { CombinedData } from "@/types/DataTypes";
-
-function MapReadyLogger({
-  mapRef,
-}: {
-  mapRef: MutableRefObject<LeafletMap | null>;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    console.log("Map is ready via useMap:", map);
-    if (mapRef) mapRef.current = map;
-  }, [map]);
-
-  return null;
-}
 
 export default function Map() {
   const router = useRouter();
@@ -45,22 +24,21 @@ export default function Map() {
     } else {
       return nowPlayingFeed;
     }
-  }, [feeds]);
+  }, [nowPlayingCandidate, nowPlayingFeed, feeds]);
 
   // TODO: where would it make sense to show all sightings in a longer time range?
   // const { filteredData } = useData();
   // const allSightings = filteredData.filter((el) => {
-  //   return el.newCategory === "SIGHTINGS";
+  //   return el.newCategory === "SIGHTING";
   // });
 
-  // const [map, setMap] = useState<LeafletMap>();
-  const mapRef = useRef<LeafletMap | null>(null);
+  const [map, setMap] = useState<LeafletMap>();
+  // const mapRef = useRef<LeafletMap | null>(null);
 
   const [sightings, setSightings] = useState<CombinedData[]>();
-
   useEffect(() => {
     const sightingsNow = nowPlayingCandidate?.array?.filter((el) => {
-      return el.newCategory === "SIGHTINGS";
+      return el.newCategory === "SIGHTING";
     });
     setSightings(sightingsNow);
   }, [nowPlayingCandidate]);
@@ -76,46 +54,29 @@ export default function Map() {
 
   useEffect(() => {
     if (feed) {
-      mapRef.current?.setZoom(12);
-      mapRef.current?.panTo(feed.latLng);
+      map?.setZoom(12);
+      map?.panTo(feed.latLng);
     } else {
-      mapRef.current?.setZoom(8);
+      map?.setZoom(8);
     }
-  }, [feed]);
-
-  useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.invalidateSize();
-    }
-  }, [feeds]);
+  }, [map, feed]);
 
   return (
     <MapContainer
-      center={[48.1, -122.75]} // this was formerly the center for the zoomed out but it overrides the first nowPlaying panTo in HalfMapLayout
+      center={feed ? feed.latLng : [48.1, -122.75]} // this needs to be set or the map won't initialize
       zoom={9}
       maxZoom={13}
       className="map-container"
       style={{ height: "100%", width: "100%" }}
-      whenReady={() => {
-        console.log("MapContainer ready");
-        setTimeout(() => {
-          mapRef.current?.invalidateSize(); // force reflow in case container was hidden on mount
-        }, 500);
+      ref={(instance) => {
+        if (instance) {
+          setMap(instance);
+        }
       }}
-      // ref={(instance) => {
-      //   if (instance) {
-      //   mapRef.current = instance;
-      // }
-      // }}
-      // whenReady={() => {
-      //   console.log("Map is ready via whenReady")
-      // }}
       zoomControl={false}
       //TODO: Disable attribution on mobile only
       attributionControl={false}
     >
-      <MapReadyLogger mapRef={mapRef} />
-
       <ZoomControl position="topright" />
       <TileLayer
         attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
@@ -137,7 +98,7 @@ export default function Map() {
         />
       ))}
       {sightings?.map((sighting) => {
-        if (sighting.newCategory !== "SIGHTINGS") return null;
+        if (sighting.newCategory !== "SIGHTING") return null;
         return (
           <Marker
             key={sighting.id}

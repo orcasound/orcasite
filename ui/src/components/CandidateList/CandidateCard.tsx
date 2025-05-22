@@ -101,11 +101,18 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     autoPlayOnReady.current = true;
     setNowPlayingCandidate(candidate);
     setNowPlayingFeed(null);
-    masterPlayerRef?.current?.play();
+
+    const player = masterPlayerRef?.current;
+    if (player && typeof player.play === "function") {
+      player.play();
+    }
   };
 
   const handlePause = () => {
-    masterPlayerRef?.current?.pause();
+    const player = masterPlayerRef?.current;
+    if (player && typeof player.pause === "function") {
+      player.pause();
+    }
   };
 
   const iconSize = "40px";
