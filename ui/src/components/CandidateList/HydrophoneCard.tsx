@@ -14,7 +14,6 @@ import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
-import useFeedPresence from "@/hooks/useFeedPresence";
 
 type Props = {
   feed: Feed;
@@ -53,8 +52,8 @@ export default function HydrophoneCard({ feed }: Props) {
 
   const iconSize = "32px";
 
-  const feedPresence = useFeedPresence(feed?.slug);
-  const listenerCount = feedPresence?.metas.length ?? 0;
+  // const feedPresence = useFeedPresence(feed?.slug);
+  // const listenerCount = feedPresence?.metas.length ?? 0;
 
   const playIcon = (
     <PlayArrow
@@ -182,7 +181,7 @@ export default function HydrophoneCard({ feed }: Props) {
                     {feed.name}
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
-                    {`${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
+                    {/* {`${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`} */}
                   </Typography>
                 </Stack>
               </Link>

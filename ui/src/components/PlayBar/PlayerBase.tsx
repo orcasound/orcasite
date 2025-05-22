@@ -168,10 +168,10 @@ export function PlayerBase({
               sx={{ whiteSpace: "nowrap", fontSize: smDown ? "14px" : "1rem" }}
             >
               <span style={{ fontWeight: "bold" }}>{playerTitle}</span>
-              {smDown ? <br /> : " • "}
-              {playerSubtitle && playerSubtitle}
-              {type === "feed" &&
-                `${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
+              {smDown && <br />}
+              {playerSubtitle && " • " + playerSubtitle}
+              {/* {type === "feed" &&
+                ` • ${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`} */}
               {type === "candidate" && " • " + duration}
             </Typography>
             {!smDown && nowPlayingCandidate && slider}

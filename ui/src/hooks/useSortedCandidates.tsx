@@ -114,7 +114,10 @@ const createCandidates = (
       clipCount: countString,
       descriptions: candidate
         .map((el: CombinedData) => cleanSightingsDescription(el.comments))
-        .filter((el: string | null | undefined) => el !== null)
+        .filter(
+          (el: string | null | undefined) =>
+            typeof el === "string" && el.length > 0,
+        )
         .join(" • ")
         .replace(/•\s?$/, "") // removes any trailing bullets from empty space comments
         .replace(/^\s?•\s?/, ""), // removes any forward bullets from empty space comments
