@@ -60,7 +60,7 @@ This project comes with a [devcontainer.json configuration](https://code.visuals
 > cp .vscode/settings.example.json .vscode/settings.json
 > ```
 >
-> This provides recommended editor settings for this project.
+> This provides recommended editor settings for this project. You can also see & install recommended extensions by opening the command palette (Cmd+Shift+P) and selecting "Extensions: Show Recommended Extensions".
 
 #### Using docker-compose directly
 
