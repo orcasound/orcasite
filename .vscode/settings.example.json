@@ -1,11 +1,12 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.ignorePath": "ui/.prettierignore",
   "eslint.workingDirectories": ["ui/"],
   "graphql-config.load.rootDir": "ui/",
+  "typescript.tsdk": "ui/node_modules/typescript/lib",
   "elixirLS.projectDir": "server/"
 }

@@ -53,6 +53,15 @@ Once you have one of these up and running, see the [Getting everything running](
 
 This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker-compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container (assuming [you've installed docker and the dev containers extension](https://code.visualstudio.com/docs/devcontainers/containers#_installation)). Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
 
+> **Tip**
+> For a better VS Code experience, copy the example settings file:
+>
+> ```
+> cp .vscode/settings.example.json .vscode/settings.json
+> ```
+>
+> This provides recommended editor settings for this project.
+
 #### Using docker-compose directly
 
 If you prefer not to use VS Code dev containers, the easiest way to develop in docker is by starting up docker-compose manually (using the dev compose file):
