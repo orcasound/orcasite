@@ -13,7 +13,7 @@ This repo specifies the web backend and frontend for the [Orcasound app](http://
 
 Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a successful contribution, as well as learning resources!
 
-## Quick Start:
+## Quick Start
 
 1. Load the Docker Configuration: `docker-compose up`
 2. Wait for containers to start up
@@ -29,7 +29,7 @@ Docker is the quickest way to get the project up and running, especially if you 
 
 Once you clone the repository, you can just run docker-compose in the root directory:
 
-```
+```shell
 docker-compose up
 ```
 
@@ -53,18 +53,27 @@ Once you have one of these up and running, see the [Getting everything running](
 
 This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker-compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container (assuming [you've installed docker and the dev containers extension](https://code.visualstudio.com/docs/devcontainers/containers#_installation)). Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
 
+> **Tip**
+> For a better VS Code experience, copy the example settings file:
+>
+> ```shell
+> cp .vscode/settings.example.json .vscode/settings.json
+> ```
+>
+> This provides recommended editor settings for this project. You can also see & install recommended extensions by opening the command palette (Cmd+Shift+P) and selecting "Extensions: Show Recommended Extensions".
+
 #### Using docker-compose directly
 
 If you prefer not to use VS Code dev containers, the easiest way to develop in docker is by starting up docker-compose manually (using the dev compose file):
 
-```
+```shell
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 > **Note**
 > You can also set the `COMPOSE_FILE` environment variable to avoid having to specify the compose files every time. This one-liner will do that for you no matter which subdirectory you're in:
 >
-> ```
+> ```shell
 > export COMPOSE_FILE=`git rev-parse --show-toplevel`/docker-compose.yml:`git rev-parse --show-toplevel`/docker-compose.dev.yml
 > ```
 >
@@ -72,7 +81,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 Once you have the services started, you can start a session inside the `web` container:
 
-```
+```shell
 docker-compose exec web bash
 ```
 
@@ -95,7 +104,7 @@ Language-level dependencies can be found under `.tool-versions`.
 
 You will need to install Postgres and set up the `postgres` user with a password. The default connection details are:
 
-```
+```text
 username: "postgres"
 password: "postgres"
 database: "orcasite_dev"
@@ -107,7 +116,7 @@ You can pass in custom values using env variables. Full details can be found in 
 
 Orcasite uses [PostGIS](http://postgis.net/) for location data inside of Postgres. To install on MacOS, run
 
-```
+```shell
 brew install postgis
 ```
 
@@ -119,7 +128,7 @@ Once you have your environment setup via one of the options above, you can start
 
 In a new terminal session, from the root directory:
 
-```
+```shell
 > cd server/
 > mix deps.get
 > mix ecto.setup
@@ -135,7 +144,7 @@ The server should soon be available at [`http://localhost:4000`](http://localhos
 
 Open another terminal session and run these commands to start Next.js:
 
-```
+```shell
 > cd ui/
 > npm i
 > npm run dev
@@ -153,7 +162,7 @@ The new version (v3) is currently under development, rapidly changing, and has n
 
 For the moment, this app is running in a Heroku instance with `mix phx.server`. To access the console, run:
 
-```
+```shell
 heroku run FEED_STREAM_QUEUE_URL="" REDIS_URL="" POOL_SIZE=2 iex -a <app name> -- -S mix
 ```
 
@@ -167,7 +176,7 @@ Orcasite uses MJML for email templating. There are a few online MJML renderers, 
 
 An API is available using the [JSON API spec](https://jsonapi.org/format/). For access to available endpoints, navigate to the server's `/api/json/swaggerui` or `/api/json/redoc` path for documentation and examples. As an example, you may access the full list of feeds with:
 
-```
+```shell
 curl -s https://beta.orcasound.net/api/json/feeds \
 -H "Content-Type: application/vnd.api+json" \
 -H "Accept: application/vnd.api+json"
