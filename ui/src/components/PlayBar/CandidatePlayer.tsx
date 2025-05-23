@@ -34,7 +34,6 @@ export function PlaybarPlayer({
   endOffset,
   duration,
   onAudioPlay,
-  onPlayerInit,
   onPlay,
   masterPlayerTimeRef,
 }: {
@@ -62,14 +61,6 @@ export function PlaybarPlayer({
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
   const [playerTime, setPlayerTime] = useState(startOffset);
-
-  // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-  // const theme = useTheme();
-
-  // const sliderMax = endOffset - startOffset;
-  // const sliderValue = playerTime - startOffset;
-  // const sliderValue = playerTimeRef.current - startOffset;
 
   const hlsURI = getHlsURI(feed.bucket, feed.nodeName, playlistTimestamp);
 
@@ -154,10 +145,10 @@ export function PlaybarPlayer({
       endOffset,
       onPlay,
       onPlayerEnd,
-      onPlayerInit,
       masterPlayerRef,
       setMasterPlayerStatus,
       masterPlayerTimeRef,
+      autoPlayOnReady,
     ],
   );
 

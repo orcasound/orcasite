@@ -51,12 +51,10 @@ export function PlayerBase({
   playerOptions,
   handleReady,
   playerStatus,
-  // setPlayerStatus,
   feed,
   playerRef,
   handlePlayPauseClickCandidate,
   handlePlayPauseClickFeed,
-  timestamp = 0,
   listenerCount = 0,
   startOffset = 0,
   endOffset = 0,
@@ -68,8 +66,6 @@ export function PlayerBase({
   playerTime = 0,
 }: PlayerBaseProps) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
-  // const theme = useTheme();
   const { nowPlayingCandidate } = useNowPlaying();
 
   const slider = (
@@ -84,7 +80,8 @@ export function PlayerBase({
 
   return (
     <Stack spacing={1} sx={{ width: "100%" }}>
-      {/* {(playerStatus === "playing" || playerStatus === "loading") &&
+      {/* // planning to bring this back in the near future
+      {(playerStatus === "playing" || playerStatus === "loading") &&
         feed && (
           <DetectionDialog
             isPlaying={playerStatus === "playing"}

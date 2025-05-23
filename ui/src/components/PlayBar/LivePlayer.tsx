@@ -50,22 +50,6 @@ export default function LivePlayer({
     ? currentFeed.name
     : "Select a location to start listening live";
 
-  // const playerTextContainerRef = useRef<HTMLElement>();
-  // const playerTextRef = useRef<HTMLElement>();
-  // const playerTextOverflowing = useIsRelativeOverflow(
-  //   playerTextContainerRef,
-  //   playerTextRef,
-  // );
-  // const theme = useTheme();
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
-  // const [playMarquee, setPlayMarquee] = useState(false);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setPlayMarquee(true);
-  //   }, 3000);
-  // }, []);
-
   const playerOptions = useMemo(
     () => ({
       poster: currentFeed?.imageUrl,
@@ -139,7 +123,12 @@ export default function LivePlayer({
         if (currentFeed?.slug) analytics.stream.error(currentFeed.slug);
       });
     },
-    [currentFeed?.slug, masterPlayerRef, setMasterPlayerStatus],
+    [
+      currentFeed?.slug,
+      masterPlayerRef,
+      setMasterPlayerStatus,
+      autoPlayOnReady,
+    ],
   );
 
   const handlePlayPauseClick = async () => {

@@ -1,5 +1,4 @@
 import dayjs, { Dayjs } from "dayjs";
-import { useRouter } from "next/router";
 import React, {
   createContext,
   MutableRefObject,
@@ -13,8 +12,6 @@ import { Feed } from "@/graphql/generated";
 import useFilteredData from "@/hooks/useFilteredData";
 import { useSortedCandidates } from "@/hooks/useSortedCandidates";
 import { Candidate, CombinedData, Dataset } from "@/types/DataTypes";
-
-import { useNowPlaying } from "./NowPlayingContext";
 
 // filters
 export interface CandidateFilters {
@@ -71,45 +68,8 @@ export const DataProvider = ({
     filters.sortOrder,
   );
 
-  // playbar queue
-  const {
-    setQueue,
-    nowPlayingCandidate,
-    setNowPlayingCandidate,
-    nowPlayingFeed,
-    masterPlayerRef,
-  } = useNowPlaying();
-
-  // on first load, if there isn't a feed or candidate selected
+  // controls if player starts when it is loaded -- initial page load sets to false
   const autoPlayOnReady = useRef(true);
-  const router = useRouter();
-
-  const tabSlugs = ["hydrophones", "candidates", "visualizations"];
-  const slug = router.route.replace("/beta/", "");
-
-  function getTabIndexFromPath(path: string): number {
-    const slug = path.replace("/beta/", "");
-    if (tabSlugs.includes(slug)) {
-      return tabSlugs.indexOf(slug);
-    } else {
-      return 0;
-    }
-  }
-
-  // useEffect(() => {
-  //   if (!nowPlayingCandidate && !nowPlayingFeed) {
-  //     autoPlayOnReady.current = false;
-  //     setNowPlayingCandidate(sortedCandidates[0]);
-  //   }
-
-  //   if (setQueue) setQueue(sortedCandidates);
-  // }, [
-  //   sortedCandidates,
-  //   setQueue,
-  //   nowPlayingCandidate,
-  //   setNowPlayingCandidate,
-  //   nowPlayingFeed,
-  // ]);
 
   return (
     <DataContext.Provider

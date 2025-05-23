@@ -84,10 +84,11 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     nowPlayingFeed,
     nowPlayingCandidate,
     feeds,
-    autoPlayOnReady.current,
+    autoPlayOnReady,
     setNowPlayingCandidate,
     setNowPlayingFeed,
     sortedCandidates,
+    setQueue,
   ]);
 
   const showChildren = useMemo(() => {

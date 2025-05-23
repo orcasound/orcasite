@@ -1,4 +1,3 @@
-import { useTheme } from "@emotion/react";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -31,7 +30,6 @@ export default function PlayBar({
   setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 }) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  const theme = useTheme();
 
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
 
@@ -130,9 +128,6 @@ export default function PlayBar({
             d.timestampString,
           )
         : 0,
-      // value: detections?.map(d => playlistStartTime
-      //   ? calcMarkValue(playlistStartTime.toString(), startOffset, d.timestamp)
-      //   : 0),
     }));
   }, [playlistStartTime, startOffset, detections]);
 

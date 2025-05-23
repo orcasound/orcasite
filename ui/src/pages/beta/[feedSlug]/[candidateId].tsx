@@ -35,10 +35,9 @@ const CandidatePage: NextPageWithLayout = () => {
 
   const { setNowPlayingCandidate, setNowPlayingFeed } = useNowPlaying();
   const { filteredData, sortedCandidates } = useData();
-  const { combined, feeds } = useMasterData(useLiveData);
+  const { feeds } = useMasterData(useLiveData);
 
   const feed = feeds?.find((f) => f.slug === feedSlug) || ({} as Feed);
-  const detectionsData = useLiveData ? filteredData : combined;
 
   const candidate =
     sortedCandidates.find((c) => {
@@ -154,7 +153,7 @@ const CandidatePage: NextPageWithLayout = () => {
       hydrophone: sortedArr[0]?.hydrophone,
       startTime: new Date(startEnd[0]).toLocaleString(),
     });
-  }, [filteredData, feeds, startTime, endTime, startEnd]);
+  }, [filteredData, feeds, startTime, endTime, startEnd, feed.id]);
 
   return (
     <div style={{ overflowY: "scroll" }}>

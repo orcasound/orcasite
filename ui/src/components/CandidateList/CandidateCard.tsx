@@ -82,20 +82,10 @@ export default function CandidateCard(props: { candidate: Candidate }) {
 
   const candidateArray = candidate.array;
   const firstCandidate = candidateArray[0]; // firstCandidate is the earliest time, reports are sorted descending
-  const lastCandidate = candidateArray[candidateArray.length - 1]; // lastCandidate is the most recent time
-  const firstTimestamp = firstCandidate.timestampString;
-  const lastTimestamp = lastCandidate.timestampString;
   const firstTimestampString = firstCandidate.timestampString;
-  const lastTimestampString = lastCandidate.timestampString;
   const candidateTitle = formatTimestamp(firstCandidate.timestampString);
 
-  // use these to set href on cards
-  // const router = useRouter();
-  // const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
   const candidateHref = `/beta/${feed?.slug}/${candidate.id}`;
-  // firstTimestamp === lastTimestamp
-  //   ? `/beta/candidate/${feed?.slug}/${firstTimestampString}`
-  //   : `/beta/candidate/${feed?.slug}/${firstTimestampString}_${lastTimestampString}`;
 
   const handlePlay = (candidate: Candidate) => {
     autoPlayOnReady.current = true;
@@ -147,7 +137,6 @@ export default function CandidateCard(props: { candidate: Candidate }) {
         height: iconSize,
         width: iconSize,
         cursor: "pointer",
-        // marginRight: smDown ? "-8px" : "-4px",
       }}
     />
   );

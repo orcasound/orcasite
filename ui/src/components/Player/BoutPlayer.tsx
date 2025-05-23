@@ -132,7 +132,7 @@ export function BoutPlayer({
             const offset = differenceInSeconds(time, playlistDatetime);
             player.currentTime(offset);
             setPlayerOffset(offset);
-            setPlayerTimeRef && setPlayerTimeRef(time);
+            if (setPlayerTimeRef) setPlayerTimeRef(time);
           },
         });
       }
