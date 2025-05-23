@@ -6,6 +6,7 @@ defmodule Orcasite.Radio.GraphqlClient do
       :feed_segment -> get_feed_streams_with_segments(feed_id, from_time, to_time)
       :candidate -> get_candidates_with_detections(feed_id, from_time, to_time)
       :detection -> get_detections_with_candidates(feed_id, from_time, to_time)
+      :audio_image -> get_audio_images(feed_id, from_time, to_time)
     end
   end
 
@@ -253,6 +254,52 @@ defmodule Orcasite.Radio.GraphqlClient do
     |
     |> submit()
     |> parse_response(["data", "detections", "results"])
+  end
+
+  def get_audio_images(
+        feed_id,
+        from_datetime,
+        to_datetime,
+        offset \\ 0,
+        limit \\ 100,
+        prev_results \\ []
+      ) do
+    image_attrs = camelized_public_attrs(Orcasite.Radio.AudioImage)
+
+    ~s|
+      {
+        audioImages (
+          feedId: "#{feed_id}"
+          startTime: "#{DateTime.to_iso8601(from_datetime)}"
+          endTime: "#{DateTime.to_iso8601(to_datetime)}"
+          offset: #{offset}
+          limit: #{limit}
+        ) {
+          hasNextPage
+          results {
+            #{image_attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+          }
+        }
+      }
+    |
+    |> submit()
+    |> case do
+      {:ok, %{"data" => %{"audioImages" => %{"hasNextPage" => true, "results" => results}}}} ->
+        get_audio_images(
+          feed_id,
+          from_datetime,
+          to_datetime,
+          offset + limit,
+          limit,
+          prev_results ++ results
+        )
+
+      {:ok, %{"data" => %{"audioImages" => %{"results" => results}}}} ->
+        prev_results ++ results
+    end
   end
 
   defp get_feed_slug(feed_id) do
