@@ -19,7 +19,7 @@ export function MapWrapper({
 }) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlayingCandidate } = useNowPlaying();
-  console.log("rendering mapwrapper");
+
   return (
     <Box className={"map-wrapper"} sx={{ flexGrow: 1, position: "relative" }}>
       <Box

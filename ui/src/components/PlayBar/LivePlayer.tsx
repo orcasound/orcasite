@@ -4,6 +4,7 @@ import { type VideoJSPlayer } from "@/components/Player/VideoJS";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import type { Feed } from "@/graphql/generated";
+import useFeedPresence from "@/hooks/useFeedPresence";
 import { useTimestampFetcher } from "@/hooks/useTimestampFetcher";
 import fin512 from "@/public/photos/fin-512x512.png";
 import { analytics } from "@/utils/analytics";
@@ -42,8 +43,8 @@ export default function LivePlayer({
     currentFeed?.nodeName,
   );
 
-  // const feedPresence = useFeedPresence(currentFeed?.slug);
-  // const listenerCount = feedPresence?.metas.length ?? 0;
+  const feedPresence = useFeedPresence(currentFeed?.slug);
+  const listenerCount = feedPresence?.metas.length ?? 0;
 
   const playerText = currentFeed
     ? currentFeed.name
@@ -201,7 +202,7 @@ export default function LivePlayer({
       handlePlayPauseClickFeed={handlePlayPauseClick}
       image={currentFeed.imageUrl?.toString()}
       timestamp={timestamp}
-      // listenerCount={listenerCount}
+      listenerCount={listenerCount}
       playerTitle={playerText}
       playerSubtitle={""}
     />
