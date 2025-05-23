@@ -30,6 +30,8 @@ export default function HydrophoneCard({ feed }: Props) {
 
   const { autoPlayOnReady } = useData();
 
+  console.log("rendering hydrophonecard");
+
   const active = feed.id === nowPlayingFeed?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));

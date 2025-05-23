@@ -12,12 +12,31 @@ import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
-import { CombinedData } from "@/types/DataTypes";
 
 export default function Map() {
   const router = useRouter();
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
-  const { feeds } = useData();
+  const { feeds, filteredData } = useData();
+  console.log("rendering newmap");
+
+  const sightings = useMemo(() => {
+    if (nowPlayingFeed) {
+      return filteredData?.filter((d) => d.newCategory === "SIGHTING");
+    } else if (nowPlayingCandidate) {
+      const startDate = new Date(nowPlayingCandidate.startTimestamp);
+      const endDate = new Date(nowPlayingCandidate.endTimestamp);
+      return filteredData?.filter((d) => {
+        return (
+          d.newCategory === "SIGHTING" &&
+          startDate <= new Date(d.timestampString) &&
+          endDate >= new Date(d.timestampString)
+        );
+      });
+    } else {
+      return [];
+    }
+  }, [nowPlayingCandidate, nowPlayingFeed]);
+
   const feed = useMemo(() => {
     if (nowPlayingCandidate) {
       return feeds.find((f) => f.id === nowPlayingCandidate.feedId);
@@ -34,14 +53,6 @@ export default function Map() {
 
   const [map, setMap] = useState<LeafletMap>();
   // const mapRef = useRef<LeafletMap | null>(null);
-
-  const [sightings, setSightings] = useState<CombinedData[]>();
-  useEffect(() => {
-    const sightingsNow = nowPlayingCandidate?.array?.filter((el) => {
-      return el.newCategory === "SIGHTING";
-    });
-    setSightings(sightingsNow);
-  }, [nowPlayingCandidate]);
 
   const hydrophoneDefaultIcon = L.icon({
     iconUrl: hydrophoneDefaultIconImage.src,
