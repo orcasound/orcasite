@@ -15,7 +15,7 @@ defmodule Orcasite.Radio.Seed.Utils do
         writable_attr?(resource, attr) ->
           [{attr, val}]
 
-        has_many_relationship?(resource, attr) ->
+        many_relationship?(resource, attr) ->
           # Recursively underscore has_many relationships
           [{attr, prepare_results(val, relationship_resource(resource, attr))}]
 
@@ -38,11 +38,11 @@ defmodule Orcasite.Radio.Seed.Utils do
     end
   end
 
-  def has_many_relationship?(resource, key) do
+  def many_relationship?(resource, key) do
     resource
     |> Ash.Resource.Info.relationship(key)
     |> case do
-      %{type: :has_many} -> true
+      %{type: type} when type in [:has_many, :many_to_many] -> true
       _ -> false
     end
   end

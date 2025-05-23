@@ -59,6 +59,7 @@ defmodule Orcasite.Radio.Seed.Changes.SeedResource do
       :feed_segment -> :populate_with_segments
       :candidate -> :seed
       :detection -> :seed
+      :audio_image -> :seed
       _ -> :create
     end
   end
