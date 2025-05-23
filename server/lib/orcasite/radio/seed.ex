@@ -50,7 +50,7 @@ defmodule Orcasite.Radio.Seed do
       change {__MODULE__.Changes.SeedFeeds, []}
     end
 
-    create :non_feed do
+    create :resource do
       argument :start_time, :utc_datetime_usec,
         default: fn -> DateTime.add(DateTime.utc_now(), -1, :hour) end
 
@@ -78,7 +78,7 @@ defmodule Orcasite.Radio.Seed do
 
     mutations do
       create :seed_feeds, :feeds
-      create :seed_non_feed, :non_feed
+      create :seed_resource, :resource
     end
   end
 end

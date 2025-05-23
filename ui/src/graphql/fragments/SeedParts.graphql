@@ -1,0 +1,7 @@
+fragment SeedParts on Seed {
+  id
+  resource
+  startTime
+  endTime
+  seededCount
+}

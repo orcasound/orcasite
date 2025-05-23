@@ -2053,6 +2053,8 @@ export type RootMutationType = {
   registerWithPassword: RegisterWithPasswordResult;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   resetPassword?: Maybe<PasswordResetResult>;
+  seedFeeds: SeedFeedsResult;
+  seedResource: SeedResourceResult;
   setDetectionVisible: SetDetectionVisibleResult;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
@@ -2108,6 +2110,10 @@ export type RootMutationTypeRequestPasswordResetArgs = {
 
 export type RootMutationTypeResetPasswordArgs = {
   input: PasswordResetInput;
+};
+
+export type RootMutationTypeSeedResourceArgs = {
+  input: SeedResourceInput;
 };
 
 export type RootMutationTypeSetDetectionVisibleArgs = {
@@ -2284,6 +2290,52 @@ export type RootSubscriptionTypeBoutNotificationSentArgs = {
   boutId: Scalars["String"]["input"];
   eventType?: InputMaybe<NotificationEventType>;
   filter?: InputMaybe<NotificationFilterInput>;
+};
+
+/** Non-persisted resource to seed records from specific time ranges from Orcasite prod */
+export type Seed = {
+  __typename?: "Seed";
+  endTime: Scalars["DateTime"]["output"];
+  id: Scalars["ID"]["output"];
+  resource: SeedResource;
+  seededCount?: Maybe<Scalars["Int"]["output"]>;
+  startTime: Scalars["DateTime"]["output"];
+};
+
+/** The result of the :seed_feeds mutation */
+export type SeedFeedsResult = {
+  __typename?: "SeedFeedsResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Seed>;
+};
+
+export const SeedResource = {
+  AudioImage: "AUDIO_IMAGE",
+  Candidate: "CANDIDATE",
+  Detection: "DETECTION",
+  Feed: "FEED",
+  FeedSegment: "FEED_SEGMENT",
+  FeedStream: "FEED_STREAM",
+} as const;
+
+export type SeedResource = (typeof SeedResource)[keyof typeof SeedResource];
+export type SeedResourceInput = {
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  /** Local/dev server feed ID to seed relationship */
+  feedId: Scalars["String"]["input"];
+  resource: SeedResource;
+  startTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+/** The result of the :seed_resource mutation */
+export type SeedResourceResult = {
+  __typename?: "SeedResourceResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<Seed>;
 };
 
 export type SetDetectionVisibleInput = {
@@ -2670,6 +2722,15 @@ export type NotificationPartsFragment = {
   insertedAt: Date;
 };
 
+export type SeedPartsFragment = {
+  __typename?: "Seed";
+  id: string;
+  resource: SeedResource;
+  startTime: Date;
+  endTime: Date;
+  seededCount?: number | null;
+};
+
 export type TagPartsFragment = {
   __typename?: "Tag";
   id: string;
@@ -2990,6 +3051,61 @@ export type ResetPasswordMutation = {
       admin?: boolean | null;
     } | null;
   } | null;
+};
+
+export type SeedFeedsMutationVariables = Exact<{ [key: string]: never }>;
+
+export type SeedFeedsMutation = {
+  __typename?: "RootMutationType";
+  seedFeeds: {
+    __typename?: "SeedFeedsResult";
+    result?: {
+      __typename?: "Seed";
+      id: string;
+      resource: SeedResource;
+      startTime: Date;
+      endTime: Date;
+      seededCount?: number | null;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type SeedResourceMutationVariables = Exact<{
+  resource: SeedResource;
+  feedId: Scalars["String"]["input"];
+  startTime: Scalars["DateTime"]["input"];
+  endTime: Scalars["DateTime"]["input"];
+}>;
+
+export type SeedResourceMutation = {
+  __typename?: "RootMutationType";
+  seedResource: {
+    __typename?: "SeedResourceResult";
+    result?: {
+      __typename?: "Seed";
+      id: string;
+      resource: SeedResource;
+      startTime: Date;
+      endTime: Date;
+      seededCount?: number | null;
+    } | null;
+    errors: Array<{
+      __typename?: "MutationError";
+      code?: string | null;
+      fields?: Array<string> | null;
+      message?: string | null;
+      shortMessage?: string | null;
+      vars?: { [key: string]: any } | null;
+    }>;
+  };
 };
 
 export type SetDetectionVisibleMutationVariables = Exact<{
@@ -3728,6 +3844,15 @@ export const NotificationPartsFragmentDoc = `
   insertedAt
 }
     `;
+export const SeedPartsFragmentDoc = `
+    fragment SeedParts on Seed {
+  id
+  resource
+  startTime
+  endTime
+  seededCount
+}
+    `;
 export const TagPartsFragmentDoc = `
     fragment TagParts on Tag {
   id
@@ -4350,6 +4475,108 @@ useResetPasswordMutation.fetcher = (
 ) =>
   fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
     ResetPasswordDocument,
+    variables,
+    options,
+  );
+
+export const SeedFeedsDocument = `
+    mutation seedFeeds {
+  seedFeeds {
+    result {
+      ...SeedParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
+    ${SeedPartsFragmentDoc}
+${ErrorPartsFragmentDoc}`;
+
+export const useSeedFeedsMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    SeedFeedsMutation,
+    TError,
+    SeedFeedsMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    SeedFeedsMutation,
+    TError,
+    SeedFeedsMutationVariables,
+    TContext
+  >({
+    mutationKey: ["seedFeeds"],
+    mutationFn: (variables?: SeedFeedsMutationVariables) =>
+      fetcher<SeedFeedsMutation, SeedFeedsMutationVariables>(
+        SeedFeedsDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useSeedFeedsMutation.getKey = () => ["seedFeeds"];
+
+useSeedFeedsMutation.fetcher = (
+  variables?: SeedFeedsMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SeedFeedsMutation, SeedFeedsMutationVariables>(
+    SeedFeedsDocument,
+    variables,
+    options,
+  );
+
+export const SeedResourceDocument = `
+    mutation seedResource($resource: SeedResource!, $feedId: String!, $startTime: DateTime!, $endTime: DateTime!) {
+  seedResource(
+    input: {feedId: $feedId, resource: $resource, startTime: $startTime, endTime: $endTime}
+  ) {
+    result {
+      ...SeedParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
+    ${SeedPartsFragmentDoc}
+${ErrorPartsFragmentDoc}`;
+
+export const useSeedResourceMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    SeedResourceMutation,
+    TError,
+    SeedResourceMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    SeedResourceMutation,
+    TError,
+    SeedResourceMutationVariables,
+    TContext
+  >({
+    mutationKey: ["seedResource"],
+    mutationFn: (variables?: SeedResourceMutationVariables) =>
+      fetcher<SeedResourceMutation, SeedResourceMutationVariables>(
+        SeedResourceDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useSeedResourceMutation.getKey = () => ["seedResource"];
+
+useSeedResourceMutation.fetcher = (
+  variables: SeedResourceMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SeedResourceMutation, SeedResourceMutationVariables>(
+    SeedResourceDocument,
     variables,
     options,
   );

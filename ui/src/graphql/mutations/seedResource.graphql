@@ -1,0 +1,22 @@
+mutation seedResource(
+  $resource: SeedResource!
+  $feedId: String!
+  $startTime: DateTime!
+  $endTime: DateTime!
+) {
+  seedResource(
+    input: {
+      feedId: $feedId
+      resource: $resource
+      startTime: $startTime
+      endTime: $endTime
+    }
+  ) {
+    result {
+      ...SeedParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
