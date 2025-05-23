@@ -4,7 +4,6 @@ import React, { MutableRefObject, SetStateAction, useState } from "react";
 import PlayBar from "@/components/PlayBar/PlayBar";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
-import { Feed } from "@/graphql/generated";
 import darkTheme from "@/styles/darkTheme";
 
 import { MobileBottomNav } from "./MobileBottomNav";
@@ -55,7 +54,7 @@ export default function Footer({
       />
       {playbarExpanded && (
         <Box sx={{ overflow: "scroll", px: "24px" }}>
-          <PlayerDetail isNew={false} feed={feed as Feed} />
+          <PlayerDetail />
         </Box>
       )}
       {mdDown && (
