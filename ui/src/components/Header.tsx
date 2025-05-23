@@ -35,7 +35,8 @@ export default function Header({
 }) {
   return (
     <AppBar
-      position="static"
+      // position="sticky"
+      position="fixed" // needed this to be fixed to avoid issue with 100vh preventing scroll on mobile
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -210,6 +211,7 @@ function Desktop() {
                 mx: 1,
                 color: "base.contrastText",
                 display: "block",
+                lineHeight: 1,
               }}
             >
               {page.label}
@@ -235,6 +237,7 @@ function Desktop() {
               // color="info"
               startIcon={<Notifications />}
               sx={{
+                lineHeight: 1,
                 borderRadius: 8,
                 backgroundColor: "white",
                 "&:hover": {

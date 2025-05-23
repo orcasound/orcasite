@@ -125,16 +125,16 @@ export default function Player({
 
       player.on("playing", () => {
         setPlayerStatus("playing");
-        currentFeed?.slug && analytics.stream.started(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.started(currentFeed.slug);
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
-        currentFeed?.slug && analytics.stream.paused(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.paused(currentFeed.slug);
       });
       player.on("waiting", () => setPlayerStatus("loading"));
       player.on("error", () => {
         setPlayerStatus("error");
-        currentFeed?.slug && analytics.stream.error(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.error(currentFeed.slug);
       });
     },
     [currentFeed?.slug],
@@ -156,10 +156,10 @@ export default function Player({
     try {
       if (playerStatus === "loading" || playerStatus === "playing") {
         await player.pause();
-        currentFeed?.slug && analytics.stream.userPaused(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.userPaused(currentFeed.slug);
       } else {
         await player.play();
-        currentFeed?.slug && analytics.stream.userStarted(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.userStarted(currentFeed.slug);
       }
     } catch (e) {
       console.error(e);
