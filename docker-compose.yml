@@ -9,8 +9,8 @@ services:
       - REDIS_HOST=cache
       - REDIS_PORT=6379
     ports:
-      - "3000:3000"
-      - "4000:4000"
+      - "3001:3000"
+      - "4001:4000"
     depends_on:
       db:
         condition: service_healthy
@@ -23,7 +23,7 @@ services:
   db:
     image: kartoza/postgis:15
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASS=postgres
@@ -39,7 +39,7 @@ services:
     image: redis:6.2-alpine
     restart: always
     ports:
-      - "6379:6379"
+      - "6380:6379"
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     healthcheck:
