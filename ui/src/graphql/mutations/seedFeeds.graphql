@@ -1,0 +1,10 @@
+mutation seedFeeds {
+  seedFeeds {
+    result {
+      ...SeedParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
