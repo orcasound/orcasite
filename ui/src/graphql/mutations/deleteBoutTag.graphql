@@ -1,0 +1,10 @@
+mutation deleteBoutTag($boutTagId: ID!) {
+  deleteBoutTag(id: $boutTagId) {
+    result {
+      ...ItemTagParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}

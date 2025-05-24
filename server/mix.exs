@@ -49,7 +49,7 @@ defmodule Orcasite.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.20.0"},
+      {:phoenix_live_view, "~> 1.0.10"},
       {:phoenix_live_dashboard, "~> 0.8.0"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
@@ -61,6 +61,7 @@ defmodule Orcasite.Mixfile do
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.5"},
+      {:absinthe_phoenix, "~> 2.0"},
       # Provides helper functions for easy batching of Ecto associations
       {:dataloader, "~> 2.0"},
       # Algorithm used by Comeonin to hash password
@@ -76,20 +77,20 @@ defmodule Orcasite.Mixfile do
       {:corsica, "~> 2.1"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:ash, "~> 3.4.1"},
-      {:ash_admin, "~> 0.11.3"},
+      {:ash, "~> 3.5.6"},
+      {:ash_admin, "~> 0.13.4"},
       {:ash_postgres, "~> 2.2"},
       {:picosat_elixir, "~> 0.2.3"},
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
       {:gen_smtp, "~> 1.0"},
       {:ash_authentication, "~> 4.2"},
-      {:ash_authentication_phoenix, "~> 2.0"},
+      {:ash_authentication_phoenix, "~> 2.6.2"},
       {:syn, "~> 3.3"},
       {:mjml, "~> 4.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
       {:ash_uuid, "~> 1.1.2"},
-      {:ash_graphql, "~> 1.4.7"},
+      {:ash_graphql, "~> 1.7.3"},
       {:ash_json_api, "~> 1.2"},
       {:open_api_spex, "~> 3.16"},
       {:redoc_ui_plug, "~> 0.2.1"},
@@ -110,7 +111,9 @@ defmodule Orcasite.Mixfile do
       {:broadway_sqs, "~> 0.7"},
       {:recon, "~> 2.5"},
       {:ecto_psql_extras, "~> 0.6"},
-      {:recase, "~> 0.5"}
+      {:recase, "~> 0.5"},
+      {:ash_slug, "~> 0.2.1"},
+      {:sourceror, "~> 1.7", only: [:dev, :test]}
     ]
   end
 

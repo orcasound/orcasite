@@ -1,5 +1,6 @@
 mutation createBout(
   $feedId: String!
+  $name: String
   $startTime: DateTime!
   $endTime: DateTime
   $category: AudioCategory!
@@ -10,17 +11,14 @@ mutation createBout(
       category: $category
       startTime: $startTime
       endTime: $endTime
+      name: $name
     }
   ) {
     result {
       ...BoutParts
     }
     errors {
-      code
-      fields
-      message
-      shortMessage
-      vars
+      ...ErrorParts
     }
   }
 }

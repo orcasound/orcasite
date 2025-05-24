@@ -1,0 +1,7 @@
+fragment ErrorParts on MutationError {
+  code
+  fields
+  message
+  shortMessage
+  vars
+}

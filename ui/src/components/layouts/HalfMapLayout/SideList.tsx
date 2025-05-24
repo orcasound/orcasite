@@ -1,8 +1,10 @@
 import { Box } from "@mui/material";
 
-import CandidatesTabs from "@/components/CandidateList/DesktopTabs";
+type SideListProps = {
+  children: React.ReactNode;
+};
 
-export function SideList() {
+export const SideList = ({ children }: SideListProps) => {
   return (
     <Box
       className="side-list"
@@ -14,7 +16,7 @@ export function SideList() {
         overflow: "auto",
       }}
     >
-      <CandidatesTabs />
+      {children}
     </Box>
   );
-}
+};

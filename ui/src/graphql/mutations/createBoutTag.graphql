@@ -1,0 +1,20 @@
+mutation createBoutTag(
+  $tagId: ID
+  $tagName: String!
+  $tagDescription: String
+  $boutId: ID!
+) {
+  createBoutTag(
+    input: {
+      bout: { id: $boutId }
+      tag: { id: $tagId, name: $tagName, description: $tagDescription }
+    }
+  ) {
+    result {
+      ...ItemTagParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}

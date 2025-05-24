@@ -13,6 +13,13 @@ const CandidatePage: NextPageWithLayout = () => {
   // const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
 
   // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
+  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up("lg"));
+
+  // // replace this with a direct react-query...
+  // const {
+  //   combined,
+  //   isSuccess,
+  // }: { combined: CombinedData[] | undefined; isSuccess: boolean } = useData(); // this uses a context provider to call data once and make it available to all children -- this may not be better than just using the query hooks, kind of does the same thing
 
   // const { filteredData, feeds } = useData();
 

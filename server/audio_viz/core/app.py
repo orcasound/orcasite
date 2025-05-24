@@ -46,13 +46,12 @@ def lambda_handler(event, context):
     """
     result = make_spectrogram(event)
 
-    return {
-        "status": 200,
-        "image_size": result["image_size"],
-        "sample_rate": result["sample_rate"],
-    }
+    return {"status": 200, **result}
 
-def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, store_image=False):
+
+def make_spectrogram(
+    job: SpectrogramJob, store_audio=False, show_image=False, store_image=False
+):
     print(f"Received job: {json.dumps(job)}")
     local_path = f"/tmp/{job["id"]}"
     s3 = boto3.client("s3")
@@ -70,17 +69,14 @@ def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, s
 
     audio, sr = librosa.load(local_path, sr=sample_rate)
 
-    generator = SpectrogramGenerator(sr,
-                                 linear=False,
-                                 n_fft=1024,
-                                #  fmin=1,
-                                #  fmax=20000,
-                                 hop_length=256,
-                                 db_range=(10, 80),
-                                 cmap='inferno')
+    params = {"linear": True, "fmin": 1, "fmax": 15000, "cmap": "viridis"}
+
+    generator = SpectrogramGenerator(
+        sr, n_fft=1024, hop_length=256, db_range=(10, 80), **params
+    )
     spectrogram = generator(audio)
     if show_image:
-        matplotlib.pyplot.axis('off')
+        matplotlib.pyplot.axis("off")
         imshow(spectrogram)
 
     # Store spectrogram image either as a file or in-memory
@@ -96,16 +92,33 @@ def make_spectrogram(job: SpectrogramJob, store_audio=False, show_image=False, s
 
     if job["image_key"] is not None and job["image_bucket"] is not None:
         image_content = open(image_store, "rb") if store_image else image_store
-        s3.put_object(Bucket=job["image_bucket"], Key=job["image_key"], Body=image_content)
+        s3.put_object(
+            Bucket=job["image_bucket"], Key=job["image_key"], Body=image_content
+        )
 
-    return {"sample_rate": sample_rate, "image_size": image_size}
+    return {
+        "sample_rate": sample_rate,
+        "image_size": image_size,
+        "frequency_spacing": "linear" if params["linear"] else "log",
+        "freq_min": params["fmin"],
+        "freq_max": params["fmax"],
+        "color_map": params["cmap"],
+    }
+
 
 def get_audio_metadata(local_path):
-    result = check_output(['ffprobe',
-                            '-hide_banner', '-loglevel', 'panic',
-                            '-show_format',
-                            '-show_streams',
-                            '-of',
-                            'json', local_path])
+    result = check_output(
+        [
+            "ffprobe",
+            "-hide_banner",
+            "-loglevel",
+            "panic",
+            "-show_format",
+            "-show_streams",
+            "-of",
+            "json",
+            local_path,
+        ]
+    )
 
     return json.loads(result)

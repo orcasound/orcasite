@@ -51,8 +51,8 @@ defmodule Orcasite.Radio.AwsClient do
               retries: [max_attempts: 3]
             )
             |> case do
-              {:ok, %{"image_size" => image_size, "sample_rate" => sample_rate}} ->
-                {:ok, %{file_size: image_size, sample_rate: sample_rate}}
+              {:ok, %{"image_size" => image_size, "sample_rate" => sample_rate} = resp} ->
+                {:ok, %{file_size: image_size, sample_rate: sample_rate, parameters: resp}}
 
               {:ok, %{"errorMessage" => _} = err} ->
                 {:error, err}

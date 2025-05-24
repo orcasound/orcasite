@@ -37,6 +37,18 @@ defmodule Orcasite.Radio.Candidate do
 
   calculations do
     calculate :uuid, :string, {Orcasite.Radio.Calculations.DecodeUUID, []}
+
+    calculate :audio_category,
+              Orcasite.Types.AudioCategory,
+              expr(
+                cond do
+                  category == :whale -> :biophony
+                  category == :vessel -> :anthrophony
+                  category == :other -> :geophony
+                end
+              ) do
+      public? true
+    end
   end
 
   relationships do
@@ -73,12 +85,7 @@ defmodule Orcasite.Radio.Candidate do
   end
 
   actions do
-    defaults [:destroy]
-
-    read :read do
-      primary? true
-      prepare build(load: [:uuid], sort: [inserted_at: :desc])
-    end
+    defaults [:read, :destroy]
 
     read :index do
       pagination do
@@ -184,7 +191,7 @@ defmodule Orcasite.Radio.Candidate do
 
   graphql do
     type :candidate
-    attribute_types [feed_id: :id]
+    attribute_types feed_id: :id
 
     queries do
       get :candidate, :read

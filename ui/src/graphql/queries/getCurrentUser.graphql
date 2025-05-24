@@ -3,8 +3,10 @@ query getCurrentUser {
     id
     firstName
     lastName
+    username
     email
     admin
     moderator
+    token
   }
 }

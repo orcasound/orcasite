@@ -1,5 +1,6 @@
 fragment BoutParts on Bout {
   id
+  name
   category
   duration
   endTime

@@ -3,8 +3,6 @@ import {
   Box,
   Button,
   Chip,
-  CircularProgress,
-  CircularProgressProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,7 +13,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TextareaAutosize,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
@@ -33,6 +31,7 @@ import {
 import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
 
+import CircularProgressWithLabel from "./CircularProgressWithLabel";
 import { DetectionsPlayer } from "./Player/DetectionsPlayer";
 
 export default function DetectionsTable({
@@ -317,12 +316,12 @@ function NotificationModal({
         <DialogContent
           sx={{ minWidth: (theme) => theme.breakpoints.values.sm }}
         >
-          <TextareaAutosize
-            style={{ width: "100%", padding: "15px" }}
+          <TextField
+            fullWidth
+            multiline
             autoFocus
             placeholder="Message to subscribers (e.g. SRKWs heard in ...)"
             onChange={handleChange}
-            minRows={3}
           />
         </DialogContent>
         <DialogActions>
@@ -361,33 +360,5 @@ function NotificationModal({
         </DialogActions>
       </Dialog>
     </>
-  );
-}
-
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
-  return (
-    <Box sx={{ position: "relative", display: "inline-flex" }}>
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: "absolute",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-        >{`${Math.round(props.value)}%`}</Typography>
-      </Box>
-    </Box>
   );
 }

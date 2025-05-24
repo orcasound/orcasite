@@ -1,5 +1,6 @@
 defmodule OrcasiteWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket, schema: OrcasiteWeb.Schema
 
   ## Channels
   channel("feed:*", OrcasiteWeb.FeedChannel)
@@ -17,9 +18,26 @@ defmodule OrcasiteWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    Phoenix.Token.verify(OrcasiteWeb.Endpoint, "user auth", token,
+      max_age: (:timer.hours(24) / 1000) |> trunc()
+    )
+    |> case do
+      {:ok, user_id} ->
+        {:ok, user} =
+          Orcasite.Accounts.User
+          |> Ash.get(user_id, authorize?: false)
+
+        {:ok,
+         socket
+         |> Absinthe.Phoenix.Socket.put_options(context: %{actor: user, current_user: user})}
+
+      _ ->
+        {:error, :unauthorized}
+    end
   end
+
+  def connect(_params, socket), do: {:ok, socket}
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
   #

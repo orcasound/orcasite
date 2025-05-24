@@ -1,13 +1,17 @@
 import dayjs, { Dayjs } from "dayjs";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  MutableRefObject,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 import { defaultRange } from "@/components/CandidateList/CandidateListFilters";
 import { Feed } from "@/graphql/generated";
 import useFilteredData from "@/hooks/useFilteredData";
 import { useSortedCandidates } from "@/hooks/useSortedCandidates";
 import { Candidate, CombinedData, Dataset } from "@/types/DataTypes";
-
-import { useNowPlaying } from "./NowPlayingContext";
 
 // filters
 export interface CandidateFilters {
@@ -29,6 +33,7 @@ interface DataContextType {
   filters: CandidateFilters;
   setFilters: React.Dispatch<React.SetStateAction<CandidateFilters>>;
   isSuccessOrcahello: boolean;
+  autoPlayOnReady: MutableRefObject<boolean>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -63,25 +68,8 @@ export const DataProvider = ({
     filters.sortOrder,
   );
 
-  // playbar queue
-  const {
-    setQueue,
-    nowPlayingCandidate,
-    setNowPlayingCandidate,
-    nowPlayingFeed,
-  } = useNowPlaying();
-  useEffect(() => {
-    if (!nowPlayingCandidate && !nowPlayingFeed) {
-      setNowPlayingCandidate(sortedCandidates[0]);
-    }
-    if (setQueue) setQueue(sortedCandidates);
-  }, [
-    sortedCandidates,
-    setQueue,
-    nowPlayingCandidate,
-    setNowPlayingCandidate,
-    nowPlayingFeed,
-  ]);
+  // controls if player starts when it is loaded -- initial page load sets to false
+  const autoPlayOnReady = useRef(true);
 
   return (
     <DataContext.Provider
@@ -92,6 +80,7 @@ export const DataProvider = ({
         filters,
         setFilters,
         isSuccessOrcahello,
+        autoPlayOnReady,
       }}
     >
       {children}

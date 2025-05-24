@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { type VideoJSPlayer } from "@/components/Player/VideoJS";
+import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import type { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
@@ -33,6 +34,7 @@ export default function LivePlayer({
 }) {
   const { masterPlayerRef, masterPlayerStatus, setMasterPlayerStatus } =
     useNowPlaying();
+  const { autoPlayOnReady } = useData();
   const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("idle");
   const playerRef = useRef<VideoJSPlayer | null>(null);
 
@@ -48,26 +50,10 @@ export default function LivePlayer({
     ? currentFeed.name
     : "Select a location to start listening live";
 
-  // const playerTextContainerRef = useRef<HTMLElement>();
-  // const playerTextRef = useRef<HTMLElement>();
-  // const playerTextOverflowing = useIsRelativeOverflow(
-  //   playerTextContainerRef,
-  //   playerTextRef,
-  // );
-  // const theme = useTheme();
-  // const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
-  // const [playMarquee, setPlayMarquee] = useState(false);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setPlayMarquee(true);
-  //   }, 3000);
-  // }, []);
-
   const playerOptions = useMemo(
     () => ({
       poster: currentFeed?.imageUrl,
-      autoplay: true,
+      // autoplay: true,
       flash: {
         hls: {
           overrideNative: true,
@@ -113,10 +99,13 @@ export default function LivePlayer({
     (player: VideoJSPlayer) => {
       playerRef.current = player;
       masterPlayerRef.current = playerRef.current;
+      if (autoPlayOnReady.current) player.play();
 
       player.on("playing", () => {
         setPlayerStatus("playing");
         setMasterPlayerStatus("playing");
+        autoPlayOnReady.current = true;
+
         if (currentFeed?.slug) analytics.stream.started(currentFeed.slug);
       });
       player.on("pause", () => {
@@ -134,7 +123,12 @@ export default function LivePlayer({
         if (currentFeed?.slug) analytics.stream.error(currentFeed.slug);
       });
     },
-    [currentFeed?.slug, masterPlayerRef, setMasterPlayerStatus],
+    [
+      currentFeed?.slug,
+      masterPlayerRef,
+      setMasterPlayerStatus,
+      autoPlayOnReady,
+    ],
   );
 
   const handlePlayPauseClick = async () => {

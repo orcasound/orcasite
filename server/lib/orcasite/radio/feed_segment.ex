@@ -111,18 +111,13 @@ defmodule Orcasite.Radio.FeedSegment do
 
       filter expr(
                feed_id == ^arg(:feed_id) and
-                 (fragment(
-                    "(?) between (?) and (?)",
-                    start_time,
-                    ^arg(:start_time),
-                    ^arg(:end_time)
-                  ) or
-                    fragment(
-                      "(?) between (?) and (?)",
-                      end_time,
-                      ^arg(:start_time),
-                      ^arg(:end_time)
-                    ))
+                 fragment(
+                   "(?) <= (?) AND (?) >= (?)",
+                   start_time,
+                   ^arg(:end_time),
+                   end_time,
+                   ^arg(:start_time)
+                 )
              )
     end
 
@@ -212,7 +207,7 @@ defmodule Orcasite.Radio.FeedSegment do
 
   graphql do
     type :feed_segment
-    attribute_types [feed_id: :id, feed_stream_id: :id]
+    attribute_types feed_id: :id, feed_stream_id: :id
 
     queries do
       list :feed_segments, :index

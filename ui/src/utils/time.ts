@@ -22,15 +22,15 @@ export const roundToNearest = (
   date: Date,
   timeUnitMs: number,
   roundMethod: "round" | "ceil" | "floor",
-) => {
-  let roundFn;
-  if (roundMethod === "round") {
-    roundFn = Math.round;
-  } else if (roundMethod === "ceil") {
-    roundFn = Math.ceil;
-  } else {
-    roundFn = Math.floor;
-  }
+): Date => {
+  const roundingFn = {
+    round: Math.round,
+    ceil: Math.ceil,
+    floor: Math.floor,
+  }[roundMethod];
 
-  return new Date(roundFn(date.getTime() / timeUnitMs) * timeUnitMs);
+  const timestamp = date.getTime();
+  const roundedTimestamp = roundingFn(timestamp / timeUnitMs) * timeUnitMs;
+
+  return new Date(roundedTimestamp);
 };

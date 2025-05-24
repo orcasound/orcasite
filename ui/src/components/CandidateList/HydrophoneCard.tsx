@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 
 import Link from "@/components/Link";
+import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import useFeedPresence from "@/hooks/useFeedPresence";
@@ -28,6 +29,8 @@ export default function HydrophoneCard({ feed }: Props) {
     masterPlayerStatus,
   } = useNowPlaying();
 
+  const { autoPlayOnReady } = useData();
+
   const active = feed.id === nowPlayingFeed?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
@@ -35,9 +38,10 @@ export default function HydrophoneCard({ feed }: Props) {
   // use these to set href on cards
   // const router = useRouter();
   // const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
-  const candidateHref = `${feed.slug}`;
+  const candidateHref = `/beta/${feed.slug}`;
 
   const handlePlay = (feed: Feed) => {
+    autoPlayOnReady.current = true;
     setNowPlayingFeed(feed);
     setNowPlayingCandidate(null);
     masterPlayerRef?.current?.play();
@@ -63,7 +67,7 @@ export default function HydrophoneCard({ feed }: Props) {
     />
   );
 
-  const playIconDisabled = (
+  const _playIconDisabled = (
     <PlayCircle
       sx={{
         opacity: 0.33,
@@ -157,6 +161,7 @@ export default function HydrophoneCard({ feed }: Props) {
               <Link
                 // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
                 href={candidateHref}
+                onClick={() => (autoPlayOnReady.current = false)}
                 style={{
                   color: "inherit",
                   textDecoration: "inherit",
@@ -177,7 +182,7 @@ export default function HydrophoneCard({ feed }: Props) {
                     {feed.name}
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
-                    {`${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
+                    {`LIVE: ${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
                   </Typography>
                 </Stack>
               </Link>

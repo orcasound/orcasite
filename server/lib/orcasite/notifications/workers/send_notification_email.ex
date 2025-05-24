@@ -81,6 +81,9 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
   defp email_for_notif(params, "confirmed_candidate"),
     do: Orcasite.Notifications.Email.confirmed_candidate_email(params)
 
+  defp email_for_notif(params, "live_bout"),
+    do: Orcasite.Notifications.Email.confirmed_candidate_email(params)
+
   defp stringify(name) when is_atom(name), do: Atom.to_string(name)
   defp stringify(name), do: name
 
@@ -94,5 +97,4 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
         {k, v}
     end)
   end
-
 end

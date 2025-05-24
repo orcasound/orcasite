@@ -2,11 +2,17 @@ mutation updateBout(
   $id: ID!
   $startTime: DateTime!
   $endTime: DateTime
+  $name: String
   $category: AudioCategory!
 ) {
   updateBout(
     id: $id
-    input: { category: $category, startTime: $startTime, endTime: $endTime }
+    input: {
+      category: $category
+      startTime: $startTime
+      endTime: $endTime
+      name: $name
+    }
   ) {
     result {
       ...BoutParts

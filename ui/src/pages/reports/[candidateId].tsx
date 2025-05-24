@@ -1,4 +1,13 @@
-import { Box, Breadcrumbs, Chip, Link, Paper, Typography } from "@mui/material";
+import { Add } from "@mui/icons-material";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Chip,
+  Link,
+  Paper,
+  Typography,
+} from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -22,6 +31,14 @@ const CandidatePage: NextPageWithLayout = () => {
     analytics.reports.reportOpened(candidateId);
   }
 
+  const time = candidate && new Date(candidate.minTime).toISOString();
+  const categoryMap = {
+    WHALE: "biophony",
+    VESSEL: "anthrophony",
+    OTHER: "geophony",
+  };
+  const category = candidate?.category && categoryMap[candidate.category];
+
   return (
     <div>
       <Head>Report {candidateId} | Orcasound </Head>
@@ -36,19 +53,28 @@ const CandidatePage: NextPageWithLayout = () => {
 
         <Paper sx={{ marginTop: 4, overflow: "auto" }}>
           <Box p={5}>
-            <Box display="flex" justifyContent="space-between">
-              <Box>
+            <Box display="flex" justifyContent="space-between" mb={5}>
+              <Box display="flex" flexDirection="column" gap={1}>
                 <Typography variant="h4">Detections</Typography>
-                <Typography sx={{ marginBottom: 5 }} variant="body2">
-                  {candidate?.id}
-                </Typography>
+                <Box display="flex" gap={1} alignItems="center">
+                  {currentUser?.moderator && (
+                    <Chip
+                      variant="outlined"
+                      label={candidate?.visible ? "Visible" : "Hidden"}
+                    />
+                  )}
+                  <Typography variant="body2">{candidate?.id}</Typography>
+                </Box>
               </Box>
-              <Box>
-                {currentUser?.moderator && (
-                  <Chip
-                    variant="outlined"
-                    label={candidate?.visible ? "Visible" : "Hidden"}
-                  />
+              <Box display="flex" gap={1}>
+                {candidate && currentUser?.moderator && (
+                  <Link
+                    href={`/bouts/new/${candidate.feed.slug}?time=${time}&category=${category}`}
+                  >
+                    <Button size="small" variant="outlined" startIcon={<Add />}>
+                      New bout
+                    </Button>
+                  </Link>
                 )}
               </Box>
             </Box>

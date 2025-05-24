@@ -1,0 +1,16 @@
+query notificationsForBout(
+  $boutId: String!
+  $eventType: NotificationEventType
+) {
+  notificationsForBout(boutId: $boutId, eventType: $eventType) {
+    id
+    eventType
+    active
+    insertedAt
+    targetCount
+    notifiedCount
+    notifiedCountUpdatedAt
+    progress
+    finished
+  }
+}

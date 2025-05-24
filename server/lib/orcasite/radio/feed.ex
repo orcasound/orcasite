@@ -113,10 +113,9 @@ defmodule Orcasite.Radio.Feed do
   end
 
   actions do
-    defaults [:destroy]
+    defaults [:read, :destroy]
 
-    read :read do
-      primary? true
+    read :index do
       prepare build(load: [:lat_lng, :lat_lng_string, :online])
     end
 
@@ -131,6 +130,46 @@ defmodule Orcasite.Radio.Feed do
 
     read :get_by_node_name do
       get_by :node_name
+    end
+
+    action :get_detections_count, :integer do
+      argument :feed_id, :string, allow_nil?: false
+      argument :from_time, :utc_datetime_usec, allow_nil?: false
+      argument :to_time, :utc_datetime_usec
+      argument :category, Orcasite.Types.DetectionCategory
+
+      run fn %{arguments: %{feed_id: feed_id, from_time: from_time} = args}, _ ->
+        category = args |> Map.get(:category)
+        to_time = args |> Map.get(:to_time)
+
+        import Ecto.Query
+
+        {:ok,
+         from(d in Orcasite.Radio.Detection,
+           select: count(),
+           where: d.feed_id == ^feed_id and d.timestamp >= ^from_time
+         )
+         |> then(fn query ->
+           if not is_nil(to_time) do
+             query
+             |> where(
+               [d],
+               d.timestamp <= ^to_time
+             )
+           else
+             query
+           end
+         end)
+         |> then(fn query ->
+           if not is_nil(category) do
+             query
+             |> where([d], d.category == ^category)
+           else
+             query
+           end
+         end)
+         |> Orcasite.Repo.one()}
+      end
     end
 
     create :create do
@@ -239,7 +278,7 @@ defmodule Orcasite.Radio.Feed do
     routes do
       base "/feeds"
 
-      index :read
+      index :index
     end
   end
 
@@ -248,11 +287,12 @@ defmodule Orcasite.Radio.Feed do
 
     queries do
       read_one :feed, :get_by_slug, allow_nil?: false
+      action :feed_detections_count, :get_detections_count
       list :feeds, :public
     end
 
     mutations do
-      update :generate_feed_spectrogram, :generate_spectrogram
+      update :generate_feed_spectrograms, :generate_spectrogram
     end
   end
 

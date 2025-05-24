@@ -34,6 +34,10 @@ defmodule Orcasite.Accounts.User do
     update_timestamp :updated_at
   end
 
+  relationships do
+    has_many :item_tags, Orcasite.Radio.ItemTag
+  end
+
   authentication do
     domain Orcasite.Accounts
 
@@ -92,6 +96,38 @@ defmodule Orcasite.Accounts.User do
     bypass action(:password_reset_with_password) do
       authorize_if always()
     end
+
+    policy action(:read) do
+      authorize_if accessing_from(Orcasite.Radio.ItemTag, :user)
+      authorize_if expr(id == ^actor(:id))
+    end
+  end
+
+  code_interface do
+    domain Orcasite.Accounts
+
+    define :sign_in_with_password
+    define :by_email, args: [:email]
+    define :request_password_reset_with_password
+    define :password_reset_with_password
+  end
+
+  field_policies do
+    field_policy_bypass :* do
+      authorize_if expr(id == ^actor(:id))
+      authorize_if actor_attribute_equals(:admin, true)
+      authorize_if actor_attribute_equals(:moderator, true)
+      authorize_if AshAuthentication.Checks.AshAuthenticationInteraction
+      authorize_if action(:register_with_password)
+      authorize_if just_created_with_action(:register_with_password)
+      authorize_if action(:sign_in_with_password)
+      authorize_if action(:request_password_reset_with_password)
+      authorize_if action(:password_reset_with_password)
+    end
+
+    field_policy :username do
+      authorize_if always()
+    end
   end
 
   actions do
@@ -103,17 +139,26 @@ defmodule Orcasite.Accounts.User do
 
     read :current_user do
       get? true
-      manual Orcasite.Accounts.Actions.CurrentUserRead
+
+      metadata :token, :string
+
+      filter expr(id == ^actor(:id))
+
+      prepare after_action(fn
+                _query, [user], _context ->
+                  {:ok,
+                   [
+                     user
+                     |> Ash.Resource.put_metadata(
+                       :token,
+                       Phoenix.Token.sign(OrcasiteWeb.Endpoint, "user auth", user.id)
+                     )
+                   ]}
+
+                _, _, _ ->
+                  {:ok, []}
+              end)
     end
-  end
-
-  code_interface do
-    domain Orcasite.Accounts
-
-    define :sign_in_with_password
-    define :by_email, args: [:email]
-    define :request_password_reset_with_password
-    define :password_reset_with_password
   end
 
   admin do
@@ -135,8 +180,13 @@ defmodule Orcasite.Accounts.User do
   graphql do
     type :user
 
+    nullable_fields [:email, :first_name, :last_name, :admin, :moderator]
+
     queries do
-      read_one :current_user, :current_user
+      get :current_user, :current_user do
+        type_name :user_with_token
+        identity false
+      end
     end
 
     mutations do

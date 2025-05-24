@@ -92,7 +92,8 @@ defmodule OrcasiteWeb.Router do
       schema: Module.concat(["OrcasiteWeb.Schema"]),
       interface: :playground,
       json_codec: Jason,
-      before_send: {__MODULE__, :absinthe_before_send}
+      before_send: {__MODULE__, :absinthe_before_send},
+      socket: OrcasiteWeb.UserSocket
     )
   end
 
@@ -139,8 +140,6 @@ defmodule OrcasiteWeb.Router do
 
     auth_routes_for Orcasite.Notifications.Subscription,
       to: OrcasiteWeb.SubscriptionAuthController
-
-    sign_out_route OrcasiteWeb.SubscriptionAuthController
   end
 
   scope "/" do
