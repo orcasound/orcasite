@@ -119,6 +119,10 @@ config :spark, :formatter,
 config :ex_aws,
   region: "us-west-2"
 
+# Compile-time for enabling/disabling writable primary IDs
+config :orcasite,
+  disable_prod_seed: System.get_env("DISABLE_PROD_SEED", "false") == "true"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
