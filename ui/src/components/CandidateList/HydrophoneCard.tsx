@@ -1,4 +1,9 @@
-import { Pause, PlayArrow, PlayCircle } from "@mui/icons-material";
+import {
+  NavigateNext,
+  Pause,
+  PlayArrow,
+  PlayCircle,
+} from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -38,7 +43,8 @@ export default function HydrophoneCard({ feed }: Props) {
   // use these to set href on cards
   // const router = useRouter();
   // const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
-  const candidateHref = `/beta/${feed.slug}`;
+  const feedHref = `/beta/${feed.slug}`;
+  const feedDetailHref = feedHref + `/detail`;
 
   const handlePlay = (feed: Feed) => {
     autoPlayOnReady.current = true;
@@ -123,7 +129,7 @@ export default function HydrophoneCard({ feed }: Props) {
               sx={{
                 display: "flex",
                 gap: "1.5rem",
-                alignItems: "stretch",
+                alignItems: "center",
                 width: "100%",
               }}
             >
@@ -160,17 +166,17 @@ export default function HydrophoneCard({ feed }: Props) {
               </Box>
               <Link
                 // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
-                href={candidateHref}
+                href={feedHref}
                 onClick={() => (autoPlayOnReady.current = false)}
-                style={{
+                sx={{
                   color: "inherit",
                   textDecoration: "inherit",
-                  flex: 1,
                   display: "flex",
                   alignItems: "center",
+                  flex: 1,
                 }}
               >
-                <Stack>
+                <Stack sx={{ flex: 1 }}>
                   <Typography
                     variant="body1"
                     component="div"
@@ -185,6 +191,20 @@ export default function HydrophoneCard({ feed }: Props) {
                     {`LIVE: ${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
                   </Typography>
                 </Stack>
+              </Link>
+              <Link
+                href={feedDetailHref}
+                style={{
+                  color: "inherit",
+                  textDecoration: "inherit",
+                  display: "flex",
+                  alignItems: "center",
+                  background: "rgba(0,0,0,.5)",
+                  borderRadius: "100%",
+                  padding: "4px",
+                }}
+              >
+                <NavigateNext />
               </Link>
             </Box>
           </Box>

@@ -64,11 +64,6 @@ export default function Map() {
   const router = useRouter();
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
   const { feeds, filteredData } = useData();
-  console.log("rendering newmap");
-  console.log(
-    "nowPlayingCandidate.hydrophone: " + nowPlayingCandidate?.hydrophone,
-  );
-  console.log("nowPlayingFeed.name: " + nowPlayingFeed?.name);
 
   const sightings = useMemo(() => {
     if (nowPlayingFeed) {

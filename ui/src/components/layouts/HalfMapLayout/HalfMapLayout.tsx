@@ -28,6 +28,8 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  console.log("pageRoute is: " + pageRoute);
+  console.log("router.query is: " + JSON.stringify(router.query));
 
   const {
     nowPlayingCandidate,
@@ -54,11 +56,14 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
         autoPlayOnReady.current = false;
         setNowPlayingFeed(feeds[0]);
         setNowPlayingCandidate(null);
-        console.log(
-          "just ran this condition and autoPlayOnReady is: " +
-            autoPlayOnReady.current,
-        );
       }
+    } else if (pageRoute === "/beta/[feedSlug]") {
+      setMenuTab(1);
+      setTabValue(0);
+      setNowPlayingFeed(
+        feeds.find((f) => f.slug === router.query.feedSlug) ?? null,
+      );
+      setNowPlayingCandidate(null);
     } else if (pageRoute === "/beta/candidates") {
       setMenuTab(0);
       setTabValue(1);
@@ -89,14 +94,15 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     setNowPlayingFeed,
     sortedCandidates,
     setQueue,
+    router.query.feedSlug,
   ]);
 
   const showChildren = useMemo(() => {
     return (
       router.query.candidateId !== undefined ||
-      router.query.feedSlug !== undefined
+      pageRoute === "/beta/[feedSlug]/detail"
     );
-  }, [router.query]);
+  }, [router.query, pageRoute]);
 
   return (
     <>
@@ -133,10 +139,10 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
               <AnimatePresence mode="wait">
                 {showChildren ? (
                   <motion.div
-                    key="children"
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 100, opacity: 0 }}
+                    key={router.asPath}
+                    initial={{ x: 100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 100, opacity: 0 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
                     style={{ height: "100%" }}
                   >

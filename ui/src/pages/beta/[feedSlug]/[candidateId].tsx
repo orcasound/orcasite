@@ -181,7 +181,7 @@ const CandidatePage: NextPageWithLayout = () => {
                 {durationString}
               </Typography>
             </Box>
-            <Link href="/beta/candidates">
+            <Link href="#" onClick={() => router.back()}>
               <Close />
             </Link>
           </Box>
