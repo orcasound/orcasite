@@ -2,8 +2,6 @@ import { Box, Stack, Theme, useMediaQuery } from "@mui/material";
 import React, { MutableRefObject, SetStateAction, useState } from "react";
 
 import PlayBar from "@/components/PlayBar/PlayBar";
-import { useData } from "@/context/DataContext";
-import { useNowPlaying } from "@/context/NowPlayingContext";
 import darkTheme from "@/styles/darkTheme";
 
 import { MobileBottomNav } from "./MobileBottomNav";
@@ -23,11 +21,6 @@ export default function Footer({
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const [playbarExpanded, setPlaybarExpanded] = useState(false);
-  const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
-  const { feeds } = useData();
-  const feed = nowPlayingCandidate
-    ? feeds?.find((f) => f.id === nowPlayingCandidate?.feedId)
-    : nowPlayingFeed;
 
   return (
     <Stack
