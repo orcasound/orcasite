@@ -162,7 +162,8 @@ export function useSortedCandidates(
   sortOrder: string,
 ): Candidate[] {
   return useMemo(() => {
-    const created = createCandidates(rawData, timeIncrement);
+    const inRange = rawData.filter((d) => d.hydrophone !== "out of range");
+    const created = createCandidates(inRange, timeIncrement);
     const sorted = sortCandidates(created, sortOrder);
     return sorted;
   }, [rawData, timeIncrement, sortOrder]);
