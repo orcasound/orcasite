@@ -1,23 +1,42 @@
-import { Box, Stack, Theme, useMediaQuery } from "@mui/material";
+import { Box, Theme, useMediaQuery } from "@mui/material";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { ReactElement, ReactNode, useRef, useState } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import DesktopTabs from "@/components/CandidateList/DesktopTabs";
 import { MobileDisplay } from "@/components/CandidateList/MobileDisplay";
 import { MobileTabs } from "@/components/CandidateList/MobileTabs";
 import Header from "@/components/Header";
+import { useData } from "@/context/DataContext";
 import { LayoutContext } from "@/context/LayoutContext";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 
-import PlayBar from "../../PlayBar/PlayBar";
 import { MasterDataLayout } from "../MasterDataLayout";
+import Footer from "./Footer";
 import { MapWrapper } from "./MapWrapper";
-import { MobileBottomNav } from "./MobileBottomNav";
 import { SideList } from "./SideList";
 
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  console.log("rendering halfmap");
+
+  const {
+    nowPlayingCandidate,
+    setNowPlayingCandidate,
+    nowPlayingFeed,
+    setNowPlayingFeed,
+    setQueue,
+  } = useNowPlaying();
+  const { feeds, sortedCandidates, autoPlayOnReady } = useData();
 
   const masterPlayerTimeRef = useRef(0);
 
@@ -26,6 +45,58 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 
   // tabValue is the state of the tabs at the top in <MobileTabs>
   const [tabValue, setTabValue] = useState(0);
+
+  useEffect(() => {
+    if (pageRoute === "/beta/hydrophones" || pageRoute === "/beta") {
+      setMenuTab(1);
+      setTabValue(0);
+      if (!nowPlayingFeed) {
+        autoPlayOnReady.current = false;
+        setNowPlayingFeed(feeds[0]);
+        setNowPlayingCandidate(null);
+        console.log(
+          "just ran this condition and autoPlayOnReady is: " +
+            autoPlayOnReady.current,
+        );
+      }
+    } else if (pageRoute === "/beta/candidates") {
+      setMenuTab(0);
+      setTabValue(1);
+      if (!nowPlayingCandidate) {
+        autoPlayOnReady.current = false;
+        setNowPlayingCandidate(sortedCandidates[0]);
+        setNowPlayingFeed(null);
+      }
+      if (setQueue) setQueue(sortedCandidates);
+    } else if (pageRoute === "/beta/visualizations") {
+      setMenuTab(0);
+      setTabValue(2);
+      if (!nowPlayingCandidate && !nowPlayingFeed) {
+        autoPlayOnReady.current = false;
+        setNowPlayingCandidate(sortedCandidates[0]);
+        setNowPlayingFeed(null);
+      }
+    }
+  }, [
+    pageRoute,
+    setMenuTab,
+    setTabValue,
+    nowPlayingFeed,
+    nowPlayingCandidate,
+    feeds,
+    autoPlayOnReady,
+    setNowPlayingCandidate,
+    setNowPlayingFeed,
+    sortedCandidates,
+    setQueue,
+  ]);
+
+  const showChildren = useMemo(() => {
+    return (
+      router.query.candidateId !== undefined ||
+      router.query.feedSlug !== undefined
+    );
+  }, [router.query]);
 
   return (
     <>
@@ -39,7 +110,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           //   height: "100dvh",
           // },
           height: "100vh",
-          paddingBottom: smDown ? "155px" : "80px",
+          paddingBottom: smDown ? "155px" : "86px",
           paddingTop: "60px", // added this due to making header position: fixed
           display: "flex",
           flexDirection: "column",
@@ -57,51 +128,61 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           }}
         >
           {/* // desktop view */}
-          {!mdDown && <SideList />}
-          {!mdDown && router.query.candidateId === undefined && (
-            <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
+          {!mdDown && (
+            <SideList>
+              <AnimatePresence mode="wait">
+                {showChildren ? (
+                  <motion.div
+                    key="children"
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 100, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    style={{ height: "100%" }}
+                  >
+                    {children}
+                  </motion.div>
+                ) : (
+                  <DesktopTabs />
+                )}
+              </AnimatePresence>
+            </SideList>
           )}
+          {!mdDown && <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />}
 
           {/* // mobile view */}
-          {mdDown && router.query.candidateId === undefined && (
+          {mdDown && (
             <>
-              <MobileTabs
-                menuTab={menuTab}
-                tabValue={tabValue}
-                setTabValue={setTabValue}
-              />
-              <MobileDisplay
-                menuTab={menuTab}
-                tabValue={tabValue}
-                masterPlayerTimeRef={masterPlayerTimeRef}
-              />
+              {showChildren ? (
+                children
+              ) : (
+                <>
+                  <MobileTabs
+                    menuTab={menuTab}
+                    tabValue={tabValue}
+                    setTabValue={setTabValue}
+                  />
+                  <MobileDisplay
+                    menuTab={menuTab}
+                    tabValue={tabValue}
+                    masterPlayerTimeRef={masterPlayerTimeRef}
+                  />
+                </>
+              )}
             </>
           )}
           {/* // candidate or feed detail view */}
-          {(router.query.candidateId !== undefined ||
+          {/* {(router.query.candidateId !== undefined ||
             router.query.feed !== undefined) &&
-            children}
-
-          <Stack
-            direction="column"
-            className={"bottom-controls-stack"}
-            sx={{
-              position: "fixed",
-              bottom: 0,
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-              width: "100%",
-            }}
-          >
-            <PlayBar masterPlayerTimeRef={masterPlayerTimeRef} />
-            {mdDown && (
-              <MobileBottomNav
-                menuTab={menuTab}
-                setMenuTab={setMenuTab}
-                setTabValue={setTabValue}
-              />
-            )}
-          </Stack>
+            children} */}
         </Box>
+
+        <Footer
+          masterPlayerTimeRef={masterPlayerTimeRef}
+          menuTab={menuTab}
+          setMenuTab={setMenuTab}
+          setTabValue={setTabValue}
+        />
       </Box>
     </>
   );

@@ -11,13 +11,14 @@ type Props = {
 export function MobileBottomNav({ menuTab, setMenuTab, setTabValue }: Props) {
   return (
     <BottomNavigation
+      className="bottom-navigation"
       showLabels
       value={menuTab}
       onChange={(_event, newMenuTab) => {
         setMenuTab(newMenuTab);
         setTabValue(0);
       }}
-      sx={{ height: "69px" }}
+      sx={{ minHeight: "69px" }}
     >
       <BottomNavigationAction label="Recordings" icon={<Earbuds />} />
       <BottomNavigationAction label="Listen Live" icon={<Mic />} />

@@ -86,15 +86,15 @@ const createCandidates = (
     const startTimestamp = subtractSeconds(firstReport, offsetPadding);
     const endTimestamp = addSeconds(lastReport, offsetPadding);
 
-    const countString = ["whale", "whale (AI)", "vessel", "other", "sightings"]
-      .map((type) => {
-        const count = countCategories(candidate, type);
-        let mutableType = type;
+    const countString = ["whale", "whale (AI)", "vessel", "other", "sighting"]
+      .map((category) => {
+        const count = countCategories(candidate, category);
+        let mutableCategory = category;
         if (count === 0) return;
-        if (type === "sightings" && count === 1) {
-          mutableType = mutableType.slice(0, -1);
+        if (category === "sighting" && count > 1) {
+          mutableCategory = mutableCategory + "s";
         }
-        return `${count} ${mutableType}`;
+        return `${count} ${mutableCategory}`;
       })
       .filter((c) => c)
       .join(" • ");
@@ -112,10 +112,12 @@ const createCandidates = (
       hydrophone: hydrophone,
       feedId: feedId,
       clipCount: countString,
-      duration: "",
       descriptions: candidate
         .map((el: CombinedData) => cleanSightingsDescription(el.comments))
-        .filter((el: string | null | undefined) => el !== null)
+        .filter(
+          (el: string | null | undefined) =>
+            typeof el === "string" && el.length > 0,
+        )
         .join(" • ")
         .replace(/•\s?$/, "") // removes any trailing bullets from empty space comments
         .replace(/^\s?•\s?/, ""), // removes any forward bullets from empty space comments
@@ -160,7 +162,8 @@ export function useSortedCandidates(
   sortOrder: string,
 ): Candidate[] {
   return useMemo(() => {
-    const created = createCandidates(rawData, timeIncrement);
+    const inRange = rawData.filter((d) => d.hydrophone !== "out of range");
+    const created = createCandidates(inRange, timeIncrement);
     const sorted = sortCandidates(created, sortOrder);
     return sorted;
   }, [rawData, timeIncrement, sortOrder]);

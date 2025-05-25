@@ -18,7 +18,7 @@ import SearchBar from "./SearchBar";
 
 export const defaultRange = sevenDays;
 
-const timeRangeSelect = [
+export const timeRangeSelect = [
   {
     label: "All time",
     value: allTime,

@@ -1,7 +1,7 @@
 import { Box, CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { DataProvider } from "@/context/DataContext";
 import { NowPlayingProvider } from "@/context/NowPlayingContext";
@@ -12,16 +12,6 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
   // use toggle switch in dev mode between live API data vs seed data
   const [useLiveData, setUseLiveData] = useState(true);
   const dataset = useMasterData(useLiveData);
-
-  // testing
-  useEffect(() => {
-    console.log("human.length: " + dataset.human.length);
-    console.log("ai.length: " + dataset.ai.length);
-    console.log("sightings.length: " + dataset.sightings.length);
-    console.log("combined.length " + dataset.combined.length);
-    console.log("feeds.length: " + dataset.feeds.length);
-    console.log("isSuccessOrcahello.length: " + dataset.isSuccessOrcahello);
-  }, [dataset]);
 
   //// RENDER
 

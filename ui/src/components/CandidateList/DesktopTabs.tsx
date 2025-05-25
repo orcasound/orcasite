@@ -7,18 +7,28 @@ import {
   Theme,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React from "react";
 
 import { CandidatesStack } from "./CandidatesStack";
 import { HydrophonesStack } from "./HydrophonesStack";
 import { VisualizationsStack } from "./VisualizationsStack";
 
-export default function CandidatesTabs({
-  navOption,
-}: {
-  navOption?: "Listen Live" | "Recordings";
-}) {
+const tabSlugs = ["hydrophones", "candidates", "visualizations"];
+
+function getTabIndexFromPath(path: string): number {
+  const slug = path.replace("/beta/", "");
+  if (tabSlugs.includes(slug)) {
+    return tabSlugs.indexOf(slug);
+  } else {
+    return 0;
+  }
+}
+
+export default function DesktopTabs() {
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const router = useRouter();
+  const tabIndex = getTabIndexFromPath(router.route);
 
   // tabs
   interface TabProps {
@@ -61,33 +71,30 @@ export default function CandidatesTabs({
     };
   }
 
-  const initialTabValue = navOption === "Recordings" ? 1 : 0;
-  const [tabValue, setTabValue] = useState(initialTabValue);
-
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
+    router.push(`/beta/${tabSlugs[newValue]}`, undefined, { shallow: true });
   };
 
-  const desktopTabs = (
+  const tabs = (
     <Stack>
       <Tabs
-        value={tabValue}
+        value={tabIndex}
         onChange={handleChange}
         aria-label="navigation tabs"
         centered={mdDown ? true : false}
       >
-        <Tab label="Candidates" {...a11yProps(0)} />
-        <Tab label="Visualizations" {...a11yProps(1)} />
-        <Tab label="Hydrophones" {...a11yProps(2)} />
+        <Tab label="Hydrophones" {...a11yProps(0)} />
+        <Tab label="Candidates" {...a11yProps(1)} />
+        <Tab label="Visualizations" {...a11yProps(2)} />
       </Tabs>
-      <DesktopTabPanel value={tabValue} index={0}>
+      <DesktopTabPanel value={tabIndex} index={0}>
+        <HydrophonesStack />
+      </DesktopTabPanel>
+      <DesktopTabPanel value={tabIndex} index={1}>
         <CandidatesStack />
       </DesktopTabPanel>
-      <DesktopTabPanel value={tabValue} index={1}>
+      <DesktopTabPanel value={tabIndex} index={2}>
         <VisualizationsStack />
-      </DesktopTabPanel>
-      <DesktopTabPanel value={tabValue} index={2}>
-        <HydrophonesStack />
       </DesktopTabPanel>
     </Stack>
   );
@@ -107,12 +114,7 @@ export default function CandidatesTabs({
           marginTop: mdDown ? 0 : "1rem",
         }}
       >
-        {desktopTabs}
-        {/* {mdDown && navOption === "Listen Live"
-          ? listenLiveTabs
-          : mdDown && navOption === "Recordings"
-            ? recordingsTabs
-            : desktopTabs} */}
+        {tabs}
       </Box>
     </Container>
   );

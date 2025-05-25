@@ -83,7 +83,7 @@ export function transformSightings(
   return sightings.map((el) => ({
     ...el,
     type: "sightings",
-    newCategory: "SIGHTINGS",
+    newCategory: "SIGHTING",
     hydrophone: assignSightingHydrophone(el),
     feedId: lookupFeedId(assignSightingHydrophone(el), feeds ?? []),
     timestampString: el.created.replace(" ", "T") + "Z",

@@ -18,7 +18,6 @@ export default function CandidatesGrid() {
         px: { xs: 1, sm: 2, md: 3 },
       }}
     >
-      {/* <CandidateListFilters /> */}
       <Box sx={{ paddingTop: "2rem" }}></Box>
       <Box
         className="grid-box"
@@ -34,12 +33,10 @@ export default function CandidatesGrid() {
           sx={{ minWidth: 0 }}
           // minWidth is necessary as a grid item to avoid overflowing container
         >
-          {/* <CandidatesResults viewType="list" /> */}
           <Box sx={{ paddingTop: "1rem" }}></Box>
           <CandidatesList />
         </Stack>
         <Stack sx={{ minWidth: 0 }}>
-          {/* <CandidatesResults viewType="chart" layout="grid" /> */}
           <Box sx={{ paddingTop: "1rem" }}></Box>
           <ReportsBarChart />
         </Stack>

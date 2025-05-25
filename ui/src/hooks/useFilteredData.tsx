@@ -24,7 +24,6 @@ export default function useFilteredData(
       return (
         // uncomment this to block Orcahello data
         // el.type === "human" &&
-        el.hydrophone !== "out of range" && // this filters out sightings that are not within 3 miles of a hydrophone
         (filters.hydrophone === "All hydrophones" ||
           el.hydrophone === filters.hydrophone) &&
         (filters.category === "All categories" ||

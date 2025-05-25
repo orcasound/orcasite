@@ -60,7 +60,8 @@ export interface Sighting extends CascadiaSighting {
   type: "sightings";
   hydrophone: string;
   feedId: string;
-  newCategory: "SIGHTINGS";
+  newCategory: "SIGHTING";
+  timestamp: Date;
   timestampString: string;
 }
 
@@ -99,6 +100,5 @@ export interface Candidate {
   hydrophone: string;
   feedId: string | undefined;
   clipCount: string;
-  duration: string;
   descriptions: string;
 }

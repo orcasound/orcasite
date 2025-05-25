@@ -98,7 +98,7 @@ export const formattedSeconds = (seconds: number) => {
     .padStart(2, "0")}`;
 };
 
-const getTimeElapsed = (dateString: string, startTime: string) => {
+const _getTimeElapsed = (dateString: string, startTime: string) => {
   const detectionTime = new Date(dateString).getTime();
   const zeroTime = new Date(startTime).getTime();
   const seconds = detectionTime - zeroTime;
