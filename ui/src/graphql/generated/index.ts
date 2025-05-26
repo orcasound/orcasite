@@ -2313,6 +2313,7 @@ export type SeedFeedsResult = {
 
 export const SeedResource = {
   AudioImage: "AUDIO_IMAGE",
+  Bout: "BOUT",
   Candidate: "CANDIDATE",
   Detection: "DETECTION",
   Feed: "FEED",
