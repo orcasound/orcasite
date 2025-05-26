@@ -1,20 +1,31 @@
 import {
   Box,
+  Button,
   Card,
   Container,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   Typography,
 } from "@mui/material";
-import { formatDuration, subHours } from "date-fns";
+import { addMinutes, formatDuration, subHours } from "date-fns";
 import _ from "lodash";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
-import { FeedQuery, SeedResource, useFeedsQuery } from "@/graphql/generated";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import {
+  FeedQuery,
+  SeedFeedsResult,
+  SeedResource,
+  SeedResourceResult,
+  useFeedsQuery,
+  useSeedFeedsMutation,
+  useSeedResourceMutation,
+} from "@/graphql/generated";
 import { NextPageWithLayout } from "@/pages/_app";
 
 const SeedPage: NextPageWithLayout = () => {
@@ -22,15 +33,92 @@ const SeedPage: NextPageWithLayout = () => {
   const resources = Object.values(SeedResource);
 
   const [startTime, setStartTime] = useState(() => subHours(new Date(), 1));
-  const [selectedFeed, setSelectedFeed] = useState();
+  const [selectedFeed, setSelectedFeed] = useState<string | undefined>();
   const intervals = [1, 5, 10, 15, 30, 45, 60]; // minutes
   const [selectedInterval, setSelectedInterval] = useState(60);
+  const [selectedResource, setSelectedResource] = useState(resources[0]);
 
   useEffect(() => {
     if (selectedFeed === undefined && feeds.length > 0) {
       setSelectedFeed(feeds[0].id);
     }
   }, [feeds]);
+
+  const [seedForm, setSeedForm] = useState({
+    isSaving: false,
+    errors: {},
+    saved: false,
+    message: "",
+  });
+  const seedFeedsMutation = useSeedFeedsMutation({
+    onSuccess: ({
+      seedFeeds: { result, errors },
+    }: {
+      seedFeeds: SeedFeedsResult;
+    }) => {
+      if (errors && errors.length > 0) {
+        console.error(errors);
+        setSeedForm((form) => ({
+          ...form,
+          isSaving: false,
+          errors: {
+            ...form.errors,
+            ...Object.fromEntries(
+              errors.map(({ code, message }) => [code, message] as const),
+            ),
+          },
+        }));
+      } else if (result) {
+        setSeedForm((form) => ({
+          ...form,
+          isSaving: false,
+          saved: true,
+          message: `${result.seededCount} ${lowerCaseResource(result.resource)}s seeded`,
+        }));
+      }
+    },
+  });
+  const seedResourceMutation = useSeedResourceMutation({
+    onSuccess: ({
+      seedResource: { result, errors },
+    }: {
+      seedResource: SeedResourceResult;
+    }) => {
+      if (errors && errors.length > 0) {
+        console.error(errors);
+        setSeedForm((form) => ({
+          ...form,
+          isSaving: false,
+          errors: {
+            ...form.errors,
+            ...Object.fromEntries(
+              errors.map(({ code, message }) => [code, message] as const),
+            ),
+          },
+        }));
+      } else if (result) {
+        setSeedForm((form) => ({
+          ...form,
+          isSaving: false,
+          saved: true,
+          message: `${result.seededCount} ${lowerCaseResource(result.resource)}s seeded`,
+        }));
+      }
+    },
+  });
+
+  const handleSubmit = () => {
+    if (selectedResource === "FEED") {
+      seedFeedsMutation.mutate({});
+    } else if (selectedFeed) {
+      seedResourceMutation.mutate({
+        resource: selectedResource,
+        feedId: selectedFeed,
+        startTime: startTime,
+        endTime: addMinutes(startTime, selectedInterval),
+      });
+    }
+  };
 
   return (
     <div>
@@ -50,13 +138,34 @@ const SeedPage: NextPageWithLayout = () => {
             alignItems={"center"}
           >
             <FormControl sx={{ minWidth: "100px" }}>
-              <InputLabel>Feed</InputLabel>
+              <InputLabel>Resource</InputLabel>
 
-              {selectedFeed && (
+              {selectedResource && (
+                <Select
+                  label="Resource"
+                  value={selectedResource}
+                  onChange={(event) =>
+                    event.target.value &&
+                    setSelectedResource(event.target.value as SeedResource)
+                  }
+                >
+                  {resources.map((resource) => (
+                    <MenuItem value={resource} key={resource}>
+                      {titleizeResource(resource)}s
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            </FormControl>
+            {selectedResource !== "FEED" && selectedFeed && (
+              <FormControl sx={{ minWidth: "100px" }}>
+                <InputLabel>Feed</InputLabel>
                 <Select
                   label="Feed"
                   value={selectedFeed}
-                  onChange={(event) => console.log(event.target.value)}
+                  onChange={(event) =>
+                    event.target.value && setSelectedFeed(event.target.value)
+                  }
                 >
                   {feeds.map((feed: FeedQuery["feed"]) => (
                     <MenuItem value={feed.id} key={feed.id}>
@@ -64,8 +173,8 @@ const SeedPage: NextPageWithLayout = () => {
                     </MenuItem>
                   ))}
                 </Select>
-              )}
-            </FormControl>
+              </FormControl>
+            )}
             <Box>
               <Typography fontSize={12}>Starting</Typography>
               <input
@@ -99,12 +208,30 @@ const SeedPage: NextPageWithLayout = () => {
                 </Select>
               </FormControl>
             </Box>
+            <Button
+              sx={{ ml: "auto" }}
+              size="large"
+              variant="contained"
+              disabled={seedForm.isSaving}
+              {...(seedForm.isSaving ? { startIcon: <LoadingSpinner /> } : {})}
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
           </Box>
+          {seedForm.message && (
+            <Snackbar
+              message={seedForm.message}
+              open={seedForm.saved}
+              onClose={() => setSeedForm((form) => ({ ...form, saved: false }))}
+              autoHideDuration={5000}
+            />
+          )}
           <Box display="flex" flexDirection="column" gap={3}>
             {resources.map((resource) => (
               <Card key={resource} sx={{ p: 4 }}>
                 <Typography variant="subtitle1">
-                  {_.replace(resource, "_", " ")}
+                  {titleizeResource(resource)}
                 </Typography>
                 <Typography variant="body1">{description(resource)}</Typography>
               </Card>
@@ -132,6 +259,14 @@ function description(resource: string) {
   };
 
   return mapping[resource];
+}
+
+function titleizeResource(resource: string) {
+  return resource[0] + _.replace(resource, "_", " ").toLowerCase().slice(1);
+}
+
+function lowerCaseResource(resource: string) {
+  return _.replace(resource, "_", " ").toLowerCase();
 }
 
 function toLocalISOString(date: Date) {
