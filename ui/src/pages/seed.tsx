@@ -29,7 +29,8 @@ import {
 import { NextPageWithLayout } from "@/pages/_app";
 
 const SeedPage: NextPageWithLayout = () => {
-  const feeds = useFeedsQuery().data?.feeds ?? [];
+  const feedsQuery = useFeedsQuery();
+  const feeds = feedsQuery.data?.feeds ?? [];
   const resources = Object.values(SeedResource);
 
   const [startTime, setStartTime] = useState(() => subHours(new Date(), 1));
@@ -50,60 +51,38 @@ const SeedPage: NextPageWithLayout = () => {
     saved: false,
     message: "",
   });
+  const onSuccess = (response: SeedFeedsResult | SeedResourceResult) => {
+    const { result, errors } = response;
+    if (errors && errors.length > 0) {
+      console.error(errors);
+      setSeedForm((form) => ({
+        ...form,
+        isSaving: false,
+        errors: {
+          ...form.errors,
+          ...Object.fromEntries(
+            errors.map(({ code, message }) => [code, message] as const),
+          ),
+        },
+      }));
+    } else if (result) {
+      setSeedForm((form) => ({
+        ...form,
+        isSaving: false,
+        saved: true,
+        message: `${result.seededCount} ${lowerCaseResource(result.resource)}s seeded`,
+      }));
+    }
+  };
   const seedFeedsMutation = useSeedFeedsMutation({
-    onSuccess: ({
-      seedFeeds: { result, errors },
-    }: {
-      seedFeeds: SeedFeedsResult;
-    }) => {
-      if (errors && errors.length > 0) {
-        console.error(errors);
-        setSeedForm((form) => ({
-          ...form,
-          isSaving: false,
-          errors: {
-            ...form.errors,
-            ...Object.fromEntries(
-              errors.map(({ code, message }) => [code, message] as const),
-            ),
-          },
-        }));
-      } else if (result) {
-        setSeedForm((form) => ({
-          ...form,
-          isSaving: false,
-          saved: true,
-          message: `${result.seededCount} ${lowerCaseResource(result.resource)}s seeded`,
-        }));
-      }
+    onSuccess: ({ seedFeeds }: { seedFeeds: SeedFeedsResult }) => {
+      onSuccess(seedFeeds);
+      feedsQuery.refetch();
     },
   });
   const seedResourceMutation = useSeedResourceMutation({
-    onSuccess: ({
-      seedResource: { result, errors },
-    }: {
-      seedResource: SeedResourceResult;
-    }) => {
-      if (errors && errors.length > 0) {
-        console.error(errors);
-        setSeedForm((form) => ({
-          ...form,
-          isSaving: false,
-          errors: {
-            ...form.errors,
-            ...Object.fromEntries(
-              errors.map(({ code, message }) => [code, message] as const),
-            ),
-          },
-        }));
-      } else if (result) {
-        setSeedForm((form) => ({
-          ...form,
-          isSaving: false,
-          saved: true,
-          message: `${result.seededCount} ${lowerCaseResource(result.resource)}s seeded`,
-        }));
-      }
+    onSuccess: ({ seedResource }: { seedResource: SeedResourceResult }) => {
+      onSuccess(seedResource);
     },
   });
 
@@ -158,56 +137,60 @@ const SeedPage: NextPageWithLayout = () => {
               )}
             </FormControl>
             {selectedResource !== "FEED" && selectedFeed && (
-              <FormControl sx={{ minWidth: "100px" }}>
-                <InputLabel>Feed</InputLabel>
-                <Select
-                  label="Feed"
-                  value={selectedFeed}
-                  onChange={(event) =>
-                    event.target.value && setSelectedFeed(event.target.value)
-                  }
-                >
-                  {feeds.map((feed: FeedQuery["feed"]) => (
-                    <MenuItem value={feed.id} key={feed.id}>
-                      {feed.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <>
+                <FormControl sx={{ minWidth: "100px" }}>
+                  <InputLabel>Feed</InputLabel>
+                  <Select
+                    label="Feed"
+                    value={selectedFeed}
+                    onChange={(event) =>
+                      event.target.value && setSelectedFeed(event.target.value)
+                    }
+                  >
+                    {feeds.map((feed: FeedQuery["feed"]) => (
+                      <MenuItem value={feed.id} key={feed.id}>
+                        {feed.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <Box>
+                  <Typography fontSize={12}>Starting</Typography>
+                  <input
+                    type="datetime-local"
+                    name="startTime"
+                    value={toLocalISOString(startTime)}
+                    onChange={(event) =>
+                      setStartTime(new Date(event.target.value))
+                    }
+                    style={{
+                      padding: "10px 14px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                    }}
+                  />
+                </Box>
+                <Box>
+                  <FormControl>
+                    <InputLabel>For</InputLabel>
+                    <Select
+                      label="For"
+                      value={selectedInterval}
+                      onChange={(event) =>
+                        setSelectedInterval(Number(event.target.value))
+                      }
+                    >
+                      {intervals.map((interval) => (
+                        <MenuItem key={interval} value={interval}>
+                          {formatDuration({ minutes: interval })}
+                        </MenuItem>
+                      ))}
+                      <MenuItem></MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
+              </>
             )}
-            <Box>
-              <Typography fontSize={12}>Starting</Typography>
-              <input
-                type="datetime-local"
-                name="startTime"
-                value={toLocalISOString(startTime)}
-                onChange={(event) => setStartTime(new Date(event.target.value))}
-                style={{
-                  padding: "10px 14px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </Box>
-            <Box>
-              <FormControl>
-                <InputLabel>For</InputLabel>
-                <Select
-                  label="For"
-                  value={selectedInterval}
-                  onChange={(event) =>
-                    setSelectedInterval(Number(event.target.value))
-                  }
-                >
-                  {intervals.map((interval) => (
-                    <MenuItem key={interval} value={interval}>
-                      {formatDuration({ minutes: interval })}
-                    </MenuItem>
-                  ))}
-                  <MenuItem></MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
             <Button
               sx={{ ml: "auto" }}
               size="large"

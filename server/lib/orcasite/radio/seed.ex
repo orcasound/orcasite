@@ -22,6 +22,7 @@ defmodule Orcasite.Radio.Seed do
 
   code_interface do
     define :feeds
+    define :resource
   end
 
   validations do
