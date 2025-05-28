@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -16,7 +17,6 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   FeedQuery,
   SeedFeedsResult,
@@ -27,6 +27,7 @@ import {
   useSeedResourceMutation,
 } from "@/graphql/generated";
 import { NextPageWithLayout } from "@/pages/_app";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const SeedPage: NextPageWithLayout = () => {
   const feedsQuery = useFeedsQuery();
