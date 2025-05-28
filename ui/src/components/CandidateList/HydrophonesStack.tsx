@@ -11,8 +11,6 @@ export const HydrophonesStack = () => {
 
   return (
     <Stack>
-      {/* <CandidateListFilters /> */}
-      {/* <Box sx={{paddingTop: "1.5rem"}}></Box> */}
       <Box sx={{ overflow: mdDown ? "auto" : "initial" }}>
         <Stack spacing={2}>
           {feeds.map((feed) => {
