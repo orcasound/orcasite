@@ -27,7 +27,7 @@ const HydrophonePage: NextPageWithLayout = () => {
 
   return (
     <HydrophoneDetailTabs>
-      <CandidatesStack feed={feed} showChart={true} showFilters={false} />
+      <CandidatesStack feed={feed} showChart={true} />
     </HydrophoneDetailTabs>
   );
 };

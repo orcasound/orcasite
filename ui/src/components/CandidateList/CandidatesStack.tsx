@@ -24,14 +24,15 @@ export const CandidatesStack = ({
       }}
     >
       {showChart && (
-        <ReportsBarChart
-          showLegend={false}
-          showYAxis={false}
-          showXAxis={false}
-          feed={feed}
-        />
+        <Box sx={{ py: "1.5rem" }}>
+          <ReportsBarChart
+            showLegend={false}
+            showYAxis={false}
+            showXAxis={false}
+            feed={feed}
+          />
+        </Box>
       )}
-      {/* <Box sx={{ paddingTop: "1.5rem" }}></Box> */}
       <Box sx={{ overflow: mdDown ? "auto" : "initial" }}>
         <CandidatesResults viewType="list" feed={feed} />
         <Box sx={{ paddingTop: "1.5rem" }}></Box>

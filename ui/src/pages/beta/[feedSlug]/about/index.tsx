@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -27,7 +26,7 @@ const HydrophonePage: NextPageWithLayout = () => {
 
   return (
     <HydrophoneDetailTabs>
-      <div
+      {/* <div
         className="image"
         style={{ position: "relative", width: "100%", height: "15em" }}
       >
@@ -40,7 +39,7 @@ const HydrophonePage: NextPageWithLayout = () => {
             objectPosition="left"
           />
         )}{" "}
-      </div>
+      </div> */}
       {feed?.introHtml ? (
         <div
           className="intro"

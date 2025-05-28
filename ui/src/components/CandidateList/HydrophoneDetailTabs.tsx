@@ -1,5 +1,7 @@
 import { ArrowBackIos } from "@mui/icons-material";
+import { PlayCircle } from "@mui/icons-material";
 import { Box, Container, Stack, Typography, useTheme } from "@mui/material";
+import { AnimatePresence, motion } from "framer-motion";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -19,7 +21,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   const routerPath = router.asPath.split("/");
   const feedPage = routerPath[routerPath.length - 1];
 
-  const tabs = ["Candidates", "About", "Take Action"];
+  const tabs = ["About", "Candidates", "Take Action"];
 
   const tabRow = (tabs: string[]) => (
     <Stack
@@ -67,15 +69,30 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
       >
         <Box
           sx={{
-            marginTop: 4,
+            position: "relative",
+            // marginTop: 5,
+            marginBottom: "8px",
             display: "flex",
-            alignItems: "flex-start",
             flexDirection: "column",
             justifyContent: "space-between",
             gap: "16px",
-            marginBottom: "8px",
+            background: `center / cover no-repeat url(${feed?.imageUrl})`,
+            mx: { xs: -1, sm: -2, md: -3 },
+            p: { xs: 1, sm: 2, md: 3 },
+            paddingTop: 5,
+            minHeight: "260px",
           }}
         >
+          {/* Gradient overlay */}
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.33), rgba(0,0,0,0))",
+              zIndex: 0,
+            }}
+          />
           <Link
             href={`/beta/${feed?.slug}`}
             style={{
@@ -85,13 +102,35 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
               textDecoration: "none",
               lineHeight: 1,
               color: theme.palette.common.white,
+              zIndex: 1,
+              position: "relative",
             }}
           >
             <ArrowBackIos />
           </Link>
-          <Typography variant="h4" component="h1" sx={{ flex: 1 }}>
-            {feed?.name}
-          </Typography>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{
+                zIndex: 1,
+                position: "relative",
+                textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              {feed?.name}
+            </Typography>
+            <PlayCircle
+              sx={{ height: 48, width: 48, zIndex: 1, position: "relative" }}
+            />
+          </Box>
         </Box>
         <Box
           sx={{
@@ -100,7 +139,18 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
         >
           {tabRow(tabs)}
         </Box>
-        {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={router.asPath}
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 100, opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ height: "100%" }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </Container>
     </div>
   );

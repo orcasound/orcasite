@@ -1,5 +1,4 @@
 import { Box, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
-import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import {
   ReactElement,
@@ -129,14 +128,20 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   };
 
   const tabSx = {
-    padding: "8px 16px !important",
-    margin: "0 10px !important",
+    padding: "7px 16px !important",
+    margin: "0 8px !important",
     minWidth: 0,
     minHeight: "unset",
     lineHeight: 1.2,
     borderRadius: "4px",
     "&.Mui-selected": {
       backgroundColor: "rgba(255,255,255,.15)",
+      "&:hover": {
+        backgroundColor: "rgba(255,255,255,.18)",
+      },
+    },
+    "&:hover": {
+      color: "primary.main",
     },
   };
 
@@ -200,22 +205,22 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           {/* // desktop view */}
           {!mdDown && (
             <SideList>
-              <AnimatePresence mode="wait">
-                {showChildren ? (
-                  <motion.div
-                    key={router.asPath}
-                    initial={{ x: 100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: 100, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                    style={{ height: "100%" }}
-                  >
-                    {children}
-                  </motion.div>
-                ) : (
-                  <DesktopTabs tabIndex={tabIndex} />
-                )}
-              </AnimatePresence>
+              {/* <AnimatePresence mode="wait"> */}
+              {showChildren ? (
+                // <motion.div
+                //   key={router.asPath}
+                //   initial={{ x: 100, opacity: 0 }}
+                //   animate={{ x: 0, opacity: 1 }}
+                //   exit={{ x: 100, opacity: 0 }}
+                //   transition={{ duration: 0.4, ease: "easeOut" }}
+                //   style={{ height: "100%" }}
+                // >
+                children
+              ) : (
+                // </motion.div>
+                <DesktopTabs tabIndex={tabIndex} />
+              )}
+              {/* </AnimatePresence> */}
             </SideList>
           )}
           {!mdDown && <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />}
