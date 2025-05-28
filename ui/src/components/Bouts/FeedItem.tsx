@@ -1,10 +1,18 @@
-import { Circle, Close, Launch, Person, ViewList } from "@mui/icons-material";
+import {
+  Add,
+  Circle,
+  Close,
+  Launch,
+  Person,
+  ViewList,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
   Card,
   Chip,
   IconButton,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -139,96 +147,110 @@ export default function FeedItem({
           </IconButton>
         </Box>
         <Box
+          display="flex"
+          flexDirection="column"
           sx={{
             ml: { sm: "auto" },
             mt: { xs: 2, sm: 0 },
             mb: { xs: 3, sm: 0 },
           }}
-          display="flex"
-          flexDirection={{ xs: "column", sm: "row" }}
-          alignSelf={"flex-start"}
         >
-          <Box>
-            <Typography component="div" mr={3} variant="overline">
-              Detections
-            </Typography>
-            <Box
-              alignItems="center"
-              display="flex"
-              justifyContent="space-between"
-            >
-              <Typography component="div" mr={3}>
-                {detsCount5MinAgo}{" "}
-                <Typography
-                  fontSize="small"
-                  noWrap
-                  fontWeight="bold"
-                  color="accent2"
-                >
-                  5 min
-                </Typography>
+          <Link
+            href={`/bouts/new/${feed.slug}`}
+            sx={{ alignSelf: { sm: "flex-end" } }}
+          >
+            <Button size="small" variant="outlined" startIcon={<Add />}>
+              New bout
+            </Button>
+          </Link>
+          <Box
+            display="flex"
+            flexDirection={{ xs: "column", sm: "row" }}
+            alignSelf={"flex-start"}
+          >
+            <Box>
+              <Typography component="div" mr={3} variant="overline">
+                Detections
               </Typography>
-              <Typography component="div" mr={3}>
-                {detsCount15MinAgo}
-                <Typography
-                  fontSize="small"
-                  noWrap
-                  color="accent2"
-                  fontWeight="bold"
-                >
-                  15 min
+              <Box
+                alignItems="center"
+                display="flex"
+                justifyContent="space-between"
+              >
+                <Typography component="div" mr={3}>
+                  {detsCount5MinAgo}{" "}
+                  <Typography
+                    fontSize="small"
+                    noWrap
+                    fontWeight="bold"
+                    color="accent2"
+                  >
+                    5 min
+                  </Typography>
                 </Typography>
-              </Typography>
-              <Typography component="div" mr={5}>
-                {detsCount}{" "}
-                <Typography
-                  fontSize="small"
-                  noWrap
-                  color="accent2"
-                  fontWeight="bold"
-                >
-                  1 hr
-                </Typography>
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box sx={{ my: { xs: 2, sm: 0 } }}>
-            <Typography component="div" mr={3} variant="overline">
-              Categories
-            </Typography>
-            <Box
-              alignItems="center"
-              display="flex"
-              justifyContent="space-between"
-            >
-              {categories.map((cat, i) => (
-                <Typography key={i} component="div" mr={3}>
-                  {
-                    recentDetections.filter(({ category }) => cat === category)
-                      .length
-                  }{" "}
+                <Typography component="div" mr={3}>
+                  {detsCount15MinAgo}
                   <Typography
                     fontSize="small"
                     noWrap
                     color="accent2"
                     fontWeight="bold"
                   >
-                    {cat}
+                    15 min
                   </Typography>
                 </Typography>
-              ))}
+                <Typography component="div" mr={5}>
+                  {detsCount}{" "}
+                  <Typography
+                    fontSize="small"
+                    noWrap
+                    color="accent2"
+                    fontWeight="bold"
+                  >
+                    1 hr
+                  </Typography>
+                </Typography>
+              </Box>
             </Box>
-          </Box>
 
-          <Box alignSelf={"stretch"} sx={{ my: { xs: 2, sm: 0 } }}>
-            <Typography component="div" mr={3} variant="overline">
-              Listeners
-            </Typography>
-            <Typography display="flex" alignItems="center" fontSize={14}>
-              <Person sx={{ mr: 1, color: "accent2.main" }} />
-              {listenerCount === undefined ? "-" : listenerCount}
-            </Typography>
+            <Box sx={{ my: { xs: 2, sm: 0 } }}>
+              <Typography component="div" mr={3} variant="overline">
+                Categories
+              </Typography>
+              <Box
+                alignItems="center"
+                display="flex"
+                justifyContent="space-between"
+              >
+                {categories.map((cat, i) => (
+                  <Typography key={i} component="div" mr={3}>
+                    {
+                      recentDetections.filter(
+                        ({ category }) => cat === category,
+                      ).length
+                    }{" "}
+                    <Typography
+                      fontSize="small"
+                      noWrap
+                      color="accent2"
+                      fontWeight="bold"
+                    >
+                      {cat}
+                    </Typography>
+                  </Typography>
+                ))}
+              </Box>
+            </Box>
+
+            <Box alignSelf={"stretch"} sx={{ my: { xs: 2, sm: 0 } }}>
+              <Typography component="div" mr={3} variant="overline">
+                Listeners
+              </Typography>
+              <Typography display="flex" alignItems="center" fontSize={14}>
+                <Person sx={{ mr: 1, color: "accent2.main" }} />
+                {listenerCount === undefined ? "-" : listenerCount}
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Box>
