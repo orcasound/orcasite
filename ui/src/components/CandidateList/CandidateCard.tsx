@@ -93,7 +93,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     setNowPlayingFeed(null);
 
     const player = masterPlayerRef?.current;
-    if (player && typeof player.play === "function") {
+    if (player && player !== null && typeof player.play === "function") {
       player.play();
     }
   };
@@ -188,7 +188,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                   alignItems: "center",
                 }}
               >
-                <Box
+                {/* <Box
                   sx={{
                     backgroundImage: `url(${image})`,
                     backgroundPosition: "center",
@@ -198,7 +198,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                     height: smDown ? "40px" : "60px",
                     borderRadius: "4px",
                   }}
-                ></Box>
+                ></Box> */}
                 <Stack>
                   <Typography
                     variant="body1"

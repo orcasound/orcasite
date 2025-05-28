@@ -100,7 +100,8 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const showChildren = useMemo(() => {
     return (
       router.query.candidateId !== undefined ||
-      pageRoute === "/beta/[feedSlug]/detail"
+      pageRoute === "/beta/[feedSlug]/candidates" ||
+      pageRoute === "/beta/[feedSlug]/about"
     );
   }, [router.query, pageRoute]);
 

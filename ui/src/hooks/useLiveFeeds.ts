@@ -22,6 +22,7 @@ const FEEDS_QUERY = gql`
       mapUrl
       bucket
       online
+      introHtml
     }
   }
 `;

@@ -1,18 +1,28 @@
 import { Box, Typography } from "@mui/material";
 
 import { useData } from "@/context/DataContext";
+import { Feed } from "@/graphql/generated";
+import { standardizeFeedName } from "@/utils/masterDataHelpers";
 
 import ChartSelect from "./ChartSelect";
 
 export function CandidatesResults({
   viewType,
   layout,
+  feed,
 }: {
   viewType: "list" | "chart";
   layout?: string;
+  feed?: Feed;
 }) {
   const { setFilters, sortedCandidates, filters, isSuccessOrcahello } =
     useData();
+
+  const candidates = feed
+    ? sortedCandidates.filter(
+        (c) => c.hydrophone === standardizeFeedName(feed?.name),
+      )
+    : sortedCandidates;
 
   const chartSelect = (
     <ChartSelect
@@ -76,7 +86,7 @@ export function CandidatesResults({
     >
       {layout !== "grid" && (
         <Typography sx={{ fontSize: "14px" }}>
-          Showing {sortedCandidates.length}{" "}
+          Showing {candidates.length}{" "}
           {!isSuccessOrcahello ? "results, checking Orcahello..." : "results"}
         </Typography>
       )}

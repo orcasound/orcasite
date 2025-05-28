@@ -122,7 +122,8 @@ darkTheme.components = {
     defaultProps: {
       // TODO: Remove the `.main` once this issue is fixed in MUI
       // https://github.com/mui-org/material-ui/issues/29596
-      color: "accent3.main",
+      color: darkTheme.palette.text.primary,
+      // underline: "hover",
     },
   },
   MuiBottomNavigation: {

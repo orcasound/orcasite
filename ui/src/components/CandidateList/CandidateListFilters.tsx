@@ -1,3 +1,4 @@
+import { Tune } from "@mui/icons-material";
 import { Button, Stack, Theme, useMediaQuery } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import dayjs, { Dayjs } from "dayjs";
@@ -160,7 +161,12 @@ const CandidateListFilters = () => {
           list={timeRangeSelect}
           onChange={handleChange}
         />
-        <Button size="small" variant="outlined" onClick={handleToggle}>
+        <Button
+          startIcon={<Tune />}
+          size="small"
+          variant="outlined"
+          onClick={handleToggle}
+        >
           Filters
         </Button>
       </Stack>

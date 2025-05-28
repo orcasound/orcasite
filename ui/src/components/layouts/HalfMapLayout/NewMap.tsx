@@ -91,12 +91,6 @@ export default function Map() {
     }
   }, [nowPlayingCandidate, nowPlayingFeed, feeds]);
 
-  // TODO: where would it make sense to show all sightings in a longer time range?
-  // const { filteredData } = useData();
-  // const allSightings = filteredData.filter((el) => {
-  //   return el.newCategory === "SIGHTING";
-  // });
-
   const [map, setMap] = useState<LeafletMap>();
   const [latLng, setLatLng] = useState<LatLngExpression>([48.1, -122.75]);
   const [zoom, setZoom] = useState<number>(9);
@@ -159,17 +153,19 @@ export default function Map() {
             }
             eventHandlers={{
               click: () => {
-                router.push(`/beta/${feed?.slug}`);
+                router.push(`/beta/${f.slug}/candidates`);
               },
             }}
           />
         ))}
         {sightings?.map((sighting) => {
           if (sighting.newCategory !== "SIGHTING") return null;
+          const inRange = sighting.hydrophone !== "out of range";
           return (
             <Marker
               key={sighting.id}
               position={[sighting.latitude, sighting.longitude]}
+              opacity={inRange ? 1 : 0.33}
             >
               <Tooltip
                 className="custom-tooltip"
@@ -183,7 +179,8 @@ export default function Map() {
                     __html: `
                   <strong>${sighting.name}</strong><br />
                   ${sighting.created}<br />
-                  ${sighting.comments}
+                  ${sighting.comments}<br />
+                  Hydrophone: ${sighting.hydrophone}
                   `,
                   }}
                 />

@@ -51,61 +51,6 @@ const CandidatePage: NextPageWithLayout = () => {
     setNowPlayingFeed(null);
   }, [candidate, setNowPlayingCandidate, setNowPlayingFeed]);
 
-  // useEffect(() => {
-  //   if(candidate) {
-  //     setNowPlayingCandidate(candidate);
-  //     setNowPlayingFeed(null);
-  //     const {durationString} = useComputedPlaybackFields(candidate);
-  //     duration = durationString;
-  //   }
-  // },[candidate, setNowPlayingCandidate, setNowPlayingFeed])
-
-  // type localFeedType = { id: string; name: string; slug: string; bucket: string; visible: boolean; image_url: string; node_name: string; intro_html: string; updated_at: string; inserted_at: string; orcahello_id: null; bucket_region: string; cloudfront_url: null; dataplicity_id: null; location_point: { crs: { type: string; properties: { name: string; }; }; type: string; coordinates: number[]; }; } | undefined;
-  // type audioImageType = {
-  //       id: string;
-  //       bucket: string;
-  //       status: string;
-  //       feed_id: string;
-  //       end_time: string;
-  //       image_size: number;
-  //       image_type: string;
-  //       start_time: string;
-  //       object_path: string;
-  // }
-
-  // const localFeed = localFeeds.find(f => f.slug === feedSlug);
-  // const audioImagesThisFeed = (localFeed: localFeedType) => audioImages.filter(f => f.feed_id === localFeed?.id)
-  // const audioImagesThisTimerange = audioImagesThisFeed(localFeed)
-  //   .filter(f => new Date(f.start_time) >= startDate && new Date(f.end_time) <= endDate)
-  // const getObjectPaths = (audioImages: audioImageType[]) => audioImages.map(i => i.object_path);
-  // const getTimes = (audioImages: audioImageType[]) => audioImages.map(i => new Date(i.start_time));
-
-  // Audio images
-
-  // const updatedAudioImages = useAudioImageUpdatedSubscription(
-  //   feed.id,
-  //   startDate,
-  //   endDate,
-  // );
-
-  // const audioImagesQueryResult = useAudioImagesQuery({
-  //   feedId: feed.id,
-  //   startTime: startDate,
-  //   endTime: endDate,
-  // });
-
-  // const initialAudioImages =
-  //   audioImagesQueryResult.data?.audioImages?.results ?? [];
-
-  // const audioImages = _.uniqBy(
-  //   [...updatedAudioImages, ...initialAudioImages].filter(
-  //     (audioImage) => audioImage !== undefined && audioImage !== null,
-  //   ),
-  //   ({ id }) => id,
-  // );
-
-  //
-
   type DetectionStats = {
     all: CombinedData[];
     human: HumanData[];

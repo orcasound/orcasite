@@ -44,7 +44,7 @@ export default function HydrophoneCard({ feed }: Props) {
   // const router = useRouter();
   // const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
   const feedHref = `/beta/${feed.slug}`;
-  const feedDetailHref = feedHref + `/detail`;
+  const feedDetailHref = feedHref + `/candidates`;
 
   const handlePlay = (feed: Feed) => {
     autoPlayOnReady.current = true;
