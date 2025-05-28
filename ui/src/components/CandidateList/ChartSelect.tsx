@@ -37,6 +37,18 @@ export default function ChartSelect({
           onChange={onChange}
           name={name}
           sx={{
+            "& .MuiSelect-select": {
+              padding: "3px 9px", // match small button padding
+              fontSize: fontSize ?? "13px", // match small button font
+              minHeight: "auto",
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid rgba(255,255,255,.25)",
+            },
+            // Optional: adjust icon size
+            "& .MuiSelect-icon": {
+              fontSize: "13px",
+            },
             ...(variant === "standard" && {
               "&::before": {
                 borderBottom: "none !important", // removes underline in standard variant

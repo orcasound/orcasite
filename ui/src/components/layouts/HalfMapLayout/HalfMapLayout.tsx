@@ -1,4 +1,4 @@
-import { Box, Theme, useMediaQuery } from "@mui/material";
+import { Box, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
 import {
@@ -13,7 +13,7 @@ import {
 import DesktopTabs from "@/components/CandidateList/DesktopTabs";
 import { MobileDisplay } from "@/components/CandidateList/MobileDisplay";
 import { MobileTabs } from "@/components/CandidateList/MobileTabs";
-import Header from "@/components/Header";
+import HeaderNew from "@/components/HeaderNew";
 import { useData } from "@/context/DataContext";
 import { LayoutContext } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
@@ -105,9 +105,72 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     );
   }, [router.query, pageRoute]);
 
+  const tabSlugs = ["hydrophones", "candidates", "visualizations"];
+
+  function getTabIndexFromPath(path: string): number {
+    const slug = path.replace("/beta/", "");
+    if (tabSlugs.includes(slug)) {
+      return tabSlugs.indexOf(slug);
+    } else {
+      return 0;
+    }
+  }
+  const tabIndex = getTabIndexFromPath(router.route);
+
+  function a11yProps(index: number) {
+    return {
+      id: `simple-tab-${index}`,
+      "aria-controls": `simple-tabpanel-${index}`,
+    };
+  }
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    router.push(`/beta/${tabSlugs[newValue]}`, undefined, { shallow: true });
+  };
+
+  const tabSx = {
+    padding: "8px 16px !important",
+    margin: "0 10px !important",
+    minWidth: 0,
+    minHeight: "unset",
+    lineHeight: 1.2,
+    borderRadius: "4px",
+    "&.Mui-selected": {
+      backgroundColor: "rgba(255,255,255,.15)",
+    },
+  };
+
+  const tabsSx = {
+    minHeight: "unset", // prevent Tabs from enforcing height on children
+    ".MuiTabs-indicator": {
+      height: "0px",
+      bottom: -1,
+      backgroundColor: "accent3.main",
+    },
+  };
+
+  const tabs = (
+    <Tabs
+      value={tabIndex}
+      onChange={handleChange}
+      aria-label="navigation tabs"
+      centered={mdDown ? true : false}
+      sx={tabsSx}
+    >
+      <Tab
+        className="first-tab"
+        sx={tabSx}
+        label="Listen Live"
+        {...a11yProps(0)}
+      />
+      <Tab sx={tabSx} label="Explore" {...a11yProps(1)} />
+      <Tab sx={tabSx} label="Take Action" {...a11yProps(2)} />
+    </Tabs>
+  );
+
   return (
     <>
-      <Header />
+      <HeaderNew tabs={tabs} />
       <Box
         sx={{
           // use `dvh` for dynamic viewport height to handle mobile browser weirdness
@@ -150,7 +213,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
                     {children}
                   </motion.div>
                 ) : (
-                  <DesktopTabs />
+                  <DesktopTabs tabIndex={tabIndex} />
                 )}
               </AnimatePresence>
             </SideList>

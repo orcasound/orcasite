@@ -146,6 +146,9 @@ darkTheme.components = {
         color: "#fff",
         borderColor: "rgba(255,255,255,.5)",
       },
+      contained: {
+        color: darkTheme.palette.base.dark,
+      },
     },
   },
 };

@@ -3,7 +3,6 @@ import React from "react";
 
 import { Feed } from "@/graphql/generated";
 
-import CandidateListFilters from "./CandidateListFilters";
 import CandidatesList from "./CandidatesList";
 import { CandidatesResults } from "./CandidatesResults";
 import ReportsBarChart from "./ReportsBarChart";
@@ -11,11 +10,9 @@ import ReportsBarChart from "./ReportsBarChart";
 export const CandidatesStack = ({
   feed,
   showChart = false,
-  showFilters = true,
 }: {
   feed?: Feed;
   showChart?: boolean;
-  showFilters?: boolean;
 }) => {
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   return (
@@ -26,12 +23,6 @@ export const CandidatesStack = ({
         flex: 1,
       }}
     >
-      {showFilters && (
-        <>
-          <CandidateListFilters />
-          <Box sx={{ paddingTop: "1.5rem" }}></Box>
-        </>
-      )}
       {showChart && (
         <ReportsBarChart
           showLegend={false}
@@ -40,7 +31,8 @@ export const CandidatesStack = ({
           feed={feed}
         />
       )}
-      <Box sx={{ paddingTop: "1.5rem", overflow: mdDown ? "auto" : "initial" }}>
+      {/* <Box sx={{ paddingTop: "1.5rem" }}></Box> */}
+      <Box sx={{ overflow: mdDown ? "auto" : "initial" }}>
         <CandidatesResults viewType="list" feed={feed} />
         <Box sx={{ paddingTop: "1.5rem" }}></Box>
         <CandidatesList feed={feed} />

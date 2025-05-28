@@ -10,6 +10,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import { useRouter } from "next/router";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
@@ -47,7 +48,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const active = candidate.id === nowPlayingCandidate?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-
+  const router = useRouter();
   const { feeds, autoPlayOnReady } = useData();
   const feed = feeds.find(
     (feed) => feed.id === props.candidate.array[0].feedId,
@@ -188,17 +189,19 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                   alignItems: "center",
                 }}
               >
-                {/* <Box
-                  sx={{
-                    backgroundImage: `url(${image})`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                    width: smDown ? "40px" : "60px",
-                    height: smDown ? "40px" : "60px",
-                    borderRadius: "4px",
-                  }}
-                ></Box> */}
+                {!router.query.feedSlug && (
+                  <Box
+                    sx={{
+                      backgroundImage: `url(${image})`,
+                      backgroundPosition: "center",
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat",
+                      width: smDown ? "40px" : "60px",
+                      height: smDown ? "40px" : "60px",
+                      borderRadius: "4px",
+                    }}
+                  ></Box>
+                )}
                 <Stack>
                   <Typography
                     variant="body1"
