@@ -2,11 +2,11 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 
-import { GlobalStyles } from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { Box, GlobalStyles, IconButton } from "@mui/material";
 import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { LatLngExpression } from "leaflet";
-import { useRouter } from "next/router";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
@@ -19,8 +19,10 @@ import { useMap } from "react-leaflet";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
+import { Feed } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
+import { Sighting } from "@/types/DataTypes";
 
 function LeafletTooltipGlobalStyles() {
   return (
@@ -60,6 +62,22 @@ function MapUpdater({
   return null;
 }
 
+const materialLocationSvg = `<svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="24px"
+      viewBox="0 -960 960 960"
+      width="24px"
+      fill="#258dad"
+    >
+      <path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 400Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Z" />
+    </svg>`;
+
+const sightingMarker = L.divIcon({
+  html: materialLocationSvg,
+  className: "",
+  iconSize: [20, 20],
+});
+
 function AudibleRadiusCircles({ centers }: { centers: LatLngExpression[] }) {
   const map = useMap();
 
@@ -88,9 +106,11 @@ function AudibleRadiusCircles({ centers }: { centers: LatLngExpression[] }) {
 function ReportCount({
   center,
   count,
+  onClick,
 }: {
   center: LatLngExpression;
   count: number;
+  onClick?: () => void;
 }) {
   const map = useMap();
 
@@ -119,20 +139,49 @@ function ReportCount({
       iconAnchor: [15, 15],
     });
 
-    L.marker(center, { icon: countMarker, zIndexOffset: 1001 }).addTo(map);
+    const marker = L.marker(center, {
+      icon: countMarker,
+      zIndexOffset: 1001,
+    });
+
+    if (onClick) {
+      marker.on("click", onClick);
+    }
+
+    marker.addTo(map);
 
     return () => {
-      map.removeLayer(countMarker);
+      marker.removeFrom(map);
     };
-  }, [center, count, map]);
+  }, [center, count, map, onClick]);
+
+  return null;
+}
+
+function MapClickHandler({ onClick }: { onClick: () => void }) {
+  const map = useMap();
+  console.log("ran mapclickhandler");
+  console.log("map instance", map);
+  useEffect(() => {
+    console.log("ran mapclickhandler useeffect");
+    console.log("map instance useffect", map);
+    map.on("click", onClick);
+    return () => {
+      map.off("click", onClick);
+    };
+  }, [map, onClick]);
 
   return null;
 }
 
 export default function Map() {
-  const router = useRouter();
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
   const { feeds, filteredData } = useData();
+
+  const [selectedFeed, setSelectedFeed] = useState<Feed | null>(null);
+  const [selectedDetection, setSelectedDetection] = useState<Sighting | null>(
+    null,
+  );
 
   const sightings = useMemo(() => {
     if (nowPlayingFeed) {
@@ -211,9 +260,15 @@ export default function Map() {
         />
         <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
         <MapUpdater center={latLng} zoom={zoom} />
+        <MapClickHandler
+          onClick={() => {
+            setSelectedFeed(null);
+            setSelectedDetection(null);
+          }}
+        />
         {feeds?.map((f) => (
           <Fragment key={f.slug}>
-            {/* <AudibleRadius center={f.latLng} /> */}
+            {/* // necessary to map circles twice to make them all appear */}
             {feeds?.length && (
               <AudibleRadiusCircles centers={feeds.map((f) => f.latLng)} />
             )}
@@ -226,15 +281,18 @@ export default function Map() {
                   : hydrophoneDefaultIcon
               }
               zIndexOffset={100}
-              eventHandlers={{
-                click: () => {
-                  router.push(`/beta/${f.slug}/candidates`);
-                },
-              }}
             />
             <ReportCount
               center={f.latLng}
-              count={filteredData.filter((d) => d.feedId === f?.id).length}
+              count={
+                filteredData.filter(
+                  (d) => d.feedId === f?.id && d.newCategory !== "SIGHTING",
+                ).length
+              }
+              onClick={() => {
+                setSelectedFeed(f);
+                setSelectedDetection(null);
+              }}
             />
           </Fragment>
         ))}
@@ -244,9 +302,16 @@ export default function Map() {
           return (
             <Marker
               key={sighting.id}
+              icon={sightingMarker}
               zIndexOffset={0}
               position={[sighting.latitude, sighting.longitude]}
               opacity={inRange ? 1 : 0.33}
+              eventHandlers={{
+                click: () => {
+                  setSelectedDetection(sighting);
+                  setSelectedFeed(null);
+                },
+              }}
             >
               <Tooltip
                 className="custom-tooltip"
@@ -270,6 +335,59 @@ export default function Map() {
           );
         })}
       </MapContainer>
+      {(selectedFeed || selectedDetection) && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: "absolute",
+            bottom: "2rem",
+            right: "2rem",
+            zIndex: 10000,
+            background: "white",
+            padding: "16px",
+            borderRadius: "8px",
+            boxShadow: "0px 2px 10px rgba(0,0,0,0.2)",
+            width: "calc(100% - 4rem)",
+            color: "black",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <h3 style={{ margin: "0 0 8px 0", flex: 1 }}>
+              {selectedFeed
+                ? selectedFeed.name
+                : `${selectedDetection?.hydrophone !== "out of range" ? `Sighting near` : "Sighting"} ${selectedDetection?.hydrophone}`}
+            </h3>
+            <IconButton
+              sx={{
+                mr: "-8px",
+                mt: "-12px",
+              }}
+              onClick={() => {
+                setSelectedFeed(null);
+                setSelectedDetection(null);
+              }}
+            >
+              <Close
+                sx={{
+                  color: "black",
+                  fontSize: "1rem",
+                }}
+              />
+            </IconButton>
+          </Box>
+          <p style={{ margin: 0 }}>
+            Lat:{" "}
+            {selectedFeed
+              ? selectedFeed.latLng.lat.toFixed(4)
+              : selectedDetection?.latitude.toFixed(4)}
+            <br />
+            Lng:{" "}
+            {selectedFeed
+              ? selectedFeed.latLng.lng.toFixed(4)
+              : selectedDetection?.longitude.toFixed(4)}
+          </p>
+        </div>
+      )}
     </>
   );
 }
