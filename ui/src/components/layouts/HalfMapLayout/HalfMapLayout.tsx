@@ -1,4 +1,12 @@
-import { Box, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Container,
+  Tab,
+  Tabs,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import {
   ReactElement,
@@ -9,7 +17,8 @@ import {
   useState,
 } from "react";
 
-import DesktopTabs from "@/components/CandidateList/DesktopTabs";
+import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
+import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
 import { MobileDisplay } from "@/components/CandidateList/MobileDisplay";
 import { MobileTabs } from "@/components/CandidateList/MobileTabs";
 import HeaderNew from "@/components/HeaderNew";
@@ -96,13 +105,16 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     router.query.feedSlug,
   ]);
 
-  const showChildren = useMemo(() => {
+  const showChildrenLeft = useMemo(() => {
+    return router.query.candidateId !== undefined;
+  }, [router.query.candidateId]);
+
+  const showChildrenRight = useMemo(() => {
     return (
-      router.query.candidateId !== undefined ||
       pageRoute === "/beta/[feedSlug]/candidates" ||
       pageRoute === "/beta/[feedSlug]/about"
     );
-  }, [router.query, pageRoute]);
+  }, [pageRoute]);
 
   const tabSlugs = ["hydrophones", "candidates", "visualizations"];
 
@@ -165,7 +177,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
       <Tab
         className="first-tab"
         sx={tabSx}
-        label="Listen Live"
+        label="Hydrophones"
         {...a11yProps(0)}
       />
       <Tab sx={tabSx} label="Explore" {...a11yProps(1)} />
@@ -206,7 +218,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           {!mdDown && (
             <SideList>
               {/* <AnimatePresence mode="wait"> */}
-              {showChildren ? (
+              {showChildrenLeft ? (
                 // <motion.div
                 //   key={router.asPath}
                 //   initial={{ x: 100, opacity: 0 }}
@@ -218,17 +230,50 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
                 children
               ) : (
                 // </motion.div>
-                <DesktopTabs tabIndex={tabIndex} />
+
+                <Container
+                  maxWidth="xl"
+                  sx={{
+                    px: { xs: 1, sm: 2, md: 3 },
+                    pb: "200px",
+                    mt: "24px",
+                  }}
+                >
+                  <Typography component="h2" variant="h5" sx={{ mb: "1rem" }}>
+                    Listen Live
+                  </Typography>
+                  <HydrophonesStack />
+                </Container>
               )}
               {/* </AnimatePresence> */}
             </SideList>
           )}
           {!mdDown && <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />}
-
+          {!mdDown && (
+            <SideList>
+              {showChildrenRight ? (
+                children
+              ) : (
+                <Container
+                  maxWidth="xl"
+                  sx={{
+                    px: { xs: 1, sm: 2, md: 3 },
+                    pb: "200px",
+                    mt: "24px",
+                  }}
+                >
+                  <Typography component="h2" variant="h5" sx={{ mb: "1rem" }}>
+                    Reports
+                  </Typography>
+                  <CandidatesStack />
+                </Container>
+              )}
+            </SideList>
+          )}
           {/* // mobile view */}
           {mdDown && (
             <>
-              {showChildren ? (
+              {showChildrenLeft ? (
                 children
               ) : (
                 <>

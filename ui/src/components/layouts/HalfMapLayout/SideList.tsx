@@ -12,7 +12,8 @@ export const SideList = ({ children }: SideListProps) => {
         borderRightColor: "divider",
         borderRightStyle: "solid",
         borderRightWidth: 1,
-        width: "45%",
+        width: "25%",
+        minWidth: "367px",
         overflow: "auto",
       }}
     >
