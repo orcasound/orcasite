@@ -33,9 +33,8 @@ export default function Map({
 
   return (
     <MapContainer
-      center={[47.8, -122.75]}
-      // center={[48.27, -123.23]}
-      zoom={8}
+      center={[48.27, -123.23]}
+      zoom={9}
       maxZoom={13}
       style={{ height: "100%", width: "100%" }}
       ref={setMap}

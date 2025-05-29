@@ -1,7 +1,3 @@
-"use client";
-import "react-datepicker/dist/react-datepicker.css";
-import "@/styles/CustomDatePicker.css";
-
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";

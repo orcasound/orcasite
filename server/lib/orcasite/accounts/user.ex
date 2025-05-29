@@ -106,6 +106,7 @@ defmodule Orcasite.Accounts.User do
   code_interface do
     domain Orcasite.Accounts
 
+    define :register_with_password
     define :sign_in_with_password
     define :by_email, args: [:email]
     define :request_password_reset_with_password

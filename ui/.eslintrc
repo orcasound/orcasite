@@ -4,7 +4,6 @@
   "plugins": ["simple-import-sort", "unused-imports"],
   "ignorePatterns": ["src/graphql/generated"],
   "rules": {
-    "react/react-in-jsx-scope": "off",
     "prefer-const": "warn",
     "simple-import-sort/imports": "warn",
     "simple-import-sort/exports": "warn",
@@ -43,7 +42,7 @@
       "rules": {
         // typescript only rules go here
         "@typescript-eslint/no-unused-vars": "off",
-        "@typescript-eslint/no-empty-function": "warn",
+        "@typescript-eslint/no-empty-function": "warn"
       }
     }
   ]
