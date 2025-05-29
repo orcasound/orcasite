@@ -21,7 +21,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   const routerPath = router.asPath.split("/");
   const feedPage = routerPath[routerPath.length - 1];
 
-  const tabs = ["About", "Candidates", "Take Action"];
+  const tabs = ["About", "Candidates", "Status"];
 
   const tabRow = (tabs: string[]) => (
     <Stack

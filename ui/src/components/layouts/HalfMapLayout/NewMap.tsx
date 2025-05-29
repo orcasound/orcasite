@@ -7,7 +7,7 @@ import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { LatLngExpression } from "leaflet";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -56,6 +56,75 @@ function MapUpdater({
       map.setView(center, zoom); // or map.panTo(center); map.setZoom(zoom);
     }
   }, [center, zoom, map]);
+
+  return null;
+}
+
+function AudibleRadiusCircles({ centers }: { centers: LatLngExpression[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const circles: L.Circle[] = [];
+
+    centers.forEach((center) => {
+      const circle = L.circle(center, {
+        radius: 4828.03, // 3 miles in meters (1 mile = 1609.34 meters)
+        color: "transparent",
+        fillColor: "#ff0000",
+        fillOpacity: 0.033,
+      });
+      circle.addTo(map);
+      circles.push(circle);
+    });
+
+    return () => {
+      circles.forEach((circle) => map.removeLayer(circle));
+    };
+  }, [centers, map]);
+
+  return null;
+}
+
+function ReportCount({
+  center,
+  count,
+}: {
+  center: LatLngExpression;
+  count: number;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!center) return;
+
+    const countMarker = L.divIcon({
+      html: `<div style="position: relative; z-index: 1001;">
+         <span style="
+           position: absolute;
+           top: -10px;
+           right: -10px;
+           background: red;
+           color: white;
+           border-radius: 100%;
+           padding: 2px 5px;
+           font-size: 10px;
+           min-width: 20px;
+           min-height: 20px;
+           display: flex;
+           justify-content: center;
+           align-items; center;
+         ">${count}</span><div>`,
+      className: "",
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+    });
+
+    L.marker(center, { icon: countMarker, zIndexOffset: 1001 }).addTo(map);
+
+    return () => {
+      map.removeLayer(countMarker);
+    };
+  }, [center, count, map]);
 
   return null;
 }
@@ -143,20 +212,31 @@ export default function Map() {
         <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
         <MapUpdater center={latLng} zoom={zoom} />
         {feeds?.map((f) => (
-          <Marker
-            key={f.slug}
-            position={f.latLng}
-            icon={
-              f.slug === feed?.slug
-                ? hydrophoneActiveIcon
-                : hydrophoneDefaultIcon
-            }
-            eventHandlers={{
-              click: () => {
-                router.push(`/beta/${f.slug}/candidates`);
-              },
-            }}
-          />
+          <Fragment key={f.slug}>
+            {/* <AudibleRadius center={f.latLng} /> */}
+            {feeds?.length && (
+              <AudibleRadiusCircles centers={feeds.map((f) => f.latLng)} />
+            )}
+
+            <Marker
+              position={f.latLng}
+              icon={
+                f.slug === feed?.slug
+                  ? hydrophoneActiveIcon
+                  : hydrophoneDefaultIcon
+              }
+              zIndexOffset={100}
+              eventHandlers={{
+                click: () => {
+                  router.push(`/beta/${f.slug}/candidates`);
+                },
+              }}
+            />
+            <ReportCount
+              center={f.latLng}
+              count={filteredData.filter((d) => d.feedId === f?.id).length}
+            />
+          </Fragment>
         ))}
         {sightings?.map((sighting) => {
           if (sighting.newCategory !== "SIGHTING") return null;
@@ -164,6 +244,7 @@ export default function Map() {
           return (
             <Marker
               key={sighting.id}
+              zIndexOffset={0}
               position={[sighting.latitude, sighting.longitude]}
               opacity={inRange ? 1 : 0.33}
             >

@@ -239,7 +239,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
                     mt: "24px",
                   }}
                 >
-                  <Typography component="h2" variant="h5" sx={{ mb: "1rem" }}>
+                  <Typography component="h2" variant="h5" sx={{ mb: "1.5rem" }}>
                     Listen Live
                   </Typography>
                   <HydrophonesStack />

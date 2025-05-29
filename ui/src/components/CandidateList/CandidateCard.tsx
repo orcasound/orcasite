@@ -189,19 +189,18 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                   alignItems: "center",
                 }}
               >
-                {!router.query.feedSlug && (
-                  <Box
-                    sx={{
-                      backgroundImage: `url(${image})`,
-                      backgroundPosition: "center",
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                      width: smDown ? "40px" : "60px",
-                      height: smDown ? "40px" : "60px",
-                      borderRadius: "4px",
-                    }}
-                  ></Box>
-                )}
+                <Box
+                  sx={{
+                    backgroundImage: `url(${image})`,
+                    backgroundPosition: "center",
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    minWidth: smDown ? "40px" : "60px",
+                    minHeight: smDown ? "40px" : "60px",
+                    borderRadius: "4px",
+                  }}
+                ></Box>
+
                 <Stack>
                   <Typography
                     variant="body1"
