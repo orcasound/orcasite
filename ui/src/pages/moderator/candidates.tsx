@@ -10,7 +10,7 @@ const ModeratorCandidatesPage: NextPageWithLayout = () => {
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   return (
     <LayoutContext.Provider value="leftNav">
-      {mdDown ? <DesktopTabs /> : <CandidatesGrid />}
+      {mdDown ? <DesktopTabs tabIndex={0} /> : <CandidatesGrid />}
     </LayoutContext.Provider>
   );
 };
