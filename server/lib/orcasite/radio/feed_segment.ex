@@ -26,7 +26,10 @@ defmodule Orcasite.Radio.FeedSegment do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdseg", public?: true, writable?: Orcasite.Config.seeding_enabled?()
+    uuid_attribute :id,
+      prefix: "fdseg",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
@@ -185,7 +188,11 @@ defmodule Orcasite.Radio.FeedSegment do
       change manage_relationship(:feed_stream, type: :append)
 
       change fn changeset, context ->
-        feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+        feed_id =
+          Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+          |> then(&(&1 |> Map.get(:id) || &1 |> Map.get("id")))
+
+        feed = Orcasite.Radio.Feed |> Ash.get!(feed_id)
 
         playlist_timestamp =
           changeset

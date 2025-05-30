@@ -2053,6 +2053,8 @@ export type RootMutationType = {
   registerWithPassword: RegisterWithPasswordResult;
   requestPasswordReset?: Maybe<Scalars["Boolean"]["output"]>;
   resetPassword?: Maybe<PasswordResetResult>;
+  /** Seed feeds, then the rest of the resources */
+  seedAll: Array<Seed>;
   seedFeeds: SeedFeedsResult;
   seedResource: SeedResourceResult;
   setDetectionVisible: SetDetectionVisibleResult;
@@ -2110,6 +2112,10 @@ export type RootMutationTypeRequestPasswordResetArgs = {
 
 export type RootMutationTypeResetPasswordArgs = {
   input: PasswordResetInput;
+};
+
+export type RootMutationTypeSeedAllArgs = {
+  input?: InputMaybe<SeedAllInput>;
 };
 
 export type RootMutationTypeSeedResourceArgs = {
@@ -2296,10 +2302,16 @@ export type RootSubscriptionTypeBoutNotificationSentArgs = {
 export type Seed = {
   __typename?: "Seed";
   endTime: Scalars["DateTime"]["output"];
+  feedId?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
   resource: SeedResource;
   seededCount?: Maybe<Scalars["Int"]["output"]>;
   startTime: Scalars["DateTime"]["output"];
+};
+
+export type SeedAllInput = {
+  endTime?: InputMaybe<Scalars["DateTime"]["input"]>;
+  startTime?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 /** The result of the :seed_feeds mutation */
@@ -3052,6 +3064,23 @@ export type ResetPasswordMutation = {
       admin?: boolean | null;
     } | null;
   } | null;
+};
+
+export type SeedAllMutationVariables = Exact<{
+  startTime: Scalars["DateTime"]["input"];
+  endTime: Scalars["DateTime"]["input"];
+}>;
+
+export type SeedAllMutation = {
+  __typename?: "RootMutationType";
+  seedAll: Array<{
+    __typename?: "Seed";
+    id: string;
+    resource: SeedResource;
+    startTime: Date;
+    endTime: Date;
+    seededCount?: number | null;
+  }>;
 };
 
 export type SeedFeedsMutationVariables = Exact<{ [key: string]: never }>;
@@ -4476,6 +4505,50 @@ useResetPasswordMutation.fetcher = (
 ) =>
   fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(
     ResetPasswordDocument,
+    variables,
+    options,
+  );
+
+export const SeedAllDocument = `
+    mutation seedAll($startTime: DateTime!, $endTime: DateTime!) {
+  seedAll(input: {startTime: $startTime, endTime: $endTime}) {
+    ...SeedParts
+  }
+}
+    ${SeedPartsFragmentDoc}`;
+
+export const useSeedAllMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    SeedAllMutation,
+    TError,
+    SeedAllMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    SeedAllMutation,
+    TError,
+    SeedAllMutationVariables,
+    TContext
+  >({
+    mutationKey: ["seedAll"],
+    mutationFn: (variables?: SeedAllMutationVariables) =>
+      fetcher<SeedAllMutation, SeedAllMutationVariables>(
+        SeedAllDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useSeedAllMutation.getKey = () => ["seedAll"];
+
+useSeedAllMutation.fetcher = (
+  variables: SeedAllMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SeedAllMutation, SeedAllMutationVariables>(
+    SeedAllDocument,
     variables,
     options,
   );
