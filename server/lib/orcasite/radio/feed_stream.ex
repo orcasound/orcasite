@@ -26,7 +26,10 @@ defmodule Orcasite.Radio.FeedStream do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdstrm", public?: true
+    uuid_attribute :id,
+      prefix: "fdstrm",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
@@ -81,6 +84,10 @@ defmodule Orcasite.Radio.FeedStream do
       public? true
       through Orcasite.Radio.BoutFeedStream
     end
+  end
+
+  code_interface do
+    define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
   end
 
   actions do
@@ -291,6 +298,7 @@ defmodule Orcasite.Radio.FeedStream do
     create :populate_with_segments do
       upsert? true
       upsert_identity :playlist_m3u8_path
+      skip_unknown_inputs :*
 
       accept [
         :start_time,
@@ -445,10 +453,6 @@ defmodule Orcasite.Radio.FeedStream do
                end
              end)
     end
-  end
-
-  code_interface do
-    define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
   end
 
   json_api do

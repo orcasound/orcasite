@@ -21,11 +21,12 @@ defmodule Orcasite.Radio.AudioImage do
   end
 
   identities do
+    identity :id, [:id]
     identity :unique_audio_image, [:feed_id, :image_type, :start_time, :end_time]
   end
 
   attributes do
-    uuid_primary_key :id
+    uuid_primary_key :id, writable?: Orcasite.Config.seeding_enabled?()
     attribute :image_type, Orcasite.Types.ImageType, public?: true
 
     attribute :status, Orcasite.Types.AudioImageStatus do
@@ -192,6 +193,44 @@ defmodule Orcasite.Radio.AudioImage do
 
                  {:ok, record}
              end)
+    end
+
+    create :seed do
+      upsert? true
+      upsert_identity :id
+
+      skip_unknown_inputs :*
+
+      accept [
+        :id,
+        :image_type,
+        :status,
+        :start_time,
+        :end_time,
+        :parameters,
+        :image_size,
+        :bucket,
+        :bucket_region,
+        :object_path,
+        :last_error
+      ]
+
+      upsert_fields [
+        :image_type,
+        :status,
+        :start_time,
+        :end_time,
+        :parameters,
+        :image_size,
+        :bucket,
+        :bucket_region,
+        :object_path,
+        :last_error
+      ]
+
+      argument :feed, :map
+
+      change manage_relationship(:feed, type: :append)
     end
 
     update :generate_spectrogram do
