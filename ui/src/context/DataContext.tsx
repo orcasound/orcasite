@@ -26,9 +26,18 @@ export interface CandidateFilters {
   chartLegend: "category" | "hydrophone";
 }
 
+type FeedCountData = {
+  counts: Record<string, number>;
+  countString: string;
+};
+
+type FeedCounts = {
+  [feed: string]: FeedCountData;
+};
 interface DataContextType {
   feeds: Feed[];
   filteredData: CombinedData[];
+  reportCount: FeedCounts;
   sortedCandidates: Candidate[];
   filters: CandidateFilters;
   setFilters: React.Dispatch<React.SetStateAction<CandidateFilters>>;
@@ -68,6 +77,57 @@ export const DataProvider = ({
     filters.sortOrder,
   );
 
+  const reportCounter = () => {
+    const categories = [...new Set(filteredData.map((el) => el.newCategory))];
+
+    const obj: FeedCounts = { all: { counts: {}, countString: "" } };
+
+    feeds.forEach((feed) => {
+      if (feed.id != null) {
+        obj[feed.id] = { counts: {}, countString: "" };
+      }
+    });
+
+    for (const feed in obj) {
+      categories.forEach((c) => {
+        obj[feed]["counts"][c] = 0;
+      });
+    }
+
+    filteredData.forEach((d) => {
+      if (
+        d.feedId &&
+        d.newCategory &&
+        obj[d.feedId] &&
+        obj[d.feedId]["counts"][d.newCategory] != null
+      ) {
+        obj.all["counts"][d.newCategory] += 1;
+        obj[d.feedId]["counts"][d.newCategory] += 1;
+      }
+    });
+
+    const countString = (obj: Record<string, number>) => {
+      const stringParts = [];
+      for (const key of Object.keys(obj)) {
+        if (typeof obj[key] === "number" && obj[key] > 0) {
+          stringParts.push(
+            `${obj[key]} ${key.toLowerCase()}${key === "SIGHTING" ? "s" : ""}`,
+          );
+        }
+      }
+      return stringParts.join(" · ");
+    };
+
+    for (const feed in obj) {
+      obj[feed].countString = countString(obj[feed]["counts"]);
+    }
+
+    return obj;
+  };
+
+  const reportCount = reportCounter();
+  console.log("reportCount", reportCount);
+
   // controls if player starts when it is loaded -- initial page load sets to false
   const autoPlayOnReady = useRef(true);
 
@@ -75,6 +135,7 @@ export const DataProvider = ({
     <DataContext.Provider
       value={{
         feeds,
+        reportCount,
         filteredData,
         sortedCandidates,
         filters,

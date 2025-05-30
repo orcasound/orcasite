@@ -2,19 +2,12 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 
-import { Close } from "@mui/icons-material";
-import { Box, GlobalStyles, IconButton } from "@mui/material";
+import { GlobalStyles } from "@mui/material";
 import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { LatLngExpression } from "leaflet";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import {
-  MapContainer,
-  Marker,
-  TileLayer,
-  Tooltip,
-  ZoomControl,
-} from "react-leaflet";
+import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import { useMap } from "react-leaflet";
 
 import { useData } from "@/context/DataContext";
@@ -23,6 +16,8 @@ import { Feed } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
 import { Sighting } from "@/types/DataTypes";
+
+import MapPopup from "./MapPopup";
 
 function LeafletTooltipGlobalStyles() {
   return (
@@ -313,7 +308,7 @@ export default function Map() {
                 },
               }}
             >
-              <Tooltip
+              {/* <Tooltip
                 className="custom-tooltip"
                 direction="top"
                 offset={[0, 0]}
@@ -330,63 +325,21 @@ export default function Map() {
                   `,
                   }}
                 />
-              </Tooltip>
+              </Tooltip> */}
             </Marker>
           );
         })}
       </MapContainer>
+
       {(selectedFeed || selectedDetection) && (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            position: "absolute",
-            bottom: "2rem",
-            right: "2rem",
-            zIndex: 10000,
-            background: "white",
-            padding: "16px",
-            borderRadius: "8px",
-            boxShadow: "0px 2px 10px rgba(0,0,0,0.2)",
-            width: "calc(100% - 4rem)",
-            color: "black",
+        <MapPopup
+          sighting={selectedDetection}
+          feed={selectedFeed}
+          onClick={() => {
+            setSelectedDetection(null);
+            setSelectedFeed(null);
           }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <h3 style={{ margin: "0 0 8px 0", flex: 1 }}>
-              {selectedFeed
-                ? selectedFeed.name
-                : `${selectedDetection?.hydrophone !== "out of range" ? `Sighting near` : "Sighting"} ${selectedDetection?.hydrophone}`}
-            </h3>
-            <IconButton
-              sx={{
-                mr: "-8px",
-                mt: "-12px",
-              }}
-              onClick={() => {
-                setSelectedFeed(null);
-                setSelectedDetection(null);
-              }}
-            >
-              <Close
-                sx={{
-                  color: "black",
-                  fontSize: "1rem",
-                }}
-              />
-            </IconButton>
-          </Box>
-          <p style={{ margin: 0 }}>
-            Lat:{" "}
-            {selectedFeed
-              ? selectedFeed.latLng.lat.toFixed(4)
-              : selectedDetection?.latitude.toFixed(4)}
-            <br />
-            Lng:{" "}
-            {selectedFeed
-              ? selectedFeed.latLng.lng.toFixed(4)
-              : selectedDetection?.longitude.toFixed(4)}
-          </p>
-        </div>
+        />
       )}
     </>
   );

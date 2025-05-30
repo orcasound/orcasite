@@ -1,12 +1,12 @@
+import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
 import { getLeftNavLayout } from "@/components/layouts/LeftNavLayout";
 import { LayoutContext } from "@/context/LayoutContext";
 import type { NextPageWithLayout } from "@/pages/_app";
-import Candidates from "@/pages/moderator/candidates";
 
 const BetaPage: NextPageWithLayout = () => {
   return (
     <LayoutContext.Provider value="leftNav">
-      <Candidates />
+      <CandidatesStack />
     </LayoutContext.Provider>
   );
 };
