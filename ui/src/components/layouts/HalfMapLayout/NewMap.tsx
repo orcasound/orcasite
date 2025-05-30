@@ -6,6 +6,7 @@ import { GlobalStyles } from "@mui/material";
 import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { LatLngExpression } from "leaflet";
+import { useRouter } from "next/router";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import { useMap } from "react-leaflet";
@@ -173,15 +174,28 @@ export default function Map() {
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
   const { feeds, filteredData } = useData();
 
-  const [selectedFeed, setSelectedFeed] = useState<Feed | null>(null);
-  const [selectedDetection, setSelectedDetection] = useState<Sighting | null>(
-    null,
-  );
+  const [popupFeed, setPopupFeed] = useState<Feed | null>(null);
+  const [popupDetection, setPopupDetection] = useState<Sighting | null>(null);
+
+  // close the popup when the URL changes
+  const router = useRouter();
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setPopupDetection(null);
+      setPopupFeed(null);
+    };
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  });
 
   const sightings = useMemo(() => {
+    // show sightings within global filter time range in live player mode
     if (nowPlayingFeed) {
       return filteredData?.filter((d) => d.newCategory === "SIGHTING");
     } else if (nowPlayingCandidate) {
+      // show sightings within candidate time range in candidate player mode
       const startDate = new Date(nowPlayingCandidate.startTimestamp);
       const endDate = new Date(nowPlayingCandidate.endTimestamp);
       return filteredData?.filter((d) => {
@@ -257,8 +271,9 @@ export default function Map() {
         <MapUpdater center={latLng} zoom={zoom} />
         <MapClickHandler
           onClick={() => {
-            setSelectedFeed(null);
-            setSelectedDetection(null);
+            // close popup when clicking on the map
+            setPopupFeed(null);
+            setPopupDetection(null);
           }}
         />
         {feeds?.map((f) => (
@@ -285,8 +300,8 @@ export default function Map() {
                 ).length
               }
               onClick={() => {
-                setSelectedFeed(f);
-                setSelectedDetection(null);
+                setPopupFeed(f);
+                setPopupDetection(null);
               }}
             />
           </Fragment>
@@ -303,8 +318,8 @@ export default function Map() {
               opacity={inRange ? 1 : 0.33}
               eventHandlers={{
                 click: () => {
-                  setSelectedDetection(sighting);
-                  setSelectedFeed(null);
+                  setPopupDetection(sighting);
+                  setPopupFeed(null);
                 },
               }}
             >
@@ -331,13 +346,13 @@ export default function Map() {
         })}
       </MapContainer>
 
-      {(selectedFeed || selectedDetection) && (
+      {(popupFeed || popupDetection) && (
         <MapPopup
-          sighting={selectedDetection}
-          feed={selectedFeed}
+          sighting={popupDetection}
+          feed={popupFeed}
           onClick={() => {
-            setSelectedDetection(null);
-            setSelectedFeed(null);
+            setPopupDetection(null);
+            setPopupFeed(null);
           }}
         />
       )}
