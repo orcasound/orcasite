@@ -156,11 +156,7 @@ function ReportCount({
 
 function MapClickHandler({ onClick }: { onClick: () => void }) {
   const map = useMap();
-  console.log("ran mapclickhandler");
-  console.log("map instance", map);
   useEffect(() => {
-    console.log("ran mapclickhandler useeffect");
-    console.log("map instance useffect", map);
     map.on("click", onClick);
     return () => {
       map.off("click", onClick);

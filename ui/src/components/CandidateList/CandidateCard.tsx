@@ -10,6 +10,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import { useRouter } from "next/router";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
@@ -43,6 +44,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     masterPlayerRef,
     masterPlayerStatus,
   } = useNowPlaying();
+  const router = useRouter();
   const candidate = props.candidate;
   const active = candidate.id === nowPlayingCandidate?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -90,6 +92,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     autoPlayOnReady.current = true;
     setNowPlayingCandidate(candidate);
     setNowPlayingFeed(null);
+    router.push(candidateHref);
 
     const player = masterPlayerRef?.current;
     if (player && player !== null && typeof player.play === "function") {

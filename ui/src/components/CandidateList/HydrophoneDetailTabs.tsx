@@ -18,12 +18,22 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   const { feeds } = useData();
   const feed = feeds.find((feed) => feed.slug === feedSlug);
 
-  const routerPath = router.asPath.split("/");
-  const feedPage = routerPath[routerPath.length - 1];
+  const route = router.route.split("/");
+  const tabPage = route[route.length - 1];
+  const isIndexPage = tabPage === "[feedSlug]";
 
-  const tabs = ["About", "Candidates", "Status"];
+  type Tab = {
+    title: string;
+    slug: string;
+  };
 
-  const tabRow = (tabs: string[]) => (
+  const tabs = [
+    { title: "About", slug: "" },
+    { title: "Candidates", slug: "candidates" },
+    { title: "Status", slug: "#" },
+  ];
+
+  const tabRow = (tabs: Tab[]) => (
     <Stack
       direction="row"
       gap="40px"
@@ -34,12 +44,12 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
       }}
     >
       {tabs.map((tab) => {
-        const active = tab.toLowerCase() === feedPage;
-        const tabRoute = tab.split(" ").join("-").toLowerCase();
+        const tabSlug = tab.slug;
+        const active = isIndexPage ? tabSlug === "" : tabPage === tabSlug;
         return (
           <Link
-            key={tab}
-            href={`/beta/${feedSlug}/${tabRoute}`}
+            key={tab.title}
+            href={`/beta/${feedSlug}/${tabSlug}`}
             style={{
               color: active
                 ? darkTheme.palette.text.primary
@@ -52,7 +62,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
                 : "none",
             }}
           >
-            {tab}
+            {tab.title}
           </Link>
         );
       })}
@@ -71,7 +81,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
           sx={{
             position: "relative",
             // marginTop: 5,
-            marginBottom: "8px",
+            marginBottom: "2px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -94,7 +104,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
             }}
           />
           <Link
-            href={`/beta/${feed?.slug}`}
+            href={`/beta`}
             style={{
               display: "flex",
               alignItems: "center",
@@ -121,6 +131,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
               component="h1"
               sx={{
                 zIndex: 1,
+                lineHeight: 1.1,
                 position: "relative",
                 textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
               }}

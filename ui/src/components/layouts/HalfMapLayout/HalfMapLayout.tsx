@@ -8,14 +8,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import {
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ReactElement, ReactNode, useMemo, useRef, useState } from "react";
 
 import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
 import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
@@ -36,8 +29,6 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  console.log("pageRoute is: " + pageRoute);
-  console.log("router.query is: " + JSON.stringify(router.query));
 
   const {
     nowPlayingCandidate,
@@ -56,54 +47,54 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   // tabValue is the state of the tabs at the top in <MobileTabs>
   const [tabValue, setTabValue] = useState(0);
 
-  useEffect(() => {
-    if (pageRoute === "/beta/hydrophones" || pageRoute === "/beta") {
-      setMenuTab(1);
-      setTabValue(0);
-      if (!nowPlayingFeed) {
-        autoPlayOnReady.current = false;
-        setNowPlayingFeed(feeds[0]);
-        setNowPlayingCandidate(null);
-      }
-    } else if (pageRoute === "/beta/[feedSlug]") {
-      setMenuTab(1);
-      setTabValue(0);
-      setNowPlayingFeed(
-        feeds.find((f) => f.slug === router.query.feedSlug) ?? null,
-      );
-      setNowPlayingCandidate(null);
-    } else if (pageRoute === "/beta/candidates") {
-      setMenuTab(0);
-      setTabValue(1);
-      if (!nowPlayingCandidate) {
-        autoPlayOnReady.current = false;
-        setNowPlayingCandidate(sortedCandidates[0]);
-        setNowPlayingFeed(null);
-      }
-      if (setQueue) setQueue(sortedCandidates);
-    } else if (pageRoute === "/beta/visualizations") {
-      setMenuTab(0);
-      setTabValue(2);
-      if (!nowPlayingCandidate && !nowPlayingFeed) {
-        autoPlayOnReady.current = false;
-        setNowPlayingCandidate(sortedCandidates[0]);
-        setNowPlayingFeed(null);
-      }
-    }
-  }, [
-    pageRoute,
-    setMenuTab,
-    setTabValue,
-    nowPlayingFeed,
-    nowPlayingCandidate,
-    feeds,
-    autoPlayOnReady,
-    setNowPlayingCandidate,
-    setNowPlayingFeed,
-    sortedCandidates,
-    setQueue,
-    router.query.feedSlug,
-  ]);
+  // useEffect(() => {
+  //   if (pageRoute === "/beta/hydrophones" || pageRoute === "/beta") {
+  //     setMenuTab(1);
+  //     setTabValue(0);
+  //     if (!nowPlayingFeed) {
+  //       autoPlayOnReady.current = false;
+  //       setNowPlayingFeed(feeds[0]);
+  //       setNowPlayingCandidate(null);
+  //     }
+  //   } else if (pageRoute === "/beta/[feedSlug]") {
+  //     setMenuTab(1);
+  //     setTabValue(0);
+  //     setNowPlayingFeed(
+  //       feeds.find((f) => f.slug === router.query.feedSlug) ?? null,
+  //     );
+  //     setNowPlayingCandidate(null);
+  //   } else if (pageRoute === "/beta/candidates") {
+  //     setMenuTab(0);
+  //     setTabValue(1);
+  //     if (!nowPlayingCandidate) {
+  //       autoPlayOnReady.current = false;
+  //       setNowPlayingCandidate(sortedCandidates[0]);
+  //       setNowPlayingFeed(null);
+  //     }
+  //     if (setQueue) setQueue(sortedCandidates);
+  //   } else if (pageRoute === "/beta/visualizations") {
+  //     setMenuTab(0);
+  //     setTabValue(2);
+  //     if (!nowPlayingCandidate && !nowPlayingFeed) {
+  //       autoPlayOnReady.current = false;
+  //       setNowPlayingCandidate(sortedCandidates[0]);
+  //       setNowPlayingFeed(null);
+  //     }
+  //   }
+  // }, [
+  //   pageRoute,
+  //   setMenuTab,
+  //   setTabValue,
+  //   nowPlayingFeed,
+  //   nowPlayingCandidate,
+  //   feeds,
+  //   autoPlayOnReady,
+  //   setNowPlayingCandidate,
+  //   setNowPlayingFeed,
+  //   sortedCandidates,
+  //   setQueue,
+  //   router.query.feedSlug,
+  // ]);
 
   const showChildrenLeft = useMemo(() => {
     return router.query.candidateId !== undefined;
@@ -112,7 +103,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const showChildrenRight = useMemo(() => {
     return (
       pageRoute === "/beta/[feedSlug]/candidates" ||
-      pageRoute === "/beta/[feedSlug]/about"
+      pageRoute === "/beta/[feedSlug]"
     );
   }, [pageRoute]);
 

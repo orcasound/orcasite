@@ -1,9 +1,4 @@
-import {
-  NavigateNext,
-  Pause,
-  PlayArrow,
-  PlayCircle,
-} from "@mui/icons-material";
+import { Pause, PlayArrow, PlayCircle } from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -44,7 +39,6 @@ export default function HydrophoneCard({ feed }: Props) {
   // const router = useRouter();
   // const basePath = router.pathname.replace(/\[.*?\]/g, "").replace(/\/$/, ""); // remove the query in [], then remove any trailing slash
   const feedHref = `/beta/${feed.slug}`;
-  const feedDetailHref = feedHref + `/about`;
 
   const handlePlay = (feed: Feed) => {
     autoPlayOnReady.current = true;
@@ -188,12 +182,12 @@ export default function HydrophoneCard({ feed }: Props) {
                     {feed.name}
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
-                    {`LIVE: ${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
+                    {`Live: ${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
                   </Typography>
                 </Stack>
               </Link>
-              <Link
-                href={feedDetailHref}
+              {/* <Link
+                href={feedHref}
                 style={{
                   color: "inherit",
                   textDecoration: "inherit",
@@ -205,7 +199,7 @@ export default function HydrophoneCard({ feed }: Props) {
                 }}
               >
                 <NavigateNext />
-              </Link>
+              </Link> */}
             </Box>
           </Box>
         </CardContent>
