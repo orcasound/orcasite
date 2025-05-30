@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   Card,
@@ -17,17 +16,18 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   FeedQuery,
   SeedFeedsResult,
   SeedResource,
   SeedResourceResult,
   useFeedsQuery,
+  useSeedAllMutation,
   useSeedFeedsMutation,
   useSeedResourceMutation,
 } from "@/graphql/generated";
 import { NextPageWithLayout } from "@/pages/_app";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 const SeedPage: NextPageWithLayout = () => {
   const feedsQuery = useFeedsQuery();
@@ -38,13 +38,15 @@ const SeedPage: NextPageWithLayout = () => {
   const [selectedFeed, setSelectedFeed] = useState<string | undefined>();
   const intervals = [1, 5, 10, 15, 30, 45, 60]; // minutes
   const [selectedInterval, setSelectedInterval] = useState(60);
-  const [selectedResource, setSelectedResource] = useState(resources[0]);
+  const [selectedResource, setSelectedResource] = useState<
+    SeedResource | "ALL"
+  >("ALL");
 
   useEffect(() => {
     if (selectedFeed === undefined && feeds.length > 0) {
       setSelectedFeed(feeds[0].id);
     }
-  }, [feeds]);
+  }, [selectedFeed, feeds]);
 
   const [seedForm, setSeedForm] = useState({
     isSaving: false,
@@ -52,6 +54,7 @@ const SeedPage: NextPageWithLayout = () => {
     saved: false,
     message: "",
   });
+
   const onSuccess = (response: SeedFeedsResult | SeedResourceResult) => {
     const { result, errors } = response;
     if (errors && errors.length > 0) {
@@ -87,8 +90,44 @@ const SeedPage: NextPageWithLayout = () => {
     },
   });
 
+  const seedAllMutation = useSeedAllMutation({
+    onSuccess: ({ seedAll }) => {
+      const counts = Object.entries(
+        seedAll.reduce((acc: { [key: string]: number }, result) => {
+          const seededCount = result.seededCount || 0;
+          if (seededCount > 0) {
+            acc[result.resource as string] =
+              (acc[result.resource as string] ?? 0) +
+              (result?.seededCount || 0);
+          }
+          return acc;
+        }, {}),
+      );
+
+      const countString = counts
+        .filter(([_resource, count]) => count > 0)
+        .map(([resource, count]) => {
+          console.log(resource, count);
+          return `${count} ${lowerCaseResource(resource)}${count === 1 ? "" : "s"}`;
+        })
+        .join(", ");
+      setSeedForm((form) => ({
+        ...form,
+        isSaving: false,
+        saved: true,
+        message: `Seeded ${countString}`,
+      }));
+    },
+  });
+
   const handleSubmit = () => {
-    if (selectedResource === "FEED") {
+    setSeedForm((form) => ({ ...form, isSaving: true }));
+    if (selectedResource === "ALL") {
+      seedAllMutation.mutate({
+        startTime: startTime,
+        endTime: addMinutes(startTime, selectedInterval),
+      });
+    } else if (selectedResource === "FEED") {
       seedFeedsMutation.mutate({});
     } else if (selectedFeed) {
       seedResourceMutation.mutate({
@@ -129,6 +168,7 @@ const SeedPage: NextPageWithLayout = () => {
                     setSelectedResource(event.target.value as SeedResource)
                   }
                 >
+                  <MenuItem value="ALL">All</MenuItem>
                   {resources.map((resource) => (
                     <MenuItem value={resource} key={resource}>
                       {titleizeResource(resource)}s
@@ -139,22 +179,25 @@ const SeedPage: NextPageWithLayout = () => {
             </FormControl>
             {selectedResource !== "FEED" && selectedFeed && (
               <>
-                <FormControl sx={{ minWidth: "100px" }}>
-                  <InputLabel>Feed</InputLabel>
-                  <Select
-                    label="Feed"
-                    value={selectedFeed}
-                    onChange={(event) =>
-                      event.target.value && setSelectedFeed(event.target.value)
-                    }
-                  >
-                    {feeds.map((feed: FeedQuery["feed"]) => (
-                      <MenuItem value={feed.id} key={feed.id}>
-                        {feed.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                {selectedResource !== "ALL" && (
+                  <FormControl sx={{ minWidth: "100px" }}>
+                    <InputLabel>Feed</InputLabel>
+                    <Select
+                      label="Feed"
+                      value={selectedFeed}
+                      onChange={(event) =>
+                        event.target.value &&
+                        setSelectedFeed(event.target.value)
+                      }
+                    >
+                      {feeds.map((feed: FeedQuery["feed"]) => (
+                        <MenuItem value={feed.id} key={feed.id}>
+                          {feed.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
                 <Box>
                   <Typography fontSize={12}>Starting</Typography>
                   <input
@@ -197,7 +240,9 @@ const SeedPage: NextPageWithLayout = () => {
               size="large"
               variant="contained"
               disabled={seedForm.isSaving}
-              {...(seedForm.isSaving ? { startIcon: <LoadingSpinner /> } : {})}
+              {...(seedForm.isSaving
+                ? { startIcon: <LoadingSpinner fontSize={8} /> }
+                : {})}
               onClick={handleSubmit}
             >
               Submit

@@ -137,7 +137,7 @@ defmodule Orcasite.Radio.GraphqlClient do
         ) {
           count
           results {
-            #{feed_stream_attrs}
+            #{feed_stream_attrs |> Enum.join(", ")}
 
             feedSegments(
               filter: {
@@ -149,7 +149,7 @@ defmodule Orcasite.Radio.GraphqlClient do
               },
               sort: {field: START_TIME, order: DESC},
             ) {
-              #{feed_seg_attrs}
+              #{feed_seg_attrs |> Enum.join(", ")}
 
               feed {
                 id
@@ -160,6 +160,7 @@ defmodule Orcasite.Radio.GraphqlClient do
       }
     |
     |> submit()
+    |> parse_response(["data", "feedStreams", "results"])
   end
 
   def get_candidates(feed_id, from_datetime, to_datetime) do
