@@ -8,5 +8,10 @@ query getCurrentUser {
     admin
     moderator
     token
+    isScientist
+    organization
+    newsletter
+    volunteering
+    userTesting
   }
 }

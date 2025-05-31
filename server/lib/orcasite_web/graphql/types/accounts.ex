@@ -10,7 +10,7 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
 
   object :sign_in_with_password_result do
     field :user, :user
-    field :errors, list_of(:mutation_error)
+    field :errors, non_null(list_of(non_null(:mutation_error)))
   end
 
   input_object :request_password_reset_input do
@@ -25,7 +25,7 @@ defmodule OrcasiteWeb.Graphql.Types.Accounts do
 
   object :password_reset_result do
     field :user, :user
-    field :errors, list_of(:mutation_error)
+    field :errors, non_null(list_of(non_null(:mutation_error)))
   end
 
   object :accounts_user_mutations do
