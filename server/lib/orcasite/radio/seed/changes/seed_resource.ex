@@ -4,6 +4,8 @@ defmodule Orcasite.Radio.Seed.Changes.SeedResource do
   alias Orcasite.Radio.Seed.Utils
   alias Orcasite.Radio.Seed.Types.Resource
 
+  require Logger
+
   @impl true
   def change(changeset, _opts, _context) do
     resource_name = Ash.Changeset.get_argument(changeset, :resource)
@@ -37,6 +39,8 @@ defmodule Orcasite.Radio.Seed.Changes.SeedResource do
           |> Ash.Changeset.force_change_attribute(:seeded_count, count)
 
         %{errors: errors} ->
+          Logger.error("Error while seeding #{resource_name}: #{inspect(errors)}")
+
           change
           |> Ash.Changeset.add_error(errors)
       end
