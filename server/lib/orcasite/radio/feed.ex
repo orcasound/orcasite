@@ -107,6 +107,10 @@ defmodule Orcasite.Radio.Feed do
       authorize_if always()
     end
 
+    bypass action(:get_detections_count) do
+      authorize_if always()
+    end
+
     policy action(:generate_spectrogram) do
       authorize_if actor_attribute_equals(:moderator, true)
     end
