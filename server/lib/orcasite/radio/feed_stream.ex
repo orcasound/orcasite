@@ -127,6 +127,8 @@ defmodule Orcasite.Radio.FeedStream do
       argument :link_streams?, :boolean, default: false
       argument :bucket, :string
 
+      change manage_relationship(:feed, type: :append)
+
       change fn changeset, _context ->
         path =
           changeset
@@ -162,7 +164,11 @@ defmodule Orcasite.Radio.FeedStream do
         if !changeset.valid? do
           changeset
         else
-          feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+          feed_id =
+            Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+            |> then(&(&1 |> Map.get(:id) || &1 |> Map.get("id")))
+
+          feed = Orcasite.Radio.Feed |> Ash.get!(feed_id)
 
           playlist_timestamp =
             changeset
@@ -220,7 +226,8 @@ defmodule Orcasite.Radio.FeedStream do
     create :create do
       primary? true
       upsert? true
-      upsert_identity :feed_stream_timestamp
+      upsert_identity :playlist_m3u8_path
+      skip_unknown_inputs :*
 
       upsert_fields [
         :start_time,
@@ -257,7 +264,11 @@ defmodule Orcasite.Radio.FeedStream do
       change manage_relationship(:prev_feed_stream, type: :append)
 
       change fn changeset, context ->
-        feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+        feed_id =
+          Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+          |> then(&(&1 |> Map.get(:id) || &1 |> Map.get("id")))
+
+        feed = Orcasite.Radio.Feed |> Ash.get!(feed_id)
 
         playlist_timestamp =
           changeset

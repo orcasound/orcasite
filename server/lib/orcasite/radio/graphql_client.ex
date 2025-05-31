@@ -107,6 +107,10 @@ defmodule Orcasite.Radio.GraphqlClient do
           count
           results {
             #{Enum.join(attrs, ", ")}
+
+            feed {
+              id
+            }
           }
         }
       }
