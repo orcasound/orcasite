@@ -6,9 +6,11 @@ import {
   Notifications,
 } from "@mui/icons-material";
 import {
+  Alert,
   AppBar,
   Box,
   Button,
+  Collapse,
   Drawer,
   IconButton,
   List,
@@ -16,8 +18,10 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Theme,
   Toolbar,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import Image from "next/image";
 import { ReactNode, useState } from "react";
@@ -36,10 +40,13 @@ export default function HeaderNew({
   onBrandClick?: () => void;
   tabs?: ReactNode;
 }) {
+  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  const [alertOpen, setAlertOpen] = useState(true);
+
   return (
     <AppBar
       // position="sticky"
-      position="fixed" // needed this to be fixed to avoid issue with 100vh preventing scroll on mobile
+      position={mdDown ? "fixed" : "static"} // needed this to be fixed to avoid issue with 100vh preventing scroll on mobile
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -49,6 +56,33 @@ export default function HeaderNew({
         <Mobile onBrandClick={onBrandClick} />
         <Desktop tabs={tabs} />
       </Toolbar>
+      <Collapse in={alertOpen}>
+        <Alert
+          severity="info"
+          variant="filled"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlertOpen(false);
+              }}
+            >
+              <Close fontSize="inherit" />
+            </IconButton>
+          }
+          sx={{
+            borderRadius: 0,
+            justifyContent: "center",
+            "& .MuiAlert-action": {
+              marginLeft: 0,
+            },
+          }}
+        >
+          DO THIS THING
+        </Alert>
+      </Collapse>{" "}
     </AppBar>
   );
 }

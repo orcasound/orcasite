@@ -118,7 +118,6 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <HeaderNew tabs={tabs} />
       <Box
         sx={{
           // use `dvh` for dynamic viewport height to handle mobile browser weirdness
@@ -135,6 +134,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           flexGrow: 1,
         }}
       >
+        <HeaderNew tabs={tabs} />
         <Box
           component="main"
           sx={{

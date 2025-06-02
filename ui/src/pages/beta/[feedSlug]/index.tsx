@@ -1,8 +1,10 @@
+import { Paper, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 import HydrophoneDetailTabs from "@/components/CandidateList/HydrophoneDetailTabs";
 import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout/HalfMapLayout";
+import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -40,6 +42,25 @@ const HydrophonePage: NextPageWithLayout = () => {
           />
         )}{" "}
       </div> */}
+      <Paper
+        elevation={0}
+        sx={{
+          backgroundColor: "accent1.main",
+          p: 2,
+          borderRadius: 1,
+          mt: 2,
+        }}
+      >
+        <Typography variant="body2">
+          Hosted by <strong>Beam Reach</strong>
+          <br />
+          <Link href="#" target="_blank" rel="noopener">
+            Learn more or donate
+          </Link>{" "}
+          to support their work.
+        </Typography>
+      </Paper>
+
       {feed?.introHtml ? (
         <div
           className="intro"

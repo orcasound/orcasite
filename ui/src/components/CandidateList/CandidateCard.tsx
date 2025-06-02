@@ -47,7 +47,6 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const router = useRouter();
   const candidate = props.candidate;
   const active = candidate.id === nowPlayingCandidate?.id;
-  // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { feeds, autoPlayOnReady } = useData();
   const feed = feeds.find(
