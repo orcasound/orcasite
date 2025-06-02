@@ -98,8 +98,10 @@ export default function LivePlayer({
   const handleReady = useCallback(
     (player: VideoJSPlayer) => {
       playerRef.current = player;
-      masterPlayerRef.current = playerRef.current;
-      if (autoPlayOnReady.current) player.play();
+      masterPlayerRef.current = player;
+      if (autoPlayOnReady.current) {
+        player.play();
+      }
 
       player.on("playing", () => {
         setPlayerStatus("playing");
@@ -182,6 +184,7 @@ export default function LivePlayer({
 
   return (
     <PlayerBase
+      key={currentFeed.id}
       type="feed"
       playerOptions={playerOptions}
       handleReady={handleReady}

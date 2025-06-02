@@ -126,7 +126,6 @@ export const DataProvider = ({
   };
 
   const reportCount = reportCounter();
-  console.log("reportCount", reportCount);
 
   // controls if player starts when it is loaded -- initial page load sets to false
   const autoPlayOnReady = useRef(true);

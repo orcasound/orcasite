@@ -9,6 +9,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import { useRouter } from "next/router";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
@@ -30,6 +31,7 @@ export default function HydrophoneCard({ feed }: Props) {
   } = useNowPlaying();
 
   const { autoPlayOnReady } = useData();
+  const router = useRouter();
 
   const active = feed.id === nowPlayingFeed?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -44,7 +46,8 @@ export default function HydrophoneCard({ feed }: Props) {
     autoPlayOnReady.current = true;
     setNowPlayingFeed(feed);
     setNowPlayingCandidate(null);
-    masterPlayerRef?.current?.play();
+    // masterPlayerRef?.current?.play();
+    router.push(`/beta/${feed.slug}`);
   };
 
   const handlePause = () => {
@@ -162,12 +165,14 @@ export default function HydrophoneCard({ feed }: Props) {
                 // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
                 href={feedHref}
                 onClick={() => (autoPlayOnReady.current = false)}
+                className="feed-href"
                 sx={{
                   color: "inherit",
                   textDecoration: "inherit",
                   display: "flex",
                   alignItems: "center",
                   flex: 1,
+                  height: "100%",
                 }}
               >
                 <Stack sx={{ flex: 1 }}>
@@ -182,7 +187,7 @@ export default function HydrophoneCard({ feed }: Props) {
                     {feed.name}
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
-                    {`Live: ${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
+                    {`${feed.online && "Live: "}${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
                   </Typography>
                 </Stack>
               </Link>
