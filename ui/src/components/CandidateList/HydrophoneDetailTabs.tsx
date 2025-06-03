@@ -12,12 +12,19 @@ import darkTheme from "@/styles/darkTheme";
 
 const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-
   const { feedSlug } = router.query;
+
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const theme = useTheme();
   const { feeds } = useData();
   const feed = feeds.find((feed) => feed.slug === feedSlug);
+
+  const isCandidateDetail =
+    !!router.query.feedSlug && !!router.query.candidateId;
+
+  const href = isCandidateDetail
+    ? `/beta/candidates/${feed?.slug}/${router.query.candidateId}`
+    : `/beta`;
 
   const route = router.route.split("/");
   const tabPage = route[route.length - 1];
@@ -110,7 +117,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
             }}
           />
           <Link
-            href={`/beta`}
+            href={href}
             style={{
               display: "flex",
               alignItems: "center",
