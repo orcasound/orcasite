@@ -52,7 +52,7 @@ const CandidatePage: NextPageWithLayout = () => {
   // const feedDetailCandidateHref = `/beta/${feed?.slug}/${candidate?.id}`;
 
   // if the card is rendered on browse all candidates, show candidateBrowseHref
-  const allCandidatesHref = `/beta/candidates`;
+  const allCandidatesHref = `/beta`;
   // const allCandidatesDetailHref = `/beta/candidates/${feed?.slug}/${candidate?.id}`;
 
   const closeHref = !isFeedDetail ? allCandidatesHref : feedDetailHref;

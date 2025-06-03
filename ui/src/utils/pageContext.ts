@@ -9,7 +9,7 @@ export function getPageContext(router: NextRouter) {
     "/beta/[feedSlug]/[candidateId]",
   ];
   const allCandidatesRoutes = [
-    "/beta/candidates",
+    "/beta",
     "/beta/candidates/[feedSlug]/[candidateId]",
   ];
 

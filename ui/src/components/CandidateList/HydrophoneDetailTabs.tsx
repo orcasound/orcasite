@@ -1,7 +1,6 @@
 import { ArrowBackIos } from "@mui/icons-material";
 import { PlayCircle } from "@mui/icons-material";
 import { Box, Container, Stack, Typography, useTheme } from "@mui/material";
-import { AnimatePresence, motion } from "framer-motion";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -163,18 +162,8 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
         >
           {tabRow(tabs)}
         </Box>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={router.asPath}
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 100, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ height: "100%" }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+
+        {children}
       </Container>
     </div>
   );

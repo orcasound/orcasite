@@ -7,7 +7,7 @@ import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { LatLngExpression } from "leaflet";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import { useMap } from "react-leaflet";
 
@@ -173,18 +173,21 @@ export default function Map() {
   const [popupFeed, setPopupFeed] = useState<Feed | null>(null);
   const [popupDetection, setPopupDetection] = useState<Sighting | null>(null);
 
-  // close the popup when the URL changes
+  // close the popup when the feedSlug changes
   const router = useRouter();
+  const previousFeedSlugRef = useRef<string | string[] | undefined>();
+
   useEffect(() => {
-    const handleRouteChange = () => {
+    const currentFeedSlug = router.query.feedSlug;
+
+    // Run effect only if feedSlug changed
+    if (previousFeedSlugRef.current !== currentFeedSlug) {
+      previousFeedSlugRef.current = currentFeedSlug;
+
       setPopupDetection(null);
       setPopupFeed(null);
-    };
-    router.events.on("routeChangeComplete", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  });
+    }
+  }, [router.query.feedSlug]);
 
   const reports = useMemo(() => {
     // show all reports in filter range for live player view

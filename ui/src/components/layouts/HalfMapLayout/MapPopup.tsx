@@ -47,7 +47,10 @@ function MapPopup({
         avatar={
           feed &&
           sighting?.hydrophone !== "out of range" && (
-            <Link href={href} onClick={onClick}>
+            <Link
+              href={href}
+              // onClick={onClick}
+            >
               <Box
                 className="popup-thumbnail"
                 sx={{
@@ -75,7 +78,7 @@ function MapPopup({
           <Link
             href={href}
             style={{ textDecoration: "none", color: "inherit" }}
-            onClick={onClick}
+            // onClick={onClick}
           >
             <Typography
               variant="h6"
@@ -92,18 +95,18 @@ function MapPopup({
           <Link
             href={href}
             style={{ textDecoration: "none" }}
-            onClick={onClick}
+            // onClick={onClick}
           >
             <Typography sx={{ margin: 0, color: "base.main" }}>
               Lat:{" "}
               {feed
                 ? feed.latLng.lat.toFixed(4)
-                : sighting?.latitude.toFixed(4)}
+                : sighting?.latitude?.toFixed(4)}
               {" · "}
               Lng:{" "}
               {feed
                 ? feed.latLng.lng.toFixed(4)
-                : sighting?.longitude.toFixed(4)}
+                : sighting?.longitude?.toFixed(4)}
             </Typography>
             <Typography sx={{ margin: 0, color: "base.main", lineHeight: 1.4 }}>
               {sighting ? (
