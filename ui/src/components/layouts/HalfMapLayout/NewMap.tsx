@@ -186,17 +186,16 @@ export default function Map() {
     };
   });
 
-  const sightings = useMemo(() => {
-    // show sightings within global filter time range in live player mode
+  const reports = useMemo(() => {
+    // show all reports in filter range for live player view
     if (nowPlayingFeed) {
-      return filteredData?.filter((d) => d.newCategory === "SIGHTING");
+      return filteredData;
     } else if (nowPlayingCandidate) {
-      // show sightings within candidate time range in candidate player mode
+      // show all reports in candidate range for live player view
       const startDate = new Date(nowPlayingCandidate.startTimestamp);
       const endDate = new Date(nowPlayingCandidate.endTimestamp);
       return filteredData?.filter((d) => {
         return (
-          d.newCategory === "SIGHTING" &&
           startDate <= new Date(d.timestampString) &&
           endDate >= new Date(d.timestampString)
         );
@@ -205,6 +204,14 @@ export default function Map() {
       return [];
     }
   }, [filteredData, nowPlayingCandidate, nowPlayingFeed]);
+
+  const audioReports = useMemo(() => {
+    return reports?.filter((d) => d.newCategory !== "SIGHTING");
+  }, [reports]);
+
+  const sightings = useMemo(() => {
+    return reports?.filter((d) => d.newCategory === "SIGHTING");
+  }, [reports]);
 
   const feed = useMemo(() => {
     if (nowPlayingCandidate) {
@@ -272,36 +279,39 @@ export default function Map() {
             setPopupDetection(null);
           }}
         />
-        {feeds?.map((f) => (
-          <Fragment key={f.slug}>
-            {/* // necessary to map circles twice to make them all appear */}
-            {feeds?.length && (
-              <AudibleRadiusCircles centers={feeds.map((f) => f.latLng)} />
-            )}
+        {feeds?.map((f) => {
+          const audioReportsThisFeed = audioReports.filter(
+            (d) => d.feedId === f?.id,
+          ).length;
+          return (
+            <Fragment key={f.slug}>
+              {/* // necessary to map circles twice to make them all appear */}
+              {feeds?.length && (
+                <AudibleRadiusCircles centers={feeds.map((f) => f.latLng)} />
+              )}
 
-            <Marker
-              position={f.latLng}
-              icon={
-                f.slug === feed?.slug
-                  ? hydrophoneActiveIcon
-                  : hydrophoneDefaultIcon
-              }
-              zIndexOffset={100}
-            />
-            <ReportCount
-              center={f.latLng}
-              count={
-                filteredData.filter(
-                  (d) => d.feedId === f?.id && d.newCategory !== "SIGHTING",
-                ).length
-              }
-              onClick={() => {
-                setPopupFeed(f);
-                setPopupDetection(null);
-              }}
-            />
-          </Fragment>
-        ))}
+              <Marker
+                position={f.latLng}
+                icon={
+                  f.slug === feed?.slug
+                    ? hydrophoneActiveIcon
+                    : hydrophoneDefaultIcon
+                }
+                zIndexOffset={100}
+              />
+              {audioReportsThisFeed > 0 && (
+                <ReportCount
+                  center={f.latLng}
+                  count={audioReportsThisFeed}
+                  onClick={() => {
+                    setPopupFeed(f);
+                    setPopupDetection(null);
+                  }}
+                />
+              )}
+            </Fragment>
+          );
+        })}
         {sightings?.map((sighting) => {
           if (sighting.newCategory !== "SIGHTING") return null;
           const inRange = sighting.hydrophone !== "out of range";

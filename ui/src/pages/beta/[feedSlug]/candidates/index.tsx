@@ -8,7 +8,7 @@ import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import type { NextPageWithLayout } from "@/pages/_app";
 
-const HydrophonePage: NextPageWithLayout = () => {
+const HydrophoneCandidatesPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { feedSlug } = router.query;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -32,6 +32,6 @@ const HydrophonePage: NextPageWithLayout = () => {
   );
 };
 
-HydrophonePage.getLayout = getHalfMapLayout;
+HydrophoneCandidatesPage.getLayout = getHalfMapLayout;
 
-export default HydrophonePage;
+export default HydrophoneCandidatesPage;

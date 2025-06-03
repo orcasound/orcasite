@@ -12,6 +12,7 @@ import darkTheme from "@/styles/darkTheme";
 
 const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+
   const { feedSlug } = router.query;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const theme = useTheme();
@@ -20,7 +21,8 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
 
   const route = router.route.split("/");
   const tabPage = route[route.length - 1];
-  const isIndexPage = tabPage === "[feedSlug]";
+  const isIndexPage = route[route.length - 1] === "[feedSlug]";
+  const isCandidatePage = route[route.length - 1] === "[candidateId]";
 
   type Tab = {
     title: string;
@@ -30,7 +32,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   const tabs = [
     { title: "About", slug: "" },
     { title: "Candidates", slug: "candidates" },
-    { title: "Status", slug: "#" },
+    { title: "Greatest Hits", slug: "#" },
   ];
 
   const tabRow = (tabs: Tab[]) => (
@@ -45,7 +47,11 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
     >
       {tabs.map((tab) => {
         const tabSlug = tab.slug;
-        const active = isIndexPage ? tabSlug === "" : tabPage === tabSlug;
+        const active = isIndexPage
+          ? tabSlug === ""
+          : isCandidatePage
+            ? tabSlug === "candidates"
+            : tabPage === tabSlug;
         return (
           <Link
             key={tab.title}

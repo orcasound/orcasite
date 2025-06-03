@@ -4,9 +4,11 @@ import { Box, Card, CardHeader, IconButton, Typography } from "@mui/material";
 import { timeRangeSelect } from "@/components/CandidateList/CandidateListFilters";
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import { cleanSightingsDescription } from "@/hooks/useSortedCandidates";
 import { Sighting } from "@/types/DataTypes";
+import { formatTimestamp } from "@/utils/time";
 
 function MapPopup({
   feed,
@@ -17,6 +19,8 @@ function MapPopup({
   sighting: Sighting | null;
   onClick?: () => void;
 }) {
+  const { nowPlayingFeed, nowPlayingCandidate } = useNowPlaying();
+
   const { feeds, reportCount, filters } = useData();
   if (sighting) {
     feed = feeds.find((f) => f.id === sighting?.feedId) ?? null;
@@ -91,20 +95,45 @@ function MapPopup({
             onClick={onClick}
           >
             <Typography sx={{ margin: 0, color: "base.main" }}>
-              <span style={{ fontWeight: "400" }}>
-                {sighting
-                  ? `${sighting.name} · ${sighting.created}`
-                  : `${timeRangeSelect.find((el) => el.value === filters.timeRange)?.label}: `}
-              </span>
-              <br />
-              {sighting
-                ? `${cleanSightingsDescription(sighting.comments)}`
-                : `${reportCount[feed ? feed.id : "all"].countString}`}
-              {/* Lat:{" "}
-            {feed ? feed.latLng.lat.toFixed(4) : sighting?.latitude.toFixed(4)}
-            {" • "}
-            Lng:{" "}
-            {feed ? feed.latLng.lng.toFixed(4) : sighting?.longitude.toFixed(4)} */}
+              Lat:{" "}
+              {feed
+                ? feed.latLng.lat.toFixed(4)
+                : sighting?.latitude.toFixed(4)}
+              {" · "}
+              Lng:{" "}
+              {feed
+                ? feed.latLng.lng.toFixed(4)
+                : sighting?.longitude.toFixed(4)}
+            </Typography>
+            <Typography sx={{ margin: 0, color: "base.main", lineHeight: 1.4 }}>
+              {sighting ? (
+                <>
+                  {formatTimestamp(sighting.created)} — {sighting.name}
+                  <br />
+                  <span style={{ opacity: 0.75 }}>
+                    {sighting.comments &&
+                      cleanSightingsDescription(sighting.comments)}
+                  </span>
+                </>
+              ) : nowPlayingFeed ? (
+                <>
+                  {
+                    timeRangeSelect.find((el) => el.value === filters.timeRange)
+                      ?.label
+                  }
+                  {" – "}
+                  {reportCount[feed ? feed.id : "all"].countString}
+                </>
+              ) : nowPlayingCandidate ? (
+                <>
+                  {formatTimestamp(nowPlayingCandidate.startTimestamp)} –{" "}
+                  {formatTimestamp(nowPlayingCandidate.endTimestamp)}
+                  <br />
+                  {reportCount[feed ? feed.id : "all"].countString}
+                </>
+              ) : (
+                <></>
+              )}
             </Typography>
           </Link>
         }

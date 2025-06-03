@@ -21,9 +21,12 @@ import { useComputedPlaybackFields } from "@/hooks/useComputedPlaybackFields";
 import { useMasterData } from "@/hooks/useMasterData";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { AIData, CombinedData, HumanData, Sighting } from "@/types/DataTypes";
+import { getPageContext } from "@/utils/pageContext";
 
 const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
+  const { isFeedDetail } = getPageContext(router);
+
   const { candidateId, feedSlug } = router.query;
   const startEnd = useMemo(() => {
     return typeof candidateId === "string" ? candidateId?.split("_") : [];
@@ -43,6 +46,16 @@ const CandidatePage: NextPageWithLayout = () => {
     sortedCandidates.find((c) => {
       return candidateId === c.id;
     }) ?? null;
+
+  // if the card is rendered on feed detail, show candidateFeedHref
+  const feedDetailHref = `/beta/${feed?.slug}/candidates`;
+  // const feedDetailCandidateHref = `/beta/${feed?.slug}/${candidate?.id}`;
+
+  // if the card is rendered on browse all candidates, show candidateBrowseHref
+  const allCandidatesHref = `/beta/candidates`;
+  // const allCandidatesDetailHref = `/beta/candidates/${feed?.slug}/${candidate?.id}`;
+
+  const closeHref = !isFeedDetail ? allCandidatesHref : feedDetailHref;
 
   const { durationString } = useComputedPlaybackFields(candidate);
 
@@ -122,11 +135,11 @@ const CandidatePage: NextPageWithLayout = () => {
               <Typography variant="h4">{detections.startTime}</Typography>
               <Typography variant="h6">
                 {detections.hydrophone}
-                {" • "}
+                {" · "}
                 {durationString}
               </Typography>
             </Box>
-            <Link href="#" onClick={() => router.back()}>
+            <Link href={closeHref}>
               <Close />
             </Link>
           </Box>

@@ -16,6 +16,8 @@ import { MobileDisplay } from "@/components/CandidateList/MobileDisplay";
 import { MobileTabs } from "@/components/CandidateList/MobileTabs";
 import HeaderNew from "@/components/HeaderNew";
 import { LayoutContext } from "@/context/LayoutContext";
+import HydrophoneCandidatesPage from "@/pages/beta/[feedSlug]/candidates";
+import { getPageContext } from "@/utils/pageContext";
 
 import { MasterDataLayout } from "../MasterDataLayout";
 import Footer from "./Footer";
@@ -24,6 +26,9 @@ import { SideList } from "./SideList";
 
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const { isFeedDetail } = getPageContext(router);
+  console.log("isFeedDetail", isFeedDetail);
+
   const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
@@ -37,15 +42,40 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const [tabValue, setTabValue] = useState(0);
 
   const showChildrenLeft = useMemo(() => {
-    return router.query.candidateId !== undefined;
+    const showChildren = router.query.candidateId !== undefined;
+    console.log("showChildrenLeft", showChildren);
+    return showChildren;
   }, [router.query.candidateId]);
 
   const showChildrenRight = useMemo(() => {
-    return (
+    const showChildren =
       pageRoute === "/beta/[feedSlug]/candidates" ||
-      pageRoute === "/beta/[feedSlug]"
-    );
+      pageRoute === "/beta/[feedSlug]";
+    console.log("showChildrenRight", showChildren);
+    return showChildren;
   }, [pageRoute]);
+
+  // // if the card is rendered on feed detail, show candidateFeedHref
+  // const feedDetailHref = `/beta/[feedSlug]/candidates`;
+  // const feedDetailCandidateHref = `/beta/[feedSlug]/[candidateId]`;
+
+  // // if the card is rendered on browse all candidates, show candidateBrowseHref
+  // const allCandidatesHref = `/beta/candidates`;
+  // const allCandidatesDetailHref = `/beta/candidates/[feedSlug]/[candidateId]`;
+
+  // let isBrowsePage;
+
+  // if (
+  //   router.route === feedDetailHref ||
+  //   router.route === feedDetailCandidateHref
+  // ) {
+  //   isBrowsePage = true;
+  // } else if (
+  //   router.route === allCandidatesHref ||
+  //   router.route === allCandidatesDetailHref
+  // ) {
+  //   isBrowsePage = false;
+  // }
 
   const tabSlugs = ["hydrophones", "candidates", "visualizations"];
 
@@ -128,7 +158,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           // },
           height: "100vh",
           paddingBottom: smDown ? "155px" : "86px",
-          paddingTop: "60px", // added this due to making header position: fixed
+          // paddingTop: "60px", // added this due to making header position: fixed
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,
@@ -182,7 +212,9 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           {!mdDown && <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />}
           {!mdDown && (
             <SideList>
-              {showChildrenRight ? (
+              {isFeedDetail ? (
+                <HydrophoneCandidatesPage />
+              ) : showChildrenRight ? (
                 children
               ) : (
                 <Container

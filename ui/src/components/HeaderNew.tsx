@@ -52,10 +52,6 @@ export default function HeaderNew({
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
-      <Toolbar>
-        <Mobile onBrandClick={onBrandClick} />
-        <Desktop tabs={tabs} />
-      </Toolbar>
       <Collapse in={alertOpen}>
         <Alert
           severity="info"
@@ -75,6 +71,7 @@ export default function HeaderNew({
           sx={{
             borderRadius: 0,
             justifyContent: "center",
+            paddingY: 0,
             "& .MuiAlert-action": {
               marginLeft: 0,
             },
@@ -83,6 +80,10 @@ export default function HeaderNew({
           DO THIS THING
         </Alert>
       </Collapse>{" "}
+      <Toolbar>
+        <Mobile onBrandClick={onBrandClick} />
+        <Desktop tabs={tabs} />
+      </Toolbar>
     </AppBar>
   );
 }

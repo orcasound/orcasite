@@ -13,6 +13,8 @@ import useFilteredData from "@/hooks/useFilteredData";
 import { useSortedCandidates } from "@/hooks/useSortedCandidates";
 import { Candidate, CombinedData, Dataset } from "@/types/DataTypes";
 
+import { useNowPlaying } from "./NowPlayingContext";
+
 // filters
 export interface CandidateFilters {
   timeRange: number;
@@ -56,6 +58,7 @@ export const DataProvider = ({
 }) => {
   const feeds = data.feeds;
   const isSuccessOrcahello = data.isSuccessOrcahello;
+  const { nowPlayingCandidate } = useNowPlaying();
 
   const [filters, setFilters] = useState<CandidateFilters>({
     timeRange: defaultRange,
@@ -77,7 +80,10 @@ export const DataProvider = ({
     filters.sortOrder,
   );
 
-  const reportCounter = () => {
+  const reportCounter = (
+    startTimestamp?: string | null,
+    endTimestamp?: string | null,
+  ) => {
     const categories = [...new Set(filteredData.map((el) => el.newCategory))];
 
     const obj: FeedCounts = { all: { counts: {}, countString: "" } };
@@ -94,7 +100,17 @@ export const DataProvider = ({
       });
     }
 
-    filteredData.forEach((d) => {
+    const data =
+      !startTimestamp || !endTimestamp
+        ? filteredData
+        : filteredData.filter((d) => {
+            return (
+              new Date(d.timestampString) >= new Date(startTimestamp) &&
+              new Date(d.timestampString) <= new Date(endTimestamp)
+            );
+          });
+
+    data.forEach((d) => {
       if (
         d.feedId &&
         d.newCategory &&
@@ -125,7 +141,12 @@ export const DataProvider = ({
     return obj;
   };
 
-  const reportCount = reportCounter();
+  const reportCount = nowPlayingCandidate
+    ? reportCounter(
+        nowPlayingCandidate.startTimestamp,
+        nowPlayingCandidate.endTimestamp,
+      )
+    : reportCounter();
 
   // controls if player starts when it is loaded -- initial page load sets to false
   const autoPlayOnReady = useRef(true);
