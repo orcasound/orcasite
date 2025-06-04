@@ -204,7 +204,7 @@ export default function Map() {
         );
       });
     } else {
-      return [];
+      return filteredData;
     }
   }, [filteredData, nowPlayingCandidate, nowPlayingFeed]);
 
