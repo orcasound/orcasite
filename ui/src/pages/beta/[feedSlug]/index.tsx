@@ -9,6 +9,34 @@ import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import type { NextPageWithLayout } from "@/pages/_app";
 
+const hosts = [
+  {
+    hydrophone: "orcasound-lab",
+    name: "Beam Reach",
+    link: "http://www.beamreach.blue/",
+  },
+  {
+    hydrophone: "north-sjc",
+    name: "Orca Behavior Institute",
+    link: "https://www.orcabehaviorinstitute.org/",
+  },
+  {
+    hydrophone: "sunset-bay",
+    name: "Beach Camp at Sunset Bay",
+    link: "https://www.sunsetbaywharf.com/",
+  },
+  {
+    hydrophone: "port-townsend",
+    name: "Port Townsend Marine Science Center",
+    link: "http://www.ptmsc.org/",
+  },
+  {
+    hydrophone: "bush-point",
+    name: "Orca Network",
+    link: "https://orcanetwork.org/",
+  },
+];
+
 const HydrophonePage: NextPageWithLayout = () => {
   const router = useRouter();
   const { feedSlug } = router.query;
@@ -17,6 +45,7 @@ const HydrophonePage: NextPageWithLayout = () => {
   const { setNowPlayingFeed, setNowPlayingCandidate } = useNowPlaying();
   const { feeds } = useData();
   const feed = feeds.find((feed) => feed.slug === feedSlug);
+  const host = hosts.find((host) => feedSlug === host.hydrophone);
 
   // load the feed into nowPlaying on page load
   useEffect(() => {
@@ -28,38 +57,26 @@ const HydrophonePage: NextPageWithLayout = () => {
 
   return (
     <HydrophoneDetailTabs>
-      {/* <div
-        className="image"
-        style={{ position: "relative", width: "100%", height: "15em" }}
-      >
-        {feed?.imageUrl && (
-          <Image
-            src={feed?.imageUrl}
-            layout="fill"
-            alt=""
-            objectFit="contain"
-            objectPosition="left"
-          />
-        )}{" "}
-      </div> */}
-      <Paper
-        elevation={0}
-        sx={{
-          backgroundColor: "accent1.main",
-          p: 2,
-          borderRadius: 1,
-          mt: 2,
-        }}
-      >
-        <Typography variant="body2">
-          Hosted by <strong>Beam Reach</strong>
-          <br />
-          <Link href="#" target="_blank" rel="noopener">
-            Learn more or donate
-          </Link>{" "}
-          to support their work.
-        </Typography>
-      </Paper>
+      {host && (
+        <Paper
+          elevation={0}
+          sx={{
+            backgroundColor: "accent1.main",
+            p: 2,
+            borderRadius: 1,
+            mt: 2,
+          }}
+        >
+          <Typography variant="body2">
+            Hosted by <strong>{host.name}</strong>
+            <br />
+            <Link href={host.link} target="_blank" rel="noopener">
+              Learn more or donate
+            </Link>{" "}
+            to support their work.
+          </Typography>
+        </Paper>
+      )}
 
       {feed?.introHtml ? (
         <div
