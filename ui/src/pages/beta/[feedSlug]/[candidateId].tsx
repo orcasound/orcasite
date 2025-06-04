@@ -106,7 +106,9 @@ const CandidatePage: NextPageWithLayout = () => {
   }, []);
 
   return (
-    <div style={{ overflowY: "scroll" }}>
+    <div
+    // style={{ overflowY: "scroll" }}
+    >
       <Head>Report {candidateId} | Orcasound </Head>
       <Container
         maxWidth="xl"

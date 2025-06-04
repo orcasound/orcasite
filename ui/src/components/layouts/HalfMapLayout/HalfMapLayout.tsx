@@ -189,7 +189,13 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           )}
           {!mdDown && <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />}
           {!mdDown && (
-            <SideList>
+            <SideList
+              key={
+                router.query.feedSlug
+                  ? router.query.feedSlug.toString()
+                  : router.asPath
+              }
+            >
               {isFeedDetail ? (
                 <HydrophoneCandidatesPage />
               ) : showChildrenRight ? (

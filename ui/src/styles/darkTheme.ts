@@ -151,6 +151,16 @@ darkTheme.components = {
       },
     },
   },
+  MuiCssBaseline: {
+    styleOverrides: {
+      a: {
+        color: darkTheme.palette.accent3.main,
+        "&:hover": {
+          color: darkTheme.palette.accent4.main,
+        },
+      },
+    },
+  },
 };
 
 export default darkTheme;

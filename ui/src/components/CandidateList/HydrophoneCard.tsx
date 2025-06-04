@@ -175,6 +175,9 @@ export default function HydrophoneCard({ feed }: Props) {
                   alignItems: "center",
                   flex: 1,
                   height: "100%",
+                  "&:hover": {
+                    color: "inherit",
+                  },
                 }}
               >
                 <Stack sx={{ flex: 1 }}>
