@@ -1,31 +1,25 @@
-import { AccountCircle, Close, Edit } from "@mui/icons-material";
-import {
-  Box,
-  Container,
-  List,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
+import { DetectionsList } from "@/components/CandidateList/DetectionsList";
 import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout/HalfMapLayout";
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import { useComputedPlaybackFields } from "@/hooks/useComputedPlaybackFields";
-import { useMasterData } from "@/hooks/useMasterData";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { AIData, CombinedData, HumanData, Sighting } from "@/types/DataTypes";
 import { getPageContext } from "@/utils/pageContext";
+import { formatTimestamp } from "@/utils/time";
 
 const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
   const { isFeedDetail } = getPageContext(router);
+  const { feeds, filters } = useData();
 
   const { candidateId, feedSlug } = router.query;
   const startEnd = useMemo(() => {
@@ -34,11 +28,8 @@ const CandidatePage: NextPageWithLayout = () => {
   const startTime = new Date(startEnd[0]).getTime();
   const endTime = new Date(startEnd[startEnd.length - 1]).getTime();
 
-  const useLiveData = true;
-
   const { setNowPlayingCandidate, setNowPlayingFeed } = useNowPlaying();
   const { filteredData, sortedCandidates } = useData();
-  const { feeds } = useMasterData(useLiveData);
 
   const feed = feeds?.find((f) => f.slug === feedSlug) || ({} as Feed);
 
@@ -82,9 +73,6 @@ const CandidatePage: NextPageWithLayout = () => {
     startTime: "",
   });
 
-  const userName = "UserProfile123";
-  const aiName = "Orcahello AI";
-
   useEffect(() => {
     // select the detection array that matches the feed and start/end times in the page URL
     const arr: CombinedData[] = [];
@@ -113,6 +101,10 @@ const CandidatePage: NextPageWithLayout = () => {
     });
   }, [filteredData, feeds, startTime, endTime, startEnd, feed.id]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div style={{ overflowY: "scroll" }}>
       <Head>Report {candidateId} | Orcasound </Head>
@@ -127,63 +119,44 @@ const CandidatePage: NextPageWithLayout = () => {
             sx={{
               marginTop: 4,
               display: "flex",
-              alignItems: "center",
               justifyContent: "space-between",
             }}
           >
             <Box>
-              <Typography variant="h4">{detections.startTime}</Typography>
-              <Typography variant="h6">
+              <Typography variant="h5" sx={{ lineHeight: 1, mb: ".5rem" }}>
+                {formatTimestamp(detections.startTime)}
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{ lineHeight: 1.2, opacity: 0.75, mb: "4px" }}
+              >
                 {detections.hydrophone}
-                {" · "}
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ lineHeight: 1.2, opacity: 0.75 }}
+              >
                 {durationString}
+                {" · "}
+                Reports within {filters?.timeIncrement} min
               </Typography>
             </Box>
-            <Link href={closeHref}>
+            <Link
+              href={closeHref}
+              onClick={() => {
+                setNowPlayingFeed(feed);
+                setNowPlayingCandidate(null);
+              }}
+            >
               <Close />
             </Link>
           </Box>
-          <Box p={2} />
-          {/* <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              overflowX: "auto",
-              width: "100%",
-              height: 300,
-              border: detections.ai.length
-                ? "none"
-                : "1px solid rgba(255,255,255,.25)",
-            }}
-          >
-            {detections.ai.length
-              ? detections?.ai?.map((d) => (
-                  <Box
-                    key={d.spectrogramUri}
-                    component="img"
-                    src={d.spectrogramUri}
-                    sx={{
-                      width: "100%",
-                      flexBasis: 0,
-                    }}
-                  />
-                ))
-              : 
-              `${JSON.stringify(audioImagesSrc, null, 2)}`}
-          </div> */}
-          <Box p={2} />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              pl: 1,
-              pb: 1,
-              minWidth: 250,
-            }}
-          ></Box>
+          <Button variant="contained" sx={{ width: "100%", my: "1.5rem" }}>
+            Open audio analyzer
+          </Button>
           <Box className="main">
-            <List>
+            {candidate && <DetectionsList candidate={candidate} />}
+            {/* <List>
               {candidate &&
                 candidate.array?.map((el, index) => (
                   <ListItemButton key={index}>
@@ -212,7 +185,7 @@ const CandidatePage: NextPageWithLayout = () => {
                     </ListItemAvatar>
                   </ListItemButton>
                 ))}
-            </List>
+            </List> */}
           </Box>
         </Box>
       </Container>

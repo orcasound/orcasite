@@ -103,7 +103,9 @@ export default function HydrophoneCard({ feed }: Props) {
         backgroundColor: active
           ? (theme) => theme.palette.base.main
           : "default",
-        border: active ? "1px solid rgba(255,255,255,.25)" : "none",
+        border: active
+          ? "1px solid rgba(255,255,255,.25)"
+          : "1px solid transparent",
       }}
     >
       <CardActionArea>

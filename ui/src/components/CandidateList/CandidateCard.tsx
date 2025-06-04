@@ -101,7 +101,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     autoPlayOnReady.current = true;
     setNowPlayingCandidate(candidate);
     setNowPlayingFeed(null);
-    // router.push(candidateHref);
+    router.push(allCandidatesDetailHref);
 
     const player = masterPlayerRef?.current;
     if (player && player !== null && typeof player.play === "function") {

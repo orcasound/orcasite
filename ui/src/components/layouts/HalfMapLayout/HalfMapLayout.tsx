@@ -55,28 +55,6 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     return showChildren;
   }, [pageRoute]);
 
-  // // if the card is rendered on feed detail, show candidateFeedHref
-  // const feedDetailHref = `/beta/[feedSlug]/candidates`;
-  // const feedDetailCandidateHref = `/beta/[feedSlug]/[candidateId]`;
-
-  // // if the card is rendered on browse all candidates, show candidateBrowseHref
-  // const allCandidatesHref = `/beta/candidates`;
-  // const allCandidatesDetailHref = `/beta/candidates/[feedSlug]/[candidateId]`;
-
-  // let isBrowsePage;
-
-  // if (
-  //   router.route === feedDetailHref ||
-  //   router.route === feedDetailCandidateHref
-  // ) {
-  //   isBrowsePage = true;
-  // } else if (
-  //   router.route === allCandidatesHref ||
-  //   router.route === allCandidatesDetailHref
-  // ) {
-  //   isBrowsePage = false;
-  // }
-
   const tabSlugs = ["hydrophones", "candidates", "visualizations"];
 
   function getTabIndexFromPath(path: string): number {
