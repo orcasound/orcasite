@@ -3,6 +3,7 @@ import React, {
   createContext,
   MutableRefObject,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -31,6 +32,7 @@ export interface CandidateFilters {
 type FeedCountData = {
   counts: Record<string, number>;
   countString: string;
+  shortCountString: string;
 };
 
 type FeedCounts = {
@@ -45,6 +47,8 @@ interface DataContextType {
   setFilters: React.Dispatch<React.SetStateAction<CandidateFilters>>;
   isSuccessOrcahello: boolean;
   autoPlayOnReady: MutableRefObject<boolean>;
+  lastWhaleReport: (feed?: Feed | null) => CombinedData | undefined;
+  lastWhaleReportFeed: Feed | null;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -58,7 +62,8 @@ export const DataProvider = ({
 }) => {
   const feeds = data.feeds;
   const isSuccessOrcahello = data.isSuccessOrcahello;
-  const { nowPlayingCandidate } = useNowPlaying();
+  const { nowPlayingCandidate, nowPlayingFeed, setNowPlayingFeed } =
+    useNowPlaying();
 
   const [filters, setFilters] = useState<CandidateFilters>({
     timeRange: defaultRange,
@@ -74,6 +79,30 @@ export const DataProvider = ({
 
   const filteredData = useFilteredData(data.combined, filters);
 
+  const lastWhaleReport = (feed?: Feed | null) => {
+    const reports = feed
+      ? filteredData.filter((d) => d.feedId === feed?.id)
+      : filteredData;
+    return reports.find(
+      (d) =>
+        d.newCategory === "WHALE" ||
+        d.newCategory === "WHALE (AI)" ||
+        d.newCategory === "SIGHTING",
+    );
+  };
+
+  const lastWhaleReportFeed =
+    feeds.find((f) => f.id === lastWhaleReport()?.feedId) ?? null;
+
+  // if there is no feed or candidate selected, auto-select the feed with the most recent whale report in the time range, or the first feed in the list if nothing else
+  useEffect(() => {
+    if (lastWhaleReportFeed && !nowPlayingCandidate && !nowPlayingFeed) {
+      setNowPlayingFeed(lastWhaleReportFeed);
+    } else if (!lastWhaleReportFeed) {
+      setNowPlayingFeed(feeds[0]);
+    }
+  });
+
   const sortedCandidates = useSortedCandidates(
     filteredData,
     filters.timeIncrement,
@@ -86,11 +115,13 @@ export const DataProvider = ({
   ) => {
     const categories = [...new Set(filteredData.map((el) => el.newCategory))];
 
-    const obj: FeedCounts = { all: { counts: {}, countString: "" } };
+    const obj: FeedCounts = {
+      all: { counts: {}, countString: "", shortCountString: "" },
+    };
 
     feeds.forEach((feed) => {
       if (feed.id != null) {
-        obj[feed.id] = { counts: {}, countString: "" };
+        obj[feed.id] = { counts: {}, countString: "", shortCountString: "" };
       }
     });
 
@@ -134,8 +165,30 @@ export const DataProvider = ({
       return stringParts.join(" · ");
     };
 
+    const shortCountString = (obj: Record<string, number>) => {
+      const stringParts: string[] = [];
+      const shortCount = {
+        whale: 0,
+        vessel: 0,
+        other: 0,
+      };
+      for (const key of Object.keys(obj)) {
+        if (key === "WHALE" || key === "WHALE (AI)" || key === "SIGHTING") {
+          shortCount.whale += obj[key];
+        } else if (key === "VESSEL") {
+          shortCount.vessel += obj[key];
+        } else if (key === "OTHER") {
+          shortCount.other += obj[key];
+        }
+      }
+      Object.entries(shortCount).forEach(([key, count]) => {
+        stringParts.push(`${count} ${key}`);
+      });
+      return stringParts.join(" · ");
+    };
     for (const feed in obj) {
       obj[feed].countString = countString(obj[feed]["counts"]);
+      obj[feed].shortCountString = shortCountString(obj[feed]["counts"]);
     }
 
     return obj;
@@ -162,6 +215,8 @@ export const DataProvider = ({
         setFilters,
         isSuccessOrcahello,
         autoPlayOnReady,
+        lastWhaleReport,
+        lastWhaleReportFeed,
       }}
     >
       {children}

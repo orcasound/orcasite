@@ -2,7 +2,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 
-import { GlobalStyles } from "@mui/material";
+import { GlobalStyles, Theme, useMediaQuery } from "@mui/material";
 import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { LatLngExpression } from "leaflet";
@@ -207,6 +207,7 @@ export default function Map() {
       return filteredData;
     }
   }, [filteredData, nowPlayingCandidate, nowPlayingFeed]);
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const audioReports = useMemo(() => {
     return reports?.filter((d) => d.newCategory !== "SIGHTING");
@@ -226,7 +227,7 @@ export default function Map() {
 
   const [map, setMap] = useState<LeafletMap>();
   const [latLng, setLatLng] = useState<LatLngExpression>([48.1, -122.75]);
-  const [zoom, setZoom] = useState<number>(9);
+  const [zoom, setZoom] = useState<number>(smDown ? 8 : 9);
 
   const hydrophoneDefaultIcon = L.icon({
     iconUrl: hydrophoneDefaultIconImage.src,
@@ -241,14 +242,14 @@ export default function Map() {
   useEffect(() => {
     if (feed) {
       setLatLng(feed.latLng);
-      setZoom(12);
+      setZoom(smDown ? 11 : 12);
       // map?.setZoom(12);
       // map?.panTo(feed.latLng);
     } else {
-      setZoom(9);
+      setZoom(smDown ? 8 : 9);
       // map?.setZoom(8);
     }
-  }, [map, feed, setLatLng, setZoom]);
+  }, [map, feed, setLatLng, setZoom, smDown]);
 
   return (
     <>
