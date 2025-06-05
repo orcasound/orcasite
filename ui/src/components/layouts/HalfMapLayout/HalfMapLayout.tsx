@@ -13,7 +13,6 @@ import { ReactElement, ReactNode, useMemo, useRef, useState } from "react";
 import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
 import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
 import { MobileDisplay } from "@/components/CandidateList/MobileDisplay";
-import { MobileTabs } from "@/components/CandidateList/MobileTabs";
 import HeaderNew from "@/components/HeaderNew";
 import { LayoutContext } from "@/context/LayoutContext";
 import HydrophoneCandidatesPage from "@/pages/beta/[feedSlug]/candidates";
@@ -31,15 +30,12 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 
   const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const masterPlayerTimeRef = useRef(0);
 
   // menuTab is the state of the mobile <MobileBottomNav>
   const [menuTab, setMenuTab] = useState(0);
-
-  // tabValue is the state of the tabs at the top in <MobileTabs>
-  const [tabValue, setTabValue] = useState(0);
 
   const showChildrenLeft = useMemo(() => {
     const showChildren = router.query.candidateId !== undefined;
@@ -135,7 +131,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           //   height: "100dvh",
           // },
           height: "100vh",
-          paddingBottom: smDown ? "155px" : "86px",
+          // paddingBottom: smDown ? "155px" : "86px",
           // paddingTop: "60px", // added this due to making header position: fixed
           display: "flex",
           flexDirection: "column",
@@ -219,36 +215,33 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           )}
           {/* // mobile view */}
           {mdDown && (
-            <>
-              {showChildrenLeft ? (
+            <Box
+              className={"mobile-view"}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                overflowY: "auto",
+              }}
+            >
+              {isFeedDetail || !!router.query.candidateId ? (
                 children
               ) : (
                 <>
-                  <MobileTabs
-                    menuTab={menuTab}
-                    tabValue={tabValue}
-                    setTabValue={setTabValue}
-                  />
                   <MobileDisplay
                     menuTab={menuTab}
-                    tabValue={tabValue}
                     masterPlayerTimeRef={masterPlayerTimeRef}
                   />
                 </>
               )}
-            </>
+            </Box>
           )}
-          {/* // candidate or feed detail view */}
-          {/* {(router.query.candidateId !== undefined ||
-            router.query.feed !== undefined) &&
-            children} */}
         </Box>
 
         <Footer
           masterPlayerTimeRef={masterPlayerTimeRef}
           menuTab={menuTab}
           setMenuTab={setMenuTab}
-          setTabValue={setTabValue}
         />
       </Box>
     </>

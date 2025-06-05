@@ -5,6 +5,7 @@ export function getPageContext(router: NextRouter) {
   const { route } = router;
 
   const feedDetailRoutes = [
+    "/beta/[feedSlug]",
     "/beta/[feedSlug]/candidates",
     "/beta/[feedSlug]/[candidateId]",
   ];

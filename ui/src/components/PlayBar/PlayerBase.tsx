@@ -166,9 +166,10 @@ export function PlayerBase({
             >
               <span style={{ fontWeight: "bold" }}>{playerTitle}</span>
               {smDown && <br />}
-              {playerSubtitle && " • " + playerSubtitle}
+              {playerSubtitle && " · " + playerSubtitle}
+              {type === "feed" && !smDown && " · "}
               {type === "feed" &&
-                ` • ${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
+                `${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
               {type === "candidate" && " • " + duration}
             </Typography>
             {!smDown && nowPlayingCandidate && slider}

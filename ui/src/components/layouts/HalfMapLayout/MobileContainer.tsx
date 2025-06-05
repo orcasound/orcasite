@@ -10,12 +10,12 @@ export const MobileContainer = ({ children }: MobileContainerProps) => {
       maxWidth="xl"
       className={"mobile-container"}
       sx={{
-        py: 2,
+        pt: 2,
         px: 1.5,
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden", // prevents double scrollbars
+        // overflow: "hidden", // prevents double scrollbars
       }}
     >
       {children}

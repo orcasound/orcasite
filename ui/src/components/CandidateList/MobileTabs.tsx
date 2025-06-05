@@ -14,7 +14,7 @@ export function MobileTabs({ menuTab, tabValue, setTabValue }: Props) {
   };
 
   const recordingsTabs = ["Map", "Candidates", "Visualizations"];
-  const listenLiveTabs = ["Map", "Hydrophones"];
+  const listenLiveTabs = ["Hydrophones", "Reports"];
 
   const makeTabs = (array: string[]) => {
     return (
@@ -26,7 +26,7 @@ export function MobileTabs({ menuTab, tabValue, setTabValue }: Props) {
           alignItems: "center",
           gap: "1rem",
           borderBottom: "1px solid rgba(255,255,255,.3)",
-          height: "36px",
+          minHeight: "48px",
         }}
       >
         {array.map((tab: string, index: number) => {
@@ -41,6 +41,10 @@ export function MobileTabs({ menuTab, tabValue, setTabValue }: Props) {
                 flex: 1,
                 textAlign: "center",
                 py: 1,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
                 color:
                   index === tabValue
                     ? "rgba(255,255,255,1)"

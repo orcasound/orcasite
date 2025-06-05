@@ -1,34 +1,24 @@
 import { Box } from "@mui/material";
-import { MutableRefObject } from "react";
+import { MutableRefObject, useState } from "react";
 
-import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
 import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
-import { VisualizationsStack } from "@/components/CandidateList/VisualizationsStack";
 
 import { MapWrapper } from "../layouts/HalfMapLayout/MapWrapper";
 import { MobileContainer } from "../layouts/HalfMapLayout/MobileContainer";
+import { CandidatesStack } from "./CandidatesStack";
+import { MobileTabs } from "./MobileTabs";
 
 type Props = {
   menuTab: number;
-  tabValue: number;
   masterPlayerTimeRef: MutableRefObject<number>;
 };
 
-export function MobileDisplay({
-  menuTab,
-  tabValue,
-  masterPlayerTimeRef,
-}: Props) {
+export function MobileDisplay({ menuTab, masterPlayerTimeRef }: Props) {
+  // tabValue is the state of the tabs at the top in <MobileTabs>
+  const [tabValue, setTabValue] = useState(0);
+
   return (
-    <Box
-      className={"mobile-display"}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-        overflowY: "auto",
-      }}
-    >
+    <>
       {menuTab === 0 && (
         <Box
           className={"tab-content"}
@@ -38,35 +28,28 @@ export function MobileDisplay({
             flexFlow: "column",
           }}
         >
-          {tabValue === 0 && ( // Map
-            <>
-              <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
-            </>
-          )}
-          {tabValue === 1 && ( // Candidates
-            <MobileContainer>
-              <CandidatesStack />
-            </MobileContainer>
-          )}
-          {tabValue === 2 && ( // Visualizations
-            <MobileContainer>
-              <VisualizationsStack />
-            </MobileContainer>
-          )}
+          <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
         </Box>
       )}
       {menuTab === 1 && (
         <>
+          <MobileTabs
+            menuTab={menuTab}
+            tabValue={tabValue}
+            setTabValue={setTabValue}
+          />
           {tabValue === 0 && ( // Map
-            <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
-          )}
-          {tabValue === 1 && ( // Hydrophones
             <MobileContainer>
               <HydrophonesStack />
             </MobileContainer>
           )}
+          {tabValue === 1 && ( // Hydrophones
+            <MobileContainer>
+              <CandidatesStack />
+            </MobileContainer>
+          )}
         </>
       )}
-    </Box>
+    </>
   );
 }

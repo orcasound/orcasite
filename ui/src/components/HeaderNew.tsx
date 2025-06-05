@@ -18,10 +18,8 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Theme,
   Toolbar,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import Image from "next/image";
 import { ReactNode, useState } from "react";
@@ -40,13 +38,14 @@ export default function HeaderNew({
   onBrandClick?: () => void;
   tabs?: ReactNode;
 }) {
-  const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+  // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const [alertOpen, setAlertOpen] = useState(true);
 
   return (
     <AppBar
       // position="sticky"
-      position={mdDown ? "fixed" : "static"} // needed this to be fixed to avoid issue with 100vh preventing scroll on mobile
+      // position={mdDown ? "fixed" : "static"} // needed this to be fixed to avoid issue with 100vh preventing scroll on mobile
+      position={"static"}
       sx={{
         // Keep header above the side drawer
         zIndex: (theme) => theme.zIndex.drawer + 1,

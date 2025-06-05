@@ -11,15 +11,13 @@ export default function Footer({
   masterPlayerTimeRef,
   menuTab,
   setMenuTab,
-  setTabValue,
 }: {
   masterPlayerTimeRef: MutableRefObject<number>;
   menuTab: number;
   setMenuTab: React.Dispatch<SetStateAction<number>>;
-  setTabValue: React.Dispatch<SetStateAction<number>>;
 }) {
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const [playbarExpanded, setPlaybarExpanded] = useState(false);
 
   return (
@@ -27,15 +25,15 @@ export default function Footer({
       direction="column"
       className={"bottom-controls-stack"}
       sx={{
-        position: "fixed",
+        position: "static",
         bottom: 0,
         zIndex: (theme) => theme.zIndex.drawer + 1,
         width: "100%",
         backgroundColor: darkTheme.palette.background.default,
         height: playbarExpanded
           ? "calc(100vh - 64px)"
-          : smDown
-            ? "155px"
+          : mdDown
+            ? "141px"
             : "86px",
         transition: "height .66s ease",
       }}
@@ -50,13 +48,7 @@ export default function Footer({
           <PlayerDetail />
         </Box>
       )}
-      {mdDown && (
-        <MobileBottomNav
-          menuTab={menuTab}
-          setMenuTab={setMenuTab}
-          setTabValue={setTabValue}
-        />
-      )}
+      {mdDown && <MobileBottomNav menuTab={menuTab} setMenuTab={setMenuTab} />}
     </Stack>
   );
 }
