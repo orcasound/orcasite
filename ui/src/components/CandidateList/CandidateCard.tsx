@@ -16,7 +16,6 @@ import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Candidate, CombinedData } from "@/types/DataTypes";
-import { getPageContext } from "@/utils/pageContext";
 import { formatTimestamp } from "@/utils/time";
 
 import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
@@ -46,7 +45,6 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     masterPlayerStatus,
   } = useNowPlaying();
   const router = useRouter();
-  const { isFeedDetail } = getPageContext(router);
 
   const candidate = props.candidate;
   const active = candidate.id === nowPlayingCandidate?.id;
@@ -83,9 +81,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     tagObject[tag] = count;
   });
 
-  const candidateArray = candidate.array;
-  const firstCandidate = candidateArray[0]; // firstCandidate is the earliest time, reports are sorted descending
-  const candidateTitle = formatTimestamp(firstCandidate.timestampString);
+  const candidateTitle = formatTimestamp(candidate.startTimestamp);
 
   // if the card is rendered on feed detail, show candidateFeedHref
   // const feedDetailHref = `/beta/${feed?.slug}/candidates`;
@@ -93,15 +89,16 @@ export default function CandidateCard(props: { candidate: Candidate }) {
 
   // if the card is rendered on browse all candidates, show candidateBrowseHref
   // const allCandidatesHref = `/beta/candidates`;
-  const allCandidatesDetailHref = `/beta/candidates/${feed?.slug}/${candidate.id}`;
+  // 6/5/25 -- abandoning the idea of a candidate detail next to all candidates browse, always goes to feed detail
+  // const allCandidatesDetailHref = `/beta/candidates/${feed?.slug}/${candidate.id}`;
 
-  const href = isFeedDetail ? feedDetailCandidateHref : allCandidatesDetailHref;
+  const href = feedDetailCandidateHref;
 
   const handlePlay = (candidate: Candidate) => {
     autoPlayOnReady.current = true;
     setNowPlayingCandidate(candidate);
     setNowPlayingFeed(null);
-    router.push(allCandidatesDetailHref);
+    router.push(href);
 
     const player = masterPlayerRef?.current;
     if (player && player !== null && typeof player.play === "function") {
@@ -185,7 +182,11 @@ export default function CandidateCard(props: { candidate: Candidate }) {
             <Link
               // custom Link component based on NextLink, not MUI Link, is required here to persist layout and avoid page reset
               href={href}
-              onClick={() => (autoPlayOnReady.current = false)}
+              onClick={() => {
+                autoPlayOnReady.current = false;
+                setNowPlayingCandidate(candidate);
+                setNowPlayingFeed(null);
+              }}
               style={{
                 width: "100%",
                 color: "inherit",

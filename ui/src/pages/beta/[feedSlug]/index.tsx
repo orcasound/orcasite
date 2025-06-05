@@ -43,17 +43,18 @@ const HydrophonePage: NextPageWithLayout = () => {
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   const { setNowPlayingFeed, setNowPlayingCandidate } = useNowPlaying();
-  const { feeds } = useData();
+  const { feeds, autoPlayOnReady } = useData();
   const feed = feeds.find((feed) => feed.slug === feedSlug);
   const host = hosts.find((host) => feedSlug === host.hydrophone);
-
   // load the feed into nowPlaying on page load
   useEffect(() => {
     if (feed) {
       setNowPlayingFeed(feed);
       setNowPlayingCandidate(null);
+      autoPlayOnReady.current = false;
     }
-  }, [feed, setNowPlayingCandidate, setNowPlayingFeed]);
+  }, [feed, setNowPlayingCandidate, setNowPlayingFeed, autoPlayOnReady]);
+  console.log("index router.route", router.route);
 
   return (
     <HydrophoneDetailTabs>

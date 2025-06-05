@@ -27,6 +27,9 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { isFeedDetail } = getPageContext(router);
   console.log("isFeedDetail", isFeedDetail);
+  console.log("router.route", router.route);
+  console.log("router.asPath", router.asPath);
+  console.log("router.pathname", router.pathname);
 
   const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -37,13 +40,13 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
   // menuTab is the state of the mobile <MobileBottomNav>
   const [menuTab, setMenuTab] = useState(0);
 
-  const showChildrenLeft = useMemo(() => {
+  const showChildrenRight = useMemo(() => {
     const showChildren = router.query.candidateId !== undefined;
     console.log("showChildrenLeft", showChildren);
     return showChildren;
   }, [router.query.candidateId]);
 
-  const showChildrenRight = useMemo(() => {
+  const showChildrenLeft = useMemo(() => {
     const showChildren =
       pageRoute === "/beta/[feedSlug]/candidates" ||
       pageRoute === "/beta/[feedSlug]";
@@ -153,7 +156,9 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           {!mdDown && (
             <SideList>
               {/* <AnimatePresence mode="wait"> */}
-              {showChildrenLeft ? (
+              {isFeedDetail ? (
+                <HydrophoneCandidatesPage />
+              ) : showChildrenLeft ? (
                 // <motion.div
                 //   key={router.asPath}
                 //   initial={{ x: 100, opacity: 0 }}
@@ -186,15 +191,13 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           {!mdDown && <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />}
           {!mdDown && (
             <SideList
-              key={
-                router.query.feedSlug
-                  ? router.query.feedSlug.toString()
-                  : router.asPath
-              }
+            // key={
+            //   router.query.feedSlug
+            //     ? router.query.feedSlug.toString()
+            //     : router.asPath
+            // }
             >
-              {isFeedDetail ? (
-                <HydrophoneCandidatesPage />
-              ) : showChildrenRight ? (
+              {showChildrenRight ? (
                 children
               ) : (
                 <Container
@@ -224,7 +227,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
                 overflowY: "auto",
               }}
             >
-              {isFeedDetail || !!router.query.candidateId ? (
+              {!!router.query.feedSlug || !!router.query.candidateId ? (
                 children
               ) : (
                 <>

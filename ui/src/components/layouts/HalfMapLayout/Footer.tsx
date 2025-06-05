@@ -44,7 +44,7 @@ export default function Footer({
         setPlaybarExpanded={setPlaybarExpanded}
       />
       {playbarExpanded && (
-        <Box sx={{ overflow: "scroll", px: "24px" }}>
+        <Box sx={{ overflow: "scroll", px: "24px", flex: 1 }}>
           <PlayerDetail />
         </Box>
       )}

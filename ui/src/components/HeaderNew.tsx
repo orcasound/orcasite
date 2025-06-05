@@ -1,10 +1,4 @@
-import {
-  Close,
-  Feedback,
-  Home,
-  Menu,
-  Notifications,
-} from "@mui/icons-material";
+import { Close, Tune } from "@mui/icons-material";
 import {
   Alert,
   AppBar,
@@ -14,10 +8,6 @@ import {
   Drawer,
   IconButton,
   List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -104,27 +94,6 @@ function Mobile({
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
-  const navItems = [
-    {
-      label: "About us",
-      url: "https://www.orcasound.net/",
-      ItemIcon: Home,
-      onClick: () => analytics.nav.aboutTabClicked(),
-    },
-    {
-      label: "Get notified",
-      url: "https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit",
-      ItemIcon: Notifications,
-      onClick: () => analytics.nav.notificationsClicked(),
-    },
-    {
-      label: "Send feedback",
-      url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
-      ItemIcon: Feedback,
-      onClick: () => analytics.nav.feedbackTabClicked(),
-    },
-  ];
-
   return (
     <Box sx={displayMobileOnly} width={1}>
       <Box
@@ -137,11 +106,16 @@ function Mobile({
         }}
       >
         <IconButton
-          sx={{ marginRight: "auto" }}
+          sx={{
+            marginRight: "auto",
+            backgroundColor: "rgba(255,255,255,.15)",
+            padding: "6px !important",
+            borderRadius: "4px",
+          }}
           color="inherit"
           onClick={handleMenuToggle}
         >
-          {menuIsOpen ? <Close /> : <Menu />}
+          {menuIsOpen ? <Close /> : <Tune />}
         </IconButton>
         <Brand onClick={onBrandClick} />
       </Box>
@@ -176,33 +150,7 @@ function Mobile({
             alignItems="center"
           >
             <List sx={{ maxWidth: (theme) => theme.breakpoints.values.sm }}>
-              {navItems.map((item) => (
-                <ListItem key={item.label} disablePadding>
-                  <ListItemButton
-                    href={item.url}
-                    target="_blank"
-                    onClick={() => item.onClick && item.onClick()}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        color: "base.main",
-                        display: "flex",
-                        justifyContent: "center",
-                        opacity: 0.9,
-                      }}
-                    >
-                      <item.ItemIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.label}
-                      sx={{
-                        color: "base.main",
-                        textTransform: "uppercase",
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+              <CandidateListFilters />
             </List>
           </Box>
         </Drawer>

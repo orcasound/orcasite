@@ -1,6 +1,10 @@
 import { Box } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
+import { useData } from "@/context/DataContext";
+
+import { timeRangeSelect } from "./CandidateListFilters";
+
 type Props = {
   menuTab: number;
   tabValue: number;
@@ -8,13 +12,17 @@ type Props = {
   // masterPlayerTimeRef: MutableRefObject<number>;
 };
 
-export function MobileTabs({ menuTab, tabValue, setTabValue }: Props) {
+export function MobileTabs({ tabValue, setTabValue }: Props) {
   const handleChange = (event: React.MouseEvent<HTMLDivElement>) => {
     setTabValue(Number(event.currentTarget.id));
   };
 
-  const recordingsTabs = ["Map", "Candidates", "Visualizations"];
-  const listenLiveTabs = ["Hydrophones", "Reports"];
+  const { filters } = useData();
+  const timeRange =
+    timeRangeSelect.find((el) => el.value === filters.timeRange)?.label ??
+    "Reports";
+
+  const listenLiveTabs = ["Listen Live", timeRange];
 
   const makeTabs = (array: string[]) => {
     return (
@@ -59,7 +67,7 @@ export function MobileTabs({ menuTab, tabValue, setTabValue }: Props) {
     );
   };
 
-  return menuTab == 0 ? makeTabs(recordingsTabs) : makeTabs(listenLiveTabs);
+  return makeTabs(listenLiveTabs);
 
   //   return (
   //     <>

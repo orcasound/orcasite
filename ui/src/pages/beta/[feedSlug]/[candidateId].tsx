@@ -19,7 +19,7 @@ import { formatTimestamp } from "@/utils/time";
 const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
   const { isFeedDetail } = getPageContext(router);
-  const { feeds, filters } = useData();
+  const { feeds, filters, autoPlayOnReady } = useData();
 
   const { candidateId, feedSlug } = router.query;
   const startEnd = useMemo(() => {
@@ -49,11 +49,6 @@ const CandidatePage: NextPageWithLayout = () => {
   const closeHref = !isFeedDetail ? allCandidatesHref : feedDetailHref;
 
   const { durationString } = useComputedPlaybackFields(candidate);
-
-  useEffect(() => {
-    setNowPlayingCandidate(candidate);
-    setNowPlayingFeed(null);
-  }, [candidate, setNowPlayingCandidate, setNowPlayingFeed]);
 
   type DetectionStats = {
     all: CombinedData[];
@@ -105,6 +100,11 @@ const CandidatePage: NextPageWithLayout = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    setNowPlayingCandidate(candidate);
+    setNowPlayingFeed(null);
+  }, [setNowPlayingCandidate, setNowPlayingFeed, candidate]);
+
   return (
     <div>
       <Head>Report {candidateId} | Orcasound </Head>
@@ -146,6 +146,7 @@ const CandidatePage: NextPageWithLayout = () => {
               onClick={() => {
                 setNowPlayingFeed(feed);
                 setNowPlayingCandidate(null);
+                autoPlayOnReady.current = false;
               }}
             >
               <Close />

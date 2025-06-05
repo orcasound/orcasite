@@ -92,7 +92,13 @@ const categorySelect = [
   },
 ];
 
-const CandidateListFilters = () => {
+const CandidateListFilters = ({
+  showTimeRange = true,
+  showFilterButton = true,
+}: {
+  showTimeRange?: boolean;
+  showFilterButton?: boolean;
+}) => {
   const { feeds, filters, setFilters } = useData();
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
@@ -155,20 +161,24 @@ const CandidateListFilters = () => {
       }}
     >
       <Stack direction="row" spacing={2} sx={{ maxWidth: "100%" }}>
-        <ChartSelect
-          name={"timeRange"}
-          value={filters.timeRange}
-          list={timeRangeSelect}
-          onChange={handleChange}
-        />
-        <Button
-          startIcon={<Tune />}
-          size="small"
-          variant="outlined"
-          onClick={handleToggle}
-        >
-          Filters
-        </Button>
+        {showTimeRange && (
+          <ChartSelect
+            name={"timeRange"}
+            value={filters.timeRange}
+            list={timeRangeSelect}
+            onChange={handleChange}
+          />
+        )}
+        {showFilterButton && (
+          <Button
+            startIcon={<Tune />}
+            size="small"
+            variant="outlined"
+            onClick={handleToggle}
+          >
+            Filters
+          </Button>
+        )}
       </Stack>
 
       {showFilters && (

@@ -38,6 +38,17 @@ export function MapWrapper({
         {nowPlayingCandidate && (
           <PlayerTimeDisplay masterPlayerTimeRef={masterPlayerTimeRef} />
         )}
+        {/* {smDown && (
+          <Box
+            sx={{
+              width: "50%",
+              backgroundColor: "background.default",
+              borderRadius: "4px",
+            }}
+          >
+            <CandidateListFilters showFilterButton={false} />
+          </Box>
+        )} */}
       </Box>
       <MapWithNoSSR />
     </Box>

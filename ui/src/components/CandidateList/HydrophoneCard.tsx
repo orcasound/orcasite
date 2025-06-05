@@ -9,7 +9,6 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useRouter } from "next/router";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
@@ -31,7 +30,6 @@ export default function HydrophoneCard({ feed }: Props) {
   } = useNowPlaying();
 
   const { autoPlayOnReady } = useData();
-  const router = useRouter();
 
   const active = feed.id === nowPlayingFeed?.id;
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -47,7 +45,7 @@ export default function HydrophoneCard({ feed }: Props) {
     setNowPlayingFeed(feed);
     setNowPlayingCandidate(null);
     // masterPlayerRef?.current?.play();
-    router.push(`/beta/${feed.slug}`);
+    // router.push(`/beta/${feed.slug}`);
   };
 
   const handlePause = () => {

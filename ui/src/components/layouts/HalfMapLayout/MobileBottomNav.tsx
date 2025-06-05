@@ -16,10 +16,10 @@ export function MobileBottomNav({ menuTab, setMenuTab }: Props) {
       onChange={(_event, newMenuTab) => {
         setMenuTab(newMenuTab);
       }}
-      sx={{ minHeight: "69px" }}
+      sx={{ minHeight: "69px", backgroundColor: "background.paper" }}
     >
       <BottomNavigationAction label="Map" icon={<Map />} />
-      <BottomNavigationAction label="Listen Live" icon={<Mic />} />
+      <BottomNavigationAction label="Hydrophones" icon={<Mic />} />
       <BottomNavigationAction label="Explore" icon={<Earbuds />} />
       <BottomNavigationAction label="Take Action" icon={<Public />} />
     </BottomNavigation>

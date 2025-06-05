@@ -1,29 +1,41 @@
 import { ArrowBackIos } from "@mui/icons-material";
 import { PlayCircle } from "@mui/icons-material";
-import { Box, Container, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Container,
+  Stack,
+  Theme,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
 
+import { timeRangeSelect } from "@/components/CandidateList/CandidateListFilters";
 import { useData } from "@/context/DataContext";
 import darkTheme from "@/styles/darkTheme";
 
 const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const { feedSlug } = router.query;
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const theme = useTheme();
-  const { feeds } = useData();
+  const { feeds, filters } = useData();
   const feed = feeds.find((feed) => feed.slug === feedSlug);
 
-  const isCandidateDetail =
-    !!router.query.feedSlug && !!router.query.candidateId;
+  // const isCandidateDetail =
+  //   !!router.query.feedSlug && !!router.query.candidateId;
 
-  const href = isCandidateDetail
-    ? `/beta/candidates/${feed?.slug}/${router.query.candidateId}`
-    : `/beta`;
+  const href =
+    // isCandidateDetail
+    //   ? `/beta/candidates/${feed?.slug}/${router.query.candidateId}`
+    //   :
+    `/beta`;
 
   const route = router.route.split("/");
   const tabPage = route[route.length - 1];
@@ -37,7 +49,12 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
 
   const tabs = [
     { title: "About", slug: "" },
-    { title: "Candidates", slug: "candidates" },
+    {
+      title:
+        timeRangeSelect.find((el) => el.value === filters.timeRange)?.label ??
+        "Candidates",
+      slug: "candidates",
+    },
     { title: "Greatest Hits", slug: "#" },
   ];
 
@@ -48,7 +65,8 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
       sx={{
         marginBottom: "24px",
         borderBottom: "1px solid rgba(255,255,255,.33)",
-        px: { xs: 1, sm: 2, md: 3 },
+        px: 3,
+        justifyContent: "center",
       }}
     >
       {tabs.map((tab) => {
@@ -83,12 +101,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   return (
     <div>
       <Head>Report {feedSlug} | Orcasound </Head>
-      <Container
-        maxWidth="xl"
-        sx={{
-          px: { xs: 1, sm: 2, md: 3 },
-        }}
-      >
+      <Container sx={{ px: 0 }}>
         <Box
           sx={{
             position: "relative",
@@ -99,10 +112,8 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
             justifyContent: "space-between",
             gap: "16px",
             background: `center / cover no-repeat url(${feed?.imageUrl})`,
-            mx: { xs: -1, sm: -2, md: -3 },
-            p: { xs: 1, sm: 2, md: 3 },
-            paddingTop: 5,
-            minHeight: "260px",
+            p: 2,
+            minHeight: smDown ? " 160px" : "260px",
           }}
         >
           {/* Gradient overlay */}
@@ -162,8 +173,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
         >
           {tabRow(tabs)}
         </Box>
-
-        {children}
+        <Box sx={{ p: 2 }}>{children}</Box>
       </Container>
     </div>
   );
