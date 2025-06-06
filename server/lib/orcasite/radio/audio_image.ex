@@ -102,6 +102,23 @@ defmodule Orcasite.Radio.AudioImage do
              )
     end
 
+    read :for_feed_subscription do
+      argument :feed_id, :string, allow_nil?: false
+      argument :start_time, :utc_datetime_usec, allow_nil?: false
+      argument :end_time, :utc_datetime_usec, allow_nil?: false
+
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 fragment(
+                   "(?) <= (?) AND (?) >= (?)",
+                   start_time,
+                   ^arg(:end_time),
+                   end_time,
+                   ^arg(:start_time)
+                 )
+             )
+    end
+
     create :for_feed_segment do
       upsert? true
       upsert_identity :unique_audio_image
@@ -249,7 +266,7 @@ defmodule Orcasite.Radio.AudioImage do
       pubsub OrcasiteWeb.Endpoint
 
       subscribe :audio_image_updated do
-        read_action :for_feed
+        read_action :for_feed_subscription
         actions [:for_feed_segment, :update]
       end
     end
