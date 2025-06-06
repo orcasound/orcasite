@@ -13,7 +13,7 @@ export default function PlayerDetail({
 }: {
   setPlaybarExpanded: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
+  const { nowPlayingCandidate } = useNowPlaying();
   const { feeds } = useData();
   const feed =
     feeds.find((f) => f.id === nowPlayingCandidate?.feedId) ?? feeds[0];

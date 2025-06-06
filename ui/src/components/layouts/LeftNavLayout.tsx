@@ -13,7 +13,6 @@ import * as React from "react";
 import { ReactElement } from "react";
 
 import Link from "@/components/Link";
-import { LayoutContext } from "@/context/LayoutContext";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { analytics } from "@/utils/analytics";
 
@@ -252,9 +251,7 @@ function LeftNavLayout({ children }: { children: React.ReactNode }) {
 export function getLeftNavLayout(page: ReactElement) {
   return (
     <MasterDataLayout>
-      <LayoutContext.Provider value="leftNav">
-        <LeftNavLayout>{page}</LeftNavLayout>
-      </LayoutContext.Provider>
+      <LeftNavLayout>{page}</LeftNavLayout>
     </MasterDataLayout>
   );
 }
