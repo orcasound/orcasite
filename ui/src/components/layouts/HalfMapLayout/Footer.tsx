@@ -2,7 +2,6 @@ import { Box, Stack, Theme, useMediaQuery } from "@mui/material";
 import React, { MutableRefObject, SetStateAction, useState } from "react";
 
 import PlayBar from "@/components/PlayBar/PlayBar";
-import darkTheme from "@/styles/darkTheme";
 
 import { MobileBottomNav } from "./MobileBottomNav";
 import PlayerDetail from "./PlayerDetail";
@@ -29,13 +28,7 @@ export default function Footer({
         bottom: 0,
         zIndex: (theme) => theme.zIndex.drawer + 1,
         width: "100%",
-        backgroundColor: darkTheme.palette.background.default,
-        height: playbarExpanded
-          ? "calc(100vh - 64px)"
-          : mdDown
-            ? "141px"
-            : "86px",
-        transition: "height .66s ease",
+        justifyContent: "flex-end",
       }}
     >
       <PlayBar
@@ -43,11 +36,23 @@ export default function Footer({
         playbarExpanded={playbarExpanded}
         setPlaybarExpanded={setPlaybarExpanded}
       />
-      {playbarExpanded && (
-        <Box sx={{ overflow: "scroll", px: "24px", flex: 1 }}>
-          <PlayerDetail />
-        </Box>
-      )}
+      <Box
+        className="now-playing-drawer"
+        sx={{
+          overflow: "scroll",
+          px: "24px",
+          flex: 1,
+          position: "absolute",
+          bottom: "69px",
+          width: "100%",
+          height: playbarExpanded ? "calc(100% - 69px)" : 0,
+          backgroundColor: "background.default",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          transition: "height .66s ease",
+        }}
+      >
+        <PlayerDetail setPlaybarExpanded={setPlaybarExpanded} />
+      </Box>
       {mdDown && <MobileBottomNav menuTab={menuTab} setMenuTab={setMenuTab} />}
     </Stack>
   );

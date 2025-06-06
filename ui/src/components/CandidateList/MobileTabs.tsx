@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { useRouter } from "next/router";
 import { Dispatch, SetStateAction } from "react";
 
 import { useData } from "@/context/DataContext";
@@ -13,8 +14,11 @@ type Props = {
 };
 
 export function MobileTabs({ tabValue, setTabValue }: Props) {
+  const router = useRouter();
   const handleChange = (event: React.MouseEvent<HTMLDivElement>) => {
-    setTabValue(Number(event.currentTarget.id));
+    const indexNumber = Number(event.currentTarget.id);
+    setTabValue(indexNumber);
+    router.push(listenLiveTabs[indexNumber].slug);
   };
 
   const { filters } = useData();
@@ -22,9 +26,17 @@ export function MobileTabs({ tabValue, setTabValue }: Props) {
     timeRangeSelect.find((el) => el.value === filters.timeRange)?.label ??
     "Reports";
 
-  const listenLiveTabs = ["Listen Live", timeRange];
+  type TabsType = {
+    title: string;
+    slug: string;
+  };
 
-  const makeTabs = (array: string[]) => {
+  const listenLiveTabs = [
+    { title: "Listen Live", slug: "/beta/hydrophones" },
+    { title: timeRange, slug: "/beta/candidates" },
+  ];
+
+  const makeTabs = (array: TabsType[]) => {
     return (
       <Box
         className={"mobile-tabs"}
@@ -37,12 +49,12 @@ export function MobileTabs({ tabValue, setTabValue }: Props) {
           minHeight: "48px",
         }}
       >
-        {array.map((tab: string, index: number) => {
+        {array.map((tab: TabsType, index: number) => {
           return (
             <Box
               id={index.toString()}
               className={"mobile-tab"}
-              key={tab}
+              key={tab.title}
               onClick={handleChange}
               sx={{
                 borderBottom: index === tabValue ? "1.5px solid #fff" : "none",
@@ -59,7 +71,7 @@ export function MobileTabs({ tabValue, setTabValue }: Props) {
                     : "rgba(255,255,255,.8)",
               }}
             >
-              {tab}
+              {tab.title}
             </Box>
           );
         })}

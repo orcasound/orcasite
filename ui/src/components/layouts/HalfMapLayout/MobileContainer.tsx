@@ -10,7 +10,7 @@ export const MobileContainer = ({ children }: MobileContainerProps) => {
       maxWidth="xl"
       className={"mobile-container"}
       sx={{
-        pt: 2,
+        py: 2,
         px: 1.5,
         flex: 1,
         display: "flex",

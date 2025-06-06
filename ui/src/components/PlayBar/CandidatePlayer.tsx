@@ -3,6 +3,7 @@ import "videojs-offset";
 import {
   MutableRefObject,
   ReactNode,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -23,7 +24,7 @@ import { PlayerBase } from "./PlayerBase";
 // // dynamically import VideoJS to speed up initial page load
 // const VideoJS = dynamic(() => import("../Player/VideoJS"));
 
-export function PlaybarPlayer({
+export function CandidatePlayer({
   clipDateTime,
   clipNode,
   feed,
@@ -36,6 +37,7 @@ export function PlaybarPlayer({
   onAudioPlay,
   onPlay,
   masterPlayerTimeRef,
+  setPlaybarExpanded,
 }: {
   clipDateTime?: string;
   clipNode?: string;
@@ -50,6 +52,7 @@ export function PlaybarPlayer({
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
   masterPlayerTimeRef?: MutableRefObject<number>;
+  setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 }) {
   const {
     masterPlayerRef,
@@ -217,6 +220,7 @@ export function PlaybarPlayer({
       playerTime={playerTime}
       onAudioPlay={onAudioPlay}
       handlePlayPauseClickCandidate={handlePlayPauseClick}
+      setPlaybarExpanded={setPlaybarExpanded}
     />
   );
 }

@@ -2,7 +2,7 @@ import "videojs-offset";
 
 import { Box, Stack, Theme, Typography, useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
-import { MutableRefObject, ReactNode } from "react";
+import { MutableRefObject, ReactNode, SetStateAction } from "react";
 
 import PlayBarPlayPauseButton from "@/components/PlayBar/CandidatePlayPauseButton";
 import { type PlayerStatus } from "@/components/Player/Player";
@@ -32,6 +32,7 @@ type PlayerBaseProps = {
   image?: string | undefined;
   playerTitle: string | undefined; // change this to player title
   playerSubtitle: string | undefined; // change this to player subtitle
+  setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 
   // Feed only
   timestamp?: number | undefined;
@@ -64,6 +65,7 @@ export function PlayerBase({
   duration = "",
   marks,
   playerTime = 0,
+  setPlaybarExpanded,
 }: PlayerBaseProps) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlayingCandidate } = useNowPlaying();
@@ -138,6 +140,7 @@ export function PlayerBase({
           direction="row"
           width="100%"
           spacing={smDown ? 2 : 3}
+          onClick={() => setPlaybarExpanded(true)}
           sx={{ overflow: "hidden" }}
         >
           <Box
@@ -165,12 +168,12 @@ export function PlayerBase({
               sx={{ whiteSpace: "nowrap", fontSize: smDown ? "14px" : "1rem" }}
             >
               <span style={{ fontWeight: "bold" }}>{playerTitle}</span>
-              {smDown && <br />}
-              {playerSubtitle && " · " + playerSubtitle}
+              {smDown ? <br /> : " · "}
+              {playerSubtitle && playerSubtitle}
               {type === "feed" && !smDown && " · "}
               {type === "feed" &&
                 `${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
-              {type === "candidate" && " • " + duration}
+              {type === "candidate" && " · " + duration}
             </Typography>
             {!smDown && nowPlayingCandidate && slider}
           </Box>

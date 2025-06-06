@@ -17,7 +17,7 @@ import formatDuration from "@/utils/masterDataHelpers";
 import { formatTimestamp } from "@/utils/time";
 
 import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
-import { PlaybarPlayer } from "./CandidatePlayer";
+import { CandidatePlayer } from "./CandidatePlayer";
 import LivePlayer from "./LivePlayer";
 
 export default function PlayBar({
@@ -135,7 +135,6 @@ export default function PlayBar({
     <AppBar
       position="relative"
       color="base"
-      onClick={smDown ? () => setPlaybarExpanded(!playbarExpanded) : undefined}
       sx={{
         top: "auto",
         height: smDown ? "auto" : "87px",
@@ -153,7 +152,7 @@ export default function PlayBar({
       >
         <>
           {nowPlayingCandidate && CandidateFeed && (
-            <PlaybarPlayer
+            <CandidatePlayer
               feed={CandidateFeed}
               image={CandidateFeed.imageUrl || ""}
               playlistTimestamp={playlistTimestamp}
@@ -165,9 +164,15 @@ export default function PlayBar({
               clipNode={hydrophone || ""}
               marks={marks}
               masterPlayerTimeRef={masterPlayerTimeRef}
+              setPlaybarExpanded={setPlaybarExpanded}
             />
           )}
-          {nowPlayingFeed && <LivePlayer currentFeed={nowPlayingFeed} />}
+          {nowPlayingFeed && (
+            <LivePlayer
+              currentFeed={nowPlayingFeed}
+              setPlaybarExpanded={setPlaybarExpanded}
+            />
+          )}
         </>
         {!smDown && (
           <IconButton

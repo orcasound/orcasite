@@ -1,5 +1,13 @@
-import { Close } from "@mui/icons-material";
-import { Box, Button, Container, Typography } from "@mui/material";
+import { ArrowBackIos, Close } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Container,
+  Stack,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -20,6 +28,7 @@ const CandidatePage: NextPageWithLayout = () => {
   const router = useRouter();
   const { isFeedDetail } = getPageContext(router);
   const { feeds, filters, autoPlayOnReady } = useData();
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const { candidateId, feedSlug } = router.query;
   const startEnd = useMemo(() => {
@@ -111,13 +120,35 @@ const CandidatePage: NextPageWithLayout = () => {
       <Container
         maxWidth="xl"
         sx={{
-          px: { xs: 1, sm: 2, md: 3 },
+          p: 2,
         }}
       >
         <Box>
+          {" "}
+          {smDown && (
+            <Link
+              href={"#"}
+              onClick={(e) => {
+                e.preventDefault();
+                router.back();
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                textDecoration: "none",
+                lineHeight: 1,
+                color: "common.white",
+                zIndex: 1,
+                position: "relative",
+              }}
+            >
+              <ArrowBackIos />
+            </Link>
+          )}
           <Box
             sx={{
-              marginTop: 4,
+              marginTop: 3,
               display: "flex",
               justifyContent: "space-between",
             }}
@@ -141,20 +172,36 @@ const CandidatePage: NextPageWithLayout = () => {
                 Reports within {filters?.timeIncrement} min
               </Typography>
             </Box>
-            <Link
-              href={closeHref}
-              onClick={() => {
-                setNowPlayingFeed(feed);
-                setNowPlayingCandidate(null);
-                autoPlayOnReady.current = false;
-              }}
-            >
-              <Close />
-            </Link>
+            {!smDown && (
+              <Link
+                href={closeHref}
+                onClick={() => {
+                  setNowPlayingFeed(feed);
+                  setNowPlayingCandidate(null);
+                  autoPlayOnReady.current = false;
+                }}
+              >
+                <Close />
+              </Link>
+            )}
           </Box>
-          <Button variant="contained" sx={{ width: "100%", my: "1.5rem" }}>
-            Open audio analyzer
-          </Button>
+          <Stack gap={2} direction="row" sx={{ my: 3 }}>
+            {durationString !== "audio unavailable" ? (
+              <Button
+                variant="contained"
+                sx={{
+                  width: "100%",
+                }}
+              >
+                Open audio analyzer
+              </Button>
+            ) : (
+              <Box sx={{ my: "1rem" }}></Box>
+            )}
+            <Button variant="outlined" sx={{ width: "100%" }}>
+              Open map view
+            </Button>
+          </Stack>
           <Box className="main">
             {candidate && <DetectionsList candidate={candidate} />}
             {/* <List>

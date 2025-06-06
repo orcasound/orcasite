@@ -65,7 +65,6 @@ const HydrophonePage: NextPageWithLayout = () => {
             backgroundColor: "accent1.main",
             p: 2,
             borderRadius: 1,
-            mt: 2,
           }}
         >
           <Typography variant="body2">

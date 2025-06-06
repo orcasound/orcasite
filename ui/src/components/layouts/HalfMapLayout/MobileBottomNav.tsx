@@ -1,5 +1,6 @@
 import { Earbuds, Map, Mic, Public } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
+import { useRouter } from "next/router";
 import React, { Dispatch, SetStateAction } from "react";
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export function MobileBottomNav({ menuTab, setMenuTab }: Props) {
+  const router = useRouter();
   return (
     <BottomNavigation
       className="bottom-navigation"
@@ -18,8 +20,16 @@ export function MobileBottomNav({ menuTab, setMenuTab }: Props) {
       }}
       sx={{ minHeight: "69px", backgroundColor: "background.paper" }}
     >
-      <BottomNavigationAction label="Map" icon={<Map />} />
-      <BottomNavigationAction label="Hydrophones" icon={<Mic />} />
+      <BottomNavigationAction
+        label="Map"
+        icon={<Map />}
+        onClick={() => router.push("/beta")}
+      />
+      <BottomNavigationAction
+        label="Hydrophones"
+        icon={<Mic />}
+        onClick={() => router.push("/beta/hydrophones")}
+      />
       <BottomNavigationAction label="Explore" icon={<Earbuds />} />
       <BottomNavigationAction label="Take Action" icon={<Public />} />
     </BottomNavigation>

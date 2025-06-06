@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
-import { MutableRefObject, useState } from "react";
+import { useRouter } from "next/router";
+import { MutableRefObject, SetStateAction, useEffect, useState } from "react";
 
 import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
 
@@ -10,12 +11,29 @@ import { MobileTabs } from "./MobileTabs";
 
 type Props = {
   menuTab: number;
+  setMenuTab: React.Dispatch<SetStateAction<number>>;
   masterPlayerTimeRef: MutableRefObject<number>;
 };
 
-export function MobileDisplay({ menuTab, masterPlayerTimeRef }: Props) {
+export function MobileDisplay({
+  menuTab,
+  setMenuTab,
+  masterPlayerTimeRef,
+}: Props) {
   // tabValue is the state of the tabs at the top in <MobileTabs>
   const [tabValue, setTabValue] = useState(0);
+  const router = useRouter();
+  useEffect(() => {
+    if (router.route === "/beta/hydrophones") {
+      setTabValue(0);
+      setMenuTab(1);
+    } else if (router.route === "/beta/candidates") {
+      setTabValue(1);
+      setMenuTab(1);
+    } else if (router.route === "/beta") {
+      setMenuTab(0);
+    }
+  }, [router, setTabValue, setMenuTab]);
 
   return (
     <>

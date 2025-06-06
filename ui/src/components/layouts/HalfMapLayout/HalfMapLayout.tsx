@@ -54,17 +54,17 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     return showChildren;
   }, [pageRoute]);
 
-  const tabSlugs = ["hydrophones", "candidates", "visualizations"];
+  // const tabSlugs = ["hydrophones", "candidates", "visualizations"];
 
-  function getTabIndexFromPath(path: string): number {
-    const slug = path.replace("/beta/", "");
-    if (tabSlugs.includes(slug)) {
-      return tabSlugs.indexOf(slug);
-    } else {
-      return 0;
-    }
-  }
-  const tabIndex = getTabIndexFromPath(router.route);
+  // function getTabIndexFromPath(path: string): number {
+  //   const slug = path.replace("/beta/", "");
+  //   if (tabSlugs.includes(slug)) {
+  //     return tabSlugs.indexOf(slug);
+  //   } else {
+  //     return 0;
+  //   }
+  // }
+  // const tabIndex = getTabIndexFromPath(router.route);
 
   function a11yProps(index: number) {
     return {
@@ -73,9 +73,9 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     };
   }
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    router.push(`/beta/${tabSlugs[newValue]}`, undefined, { shallow: true });
-  };
+  // const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  //   router.push(`/beta/${tabSlugs[newValue]}`, undefined, { shallow: true });
+  // };
 
   const tabSx = {
     padding: "7px 16px !important",
@@ -106,8 +106,8 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 
   const tabs = (
     <Tabs
-      value={tabIndex}
-      onChange={handleChange}
+      // value={tabIndex}
+      // onChange={handleChange}
       aria-label="navigation tabs"
       centered={mdDown ? true : false}
       sx={tabsSx}
@@ -233,6 +233,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
                 <>
                   <MobileDisplay
                     menuTab={menuTab}
+                    setMenuTab={setMenuTab}
                     masterPlayerTimeRef={masterPlayerTimeRef}
                   />
                 </>

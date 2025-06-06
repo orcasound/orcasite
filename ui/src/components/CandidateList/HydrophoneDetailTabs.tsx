@@ -2,7 +2,6 @@ import { ArrowBackIos } from "@mui/icons-material";
 import { PlayCircle } from "@mui/icons-material";
 import {
   Box,
-  Container,
   Stack,
   Theme,
   Typography,
@@ -63,10 +62,8 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
       direction="row"
       gap="40px"
       sx={{
-        marginBottom: "24px",
         borderBottom: "1px solid rgba(255,255,255,.33)",
         px: 3,
-        justifyContent: "center",
       }}
     >
       {tabs.map((tab) => {
@@ -101,80 +98,78 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
   return (
     <div>
       <Head>Report {feedSlug} | Orcasound </Head>
-      <Container sx={{ px: 0 }}>
+      <Box
+        sx={{
+          position: "relative",
+          // marginTop: 5,
+          marginBottom: "2px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: "16px",
+          background: `center / cover no-repeat url(${feed?.imageUrl})`,
+          p: 2,
+          minHeight: smDown ? " 160px" : "260px",
+        }}
+      >
+        {/* Gradient overlay */}
         <Box
           sx={{
-            position: "relative",
-            // marginTop: 5,
-            marginBottom: "2px",
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.33), rgba(0,0,0,0))",
+            zIndex: 0,
+          }}
+        />
+        <Link
+          href={smDown ? "#" : href}
+          onClick={(e) => {
+            e.preventDefault();
+            if (smDown) {
+              router.back();
+            }
+          }}
+          style={{
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            gap: "16px",
-            background: `center / cover no-repeat url(${feed?.imageUrl})`,
-            p: 2,
-            minHeight: smDown ? " 160px" : "260px",
+            alignItems: "center",
+            gap: "8px",
+            textDecoration: "none",
+            lineHeight: 1,
+            color: theme.palette.common.white,
+            zIndex: 1,
+            position: "relative",
           }}
         >
-          {/* Gradient overlay */}
-          <Box
-            sx={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "linear-gradient(to top, rgba(0,0,0,0.33), rgba(0,0,0,0))",
-              zIndex: 0,
-            }}
-          />
-          <Link
-            href={href}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              textDecoration: "none",
-              lineHeight: 1,
-              color: theme.palette.common.white,
-              zIndex: 1,
-              position: "relative",
-            }}
-          >
-            <ArrowBackIos />
-          </Link>
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{
-                zIndex: 1,
-                lineHeight: 1.1,
-                position: "relative",
-                textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
-              }}
-            >
-              {feed?.name}
-            </Typography>
-            <PlayCircle
-              sx={{ height: 48, width: 48, zIndex: 1, position: "relative" }}
-            />
-          </Box>
-        </Box>
+          <ArrowBackIos />
+        </Link>
         <Box
           sx={{
-            mx: { xs: -1, sm: -2, md: -3 },
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          {tabRow(tabs)}
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              zIndex: 1,
+              lineHeight: 1.1,
+              position: "relative",
+              textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            {feed?.name}
+          </Typography>
+          <PlayCircle
+            sx={{ height: 48, width: 48, zIndex: 1, position: "relative" }}
+          />
         </Box>
-        <Box sx={{ p: 2 }}>{children}</Box>
-      </Container>
+      </Box>
+      {tabRow(tabs)}
+      <Box sx={{ p: 2 }}>{children}</Box>
     </div>
   );
 };

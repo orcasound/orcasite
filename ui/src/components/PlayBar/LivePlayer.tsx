@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { type VideoJSPlayer } from "@/components/Player/VideoJS";
 import { useData } from "@/context/DataContext";
@@ -18,8 +25,11 @@ type PlayerStatus = "idle" | "loading" | "playing" | "paused" | "error";
 
 export default function LivePlayer({
   currentFeed,
+  setPlaybarExpanded,
 }: {
   currentFeed: Feed;
+  setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
+
   // Pick<
   //   Feed,
   //   | "id"
@@ -197,6 +207,7 @@ export default function LivePlayer({
       listenerCount={listenerCount}
       playerTitle={playerText}
       playerSubtitle={""}
+      setPlaybarExpanded={setPlaybarExpanded}
     />
   );
 }
