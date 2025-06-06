@@ -15,6 +15,7 @@ import Image from "next/image";
 import { ReactNode, useState } from "react";
 
 import Link from "@/components/Link";
+import { useLayout } from "@/context/LayoutContext";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
@@ -29,7 +30,7 @@ export default function HeaderNew({
   tabs?: ReactNode;
 }) {
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const [alertOpen, setAlertOpen] = useState(true);
+  const { alertOpen, setAlertOpen } = useLayout();
 
   return (
     <AppBar

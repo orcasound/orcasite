@@ -198,9 +198,11 @@ const CandidatePage: NextPageWithLayout = () => {
             ) : (
               <Box sx={{ my: "1rem" }}></Box>
             )}
-            <Button variant="outlined" sx={{ width: "100%" }}>
-              Open map view
-            </Button>
+            {smDown && (
+              <Button variant="outlined" sx={{ width: "100%" }}>
+                Open map view
+              </Button>
+            )}
           </Stack>
           <Box className="main">
             {candidate && <DetectionsList candidate={candidate} />}

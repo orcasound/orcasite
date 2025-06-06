@@ -4,6 +4,7 @@ import * as React from "react";
 import { useState } from "react";
 
 import { DataProvider } from "@/context/DataContext";
+import { LayoutProvider } from "@/context/LayoutContext";
 import { NowPlayingProvider } from "@/context/NowPlayingContext";
 import { useMasterData } from "@/hooks/useMasterData";
 import darkTheme from "@/styles/darkTheme";
@@ -46,7 +47,9 @@ export function MasterDataLayout({ children }: { children: React.ReactNode }) {
       <NowPlayingProvider>
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
-          <DataProvider data={dataset}>{children}</DataProvider>
+          <DataProvider data={dataset}>
+            <LayoutProvider>{children}</LayoutProvider>
+          </DataProvider>
         </ThemeProvider>
       </NowPlayingProvider>
     </Box>

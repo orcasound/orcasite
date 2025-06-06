@@ -54,7 +54,6 @@ const HydrophonePage: NextPageWithLayout = () => {
       autoPlayOnReady.current = false;
     }
   }, [feed, setNowPlayingCandidate, setNowPlayingFeed, autoPlayOnReady]);
-  console.log("index router.route", router.route);
 
   return (
     <HydrophoneDetailTabs>

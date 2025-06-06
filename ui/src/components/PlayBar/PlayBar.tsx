@@ -137,8 +137,8 @@ export default function PlayBar({
       color="base"
       sx={{
         top: "auto",
-        height: smDown ? "auto" : "87px",
-        padding: "8px 0",
+        height: "auto",
+        padding: "6px 0",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

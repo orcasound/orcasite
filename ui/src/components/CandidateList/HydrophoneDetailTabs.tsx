@@ -15,6 +15,7 @@ import { ReactNode } from "react";
 
 import { timeRangeSelect } from "@/components/CandidateList/CandidateListFilters";
 import { useData } from "@/context/DataContext";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 import darkTheme from "@/styles/darkTheme";
 
 const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
@@ -24,6 +25,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
 
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const theme = useTheme();
+  const { setNowPlayingCandidate, setNowPlayingFeed } = useNowPlaying();
   const { feeds, filters } = useData();
   const feed = feeds.find((feed) => feed.slug === feedSlug);
 
@@ -125,9 +127,13 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
         <Link
           href={smDown ? "#" : href}
           onClick={(e) => {
-            e.preventDefault();
             if (smDown) {
+              e.preventDefault();
               router.back();
+            }
+            if (feed) {
+              setNowPlayingFeed(feed);
+              setNowPlayingCandidate(null);
             }
           }}
           style={{

@@ -22,6 +22,7 @@ const darkTheme = createTheme({
     primary: {
       ...theme.palette.primary,
       main: "#ffffff",
+      dark: "#cccccc",
     },
     background: {
       default: "#080d26",
@@ -39,6 +40,13 @@ const darkTheme = createTheme({
       },
       name: "darkgrey",
     }),
+    action: {
+      hover: "rgba(255, 255, 255, 0.08)", // subtle white-on-dark hover
+      disabledBackground: "rgba(255, 255, 255, 0.12)", // muted, readable disabled bg
+      disabled: "rgba(255, 255, 255, 0.3)", // disabled text/icons
+      selected: "rgba(255, 255, 255, 0.16)", // optional: for selected items
+      focus: "rgba(255, 255, 255, 0.2)", // optional: focus ring bg if needed
+    },
     accent1: theme.palette.augmentColor({
       color: {
         main: "#002f49",
@@ -143,11 +151,40 @@ darkTheme.components = {
   MuiButton: {
     styleOverrides: {
       outlined: {
-        color: "#fff",
-        borderColor: "rgba(255,255,255,.5)",
+        color: "text.primary",
+        borderColor: "rgba(255,255,255,0.5)",
+        "&:hover": {
+          borderColor: "rgba(255,255,255,0.8)",
+          backgroundColor: "rgba(255,255,255,0.04)", // subtle hover bg
+        },
+        "&:disabled": {
+          color: "text.disabled",
+          borderColor: "rgba(255,255,255,0.2)",
+        },
+        "&.Mui-focused": {
+          borderColor: "primary.main",
+        },
       },
       contained: {
         color: darkTheme.palette.base.dark,
+        backgroundColor: "primary.main",
+        "&:hover": {
+          backgroundColor: "primary.main",
+        },
+        "&:disabled": {
+          backgroundColor: "action.disabledBackground",
+          color: "text.disabled",
+        },
+        "&.Mui-focused": {
+          boxShadow: `0 0 0 3px ${darkTheme.palette.primary.light}33`, // soft focus ring
+        },
+      },
+      // You can also style the default (text) variant if needed
+      text: {
+        color: "text.primary",
+        "&:hover": {
+          backgroundColor: "action.hover",
+        },
       },
     },
   },

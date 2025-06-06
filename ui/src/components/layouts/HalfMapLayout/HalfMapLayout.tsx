@@ -14,7 +14,6 @@ import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
 import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
 import { MobileDisplay } from "@/components/CandidateList/MobileDisplay";
 import HeaderNew from "@/components/HeaderNew";
-import { LayoutContext } from "@/context/LayoutContext";
 import HydrophoneCandidatesPage from "@/pages/beta/[feedSlug]/candidates";
 import { getPageContext } from "@/utils/pageContext";
 
@@ -255,9 +254,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 export function getHalfMapLayout(page: ReactElement) {
   return (
     <MasterDataLayout>
-      <LayoutContext.Provider value="halfMap">
-        <HalfMapLayout>{page}</HalfMapLayout>
-      </LayoutContext.Provider>
+      <HalfMapLayout>{page}</HalfMapLayout>
     </MasterDataLayout>
   );
 }

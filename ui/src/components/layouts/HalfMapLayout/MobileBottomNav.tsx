@@ -18,7 +18,22 @@ export function MobileBottomNav({ menuTab, setMenuTab }: Props) {
       onChange={(_event, newMenuTab) => {
         setMenuTab(newMenuTab);
       }}
-      sx={{ minHeight: "69px", backgroundColor: "background.paper" }}
+      sx={{
+        minHeight: "69px",
+        backgroundColor: "background.paper",
+        "& .MuiBottomNavigationAction-root": {
+          color: "text.secondary",
+          "& .MuiSvgIcon-root": {
+            color: "text.secondary",
+          },
+        },
+        "& .Mui-selected": {
+          color: "text.primary",
+          "& .MuiSvgIcon-root": {
+            color: "text.primary",
+          },
+        },
+      }}
     >
       <BottomNavigationAction
         label="Map"
