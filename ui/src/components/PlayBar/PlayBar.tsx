@@ -150,6 +150,19 @@ export default function PlayBar({
           width: "100%",
         }}
       >
+        {" "}
+        {!smDown && (
+          <IconButton
+            color="inherit"
+            sx={{ background: "black", height: "70px", borderRadius: "10px" }}
+            onClick={() => setPlaybarExpanded(!playbarExpanded)}
+          >
+            <Typography sx={{ fontSize: "16px" }}>
+              {playbarExpanded ? "Close audio analyzer" : "Open audio analyzer"}
+            </Typography>
+            {playbarExpanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+          </IconButton>
+        )}
         <>
           {nowPlayingCandidate && CandidateFeed && (
             <CandidatePlayer
@@ -174,18 +187,6 @@ export default function PlayBar({
             />
           )}
         </>
-        {!smDown && (
-          <IconButton
-            color="inherit"
-            sx={{ background: "black", height: "70px", borderRadius: "10px" }}
-            onClick={() => setPlaybarExpanded(!playbarExpanded)}
-          >
-            <Typography sx={{ fontSize: "16px" }}>
-              {playbarExpanded ? "Close audio analyzer" : "Open audio analyzer"}
-            </Typography>
-            {playbarExpanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          </IconButton>
-        )}
       </Toolbar>
     </AppBar>
   );

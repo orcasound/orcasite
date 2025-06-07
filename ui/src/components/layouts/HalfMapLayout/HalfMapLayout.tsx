@@ -25,10 +25,6 @@ import { SideList } from "./SideList";
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { isFeedDetail } = getPageContext(router);
-  console.log("isFeedDetail", isFeedDetail);
-  console.log("router.route", router.route);
-  console.log("router.asPath", router.asPath);
-  console.log("router.pathname", router.pathname);
 
   const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -41,7 +37,6 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 
   const showChildrenRight = useMemo(() => {
     const showChildren = router.query.candidateId !== undefined;
-    console.log("showChildrenLeft", showChildren);
     return showChildren;
   }, [router.query.candidateId]);
 
@@ -49,7 +44,6 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
     const showChildren =
       pageRoute === "/beta/[feedSlug]/candidates" ||
       pageRoute === "/beta/[feedSlug]";
-    console.log("showChildrenRight", showChildren);
     return showChildren;
   }, [pageRoute]);
 
@@ -105,7 +99,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
 
   const tabs = (
     <Tabs
-      // value={tabIndex}
+      value={0}
       // onChange={handleChange}
       aria-label="navigation tabs"
       centered={mdDown ? true : false}

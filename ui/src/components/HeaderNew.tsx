@@ -36,6 +36,7 @@ export default function HeaderNew({
     <AppBar
       // position="sticky"
       // position={mdDown ? "fixed" : "static"} // needed this to be fixed to avoid issue with 100vh preventing scroll on mobile
+      color="primary"
       position={"static"}
       sx={{
         // Keep header above the side drawer
@@ -179,20 +180,17 @@ function Desktop({ tabs }: { tabs?: ReactNode }) {
           <Box sx={{ width: "260px" }}>
             <CandidateListFilters />
           </Box>
-          <Link href="#" onClick={() => analytics.nav.notificationsClicked()}>
-            <Button
-              size="small"
-              variant="outlined"
-              sx={{ whiteSpace: "nowrap" }}
-            >
-              Sign up
-            </Button>
-          </Link>
-          <Link href="#">
-            <Button size="small" variant="contained">
-              Log in
-            </Button>
-          </Link>
+          <Button
+            href="#"
+            size="small"
+            variant="outlined"
+            sx={{ whiteSpace: "nowrap" }}
+          >
+            Sign up
+          </Button>
+          <Button href="#" size="small" variant="contained">
+            Log in
+          </Button>
         </Box>
       </Box>
     </Box>

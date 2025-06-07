@@ -16,6 +16,7 @@ import { DetectionsList } from "@/components/CandidateList/DetectionsList";
 import { getHalfMapLayout } from "@/components/layouts/HalfMapLayout/HalfMapLayout";
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
+import { useLayout } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import { useComputedPlaybackFields } from "@/hooks/useComputedPlaybackFields";
@@ -39,6 +40,7 @@ const CandidatePage: NextPageWithLayout = () => {
 
   const { setNowPlayingCandidate, setNowPlayingFeed } = useNowPlaying();
   const { filteredData, sortedCandidates } = useData();
+  const { setPlaybarExpanded } = useLayout();
 
   const feed = feeds?.find((f) => f.slug === feedSlug) || ({} as Feed);
 
@@ -189,6 +191,9 @@ const CandidatePage: NextPageWithLayout = () => {
             {durationString !== "audio unavailable" ? (
               <Button
                 variant="contained"
+                onClick={() => {
+                  setPlaybarExpanded(true);
+                }}
                 sx={{
                   width: "100%",
                 }}

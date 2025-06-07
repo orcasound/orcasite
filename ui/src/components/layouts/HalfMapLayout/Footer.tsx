@@ -1,5 +1,5 @@
 import { Box, Stack, Theme, useMediaQuery } from "@mui/material";
-import React, { MutableRefObject, SetStateAction, useState } from "react";
+import React, { MutableRefObject, SetStateAction } from "react";
 
 import PlayBar from "@/components/PlayBar/PlayBar";
 import { useLayout } from "@/context/LayoutContext";
@@ -18,8 +18,7 @@ export default function Footer({
 }) {
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  const [playbarExpanded, setPlaybarExpanded] = useState(false);
-  const { headerHeight } = useLayout();
+  const { headerHeight, playbarExpanded, setPlaybarExpanded } = useLayout();
 
   return (
     <Stack

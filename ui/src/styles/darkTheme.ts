@@ -23,6 +23,7 @@ const darkTheme = createTheme({
       ...theme.palette.primary,
       main: "#ffffff",
       dark: "#cccccc",
+      contrastText: "#1b2b7b",
     },
     background: {
       default: "#080d26",
@@ -150,30 +151,35 @@ darkTheme.components = {
   },
   MuiButton: {
     styleOverrides: {
+      root: {
+        "&:hover": {
+          cursor: "pointer",
+        },
+      },
       outlined: {
-        color: "text.primary",
+        color: darkTheme.palette.text.primary,
         borderColor: "rgba(255,255,255,0.5)",
         "&:hover": {
           borderColor: "rgba(255,255,255,0.8)",
           backgroundColor: "rgba(255,255,255,0.04)", // subtle hover bg
         },
         "&:disabled": {
-          color: "text.disabled",
+          color: darkTheme.palette.text.disabled,
           borderColor: "rgba(255,255,255,0.2)",
         },
         "&.Mui-focused": {
-          borderColor: "primary.main",
+          borderColor: darkTheme.palette.primary.main,
         },
       },
       contained: {
-        color: darkTheme.palette.base.dark,
-        backgroundColor: "primary.main",
+        color: darkTheme.palette.background.default,
+        backgroundColor: darkTheme.palette.primary.main,
         "&:hover": {
-          backgroundColor: "primary.main",
+          backgroundColor: darkTheme.palette.primary.main,
         },
         "&:disabled": {
-          backgroundColor: "action.disabledBackground",
-          color: "text.disabled",
+          backgroundColor: darkTheme.palette.action.disabledBackground,
+          color: darkTheme.palette.text.disabled,
         },
         "&.Mui-focused": {
           boxShadow: `0 0 0 3px ${darkTheme.palette.primary.light}33`, // soft focus ring
@@ -181,9 +187,9 @@ darkTheme.components = {
       },
       // You can also style the default (text) variant if needed
       text: {
-        color: "text.primary",
+        color: darkTheme.palette.text.primary,
         "&:hover": {
-          backgroundColor: "action.hover",
+          backgroundColor: darkTheme.palette.action.hover,
         },
       },
     },

@@ -2,7 +2,6 @@ import { KeyboardArrowDown } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import { Dispatch, SetStateAction } from "react";
 
-import BoutPage from "@/components/Bouts/BoutPage";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 
@@ -21,18 +20,27 @@ export default function PlayerDetail({
   return (
     <>
       <Box
-        display="flex"
         className="drawer-nav"
-        justifyContent="flex-end"
-        alignItems="center"
-        my={2}
+        sx={{
+          display: "flex",
+          position: "fixed",
+          left: 0,
+          ml: "2rem",
+          mt: "1.25rem",
+          borderRadius: "100%",
+          padding: ".25rem",
+          backgroundColor: "rgba(255,255,255,.15)",
+          "&:hover": {
+            backgroundColor: "rgba(255,255,255,.25)",
+          },
+        }}
       >
         <KeyboardArrowDown
           sx={{ fontSize: "2rem" }}
           onClick={() => setPlaybarExpanded(false)}
         />
       </Box>
-      {nowPlayingCandidate && <BoutPage isNew={true} feed={feed} />}
+      {/* {nowPlayingCandidate && <AudioAnalyzer isNew={true} feed={feed} />} */}
     </>
   );
 }

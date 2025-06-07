@@ -11,6 +11,8 @@ type LayoutContextType = {
   setAlertOpen: Dispatch<SetStateAction<boolean>>;
   headerHeight: string;
   mobileMenuHeight: string;
+  playbarExpanded: boolean;
+  setPlaybarExpanded: Dispatch<SetStateAction<boolean>>;
 };
 
 const LayoutContext = createContext<LayoutContextType | null>(null);
@@ -26,6 +28,8 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
     ? `calc(${alertHeight} + ${desktopHeaderHeight})`
     : desktopHeaderHeight;
 
+  const [playbarExpanded, setPlaybarExpanded] = useState(false);
+
   return (
     <LayoutContext.Provider
       value={{
@@ -33,6 +37,8 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
         setAlertOpen,
         headerHeight,
         mobileMenuHeight,
+        playbarExpanded,
+        setPlaybarExpanded,
       }}
     >
       {children}
