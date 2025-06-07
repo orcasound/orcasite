@@ -2,7 +2,6 @@ import { Box, List, ListItem } from "@mui/material";
 import { MutableRefObject, useEffect, useState } from "react";
 
 import { useNowPlaying } from "@/context/NowPlayingContext";
-import { useComputedPlaybackFields } from "@/hooks/useComputedPlaybackFields";
 import { CombinedData } from "@/types/DataTypes";
 import {
   addMilliseconds,
@@ -11,11 +10,12 @@ import {
 
 export default function PlayerTimeDisplay({
   masterPlayerTimeRef,
+  startOffset,
 }: {
   masterPlayerTimeRef: MutableRefObject<number>;
+  startOffset: number;
 }) {
   const { nowPlayingCandidate } = useNowPlaying();
-  const { startOffset } = useComputedPlaybackFields(nowPlayingCandidate);
 
   const [currentDetections, setCurrentDetections] = useState<
     CombinedData[] | undefined

@@ -28,6 +28,7 @@ export const useComputedPlaybackFields = (candidate: Candidate | null) => {
   });
 
   const segments = feedSegments?.feedSegments.results;
+  console.log("segments", JSON.stringify(segments));
   const firstPlaylistTimestamp = segments?.[0]?.playlistTimestamp;
   const lastPlaylistTimestamp =
     segments?.[segments.length - 1]?.playlistTimestamp;

@@ -4,6 +4,7 @@ import React from "react";
 
 import PlayerTimeDisplay from "@/components/CandidateList/PlayerTimeDisplay";
 import { useNowPlaying } from "@/context/NowPlayingContext";
+import { useComputedPlaybackFields } from "@/hooks/useComputedPlaybackFields";
 
 const MapWithNoSSR = dynamic(
   () => import("@/components/layouts/HalfMapLayout/NewMap"),
@@ -19,6 +20,7 @@ export function MapWrapper({
 }) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlayingCandidate } = useNowPlaying();
+  const { startOffset } = useComputedPlaybackFields(nowPlayingCandidate);
 
   return (
     <Box className={"map-wrapper"} sx={{ flexGrow: 1, position: "relative" }}>
@@ -36,7 +38,10 @@ export function MapWrapper({
         }}
       >
         {nowPlayingCandidate && (
-          <PlayerTimeDisplay masterPlayerTimeRef={masterPlayerTimeRef} />
+          <PlayerTimeDisplay
+            masterPlayerTimeRef={masterPlayerTimeRef}
+            startOffset={startOffset}
+          />
         )}
         {/* {smDown && (
           <Box
