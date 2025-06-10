@@ -7,10 +7,9 @@ export default function DetectionButton() {
       variant="extended"
       size="large"
       color="secondary"
-      id="report-sound"
       sx={{
         position: "absolute",
-        bottom: 86,
+        bottom: 100,
         left: 0,
         right: 0,
         margin: "auto",

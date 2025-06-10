@@ -10,7 +10,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
 import { MutableRefObject, ReactNode, SetStateAction, useMemo } from "react";
 
 import PlayBarPlayPauseButton from "@/components/PlayBar/CandidatePlayPauseButton";
@@ -83,7 +82,6 @@ export function PlayerBase({
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
   const { feeds } = useData();
-  const router = useRouter();
   const feedSlug = useMemo(() => {
     if (nowPlayingCandidate) {
       const feed =

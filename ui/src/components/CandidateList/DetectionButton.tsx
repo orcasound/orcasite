@@ -7,9 +7,10 @@ export default function DetectionButton() {
       variant="extended"
       size="large"
       color="primary"
+      id="detection-button"
       sx={{
         position: "absolute",
-        bottom: "2rem",
+        bottom: "86px",
         left: 0,
         right: 0,
         margin: "auto",
