@@ -1,5 +1,5 @@
 import { PlayCircleFilled } from "@mui/icons-material";
-import { Box } from "@mui/material";
+import { Box, Theme, useMediaQuery } from "@mui/material";
 import {
   addMilliseconds,
   addMinutes,
@@ -27,7 +27,6 @@ import { FrequencyAxisLayerDark } from "./FrequencyAxisLayerDark";
 import { TimelineTickerLayerDark } from "./TimelineTickerLayerDark";
 
 export const TICKER_HEIGHT = 30;
-const SPECTROGRAM_HEIGHT = 450;
 const PIXEL_ZOOM_FACTOR = 50;
 
 import { SpectrogramControls } from "../SpectrogramTimeline";
@@ -151,6 +150,9 @@ export default function SpectrogramTimelineDark({
     200,
     { trailing: false },
   );
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
+  const SPECTROGRAM_HEIGHT = smDown ? 250 : 450;
 
   const minZoom = 2;
   const maxZoom = 1600;

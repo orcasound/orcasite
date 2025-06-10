@@ -57,19 +57,25 @@ export function MapWrapper({
           zIndex: (theme) => theme.zIndex.fab,
           display: "flex",
           flexDirection: "column",
+          alignItems: "flex-start",
           gap: "4px",
         }}
       >
-        {/* {smDown && (
+        {smDown && (
           <Box
             sx={{
-              width: "50%",
+              width: "auto",
               backgroundColor: "background.default",
+              marginBottom: "6px",
+              padding: "6px 12px",
+              background: "rgba(0,0,0,.9)",
               borderRadius: "4px",
+              color: "white",
             }}
           >
+            {nowPlayingCandidate ? "Report" : "Last 7 days"}
           </Box>
-        )} */}
+        )}
         {nowPlayingCandidate && (
           <PlayerTimeDisplay
             masterPlayerTimeRef={masterPlayerTimeRef}

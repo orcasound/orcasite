@@ -58,7 +58,7 @@ function MapPopup({
       onClick={(e) => e.stopPropagation()}
       sx={{
         position: "absolute",
-        bottom: smDown ? "1rem" : "2rem",
+        bottom: smDown ? "86px" : "2rem",
         right: smDown ? "1rem" : "2rem",
         zIndex: 10000,
         backgroundColor: "primary.main",

@@ -1,4 +1,5 @@
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
+import { Theme } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import React from "react";
 
@@ -30,6 +31,8 @@ export default function ReportsBarChart({
   showXAxis?: boolean;
   feed?: Feed;
 }) {
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
   const msPerHour = 1000 * 60 * 60;
   const msPerDay = msPerHour * 24;
 
@@ -40,7 +43,7 @@ export default function ReportsBarChart({
         dataKey: "detections",
       },
     ],
-    height: showYAxis ? 230 : 100,
+    height: showYAxis ? 230 : smDown ? 50 : 100,
     margin: {
       top: showXAxis ? 10 : 0,
       right: showYAxis ? 20 : 0,

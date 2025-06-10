@@ -127,12 +127,13 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
           // "&": {
           //   height: "100dvh",
           // },
-          height: "100vh",
+          // height: "100vh",
           // paddingBottom: smDown ? "155px" : "86px",
           // paddingTop: "60px", // added this due to making header position: fixed
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,
+          minHeight: 0, // important for mobile scrolling
         }}
       >
         <HeaderNew tabs={tabs} />
@@ -224,9 +225,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
               {!!router.query.feedSlug || !!router.query.candidateId ? (
                 children
               ) : (
-                <>
-                  <MobileDisplay masterPlayerTimeRef={masterPlayerTimeRef} />
-                </>
+                <MobileDisplay masterPlayerTimeRef={masterPlayerTimeRef} />
               )}
             </Box>
           )}
