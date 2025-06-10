@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import _ from "lodash";
 import { Fragment } from "react";
 
-import { TICKER_HEIGHT } from "./SpectrogramTimeline";
+import { TICKER_HEIGHT } from "../SpectrogramTimeline";
 
 const MAX_TICK_WIDTH = 0.3;
 

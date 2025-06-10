@@ -13,6 +13,8 @@ type LayoutContextType = {
   mobileMenuHeight: string;
   playbarExpanded: boolean;
   setPlaybarExpanded: Dispatch<SetStateAction<boolean>>;
+  mobileTab: number;
+  setMobileTab: Dispatch<SetStateAction<number>>;
 };
 
 const LayoutContext = createContext<LayoutContextType | null>(null);
@@ -30,6 +32,9 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [playbarExpanded, setPlaybarExpanded] = useState(false);
 
+  // menuTab is the state of the mobile <MobileBottomNav>
+  const [mobileTab, setMobileTab] = useState(0);
+
   return (
     <LayoutContext.Provider
       value={{
@@ -39,6 +44,8 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
         mobileMenuHeight,
         playbarExpanded,
         setPlaybarExpanded,
+        mobileTab,
+        setMobileTab,
       }}
     >
       {children}

@@ -1,14 +1,4 @@
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  AppBar,
-  IconButton,
-  Theme,
-  Toolbar,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Tooltip } from "@mui/material";
 import React, { MutableRefObject, SetStateAction, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
@@ -16,20 +6,18 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 import formatDuration from "@/utils/masterDataHelpers";
 import { formatTimestamp } from "@/utils/time";
 
-import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
+import { useComputedPlaybackFields } from "../../hooks/beta/useComputedPlaybackFields";
 import { CandidatePlayer } from "./CandidatePlayer";
 import LivePlayer from "./LivePlayer";
 
 export default function PlayBar({
   masterPlayerTimeRef,
-  playbarExpanded,
   setPlaybarExpanded,
 }: {
   masterPlayerTimeRef?: MutableRefObject<number>;
-  playbarExpanded: boolean;
   setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 }) {
-  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
 
@@ -132,62 +120,29 @@ export default function PlayBar({
   }, [playlistStartTime, startOffset, detections]);
 
   return (
-    <AppBar
-      position="relative"
-      color="base"
-      sx={{
-        top: "auto",
-        height: "auto",
-        padding: "6px 0",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: (theme) => theme.palette.base.main,
-      }}
-    >
-      <Toolbar
-        sx={{
-          width: "100%",
-        }}
-      >
-        {" "}
-        {!smDown && (
-          <IconButton
-            color="inherit"
-            sx={{ background: "black", height: "70px", borderRadius: "10px" }}
-            onClick={() => setPlaybarExpanded(!playbarExpanded)}
-          >
-            <Typography sx={{ fontSize: "16px" }}>
-              {playbarExpanded ? "Close audio analyzer" : "Open audio analyzer"}
-            </Typography>
-            {playbarExpanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          </IconButton>
-        )}
-        <>
-          {nowPlayingCandidate && CandidateFeed && (
-            <CandidatePlayer
-              feed={CandidateFeed}
-              image={CandidateFeed.imageUrl || ""}
-              playlistTimestamp={playlistTimestamp}
-              startOffset={startOffset}
-              endOffset={endOffset}
-              duration={duration}
-              key={`${startOffset}-${endOffset}`}
-              clipDateTime={clipDateTime}
-              clipNode={hydrophone || ""}
-              marks={marks}
-              masterPlayerTimeRef={masterPlayerTimeRef}
-              setPlaybarExpanded={setPlaybarExpanded}
-            />
-          )}
-          {nowPlayingFeed && (
-            <LivePlayer
-              currentFeed={nowPlayingFeed}
-              setPlaybarExpanded={setPlaybarExpanded}
-            />
-          )}
-        </>
-      </Toolbar>
-    </AppBar>
+    <>
+      {nowPlayingCandidate && CandidateFeed && (
+        <CandidatePlayer
+          feed={CandidateFeed}
+          image={CandidateFeed.imageUrl || ""}
+          playlistTimestamp={playlistTimestamp}
+          startOffset={startOffset}
+          endOffset={endOffset}
+          duration={duration}
+          key={`${startOffset}-${endOffset}`}
+          clipDateTime={clipDateTime}
+          clipNode={hydrophone || ""}
+          marks={marks}
+          masterPlayerTimeRef={masterPlayerTimeRef}
+          setPlaybarExpanded={setPlaybarExpanded}
+        />
+      )}
+      {nowPlayingFeed && (
+        <LivePlayer
+          currentFeed={nowPlayingFeed}
+          setPlaybarExpanded={setPlaybarExpanded}
+        />
+      )}
+    </>
   );
 }

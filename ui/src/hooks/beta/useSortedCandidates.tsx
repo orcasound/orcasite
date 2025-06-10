@@ -6,9 +6,7 @@ const countCategories = (arr: { newCategory: string }[], cat: string) => {
   return arr.filter((d) => d.newCategory.toLowerCase() === cat.toLowerCase())
     .length;
 };
-export const cleanSightingsDescription = (
-  description: string | null | undefined,
-) => {
+const cleanSightingsDescription = (description: string | null | undefined) => {
   if (!description) return;
   const removeBracket = description.replace(/^\[[^\]]*\]\s*/, "");
   const removeBreak = removeBracket.replace(/<br>[^•]*/g, "");

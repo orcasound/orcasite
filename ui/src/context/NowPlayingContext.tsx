@@ -65,6 +65,11 @@ export const NowPlayingProvider = ({
     onPlayerEndRef.current?.();
   }, []);
 
+  useEffect(() => {
+    console.log("nowPlayingCandidate", nowPlayingCandidate);
+    console.log("nowPlayingFeed", nowPlayingFeed);
+  });
+
   return (
     <NowPlayingContext.Provider
       value={{

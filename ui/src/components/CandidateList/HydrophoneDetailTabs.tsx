@@ -1,4 +1,4 @@
-import { ArrowBackIos } from "@mui/icons-material";
+import { ArrowBackIos, PauseCircle } from "@mui/icons-material";
 import { PlayCircle } from "@mui/icons-material";
 import {
   Box,
@@ -16,6 +16,7 @@ import { ReactNode } from "react";
 import { timeRangeSelect } from "@/components/CandidateList/CandidateListFilters";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
+import { Feed } from "@/graphql/generated";
 import darkTheme from "@/styles/darkTheme";
 
 const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
@@ -25,8 +26,14 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
 
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const theme = useTheme();
-  const { setNowPlayingCandidate, setNowPlayingFeed } = useNowPlaying();
-  const { feeds, filters } = useData();
+  const {
+    setNowPlayingCandidate,
+    setNowPlayingFeed,
+    nowPlayingFeed,
+    masterPlayerRef,
+    masterPlayerStatus,
+  } = useNowPlaying();
+  const { feeds, filters, autoPlayOnReady } = useData();
   const feed = feeds.find((feed) => feed.slug === feedSlug);
 
   // const isCandidateDetail =
@@ -97,6 +104,37 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
       })}
     </Stack>
   );
+
+  const active = feed?.id === nowPlayingFeed?.id;
+
+  const handlePlay = (feed: Feed) => {
+    autoPlayOnReady.current = true;
+    setNowPlayingFeed(feed);
+    setNowPlayingCandidate(null);
+  };
+
+  const playIcon = (
+    <PlayCircle
+      sx={{ height: 48, width: 48, zIndex: 1, position: "relative" }}
+      onClick={() => {
+        console.log("clicked");
+        if (feed) handlePlay(feed);
+      }}
+    />
+  );
+  const handlePause = () => {
+    masterPlayerRef?.current?.pause();
+  };
+
+  const pauseIcon = (
+    <PauseCircle
+      sx={{ height: 48, width: 48, zIndex: 1, position: "relative" }}
+      onClick={() => {
+        handlePause();
+      }}
+    />
+  );
+
   return (
     <div>
       <Head>Report {feedSlug} | Orcasound </Head>
@@ -169,9 +207,7 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
           >
             {feed?.name}
           </Typography>
-          <PlayCircle
-            sx={{ height: 48, width: 48, zIndex: 1, position: "relative" }}
-          />
+          {!active || masterPlayerStatus !== "playing" ? playIcon : pauseIcon}
         </Box>
       </Box>
       {tabRow(tabs)}

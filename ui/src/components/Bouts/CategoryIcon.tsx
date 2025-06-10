@@ -32,8 +32,14 @@ export default function CategoryIcon({
       {iconConfig && (
         <Image
           src={iconConfig.src}
-          {...(size ? { width: size, height: size } : { fill: true })}
+          width={size ?? 20}
+          height={size ?? 20}
+          // {...(size ? { width: size, height: size } : { fill: true })}
           alt={iconConfig.alt}
+          style={{
+            display: "block",
+            margin: "auto",
+          }}
         />
       )}
     </>

@@ -38,9 +38,10 @@ export default function PlayerTimeDisplay({
         : "";
       if (!currentTimestamp) return;
 
+      // 16 second buffer range to capture first second
       const currentRange = [
-        subtractMilliseconds(currentTimestamp, 15000),
-        addMilliseconds(currentTimestamp, 15000),
+        subtractMilliseconds(currentTimestamp, 16000),
+        addMilliseconds(currentTimestamp, 16000),
       ];
 
       const detectionsInRange = detections?.filter((d) => {
@@ -65,7 +66,7 @@ export default function PlayerTimeDisplay({
         <List
           id="report-list"
           sx={{
-            paddingTop: "2px",
+            p: 0,
           }}
         >
           {currentDetections &&
@@ -85,7 +86,7 @@ export default function PlayerTimeDisplay({
                 <ListItem key={d.id} id={d.timestampString} sx={{ m: 0, p: 0 }}>
                   <mark
                     style={{
-                      marginTop: "6px",
+                      marginBottom: "6px",
                       padding: "6px 12px",
                       background: "rgba(0,0,0,.9)",
                       borderRadius: "4px",

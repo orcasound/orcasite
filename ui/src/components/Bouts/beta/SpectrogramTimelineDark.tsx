@@ -19,18 +19,18 @@ import {
 
 import { AudioImagesQuery } from "@/graphql/generated";
 
-import { PlayerControls } from "../Player/BoutPlayer";
-import { AudioImagesLayer } from "./AudioImagesLayer";
-import { BaseAudioWidthLayer } from "./BaseAudioWidthLayer";
+import { PlayerControls } from "../../Player/BoutPlayer";
+import { AudioImagesLayer } from "../AudioImagesLayer";
+import { BaseAudioWidthLayer } from "../BaseAudioWidthLayer";
+import { TimelineMarker } from "../TimelineMarker";
 import { FrequencyAxisLayerDark } from "./FrequencyAxisLayerDark";
-import { TimelineMarker } from "./TimelineMarker";
 import { TimelineTickerLayerDark } from "./TimelineTickerLayerDark";
 
 export const TICKER_HEIGHT = 30;
 const SPECTROGRAM_HEIGHT = 450;
 const PIXEL_ZOOM_FACTOR = 50;
 
-import { SpectrogramControls } from "./SpectrogramTimeline";
+import { SpectrogramControls } from "../SpectrogramTimeline";
 
 // export type SpectrogramControls = {
 //   goToTime: (time: Date) => void;

@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
 import { useRouter } from "next/router";
-import { MutableRefObject, SetStateAction, useEffect, useState } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 
 import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
+import { useLayout } from "@/context/LayoutContext";
 
 import { MapWrapper } from "../layouts/HalfMapLayout/MapWrapper";
 import { MobileContainer } from "../layouts/HalfMapLayout/MobileContainer";
@@ -10,34 +11,33 @@ import { CandidatesStack } from "./CandidatesStack";
 import { MobileTabs } from "./MobileTabs";
 
 type Props = {
-  menuTab: number;
-  setMenuTab: React.Dispatch<SetStateAction<number>>;
   masterPlayerTimeRef: MutableRefObject<number>;
 };
 
-export function MobileDisplay({
-  menuTab,
-  setMenuTab,
-  masterPlayerTimeRef,
-}: Props) {
-  // tabValue is the state of the tabs at the top in <MobileTabs>
+export function MobileDisplay({ masterPlayerTimeRef }: Props) {
+  // tabValue is the state of the top tabs (Listen Live, Last 7 Days) in <MobileTabs>
   const [tabValue, setTabValue] = useState(0);
+
+  // mobileTab is the state of the bottom tabs in <MobileBottomNav>
+  const { mobileTab, setMobileTab } = useLayout();
+
   const router = useRouter();
+
   useEffect(() => {
     if (router.route === "/beta/hydrophones") {
       setTabValue(0);
-      setMenuTab(1);
+      setMobileTab(1);
     } else if (router.route === "/beta/candidates") {
       setTabValue(1);
-      setMenuTab(1);
+      setMobileTab(1);
     } else if (router.route === "/beta") {
-      setMenuTab(0);
+      setMobileTab(0);
     }
-  }, [router, setTabValue, setMenuTab]);
+  }, [router, setTabValue, setMobileTab]);
 
   return (
     <>
-      {menuTab === 0 && (
+      {mobileTab === 0 && (
         <Box
           className={"tab-content"}
           sx={{
@@ -49,13 +49,9 @@ export function MobileDisplay({
           <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
         </Box>
       )}
-      {menuTab === 1 && (
+      {mobileTab === 1 && (
         <>
-          <MobileTabs
-            menuTab={menuTab}
-            tabValue={tabValue}
-            setTabValue={setTabValue}
-          />
+          <MobileTabs tabValue={tabValue} setTabValue={setTabValue} />
           {tabValue === 0 && ( // Map
             <MobileContainer>
               <HydrophonesStack />

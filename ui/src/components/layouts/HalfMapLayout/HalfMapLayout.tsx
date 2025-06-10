@@ -8,32 +8,33 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { ReactElement, ReactNode, useMemo, useRef, useState } from "react";
+import { ReactElement, ReactNode, useMemo, useRef } from "react";
 
 import { CandidatesStack } from "@/components/CandidateList/CandidatesStack";
 import { HydrophonesStack } from "@/components/CandidateList/HydrophonesStack";
 import { MobileDisplay } from "@/components/CandidateList/MobileDisplay";
 import HeaderNew from "@/components/HeaderNew";
+import { useLayout } from "@/context/LayoutContext";
 import HydrophoneCandidatesPage from "@/pages/beta/[feedSlug]/candidates";
 import { getPageContext } from "@/utils/pageContext";
 
 import { MasterDataLayout } from "../MasterDataLayout";
 import Footer from "./Footer";
 import { MapWrapper } from "./MapWrapper";
+import { MobileBottomNav } from "./MobileBottomNav";
+import PlayerDetail from "./PlayerDetail";
 import { SideList } from "./SideList";
 
 function HalfMapLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { isFeedDetail } = getPageContext(router);
+  const { playbarExpanded, headerHeight } = useLayout();
 
   const pageRoute = useMemo(() => router.route, [router.route]);
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const masterPlayerTimeRef = useRef(0);
-
-  // menuTab is the state of the mobile <MobileBottomNav>
-  const [menuTab, setMenuTab] = useState(0);
 
   const showChildrenRight = useMemo(() => {
     const showChildren = router.query.candidateId !== undefined;
@@ -224,22 +225,34 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
                 children
               ) : (
                 <>
-                  <MobileDisplay
-                    menuTab={menuTab}
-                    setMenuTab={setMenuTab}
-                    masterPlayerTimeRef={masterPlayerTimeRef}
-                  />
+                  <MobileDisplay masterPlayerTimeRef={masterPlayerTimeRef} />
                 </>
               )}
             </Box>
           )}
         </Box>
 
-        <Footer
-          masterPlayerTimeRef={masterPlayerTimeRef}
-          menuTab={menuTab}
-          setMenuTab={setMenuTab}
-        />
+        <Footer masterPlayerTimeRef={masterPlayerTimeRef} />
+        {mdDown && <MobileBottomNav />}
+        <Box
+          className="now-playing-drawer"
+          sx={{
+            px: mdDown ? "1rem" : "24px",
+            flex: 1,
+            overflowY: "auto",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: smDown ? "100%" : "75%",
+            borderRight: "1px solid rgba(255,255,255,.5)",
+            height: playbarExpanded ? `calc(100vh - ${headerHeight})` : 0,
+            backgroundColor: "background.default",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            transition: "height .66s ease",
+          }}
+        >
+          {playbarExpanded && <PlayerDetail />}
+        </Box>
       </Box>
     </>
   );

@@ -3,15 +3,14 @@ import React, {
   createContext,
   MutableRefObject,
   useContext,
-  useEffect,
   useRef,
   useState,
 } from "react";
 
 import { defaultRange } from "@/components/CandidateList/CandidateListFilters";
 import { Feed } from "@/graphql/generated";
-import useFilteredData from "@/hooks/useFilteredData";
-import { useSortedCandidates } from "@/hooks/useSortedCandidates";
+import useFilteredData from "@/hooks/beta/useFilteredData";
+import { useSortedCandidates } from "@/hooks/beta/useSortedCandidates";
 import { Candidate, CombinedData, Dataset } from "@/types/DataTypes";
 
 import { useNowPlaying } from "./NowPlayingContext";
@@ -62,8 +61,7 @@ export const DataProvider = ({
 }) => {
   const feeds = data.feeds;
   const isSuccessOrcahello = data.isSuccessOrcahello;
-  const { nowPlayingCandidate, nowPlayingFeed, setNowPlayingFeed } =
-    useNowPlaying();
+  const { nowPlayingCandidate } = useNowPlaying();
 
   const [filters, setFilters] = useState<CandidateFilters>({
     timeRange: defaultRange,
@@ -83,25 +81,32 @@ export const DataProvider = ({
     const reports = feed
       ? filteredData.filter((d) => d.feedId === feed?.id)
       : filteredData;
-    return reports.find(
+    const whaleReports = reports.filter(
       (d) =>
         d.newCategory === "WHALE" ||
         d.newCategory === "WHALE (AI)" ||
         d.newCategory === "SIGHTING",
     );
+    const lastReportTime = Math.max(
+      ...whaleReports.map((r) => new Date(r.timestampString).getTime()),
+    );
+    const lastReport = whaleReports.find(
+      (r) => new Date(r.timestampString).getTime() === lastReportTime,
+    );
+    return lastReport;
   };
 
   const lastWhaleReportFeed =
     feeds.find((f) => f.id === lastWhaleReport()?.feedId) ?? null;
 
   // if there is no feed or candidate selected, auto-select the feed with the most recent whale report in the time range, or the first feed in the list if nothing else
-  useEffect(() => {
-    if (lastWhaleReportFeed && !nowPlayingCandidate && !nowPlayingFeed) {
-      setNowPlayingFeed(lastWhaleReportFeed);
-    } else if (!lastWhaleReportFeed) {
-      setNowPlayingFeed(feeds[0]);
-    }
-  });
+  // useEffect(() => {
+  //   if (lastWhaleReportFeed && !nowPlayingCandidate && !nowPlayingFeed) {
+  //     setNowPlayingFeed(lastWhaleReportFeed);
+  //   } else if (!lastWhaleReportFeed) {
+  //     setNowPlayingFeed(feeds[0]);
+  //   }
+  // });
 
   const sortedCandidates = useSortedCandidates(
     filteredData,

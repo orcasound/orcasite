@@ -6,11 +6,10 @@ export default function DetectionButton() {
     <Fab
       variant="extended"
       size="large"
-      color="secondary"
-      id="report-sound"
+      color="primary"
       sx={{
         position: "absolute",
-        bottom: 86,
+        bottom: "2rem",
         left: 0,
         right: 0,
         margin: "auto",
@@ -18,13 +17,13 @@ export default function DetectionButton() {
 
         // style to look like outlined button
         backgroundColor: "white",
-        color: "primary.main",
+        color: "background.default",
         borderColor: "primary.main",
         borderStyle: "solid",
         borderWidth: "2px",
         "&:hover": {
           backgroundColor: "primary.main",
-          color: "white",
+          // color: "white",
         },
       }}
     >
@@ -35,7 +34,7 @@ export default function DetectionButton() {
           alignItems: "center",
         }}
       >
-        <GraphicEq sx={{ mr: 1 }} />
+        <GraphicEq sx={{ mr: 1, color: "background.default" }} />
         Report sound
       </Box>
     </Fab>

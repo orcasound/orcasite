@@ -7,7 +7,6 @@ import { useData } from "@/context/DataContext";
 import { timeRangeSelect } from "./CandidateListFilters";
 
 type Props = {
-  menuTab: number;
   tabValue: number;
   setTabValue: Dispatch<SetStateAction<number>>;
   // masterPlayerTimeRef: MutableRefObject<number>;

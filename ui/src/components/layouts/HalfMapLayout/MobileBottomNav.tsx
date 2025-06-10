@@ -1,22 +1,21 @@
 import { Earbuds, Map, Mic, Public } from "@mui/icons-material";
 import { BottomNavigation, BottomNavigationAction } from "@mui/material";
 import { useRouter } from "next/router";
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 
-type Props = {
-  menuTab: number;
-  setMenuTab: Dispatch<SetStateAction<number>>;
-};
+import { useLayout } from "@/context/LayoutContext";
 
-export function MobileBottomNav({ menuTab, setMenuTab }: Props) {
+export function MobileBottomNav() {
   const router = useRouter();
+  const { mobileTab, setMobileTab } = useLayout();
+
   return (
     <BottomNavigation
       className="bottom-navigation"
       showLabels
-      value={menuTab}
+      value={mobileTab}
       onChange={(_event, newMenuTab) => {
-        setMenuTab(newMenuTab);
+        setMobileTab(newMenuTab);
       }}
       sx={{
         minHeight: "69px",

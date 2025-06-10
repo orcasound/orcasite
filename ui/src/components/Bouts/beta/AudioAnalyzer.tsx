@@ -20,7 +20,6 @@ import {
   FormControl,
   FormHelperText,
   IconButton,
-  Input,
   InputLabel,
   ListItemIcon,
   MenuItem,
@@ -42,31 +41,27 @@ import {
   useState,
 } from "react";
 
+import SpectrogramTimelineDark from "@/components/Bouts/beta/SpectrogramTimelineDark";
 import { SpectrogramControls } from "@/components/Bouts/SpectrogramTimeline";
-import SpectrogramTimelineDark from "@/components/Bouts/SpectrogramTimelineDark";
 import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
-import { useData } from "@/context/DataContext";
-import { useNowPlaying } from "@/context/NowPlayingContext";
 import {
   AudioCategory,
   BoutQuery,
   FeedQuery,
-  useAudioImagesQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
   useGenerateFeedSpectrogramsMutation,
-  useGetCurrentUserQuery,
-  useListFeedStreamsQuery,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
+import { useAudioImages } from "@/hooks/beta/useAudioImages";
+import { useListFeedStreams } from "@/hooks/beta/useListFeedStreams";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
-import { useBouts } from "@/hooks/useBouts";
-import { formatTimestamp, roundToNearest } from "@/utils/time";
+import { roundToNearest } from "@/utils/time";
 
-import BoutScrubBar from "../../Bouts/BoutScrubBar";
-import CategoryIcon from "../../Bouts/CategoryIcon";
 import CopyToClipboardButton from "../../CopyToClipboard";
 import LoadingSpinner from "../../LoadingSpinner";
+import BoutScrubBar from "../BoutScrubBar";
+import CategoryIcon from "../CategoryIcon";
 
 type BoutFormType = {
   errors: Record<string, string>;
@@ -96,20 +91,11 @@ export default function AudioAnalyzer({
   const [now] = useState(() => new Date());
   targetTime =
     targetTime ?? (bout?.startTime && new Date(bout.startTime)) ?? now;
-  const { nowPlayingCandidate } = useNowPlaying();
+  // const { nowPlayingCandidate } = useNowPlaying();
   // const candidateStart = nowPlayingCandidate
   //   ? new Date(nowPlayingCandidate.startTimestamp)
   //   : now;
   // targetTime = targetTime ?? candidateStart;
-
-  // seeding with known bout from production
-  isNew = false;
-  const { feeds } = useData();
-  feed = feeds.find((f) => f.name === "Port Townsend") ?? feeds[0];
-  const { data } = useBouts({ feedId: feed.id });
-  const bouts = data?.bouts.results ?? [];
-  bout = bouts[0];
-  console.log("bouts", JSON.stringify(bouts));
 
   const [boutSaved, setBoutSaved] = useState(false);
   const [spectrogramProcessing, setSpectrogramProcessing] = useState(false);
@@ -139,18 +125,22 @@ export default function AudioAnalyzer({
     };
   }, []);
 
-  const candidateTitle = useMemo(() => {
-    if (nowPlayingCandidate) {
-      const time = formatTimestamp(nowPlayingCandidate.startTimestamp);
-      const name = nowPlayingCandidate.hydrophone;
-      return `${time} · ${name}`;
-    }
-  }, [nowPlayingCandidate]);
+  // const candidateTitle = useMemo(() => {
+  //   if (nowPlayingCandidate) {
+  //     const time = formatTimestamp(nowPlayingCandidate.startTimestamp);
+  //     const name = nowPlayingCandidate.hydrophone;
+  //     return `${time} · ${name}`;
+  //   }
+  // }, [nowPlayingCandidate]);
 
-  const [boutName, setBoutName] = useState<string | undefined>(
-    // bout?.name ?? feed.name,
-    bout?.name ?? candidateTitle ?? "New audio",
-  );
+  // const boutStartTitle = bout ? formatTimestamp(bout.startTime) : "";
+  // const [boutName, setBoutName] = useState<string | undefined>(
+  //   // bout?.name ?? feed.name,
+  //   bout?.name ??
+  //     `${formatTimestamp(boutStartTitle)} · ${feed.name}` ??
+  //     feed.name,
+  //   // bout?.name ?? candidateTitle ?? "New audio",
+  // );
   const [boutStartTime, setBoutStartTime] = useState<Date | undefined>(
     bout?.startTime && new Date(bout.startTime),
   );
@@ -222,7 +212,13 @@ export default function AudioAnalyzer({
   // If feed is present, and there's no pre-set time,
   // get latest stream and last <timeBuffer> minutes of segments.
   // Set time to end of last segment
-  const feedStreamQueryResult = useListFeedStreamsQuery({
+  // const feedStreamQueryResult = useListFeedStreamsQuery({
+  //   feedId: feed.id,
+  //   fromDateTime: timelineStartTime,
+  //   toDateTime: timelineEndTime,
+  //   dayBeforeFromDateTime: timelineStartTimeMinusADay,
+  // });
+  const feedStreamQueryResult = useListFeedStreams({
     feedId: feed.id,
     fromDateTime: timelineStartTime,
     toDateTime: timelineEndTime,
@@ -253,13 +249,21 @@ export default function AudioAnalyzer({
     timelineEndTime,
   );
 
-  const audioImagesQueryResult = useAudioImagesQuery({
+  // const audioImagesQueryResult = useAudioImagesQuery({
+  //   feedId: feed.id,
+  //   startTime: timelineStartTime,
+  //   endTime: timelineEndTime,
+  // });
+  const audioImagesQueryResult = useAudioImages({
     feedId: feed.id,
     startTime: timelineStartTime,
     endTime: timelineEndTime,
   });
+
   const initialAudioImages =
     audioImagesQueryResult.data?.audioImages?.results ?? [];
+  console.log("initialAudioImages", JSON.stringify(initialAudioImages));
+
   const audioImages = _.uniqBy(
     [...updatedAudioImages, ...initialAudioImages].filter(
       (audioImage) => audioImage !== undefined && audioImage !== null,
@@ -362,7 +366,7 @@ export default function AudioAnalyzer({
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        my={2}
+        my={2.5}
       >
         {/* <Box> */}
         {/* <Typography variant="overline" sx={{ fontSize: 18 }}>
@@ -380,11 +384,11 @@ export default function AudioAnalyzer({
               Bouts
             </Link>
           </Typography> */}
-        <BoutName
+        {/* <BoutName
           feedName={feed.name}
           boutName={boutName}
           setBoutName={setBoutName}
-        />
+        /> */}
         {/* </Box> */}
         <Box
           display="flex"
@@ -782,53 +786,53 @@ function shareUrl(time: Date) {
 }
 
 // Shows current name and if user is a moderator, allows setting bout name
-function BoutName({
-  feedName,
-  boutName,
-  setBoutName,
-}: {
-  feedName: string;
-  boutName?: string;
-  setBoutName: (value: SetStateAction<string | undefined>) => void;
-}) {
-  const theme = useTheme();
+// function BoutName({
+//   feedName,
+//   boutName,
+//   setBoutName,
+// }: {
+//   feedName: string;
+//   boutName?: string;
+//   setBoutName: (value: SetStateAction<string | undefined>) => void;
+// }) {
+//   const theme = useTheme();
 
-  const { moderator } = useGetCurrentUserQuery().data?.currentUser ?? {
-    moderator: false,
-    // moderator: true,
-  };
+//   const { moderator } = useGetCurrentUserQuery().data?.currentUser ?? {
+//     moderator: false,
+//     // moderator: true,
+//   };
 
-  return (
-    <Box sx={{ marginLeft: "4rem" }}>
-      {!moderator && (
-        <Typography
-          variant="h4"
-          my={1}
-          sx={{ lineHeight: 1, fontSize: "30px" }}
-        >
-          {boutName ?? feedName}
-        </Typography>
-      )}
+//   return (
+//     <Box sx={{ marginLeft: "4rem" }}>
+//       {!moderator && (
+//         <Typography
+//           variant="h4"
+//           my={1}
+//           sx={{ lineHeight: 1, fontSize: "30px" }}
+//         >
+//           {boutName ?? feedName}
+//         </Typography>
+//       )}
 
-      {moderator && (
-        <Input
-          sx={{ ...theme.typography.h4 }}
-          disableUnderline={true}
-          type="text"
-          value={boutName ?? feedName}
-          onBlur={(event) =>
-            setBoutName(
-              (event.target.value ?? "").length > 0
-                ? event.target.value
-                : feedName,
-            )
-          }
-          onChange={(event) => setBoutName(event.target.value ?? feedName)}
-        />
-      )}
-    </Box>
-  );
-}
+//       {moderator && (
+//         <Input
+//           sx={{ ...theme.typography.h4 }}
+//           disableUnderline={true}
+//           type="text"
+//           value={boutName ?? feedName}
+//           onBlur={(event) =>
+//             setBoutName(
+//               (event.target.value ?? "").length > 0
+//                 ? event.target.value
+//                 : feedName,
+//             )
+//           }
+//           onChange={(event) => setBoutName(event.target.value ?? feedName)}
+//         />
+//       )}
+//     </Box>
+//   );
+// }
 
 function CategorySelect({
   boutForm,
@@ -842,6 +846,7 @@ function CategorySelect({
   return (
     <Box display="flex" alignItems="center" ml={{ sm: 0, md: "auto" }}>
       <FormControl
+        variant="outlined"
         sx={{
           width: "100%",
           minHeight: topRightButtonHeight, // matches header buttons
@@ -852,28 +857,36 @@ function CategorySelect({
         }}
         {...(boutForm.errors.audioCategory ? { error: true } : {})}
       >
-        <InputLabel
-          sx={{
-            textTransform: "uppercase",
-            fontSize: 14,
-            color: "primary.main",
-            transform: "translate(14px, 6px) scale(1)", // vertically center the label manually
-            // "&[data-shrink=false]": { top: "-6px" },
-          }}
-        >
-          Category
-        </InputLabel>
+        {!audioCategory && (
+          <InputLabel
+            id="category-label"
+            // sx={{
+            //   textTransform: "uppercase",
+            //   fontSize: 14,
+            //   color: "primary.main",
+            //   // "&[data-shrink=false]": { top: "-6px" },
+            // }}
+          >
+            Category
+          </InputLabel>
+        )}
         <Select
+          labelId="category-label"
           value={audioCategory ?? ""}
           onChange={(event) =>
             setAudioCategory(event.target.value as AudioCategory)
           }
-          label="Category"
-          sx={{ minWidth: 200 }}
+          // label="Category"
+          sx={{
+            minWidth: 200,
+            "& .MuiSelect-select": {
+              display: "flex !important", // necessary to vertically center the icon
+            },
+          }}
           size="small"
         >
           {audioCategories.map((category) => (
-            <MenuItem key={category} value={category}>
+            <MenuItem id="menu-item" key={category} value={category}>
               <ListItemIcon
                 sx={{
                   "&": {

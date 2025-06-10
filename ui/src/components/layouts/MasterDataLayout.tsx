@@ -6,7 +6,7 @@ import { useState } from "react";
 import { DataProvider } from "@/context/DataContext";
 import { LayoutProvider } from "@/context/LayoutContext";
 import { NowPlayingProvider } from "@/context/NowPlayingContext";
-import { useMasterData } from "@/hooks/useMasterData";
+import { useMasterData } from "@/hooks/beta/useMasterData";
 import darkTheme from "@/styles/darkTheme";
 
 export function MasterDataLayout({ children }: { children: React.ReactNode }) {

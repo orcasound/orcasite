@@ -17,6 +17,7 @@ export default function formatDuration(startOffset: number, endOffset: number) {
   const hoursDown = Math.floor(seconds / 60 / 60);
   const daysDown = Math.floor(seconds / 60 / 60 / 24);
   const remainder = Math.round(seconds % 60);
+
   if (seconds === 0) {
     return "audio unavailable";
   } else if (seconds < 60) {
@@ -26,7 +27,7 @@ export default function formatDuration(startOffset: number, endOffset: number) {
   } else if (seconds >= 600 && seconds < 3600) {
     return `${minutesRound} minute${minutesRound === 1 ? "" : "s"}`;
   } else if (seconds >= 3600 && seconds < 86400) {
-    return `${hoursDown} hour${hoursDown === 1 ? "" : "s"} ${remainder / 60} minute${remainder / 60 === 1 ? "" : "s"}`;
+    return `${hoursDown} hour${hoursDown === 1 ? "" : "s"}`;
   } else if (seconds >= 86400) {
     return `${daysDown} day${daysDown === 1 ? "" : "s"}`;
   }

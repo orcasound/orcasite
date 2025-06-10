@@ -16,9 +16,10 @@ import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Candidate, CombinedData } from "@/types/DataTypes";
+import formatDuration from "@/utils/masterDataHelpers";
 import { formatTimestamp } from "@/utils/time";
 
-import { useComputedPlaybackFields } from "../../hooks/useComputedPlaybackFields";
+import { useComputedPlaybackFields } from "../../hooks/beta/useComputedPlaybackFields";
 
 const tagRegex = [
   "s[0-9]+",
@@ -98,7 +99,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     autoPlayOnReady.current = true;
     setNowPlayingCandidate(candidate);
     setNowPlayingFeed(null);
-    router.push(href);
+    if (!smDown) router.push(href);
 
     const player = masterPlayerRef?.current;
     if (player && player !== null && typeof player.play === "function") {
@@ -149,6 +150,10 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     />
   );
 
+  const currentTimeSeconds = new Date().getTime() / 1000;
+  const timestampSeconds = new Date(candidate.startTimestamp).getTime() / 1000;
+  const timeAgoString = formatDuration(timestampSeconds, currentTimeSeconds);
+
   return (
     <Card
       key={candidate.id}
@@ -177,6 +182,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
               display: "flex",
               justifyContent: "space-between",
               width: "100%",
+              gap: "1rem",
             }}
           >
             <Link
@@ -226,7 +232,9 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                   </Typography>
                   <Typography variant="body1" sx={{ fontSize: "inherit" }}>
                     {candidate.hydrophone}
-                    {" • "}
+                    {" · "}
+                    {timeAgoString} ago
+                    {" · "}
                     {durationString}
                   </Typography>
                 </Stack>
