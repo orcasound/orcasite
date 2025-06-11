@@ -129,6 +129,7 @@ const CandidatePage: NextPageWithLayout = () => {
         maxWidth="xl"
         sx={{
           p: 2,
+          pb: 6,
         }}
       >
         <Box>
@@ -169,9 +170,6 @@ const CandidatePage: NextPageWithLayout = () => {
               <Typography
                 variant="h6"
                 sx={{ lineHeight: 1.2, opacity: 0.75, mb: "4px" }}
-                onClick={() => {
-                  router.push(`/beta/${detections.hydrophone}`);
-                }}
               >
                 {detections.hydrophone}
               </Typography>

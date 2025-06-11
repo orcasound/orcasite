@@ -8,14 +8,14 @@ export const MobileContainer = ({ children }: MobileContainerProps) => {
   return (
     <Container
       maxWidth="xl"
-      className={"mobile-container"}
+      id={"mobile-container"}
       sx={{
         py: 2,
         px: 1.5,
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        // overflow: "hidden", // prevents double scrollbars
+        pb: 6,
       }}
     >
       {children}

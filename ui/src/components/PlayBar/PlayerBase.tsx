@@ -190,7 +190,15 @@ export function PlayerBase({
                   />
                 )}
               </Box>
-              <Link href={href} sx={{ textDecoration: "none" }}>
+              <Link
+                href={href}
+                sx={{
+                  textDecoration: "none",
+                  "&:hover": {
+                    color: "text.primary",
+                  },
+                }}
+              >
                 <Stack
                   direction="row"
                   width="100%"

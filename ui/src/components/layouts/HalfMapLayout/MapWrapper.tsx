@@ -1,12 +1,13 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
-import React, { useMemo } from "react";
+import { useRouter } from "next/router";
+import React from "react";
 
 import PlayerTimeDisplay from "@/components/CandidateList/PlayerTimeDisplay";
-import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { useComputedPlaybackFields } from "@/hooks/beta/useComputedPlaybackFields";
+import formatDuration from "@/utils/masterDataHelpers";
 
 const MapWithNoSSR = dynamic(
   () => import("@/components/layouts/HalfMapLayout/NewMap"),
@@ -22,28 +23,34 @@ export function MapWrapper({
 }) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const {
-    nowPlayingFeed,
+    // nowPlayingFeed,
     nowPlayingCandidate,
-    setNowPlayingCandidate,
-    setNowPlayingFeed,
+    // setNowPlayingCandidate,
+    // setNowPlayingFeed,
   } = useNowPlaying();
-  const { feeds } = useData();
+  // const { feeds } = useData();
+  const router = useRouter();
   const { startOffset } = useComputedPlaybackFields(nowPlayingCandidate);
 
-  const feed = useMemo(() => {
-    if (nowPlayingCandidate) {
-      const canFeed = feeds.find((f) => f.id === nowPlayingCandidate.feedId);
-      if (canFeed) {
-        return canFeed;
-      } else {
-        return null;
-      }
-    } else if (nowPlayingFeed) {
-      return nowPlayingFeed;
-    } else {
-      return null;
-    }
-  }, [feeds, nowPlayingCandidate, nowPlayingFeed]);
+  const candidateStart = nowPlayingCandidate?.startTimestamp ?? "";
+  const currentTimeSeconds = new Date().getTime() / 1000;
+  const timestampSeconds = new Date(candidateStart).getTime() / 1000;
+  const timeAgoString = formatDuration(timestampSeconds, currentTimeSeconds);
+
+  // const feed = useMemo(() => {
+  //   if (nowPlayingCandidate) {
+  //     const canFeed = feeds.find((f) => f.id === nowPlayingCandidate.feedId);
+  //     if (canFeed) {
+  //       return canFeed;
+  //     } else {
+  //       return null;
+  //     }
+  //   } else if (nowPlayingFeed) {
+  //     return nowPlayingFeed;
+  //   } else {
+  //     return null;
+  //   }
+  // }, [feeds, nowPlayingCandidate, nowPlayingFeed]);
 
   return (
     <Box className={"map-wrapper"} sx={{ flexGrow: 1, position: "relative" }}>
@@ -73,7 +80,7 @@ export function MapWrapper({
               color: "white",
             }}
           >
-            {nowPlayingCandidate ? "Report" : "Last 7 days"}
+            {nowPlayingCandidate ? timeAgoString + " ago" : "Last 7 days"}
           </Box>
         )}
         {nowPlayingCandidate && (
@@ -89,8 +96,9 @@ export function MapWrapper({
           aria-label="close"
           className="candidate-map-close"
           onClick={() => {
-            setNowPlayingFeed(feed);
-            setNowPlayingCandidate(null);
+            router.back();
+            // setNowPlayingFeed(feed);
+            // setNowPlayingCandidate(null);
           }}
           sx={{
             position: "absolute",
