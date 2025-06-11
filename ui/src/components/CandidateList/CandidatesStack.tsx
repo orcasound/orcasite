@@ -21,6 +21,7 @@ export const CandidatesStack = ({
       sx={{
         overflowY: "auto",
         flex: 1,
+        pb: "100px",
       }}
     >
       {showChart && (

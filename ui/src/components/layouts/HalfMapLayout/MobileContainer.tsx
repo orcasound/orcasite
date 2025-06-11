@@ -15,7 +15,7 @@ export const MobileContainer = ({ children }: MobileContainerProps) => {
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        pb: 6,
+        pb: "100px", // ensures bottom of scroll clears the playbar
       }}
     >
       {children}

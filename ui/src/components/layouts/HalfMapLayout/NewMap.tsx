@@ -167,8 +167,12 @@ function MapClickHandler({ onClick }: { onClick: () => void }) {
 }
 
 export default function Map() {
-  const { nowPlayingCandidate, nowPlayingFeed, setNowPlayingFeed } =
-    useNowPlaying();
+  const {
+    nowPlayingCandidate,
+    nowPlayingFeed,
+    setNowPlayingFeed,
+    setNowPlayingCandidate,
+  } = useNowPlaying();
   const { feeds, filteredData, autoPlayOnReady } = useData();
 
   const [popupFeed, setPopupFeed] = useState<Feed | null>(null);
@@ -309,10 +313,15 @@ export default function Map() {
                   center={f.latLng}
                   count={audioReportsThisFeed}
                   onClick={() => {
-                    autoPlayOnReady.current = false;
-                    setNowPlayingFeed(f);
-                    // setPopupFeed(f);
-                    // setPopupDetection(null);
+                    if (nowPlayingCandidate) {
+                      router.push(`/beta/${f.slug}/candidates`);
+                    } else {
+                      autoPlayOnReady.current = false;
+                      setNowPlayingFeed(f);
+                      setNowPlayingCandidate(null);
+                      // setPopupFeed(f);
+                      // setPopupDetection(null);
+                    }
                   }}
                 />
               )}

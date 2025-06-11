@@ -82,48 +82,52 @@ export function MapWrapper({
             >
               {nowPlayingCandidate ? timeAgoString + " ago" : "Last 7 days"}
             </Box>
-            <Box
-              sx={{
-                width: "auto",
-                backgroundColor: "primary.main",
-                marginBottom: "6px",
-                padding: "6px 12px",
-                borderRadius: "4px",
-                color: "background.default",
-                border: "1px solid",
-                borderColor: "primary.dark",
-              }}
-            >
-              Whale
-            </Box>
-            <Box
-              sx={{
-                width: "auto",
-                backgroundColor: "primary.main",
-                marginBottom: "6px",
-                padding: "6px 12px",
-                borderRadius: "4px",
-                color: "background.default",
-                border: "1px solid",
-                borderColor: "primary.dark",
-              }}
-            >
-              Vessel
-            </Box>
-            <Box
-              sx={{
-                width: "auto",
-                backgroundColor: "primary.main",
-                marginBottom: "6px",
-                padding: "6px 12px",
-                borderRadius: "4px",
-                color: "background.default",
-                border: "1px solid",
-                borderColor: "primary.dark",
-              }}
-            >
-              Other
-            </Box>
+            {!nowPlayingCandidate && (
+              <Box sx={{ display: "flex", gap: ".5rem" }}>
+                <Box
+                  sx={{
+                    width: "auto",
+                    backgroundColor: "primary.main",
+                    marginBottom: "6px",
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    color: "background.default",
+                    border: "1px solid",
+                    borderColor: "primary.dark",
+                  }}
+                >
+                  Whale
+                </Box>
+                <Box
+                  sx={{
+                    width: "auto",
+                    backgroundColor: "primary.main",
+                    marginBottom: "6px",
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    color: "background.default",
+                    border: "1px solid",
+                    borderColor: "primary.dark",
+                  }}
+                >
+                  Vessel
+                </Box>
+                <Box
+                  sx={{
+                    width: "auto",
+                    backgroundColor: "primary.main",
+                    marginBottom: "6px",
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    color: "background.default",
+                    border: "1px solid",
+                    borderColor: "primary.dark",
+                  }}
+                >
+                  Other
+                </Box>
+              </Box>
+            )}
           </Stack>
         )}
         {nowPlayingCandidate && (
@@ -155,7 +159,7 @@ export function MapWrapper({
           <CloseIcon />
         </IconButton>
       )}
-      <MapWithNoSSR />
+      <MapWithNoSSR key={router.pathname} />
     </Box>
   );
 }
