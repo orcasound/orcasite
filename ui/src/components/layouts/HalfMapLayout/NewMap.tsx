@@ -167,8 +167,9 @@ function MapClickHandler({ onClick }: { onClick: () => void }) {
 }
 
 export default function Map() {
-  const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
-  const { feeds, filteredData } = useData();
+  const { nowPlayingCandidate, nowPlayingFeed, setNowPlayingFeed } =
+    useNowPlaying();
+  const { feeds, filteredData, autoPlayOnReady } = useData();
 
   const [popupFeed, setPopupFeed] = useState<Feed | null>(null);
   const [popupDetection, setPopupDetection] = useState<Sighting | null>(null);
@@ -269,7 +270,7 @@ export default function Map() {
         //TODO: Disable attribution on mobile only
         attributionControl={false}
       >
-        {!nowPlayingCandidate && <ZoomControl position="topright" />}
+        {!smDown && <ZoomControl position="topright" />}
         <TileLayer
           attribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri"
           url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
@@ -308,8 +309,10 @@ export default function Map() {
                   center={f.latLng}
                   count={audioReportsThisFeed}
                   onClick={() => {
-                    setPopupFeed(f);
-                    setPopupDetection(null);
+                    autoPlayOnReady.current = false;
+                    setNowPlayingFeed(f);
+                    // setPopupFeed(f);
+                    // setPopupDetection(null);
                   }}
                 />
               )}

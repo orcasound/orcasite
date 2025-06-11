@@ -1,7 +1,9 @@
 import { GraphicEq } from "@mui/icons-material";
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Theme, useMediaQuery } from "@mui/material";
 
 export default function DetectionButton() {
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
   return (
     <Fab
       variant="extended"
@@ -9,12 +11,15 @@ export default function DetectionButton() {
       color="primary"
       id="detection-button"
       sx={{
-        position: "absolute",
-        bottom: "86px",
-        left: 0,
-        right: 0,
-        margin: "auto",
+        // position: "absolute",
+        // bottom: "86px",
+        // left: 0,
+        // right: 0,
+        // margin: "auto",
+        mr: smDown ? 0 : "1rem",
         maxWidth: "max-content",
+        whiteSpace: "nowrap",
+        px: "12px",
 
         // style to look like outlined button
         backgroundColor: "white",
@@ -35,8 +40,8 @@ export default function DetectionButton() {
           alignItems: "center",
         }}
       >
-        <GraphicEq sx={{ mr: 1, color: "background.default" }} />
-        Report sound
+        <GraphicEq sx={{ mr: smDown ? 0 : 1, color: "background.default" }} />
+        {!smDown && "Report sound"}
       </Box>
     </Fab>
   );

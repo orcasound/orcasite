@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
+import { Box, IconButton, Stack, Theme, useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React from "react";
@@ -58,9 +58,9 @@ export function MapWrapper({
         className="map-title"
         sx={{
           position: "absolute",
-          top: smDown ? 21 : 16,
+          top: 16,
           left: 16,
-          width: smDown ? "250px" : "300px",
+          // width: smDown ? "250px" : "300px",
           zIndex: (theme) => theme.zIndex.fab,
           display: "flex",
           flexDirection: "column",
@@ -69,19 +69,62 @@ export function MapWrapper({
         }}
       >
         {smDown && (
-          <Box
-            sx={{
-              width: "auto",
-              backgroundColor: "background.default",
-              marginBottom: "6px",
-              padding: "6px 12px",
-              background: "rgba(0,0,0,.9)",
-              borderRadius: "4px",
-              color: "white",
-            }}
-          >
-            {nowPlayingCandidate ? timeAgoString + " ago" : "Last 7 days"}
-          </Box>
+          <Stack direction="row" gap=".5rem">
+            <Box
+              sx={{
+                width: "auto",
+                backgroundColor: "background.default",
+                marginBottom: "6px",
+                padding: "6px 12px",
+                borderRadius: "4px",
+                color: "primary.main",
+              }}
+            >
+              {nowPlayingCandidate ? timeAgoString + " ago" : "Last 7 days"}
+            </Box>
+            <Box
+              sx={{
+                width: "auto",
+                backgroundColor: "primary.main",
+                marginBottom: "6px",
+                padding: "6px 12px",
+                borderRadius: "4px",
+                color: "background.default",
+                border: "1px solid",
+                borderColor: "primary.dark",
+              }}
+            >
+              Whale
+            </Box>
+            <Box
+              sx={{
+                width: "auto",
+                backgroundColor: "primary.main",
+                marginBottom: "6px",
+                padding: "6px 12px",
+                borderRadius: "4px",
+                color: "background.default",
+                border: "1px solid",
+                borderColor: "primary.dark",
+              }}
+            >
+              Vessel
+            </Box>
+            <Box
+              sx={{
+                width: "auto",
+                backgroundColor: "primary.main",
+                marginBottom: "6px",
+                padding: "6px 12px",
+                borderRadius: "4px",
+                color: "background.default",
+                border: "1px solid",
+                borderColor: "primary.dark",
+              }}
+            >
+              Other
+            </Box>
+          </Stack>
         )}
         {nowPlayingCandidate && (
           <PlayerTimeDisplay

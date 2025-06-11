@@ -21,8 +21,8 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 // import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
 
-import DetectionButton from "../CandidateList/DetectionButton";
-import DetectionDialog from "../CandidateList/DetectionDialog";
+import DetectionButton from "../CandidateList/DetectionButtonBeta";
+import DetectionDialog from "../CandidateList/DetectionDialogBeta";
 import Link from "../Link";
 import PlayPauseButton from "../Player/PlayPauseButton";
 import { PlaybarSlider } from "./PlaybarSlider";
@@ -100,7 +100,10 @@ export function PlayerBase({
       return "";
     }
   }, [nowPlayingCandidate]);
-  const href = `/beta/${feedSlug}/${candidateId}`;
+  const href =
+    candidateId.length > 0
+      ? `/beta/${feedSlug}/${candidateId}`
+      : `/beta/${feedSlug}/candidates`;
 
   const slider = (
     <PlaybarSlider
@@ -114,19 +117,6 @@ export function PlayerBase({
 
   return (
     <>
-      {(playerStatus === "playing" || playerStatus === "loading") &&
-        feed &&
-        nowPlayingFeed && (
-          <DetectionDialog
-            isPlaying={playerStatus === "playing"}
-            feed={feed}
-            timestamp={timestamp}
-            getPlayerTime={() => playerRef.current?.currentTime()}
-            listenerCount={listenerCount}
-          >
-            <DetectionButton />
-          </DetectionDialog>
-        )}
       <AppBar
         position="relative"
         color="base"
@@ -155,14 +145,14 @@ export function PlayerBase({
                 minHeight: smDown ? 0 : theme.spacing(10),
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent: "flex-start",
                 px: [0, 2],
                 position: "relative",
                 // className: "candidate-card-player",
                 // Keep player above the sliding drawer
                 zIndex: theme.zIndex.drawer + 1,
                 width: "100%",
-                flexFlow: smDown ? "row-reverse" : "row",
+                // flexFlow: smDown ? "row-reverse" : "row",
                 gap: smDown ? 2 : 3,
                 marginRight: smDown ? 0 : "2rem",
               })}
@@ -246,6 +236,19 @@ export function PlayerBase({
             </Box>
             {smDown && nowPlayingCandidate && slider}
           </Stack>
+          {(playerStatus === "playing" || playerStatus === "loading") &&
+            feed &&
+            nowPlayingFeed && (
+              <DetectionDialog
+                isPlaying={playerStatus === "playing"}
+                feed={feed}
+                timestamp={timestamp}
+                getPlayerTime={() => playerRef.current?.currentTime()}
+                listenerCount={listenerCount}
+              >
+                <DetectionButton />
+              </DetectionDialog>
+            )}
         </Toolbar>
       </AppBar>
     </>

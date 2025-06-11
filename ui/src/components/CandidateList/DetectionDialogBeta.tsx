@@ -23,7 +23,7 @@ import wavesIconImage from "@/public/icons/water-waves-blue.svg";
 import whaleFlukeIconImage from "@/public/icons/whale-fluke-gray.svg";
 import { analytics } from "@/utils/analytics";
 
-import DetectionCategoryButton from "./DetectionCategoryButton";
+import DetectionCategoryButton from "./DetectionCategoryButtonBeta";
 
 export default function DetectionDialog({
   children,
