@@ -26,13 +26,20 @@ export default function Footer({
         margin: "auto",
         justifyContent: "flex-end",
         alignItems: "center",
+        // backgroundColor: "rgba(0,0,0,.15)",
+        // backdropFilter: "blur(10px)",
+        // WebkitBackdropFilter: "blur(10px)",
+
+        // maskImage: "linear-gradient(to bottom, black 70%, transparent 100%)",
+        // WebkitMaskImage:
+        //   "linear-gradient(to bottom, black 70%, transparent 100%)",
       }}
     >
       <Box
         className="playbar-container"
         sx={{
-          width: smDown ? "96%" : "46%",
-          mb: smDown ? ".25rem" : "2rem",
+          width: smDown ? "calc(100% - .5rem)" : "46%",
+          mb: smDown ? "2px" : "2rem",
         }}
       >
         <PlayBar

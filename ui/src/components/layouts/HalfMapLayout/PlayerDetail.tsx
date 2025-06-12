@@ -16,7 +16,7 @@ export default function PlayerDetail() {
   const { setPlaybarExpanded } = useLayout();
 
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   // seeding with known bout from production
   const { feeds } = useData();
@@ -53,9 +53,7 @@ export default function PlayerDetail() {
         />
       </Box>
 
-      {nowPlayingCandidate && (
-        <AudioAnalyzer isNew={false} bout={bout} feed={feed} />
-      )}
+      <AudioAnalyzer isNew={false} bout={bout} feed={feed} />
     </>
   );
 }

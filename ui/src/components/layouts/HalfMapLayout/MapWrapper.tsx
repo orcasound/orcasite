@@ -82,7 +82,7 @@ export function MapWrapper({
             >
               {nowPlayingCandidate ? timeAgoString + " ago" : "Last 7 days"}
             </Box>
-            {!nowPlayingCandidate && (
+            {false && (
               <Box sx={{ display: "flex", gap: ".5rem" }}>
                 <Box
                   sx={{
