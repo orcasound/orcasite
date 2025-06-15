@@ -17,8 +17,15 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
+  identities do
+    identity :id, [:id]
+  end
+
   attributes do
-    uuid_attribute :id, prefix: "bout", public?: true
+    uuid_attribute :id,
+      prefix: "bout",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
@@ -131,12 +138,22 @@ defmodule Orcasite.Radio.Bout do
       end
     end
 
+    create :seed do
+      upsert? true
+      upsert_identity :id
+      skip_unknown_inputs :*
+
+      accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
+      upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
+    end
+
     update :update do
       primary? true
       accept [:category, :start_time, :end_time, :name]
       require_atomic? false
 
       change debug_log()
+
       change fn changeset, _ ->
         end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
         start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
