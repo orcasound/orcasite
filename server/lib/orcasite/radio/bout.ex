@@ -17,6 +17,14 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
+  validations do
+    validate string_length(:name, min: 3), where: present(:name), before_action?: true
+  end
+
+  changes do
+    change set_attribute(:name, expr(string_trim(arg(:name)))), where: present(arg(:name))
+  end
+
   attributes do
     uuid_attribute :id, prefix: "bout", public?: true
 
@@ -137,6 +145,7 @@ defmodule Orcasite.Radio.Bout do
       require_atomic? false
 
       change debug_log()
+
       change fn changeset, _ ->
         end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
         start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
