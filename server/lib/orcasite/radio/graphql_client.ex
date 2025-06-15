@@ -452,6 +452,7 @@ defmodule Orcasite.Radio.GraphqlClient do
           limit: #{limit},
           offset: #{offset}
         ) {
+          hasNextPage
           results {
             #{bout_attrs |> Enum.join(", ")}
             feed {
@@ -494,6 +495,7 @@ defmodule Orcasite.Radio.GraphqlClient do
           offset: #{offset},
           sort: {field: START_TIME, order: DESC},
         ) {
+          hasNextPage
           results {
             #{bout_attrs |> Enum.join(", ")}
             feed {

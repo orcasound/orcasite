@@ -17,8 +17,15 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
+  identities do
+    identity :id, [:id]
+  end
+
   attributes do
-    uuid_attribute :id, prefix: "bout", public?: true
+    uuid_attribute :id,
+      prefix: "bout",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
@@ -158,8 +165,12 @@ defmodule Orcasite.Radio.Bout do
     end
 
     create :seed do
-      accept [:category, :start_time, :end_time, :name, :duration, :feed_id]
+      upsert? true
+      upsert_identity :id
       skip_unknown_inputs :*
+
+      accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
+      upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
     end
 
     update :update do
