@@ -266,7 +266,7 @@ export default function BoutPage({
   });
 
   const updateBoutMutation = useUpdateBoutMutation({
-    onSuccess: ({ updateBout: { errors } }) => {
+    onSuccess: ({ updateBout: { errors, result } }) => {
       if (errors && errors.length > 0) {
         console.error(errors);
         setBoutForm((form) => ({
@@ -279,7 +279,8 @@ export default function BoutPage({
             ),
           },
         }));
-      } else {
+      } else if (result) {
+        setBoutName(result?.name ?? feed.name);
         setBoutForm((form) => ({ ...form, isSaving: false }));
         setBoutSaved(true);
         setTimeout(() => {
