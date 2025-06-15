@@ -92,6 +92,7 @@ defmodule Orcasite.Radio.Candidate do
         offset? true
         countable true
         default_limit 100
+        max_page_size 1000
       end
 
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
