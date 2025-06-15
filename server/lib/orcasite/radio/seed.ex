@@ -1,7 +1,7 @@
 defmodule Orcasite.Radio.Seed do
   use Ash.Resource,
     domain: Orcasite.Radio,
-    extensions: [AshGraphql.Resource]
+    extensions: [AshGraphql.Resource, AshOban]
 
   resource do
     description "Non-persisted resource to seed records from specific time ranges from Orcasite prod"
@@ -57,7 +57,7 @@ defmodule Orcasite.Radio.Seed do
       argument :end_time, :utc_datetime_usec, default: &DateTime.utc_now/0
 
       argument :start_time, :utc_datetime_usec,
-        default: fn -> DateTime.utc_now() |> DateTime.add(-1, :hour) end
+        default: fn -> DateTime.utc_now() |> DateTime.add(-6, :minute) end
 
       run fn %{arguments: %{start_time: start_time, end_time: end_time}}, _ ->
         __MODULE__.feeds()
@@ -165,6 +165,20 @@ defmodule Orcasite.Radio.Seed do
       change set_attribute(:feed_id, arg(:feed_id))
 
       change {__MODULE__.Changes.SeedResource, []}
+    end
+  end
+
+  oban do
+    if not Application.compile_env(:orcasite, :disable_prod_seed, false) do
+      scheduled_actions do
+        # Every 5 minutes
+        schedule :sync, "*/5 * * * *" do
+          action :all
+          queue :seed
+          worker_module_name __MODULE__.AshOban.Sync.Worker
+          debug? true
+        end
+      end
     end
   end
 

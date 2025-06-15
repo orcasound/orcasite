@@ -4,6 +4,7 @@
     :ecto_sql,
     :phoenix,
     :ash,
+    :ash_oban,
     :ash_postgres,
     :ash_admin,
     :ash_authentication,
