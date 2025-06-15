@@ -60,6 +60,7 @@ defmodule Orcasite.Radio.Seed do
         default: fn -> DateTime.utc_now() |> DateTime.add(-6, :minute) end
 
       run fn %{arguments: %{start_time: start_time, end_time: end_time}}, _ ->
+        IO.puts("Running seed all...")
         __MODULE__.feeds()
 
         feeds = Orcasite.Radio.Feed |> Ash.read!()
@@ -171,12 +172,11 @@ defmodule Orcasite.Radio.Seed do
   oban do
     if not Application.compile_env(:orcasite, :disable_prod_seed, false) do
       scheduled_actions do
-        # Every 5 minutes
+        # Every 5 minutes, pull the last 6 minutes of data
         schedule :sync, "*/5 * * * *" do
           action :all
           queue :seed
           worker_module_name __MODULE__.AshOban.Sync.Worker
-          debug? true
         end
       end
     end
