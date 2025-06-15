@@ -299,6 +299,7 @@ export default function BoutPage({
           startTime: boutStartTime,
           endTime: boutEndTime,
           category: audioCategory,
+          name: boutName,
         });
       } else if (bout) {
         updateBoutMutation.mutate({
@@ -306,6 +307,7 @@ export default function BoutPage({
           startTime: boutStartTime,
           endTime: boutEndTime,
           category: audioCategory,
+          name: boutName,
         });
       }
     } else {
