@@ -17,16 +17,15 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
-  validations do
-    validate string_length(:name, min: 3), where: present(:name), before_action?: true
-  end
-
-  changes do
-    change set_attribute(:name, expr(string_trim(arg(:name)))), where: present(arg(:name))
+  identities do
+    identity :id, [:id]
   end
 
   attributes do
-    uuid_attribute :id, prefix: "bout", public?: true
+    uuid_attribute :id,
+      prefix: "bout",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
@@ -140,8 +139,12 @@ defmodule Orcasite.Radio.Bout do
     end
 
     create :seed do
-      accept [:category, :start_time, :end_time, :name, :duration, :feed_id]
+      upsert? true
+      upsert_identity :id
       skip_unknown_inputs :*
+
+      accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
+      upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
     end
 
     update :update do
@@ -168,6 +171,25 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
+  changes do
+    change set_attribute(:name, expr(string_trim(arg(:name)))), where: present(arg(:name))
+  end
+
+  validations do
+    validate string_length(:name, min: 3), where: present(:name), before_action?: true
+  end
+
+  json_api do
+    type "bout"
+
+    includes [:feed, :tags]
+
+    routes do
+      base "/bouts"
+      index :index
+    end
+  end
+
   graphql do
     type :bout
     attribute_types feed_id: :id, feed_stream_id: :id
@@ -180,17 +202,6 @@ defmodule Orcasite.Radio.Bout do
     mutations do
       create :create_bout, :create
       update :update_bout, :update
-    end
-  end
-
-  json_api do
-    type "bout"
-
-    includes [:feed, :tags]
-
-    routes do
-      base "/bouts"
-      index :index
     end
   end
 end
