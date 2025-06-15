@@ -1,6 +1,7 @@
 require Ash.Query
 
 Orcasite.Radio.Seed.all()
+Orcasite.Radio.Seed.latest()
 
 feeds = Orcasite.Radio.Feed |> Ash.read!()
 

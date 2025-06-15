@@ -16,8 +16,9 @@ defmodule Orcasite.Radio.Seed do
     end
 
     attribute :feed_id, :string, public?: true
-    attribute :start_time, :utc_datetime_usec, allow_nil?: false, public?: true
-    attribute :end_time, :utc_datetime_usec, allow_nil?: false, public?: true
+    attribute :start_time, :utc_datetime_usec, public?: true
+    attribute :end_time, :utc_datetime_usec, public?: true
+    attribute :limit, :integer, public?: true
     attribute :seeded_count, :integer, public?: true
   end
 
@@ -25,6 +26,8 @@ defmodule Orcasite.Radio.Seed do
     define :feeds
     define :resource
     define :all
+    define :latest_resource
+    define :latest
   end
 
   validations do
@@ -33,7 +36,8 @@ defmodule Orcasite.Radio.Seed do
                 from_date_attr: :start_time,
                 to_date_attr: :end_time,
                 max_interval: :timer.hours(1)
-              ]}
+              ]},
+             where: absent(:limit)
 
     validate fn _change, _context ->
       if Application.get_env(:orcasite, :disable_prod_seed) do
@@ -56,7 +60,7 @@ defmodule Orcasite.Radio.Seed do
         default: fn -> DateTime.utc_now() |> DateTime.add(-1, :hour) end
 
       run fn %{arguments: %{start_time: start_time, end_time: end_time}}, _ ->
-        __MODULE__.feeds(%{start_time: start_time, end_time: end_time})
+        __MODULE__.feeds()
 
         feeds = Orcasite.Radio.Feed |> Ash.read!()
 
@@ -67,7 +71,6 @@ defmodule Orcasite.Radio.Seed do
 
         seed_params
         |> Enum.map(fn {feed, resource} -> {feed.slug, resource} end)
-        |> IO.inspect(label: "params")
 
         seed_params
         |> Stream.map(fn {feed, resource} ->
@@ -83,12 +86,62 @@ defmodule Orcasite.Radio.Seed do
       end
     end
 
+    action :latest, {:array, :struct} do
+      constraints items: [instance_of: __MODULE__]
+      description "Seed feeds, then latest detections/candidates, audio images, bouts"
+      argument :limit, :integer, allow_nil?: false, default: 100
+
+      run fn %{arguments: %{limit: limit}}, _ ->
+        __MODULE__.feeds()
+
+        feeds = Orcasite.Radio.Feed |> Ash.read!()
+
+        seed_params =
+          for feed <- feeds, resource <- [:detection, :audio_image, :bout] do
+            {feed, resource}
+          end
+
+        seed_params
+        |> Enum.map(fn {feed, resource} -> {feed.slug, resource} end)
+
+        seed_params
+        |> Stream.map(fn {feed, resource} ->
+          __MODULE__.latest_resource!(%{
+            resource: resource,
+            limit: limit,
+            feed_id: feed.id
+          })
+        end)
+        |> Enum.to_list()
+        |> then(&{:ok, &1})
+      end
+    end
+
     create :feeds do
       change set_attribute(:resource, :feed)
       change set_attribute(:start_time, &DateTime.utc_now/0)
       change set_attribute(:end_time, &DateTime.utc_now/0)
 
       change {__MODULE__.Changes.SeedFeeds, []}
+    end
+
+    create :latest_resource do
+      argument :limit, :integer, allow_nil?: false, default: 100
+
+      argument :resource, __MODULE__.Types.Resource do
+        allow_nil? false
+      end
+
+      argument :feed_id, :string do
+        allow_nil? false
+        description "Local/dev server feed ID to seed relationship"
+      end
+
+      change set_attribute(:resource, arg(:resource))
+      change set_attribute(:limit, arg(:limit))
+      change set_attribute(:feed_id, arg(:feed_id))
+
+      change {__MODULE__.Changes.SeedResource, [type: :latest]}
     end
 
     create :resource do
@@ -121,6 +174,7 @@ defmodule Orcasite.Radio.Seed do
     mutations do
       create :seed_feeds, :feeds
       create :seed_resource, :resource
+      create :seed_latest_resource, :latest_resource
       action :seed_all, :all
     end
   end

@@ -157,6 +157,11 @@ defmodule Orcasite.Radio.Bout do
       end
     end
 
+    create :seed do
+      accept [:category, :start_time, :end_time, :name, :duration, :feed_id]
+      skip_unknown_inputs :*
+    end
+
     update :update do
       primary? true
       accept [:category, :start_time, :end_time, :name]

@@ -7,22 +7,33 @@ defmodule Orcasite.Radio.Seed.Changes.SeedResource do
   require Logger
 
   @impl true
-  def change(changeset, _opts, _context) do
+  def change(changeset, opts, _context) do
+    seed_type = Keyword.get(opts, :type, :time_range)
+
     resource_name = Ash.Changeset.get_argument(changeset, :resource)
 
     changeset
     |> Ash.Changeset.before_action(fn change ->
       feed_id = change |> Ash.Changeset.get_argument(:feed_id)
 
-      from_date = change |> Ash.Changeset.get_argument(:start_time)
-      to_date = change |> Ash.Changeset.get_argument(:end_time)
-
       bulk_resource = resource_name |> bulk_create_resource_name() |> Resource.to_module()
       bulk_action = resource_name |> bulk_create_action()
 
       inputs =
-        Orcasite.Radio.GraphqlClient.get_resource(resource_name, feed_id, from_date, to_date)
-        |> Utils.prepare_results(bulk_resource)
+        case seed_type do
+          :time_range ->
+            from_date = change |> Ash.Changeset.get_argument(:start_time)
+            to_date = change |> Ash.Changeset.get_argument(:end_time)
+
+            Orcasite.Radio.GraphqlClient.get_resource(resource_name, feed_id, from_date, to_date)
+            |> Utils.prepare_results(bulk_resource)
+
+          :latest ->
+            limit = change |> Ash.Changeset.get_argument(:limit)
+
+            Orcasite.Radio.GraphqlClient.get_latest_resource(resource_name, feed_id, limit)
+            |> Utils.prepare_results(bulk_resource)
+        end
 
       count = Enum.count(inputs)
 
@@ -64,6 +75,7 @@ defmodule Orcasite.Radio.Seed.Changes.SeedResource do
       :candidate -> :seed
       :detection -> :seed
       :audio_image -> :seed
+      :bout -> :seed
       _ -> :create
     end
   end

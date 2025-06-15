@@ -11,6 +11,15 @@ defmodule Orcasite.Radio.GraphqlClient do
     end
   end
 
+  def get_latest_resource(resource_name, feed_id, limit \\ 100) do
+    case resource_name do
+      :detection -> get_latest_detections_with_candidates(feed_id, limit)
+      :candidate -> get_latest_candidates_with_detections(feed_id, limit)
+      :audio_image -> get_latest_audio_images(feed_id, 0, limit)
+      :bout -> get_latest_bouts(feed_id, 0, limit)
+    end
+  end
+
   def submit(query) do
     Finch.build(
       :post,
@@ -224,6 +233,41 @@ defmodule Orcasite.Radio.GraphqlClient do
     |> parse_response(["data", "candidates", "results"])
   end
 
+  def get_latest_candidates_with_detections(feed_id, limit \\ 100) do
+    feed_slug = get_feed_slug(feed_id)
+    candidate_attrs = camelized_public_attrs(Orcasite.Radio.Candidate)
+    detection_attrs = camelized_public_attrs(Orcasite.Radio.Detection)
+
+    ~s|
+      {
+        candidates (
+          filter: {
+            feed: {slug: {eq: "#{feed_slug}"}},
+          },
+          sort: {field: MIN_TIME, order: DESC},
+          limit: #{limit}
+        ) {
+          results {
+            #{candidate_attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+
+            detections {
+              #{detection_attrs |> Enum.join(", ")}
+
+              feed {
+                id
+              }
+            }
+          }
+        }
+      }
+    |
+    |> submit()
+    |> parse_response(["data", "candidates", "results"])
+  end
+
   def get_detections_with_candidates(feed_id, from_datetime, to_datetime) do
     feed_slug = get_feed_slug(feed_id)
     candidate_attrs = camelized_public_attrs(Orcasite.Radio.Candidate)
@@ -242,6 +286,40 @@ defmodule Orcasite.Radio.GraphqlClient do
             }
           ]
         }) {
+          results {
+            #{detection_attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+            candidate {
+              #{candidate_attrs |> Enum.join(", ")}
+
+              feed {
+                id
+              }
+            }
+          }
+        }
+      }
+    |
+    |> submit()
+    |> parse_response(["data", "detections", "results"])
+  end
+
+  def get_latest_detections_with_candidates(feed_id, limit \\ 100) do
+    feed_slug = get_feed_slug(feed_id)
+    candidate_attrs = camelized_public_attrs(Orcasite.Radio.Candidate)
+    detection_attrs = camelized_public_attrs(Orcasite.Radio.Detection)
+
+    ~s|
+      {
+        detections (
+          filter: {
+            feed: {slug: {eq: "#{feed_slug}"}}
+          },
+          sort: {field: TIMESTAMP, order: DESC},
+          limit: #{limit}
+        ) {
           results {
             #{detection_attrs |> Enum.join(", ")}
             feed {
@@ -308,6 +386,51 @@ defmodule Orcasite.Radio.GraphqlClient do
     end
   end
 
+  def get_latest_audio_images(
+        feed_id,
+        offset \\ 0,
+        limit \\ 100,
+        prev_results \\ []
+      ) do
+    image_attrs = camelized_public_attrs(Orcasite.Radio.AudioImage)
+    to_datetime = DateTime.utc_now()
+    from_datetime = DateTime.add(to_datetime, -1, :day)
+
+    ~s|
+      {
+        audioImages (
+          feedId: "#{feed_id}"
+          startTime: "#{DateTime.to_iso8601(from_datetime)}"
+          endTime: "#{DateTime.to_iso8601(to_datetime)}"
+          offset: #{offset}
+          limit: #{limit}
+          sort: {field: START_TIME, order: DESC},
+        ) {
+          hasNextPage
+          results {
+            #{image_attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+          }
+        }
+      }
+    |
+    |> submit()
+    |> case do
+      {:ok, %{"data" => %{"audioImages" => %{"hasNextPage" => true, "results" => results}}}} ->
+        get_latest_audio_images(
+          feed_id,
+          offset + limit,
+          limit,
+          prev_results ++ results
+        )
+
+      {:ok, %{"data" => %{"audioImages" => %{"results" => results}}}} ->
+        prev_results ++ results
+    end
+  end
+
   def get_bouts(
         feed_id,
         from_datetime,
@@ -325,7 +448,9 @@ defmodule Orcasite.Radio.GraphqlClient do
           filter: {
             startTime: {lessThanOrEqual: "#{DateTime.to_iso8601(to_datetime)}"},
             endTime: {greaterThanOrEqual: "#{DateTime.to_iso8601(from_datetime)}"}
-          }
+          },
+          limit: #{limit},
+          offset: #{offset}
         ) {
           results {
             #{bout_attrs |> Enum.join(", ")}
@@ -339,10 +464,50 @@ defmodule Orcasite.Radio.GraphqlClient do
     |> submit()
     |> case do
       {:ok, %{"data" => %{"bouts" => %{"hasNextPage" => true, "results" => results}}}} ->
-        get_audio_images(
+        get_bouts(
           feed_id,
           from_datetime,
           to_datetime,
+          offset + limit,
+          limit,
+          prev_results ++ results
+        )
+
+      {:ok, %{"data" => %{"bouts" => %{"results" => results}}}} ->
+        prev_results ++ results
+    end
+  end
+
+  def get_latest_bouts(
+        feed_id,
+        offset \\ 0,
+        limit \\ 100,
+        prev_results \\ []
+      ) do
+    bout_attrs = camelized_public_attrs(Orcasite.Radio.Bout)
+
+    ~s|
+      {
+        bouts (
+          feedId: "#{feed_id}",
+          limit: #{limit},
+          offset: #{offset},
+          sort: {field: START_TIME, order: DESC},
+        ) {
+          results {
+            #{bout_attrs |> Enum.join(", ")}
+            feed {
+              id
+            }
+          }
+        }
+      }
+    |
+    |> submit()
+    |> case do
+      {:ok, %{"data" => %{"bouts" => %{"hasNextPage" => true, "results" => results}}}} ->
+        get_latest_bouts(
+          feed_id,
           offset + limit,
           limit,
           prev_results ++ results
