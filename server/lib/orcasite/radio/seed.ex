@@ -28,6 +28,7 @@ defmodule Orcasite.Radio.Seed do
     define :all
     define :latest_resource
     define :latest
+    define :delete_old
   end
 
   validations do

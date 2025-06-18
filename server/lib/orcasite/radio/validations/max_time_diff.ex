@@ -16,8 +16,7 @@ defmodule Orcasite.Radio.Validations.MaxTimeDiff do
   def validate(change, opts, _context) do
     from_date = change |> Ash.Changeset.get_attribute(opts[:from_date_attr])
     to_date = change |> Ash.Changeset.get_attribute(opts[:to_date_attr])
--    max_interval = change |> Ash.Changeset.get_attribute(opts[:max_interval])
-+    max_interval = opts[:max_interval]
+    max_interval = opts[:max_interval]
 
     if DateTime.diff(to_date, from_date, :millisecond) <= max_interval do
       :ok
