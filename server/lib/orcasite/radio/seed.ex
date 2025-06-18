@@ -207,13 +207,13 @@ defmodule Orcasite.Radio.Seed do
           queue :seed
           worker_module_name __MODULE__.AshOban.Sync.Worker
         end
-      end
 
-      if Application.compile_env(:orcasite, :delete_old_seeded_records, false) do
-        schedule :delete_old, "@hourly" do
-          action :delete_old
-          queue :seed
-          worker_module_name __MODULE__.AshOban.DeleteOld.Worker
+        if Application.compile_env(:orcasite, :delete_old_seeded_records, false) do
+          schedule :delete_old, "@hourly" do
+            action :delete_old
+            queue :seed
+            worker_module_name __MODULE__.AshOban.DeleteOld.Worker
+          end
         end
       end
     end
