@@ -4,6 +4,10 @@ defmodule Orcasite.Radio.FeedSegment do
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
+  resource do
+    description "Represents a single .ts file from a feed (usually 10 second). A feed_stream has many feed_segments. Used to track timestamps for querying audio from S3"
+  end
+
   postgres do
     table "feed_segments"
     repo Orcasite.Repo

@@ -7,6 +7,10 @@ defmodule Orcasite.Radio.Detection do
 
   alias Orcasite.Radio.{Feed, Candidate}
 
+  resource do
+    description "A single user-submitted report of tagged audio (whale, vessel, other)"
+  end
+
   postgres do
     table "detections"
     repo Orcasite.Repo

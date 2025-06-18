@@ -7,6 +7,10 @@ defmodule Orcasite.Radio.Candidate do
 
   alias Orcasite.Radio.{Detection, Feed}
 
+  resource do
+    description "Groups one or many detections based on whether detections of the same category (whale, vessel, other) are within 3 minutes of each other"
+  end
+
   postgres do
     table "candidates"
     repo Orcasite.Repo
