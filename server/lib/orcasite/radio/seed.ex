@@ -123,6 +123,7 @@ defmodule Orcasite.Radio.Seed do
         default: fn -> DateTime.utc_now() |> DateTime.add(-24 * 7, :hour) end
 
       run fn %{arguments: %{before: before}}, _ ->
+        require Ash.Query
         feeds = Orcasite.Radio.Feed |> Ash.read!()
 
         delete_params =
@@ -142,7 +143,7 @@ defmodule Orcasite.Radio.Seed do
         |> Enum.map(fn {feed, resource} ->
           resource
           |> Ash.Query.filter(feed_id: feed.id, inserted_at: [less_than: before])
-          |> Ash.bulk_destroy(:destroy, %{})
+          |> Ash.bulk_destroy(:destroy, %{}, authorize?: false)
         end)
       end
 
