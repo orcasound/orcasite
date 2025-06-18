@@ -195,40 +195,42 @@ defmodule Orcasite.Radio.Detection do
       change manage_relationship(:feed, type: :append)
     end
 
-    create :seed do
-      upsert? true
-      upsert_identity :id
+    if Application.compile_env(:orcasite, :enable_prod_seed, false) do
+      create :seed do
+        upsert? true
+        upsert_identity :id
 
-      skip_unknown_inputs :*
+        skip_unknown_inputs :*
 
-      accept [
-        :id,
-        :source_ip,
-        :playlist_timestamp,
-        :player_offset,
-        :listener_count,
-        :timestamp,
-        :description,
-        :visible,
-        :category
-      ]
+        accept [
+          :id,
+          :source_ip,
+          :playlist_timestamp,
+          :player_offset,
+          :listener_count,
+          :timestamp,
+          :description,
+          :visible,
+          :category
+        ]
 
-      upsert_fields [
-        :source_ip,
-        :playlist_timestamp,
-        :player_offset,
-        :listener_count,
-        :timestamp,
-        :description,
-        :visible,
-        :category
-      ]
+        upsert_fields [
+          :source_ip,
+          :playlist_timestamp,
+          :player_offset,
+          :listener_count,
+          :timestamp,
+          :description,
+          :visible,
+          :category
+        ]
 
-      argument :feed, :map
-      argument :candidate, :map
+        argument :feed, :map
+        argument :candidate, :map
 
-      change manage_relationship(:feed, type: :append)
-      change manage_relationship(:candidate, on_lookup: :relate, on_no_match: {:create, :seed})
+        change manage_relationship(:feed, type: :append)
+        change manage_relationship(:candidate, on_lookup: :relate, on_no_match: {:create, :seed})
+      end
     end
 
     create :submit_detection do
