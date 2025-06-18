@@ -116,4 +116,12 @@ config :orcasite,
   audio_image_bucket: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "dev-audio-viz"),
   audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
 
+# Disable these by copying them to dev.secret.exs and setting them to false
+config :orcasite, enable_prod_seed: true
+config :orcasite, delete_old_seeded_records: true
+
 config :orcasite, :env, :dev
+
+if __DIR__ |> Path.join("dev.secret.exs") |> File.exists?() do
+  import_config("dev.secret.exs")
+end
