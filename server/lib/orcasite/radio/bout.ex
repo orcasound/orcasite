@@ -5,6 +5,10 @@ defmodule Orcasite.Radio.Bout do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  resource do
+    description "A moderator-generated time interval for a feed where there's a specific category of audio going on. Usually 10-90 minutes long."
+  end
+
   postgres do
     table "bouts"
     repo Orcasite.Repo
