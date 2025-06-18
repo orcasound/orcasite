@@ -123,6 +123,8 @@ defmodule Orcasite.Radio.Seed do
         default: fn -> DateTime.utc_now() |> DateTime.add(-24 * 7, :hour) end
 
       run fn %{arguments: %{before: before}}, _ ->
+        feeds = Orcasite.Radio.Feed |> Ash.read!()
+
         delete_params =
           for feed <- feeds,
               resource_name <- [
