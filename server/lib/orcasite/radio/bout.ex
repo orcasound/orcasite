@@ -168,13 +168,15 @@ defmodule Orcasite.Radio.Bout do
       end
     end
 
-    create :seed do
-      upsert? true
-      upsert_identity :id
-      skip_unknown_inputs :*
+    if Application.compile_env(:orcasite, :enable_prod_seed, false) do
+      create :seed do
+        upsert? true
+        upsert_identity :id
+        skip_unknown_inputs :*
 
-      accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
-      upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
+        accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
+        upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
+      end
     end
 
     update :update do
