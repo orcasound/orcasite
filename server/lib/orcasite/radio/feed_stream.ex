@@ -4,6 +4,13 @@ defmodule Orcasite.Radio.FeedStream do
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
+  resource do
+    description """
+      Represents an m3u8 file in S3 (audio segment manifest, lists .ts files in order with their length).
+      Whenever a feed restarts, a new m3u8 file is created
+    """
+  end
+
   postgres do
     table "feed_streams"
     repo Orcasite.Repo

@@ -7,6 +7,10 @@ defmodule Orcasite.Radio.Feed do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  resource do
+    desciption "Represents hydrophones that record audio under water"
+  end
+
   postgres do
     table "feeds"
     repo Orcasite.Repo

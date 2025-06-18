@@ -6,6 +6,10 @@ defmodule Orcasite.Radio.AudioImage do
     data_layer: AshPostgres.DataLayer,
     notifiers: [Ash.Notifier.PubSub]
 
+  resource do
+    description "Spectrograms or any other type of image representing audio."
+  end
+
   postgres do
     table "audio_images"
     repo Orcasite.Repo
