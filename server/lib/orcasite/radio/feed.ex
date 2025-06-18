@@ -8,7 +8,7 @@ defmodule Orcasite.Radio.Feed do
     authorizers: [Ash.Policy.Authorizer]
 
   resource do
-    desciption "Represents hydrophones that record audio under water"
+    description "Represents hydrophones that record audio under water"
   end
 
   postgres do
