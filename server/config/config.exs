@@ -121,7 +121,7 @@ config :ex_aws,
 
 # Compile-time for enabling/disabling writable primary IDs
 config :orcasite,
-  disable_prod_seed: System.get_env("DISABLE_PROD_SEED", "false") == "true"
+  enable_prod_seed: System.get_env("ENABLE_PROD_SEED", "false") == "true"
 
 config :orcasite,
   delete_old_seeded_records: System.get_env("DELETE_OLD_SEEDED_RECORDS", "false") == "true"
