@@ -60,7 +60,6 @@ defmodule Orcasite.Radio.Seed do
         default: fn -> DateTime.utc_now() |> DateTime.add(-6, :minute) end
 
       run fn %{arguments: %{start_time: start_time, end_time: end_time}}, _ ->
-        IO.puts("Running seed all...")
         __MODULE__.feeds()
 
         feeds = Orcasite.Radio.Feed |> Ash.read!()
@@ -116,6 +115,35 @@ defmodule Orcasite.Radio.Seed do
         |> Enum.to_list()
         |> then(&{:ok, &1})
       end
+    end
+
+    action :delete_old, :atom do
+      argument :before, :utc_datetime_usec,
+        default: fn -> DateTime.utc_now() |> DateTime.add(-24 * 7, :hour) end
+
+      run fn %{arguments: %{before: before}}, _ ->
+        delete_params =
+          for feed <- feeds,
+              resource_name <- [
+                :detection,
+                :candidate,
+                :feed_segment,
+                :feed_stream,
+                :audio_image,
+                :bout
+              ] do
+            {feed, to_resource(resource_name)}
+          end
+
+        delete_params
+        |> Enum.map(fn {feed, resource} ->
+          resource
+          |> Ash.Query.filter(feed_id: feed.id, inserted_at: [less_than: before])
+          |> Ash.bulk_destroy(:destroy, %{})
+        end)
+      end
+
+      :ok
     end
 
     create :feeds do
@@ -179,6 +207,14 @@ defmodule Orcasite.Radio.Seed do
           worker_module_name __MODULE__.AshOban.Sync.Worker
         end
       end
+
+      if Application.compile_env(:orcasite, :delete_old_seeded_records, false) do
+        schedule :delete_old, "@hourly" do
+          action :delete_old
+          queue :seed
+          worker_module_name __MODULE__.AshOban.DeleteOld.Worker
+        end
+      end
     end
   end
 
@@ -190,6 +226,17 @@ defmodule Orcasite.Radio.Seed do
       create :seed_resource, :resource
       create :seed_latest_resource, :latest_resource
       action :seed_all, :all
+    end
+  end
+
+  defp to_resource(name) do
+    case name do
+      :detection -> Orcasite.Radio.Detection
+      :candidate -> Orcasite.Radio.Candidate
+      :audio_image -> Orcasite.Radio.AudioImage
+      :bout -> Orcasite.Radio.Bout
+      :feed_segment -> Orcasite.Radio.FeedSegment
+      :feed_stream -> Orcasite.Radio.FeedStream
     end
   end
 end
