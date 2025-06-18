@@ -290,9 +290,7 @@ function description(resource: string) {
   return mapping[resource];
 }
 
-function titleizeResource(resource: string) {
-  return resource[0] + _.replace(resource, "_", " ").toLowerCase().slice(1);
-}
+const titleizeResource = _.flow(_.lowerCase, _.upperFirst);
 
 function lowerCaseResource(resource: string) {
   return _.replace(resource, "_", " ").toLowerCase();
