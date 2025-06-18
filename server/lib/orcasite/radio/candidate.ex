@@ -121,19 +121,21 @@ defmodule Orcasite.Radio.Candidate do
       change manage_relationship(:detections, type: :append)
     end
 
-    create :seed do
-      upsert? true
-      upsert_identity :id
+    if Application.compile_env(:orcasite, :enable_prod_seed, false) do
+      create :seed do
+        upsert? true
+        upsert_identity :id
 
-      accept [:id, :min_time, :max_time, :detection_count, :category, :visible]
-      upsert_fields [:min_time, :max_time, :detection_count, :category, :visible]
-      skip_unknown_inputs :*
+        accept [:id, :min_time, :max_time, :detection_count, :category, :visible]
+        upsert_fields [:min_time, :max_time, :detection_count, :category, :visible]
+        skip_unknown_inputs :*
 
-      argument :detections, {:array, :map}
-      argument :feed, :map
+        argument :detections, {:array, :map}
+        argument :feed, :map
 
-      change manage_relationship(:feed, type: :append)
-      change manage_relationship(:detections, on_lookup: :relate, on_no_match: {:create, :seed})
+        change manage_relationship(:feed, type: :append)
+        change manage_relationship(:detections, on_lookup: :relate, on_no_match: {:create, :seed})
+      end
     end
 
     read :find_nearby_candidate do

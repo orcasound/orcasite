@@ -216,42 +216,44 @@ defmodule Orcasite.Radio.AudioImage do
              end)
     end
 
-    create :seed do
-      upsert? true
-      upsert_identity :id
+    if Application.compile_env(:orcasite, :enable_prod_seed, false) do
+      create :seed do
+        upsert? true
+        upsert_identity :id
 
-      skip_unknown_inputs :*
+        skip_unknown_inputs :*
 
-      accept [
-        :id,
-        :image_type,
-        :status,
-        :start_time,
-        :end_time,
-        :parameters,
-        :image_size,
-        :bucket,
-        :bucket_region,
-        :object_path,
-        :last_error
-      ]
+        accept [
+          :id,
+          :image_type,
+          :status,
+          :start_time,
+          :end_time,
+          :parameters,
+          :image_size,
+          :bucket,
+          :bucket_region,
+          :object_path,
+          :last_error
+        ]
 
-      upsert_fields [
-        :image_type,
-        :status,
-        :start_time,
-        :end_time,
-        :parameters,
-        :image_size,
-        :bucket,
-        :bucket_region,
-        :object_path,
-        :last_error
-      ]
+        upsert_fields [
+          :image_type,
+          :status,
+          :start_time,
+          :end_time,
+          :parameters,
+          :image_size,
+          :bucket,
+          :bucket_region,
+          :object_path,
+          :last_error
+        ]
 
-      argument :feed, :map
+        argument :feed, :map
 
-      change manage_relationship(:feed, type: :append)
+        change manage_relationship(:feed, type: :append)
+      end
     end
 
     update :generate_spectrogram do
