@@ -21,6 +21,7 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 // import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
 
+import { timeRangeSelect } from "../CandidateList/CandidateListFilters";
 import DetectionButton from "../CandidateList/DetectionButtonBeta";
 import DetectionDialog from "../CandidateList/DetectionDialogBeta";
 import Link from "../Link";
@@ -81,7 +82,7 @@ export function PlayerBase({
 }: PlayerBaseProps) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
-  const { feeds } = useData();
+  const { feeds, reportCount, filters } = useData();
   const feedSlug = useMemo(() => {
     if (nowPlayingCandidate) {
       const feed =
@@ -229,6 +230,17 @@ export function PlayerBase({
                         `${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
                       {type === "candidate" && " · " + duration}
                     </Typography>
+                    {!smDown && (
+                      <Typography sx={{ color: "text.secondary" }}>
+                        {
+                          timeRangeSelect.find(
+                            (el) => el.value === filters.timeRange,
+                          )?.label
+                        }
+                        {" – "}
+                        {reportCount[feed.id].shortCountString}
+                      </Typography>
+                    )}
                     {!smDown && nowPlayingCandidate && slider}
                   </Box>
                 </Stack>
@@ -249,6 +261,7 @@ export function PlayerBase({
                 <DetectionButton />
               </DetectionDialog>
             )}
+          {playerStatus !== "playing" && <DetectionButton disabled={true} />}
         </Toolbar>
       </AppBar>
     </>

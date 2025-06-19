@@ -26,6 +26,7 @@ const SearchBar = () => {
             onInput={handleInput}
             placeholder="Search..."
             size="small"
+            sx={{ height: "31px" }}
             startAdornment={
               <InputAdornment position="start">
                 <IconButton aria-label="search" edge="start">

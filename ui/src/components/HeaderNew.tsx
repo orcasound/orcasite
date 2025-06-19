@@ -3,7 +3,6 @@ import {
   Alert,
   AppBar,
   Box,
-  Button,
   Collapse,
   Drawer,
   IconButton,
@@ -29,7 +28,6 @@ export default function HeaderNew({
   onBrandClick?: () => void;
   tabs?: ReactNode;
 }) {
-  // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const { alertOpen, setAlertOpen } = useLayout();
 
   return (
@@ -88,6 +86,7 @@ function Mobile({
 }) {
   const drawerWidth = "100%";
   const [menuIsOpen, setMenuOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   const handleMenuToggle = () => {
     setMenuOpen(!menuIsOpen);
@@ -152,7 +151,10 @@ function Mobile({
             alignItems="center"
           >
             <List sx={{ maxWidth: (theme) => theme.breakpoints.values.sm }}>
-              <CandidateListFilters />
+              <CandidateListFilters
+                showFilters={showFilters}
+                setShowFilters={setShowFilters}
+              />
             </List>
           </Box>
         </Drawer>
@@ -162,6 +164,7 @@ function Mobile({
 }
 
 function Desktop({ tabs }: { tabs?: ReactNode }) {
+  const [showFilters, setShowFilters] = useState(false);
   return (
     <Box sx={{ ...displayDesktopOnly, width: "100%" }}>
       <Box
@@ -176,21 +179,16 @@ function Desktop({ tabs }: { tabs?: ReactNode }) {
 
         <Box sx={{ flex: 1, marginLeft: "3rem" }}>{tabs}</Box>
 
-        <Box className="header-buttons" sx={{ display: "flex", gap: "16px" }}>
-          <Box sx={{ width: "260px" }}>
-            <CandidateListFilters />
+        <Box
+          className="header-buttons"
+          sx={{ display: "flex", gap: "16px", py: "1rem" }}
+        >
+          <Box>
+            <CandidateListFilters
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+            />
           </Box>
-          <Button
-            href="#"
-            size="small"
-            variant="outlined"
-            sx={{ whiteSpace: "nowrap" }}
-          >
-            Sign up
-          </Button>
-          <Button href="#" size="small" variant="contained">
-            Log in
-          </Button>
         </Box>
       </Box>
     </Box>

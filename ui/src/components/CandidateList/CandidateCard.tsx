@@ -131,7 +131,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const playIconDisabled = (
     <PlayCircle
       sx={{
-        opacity: 0.33,
+        opacity: 0,
         height: iconSize,
         width: iconSize,
         // marginRight: smDown ? "-8px" : "-4px",

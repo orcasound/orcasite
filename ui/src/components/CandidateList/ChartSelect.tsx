@@ -25,10 +25,9 @@ export default function ChartSelect({
   variant,
   fontSize,
   onChange,
-  minWidth = 100,
 }: SelectProps) {
   return (
-    <Box sx={{ minWidth: minWidth, flex: 1 }}>
+    <Box sx={{ width: "100%" }}>
       <FormControl fullWidth size={size} variant={variant}>
         <Select
           id={`${name}-select`}

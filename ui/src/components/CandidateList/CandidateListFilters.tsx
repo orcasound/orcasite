@@ -2,7 +2,7 @@ import { Tune } from "@mui/icons-material";
 import { Button, Stack, Theme, useMediaQuery } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import dayjs, { Dayjs } from "dayjs";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 import { useData } from "@/context/DataContext";
 import {
@@ -95,9 +95,13 @@ const categorySelect = [
 const CandidateListFilters = ({
   showTimeRange = true,
   showFilterButton = true,
+  showFilters = true,
+  setShowFilters,
 }: {
   showTimeRange?: boolean;
   showFilterButton?: boolean;
+  showFilters?: boolean;
+  setShowFilters?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { feeds, filters, setFilters } = useData();
   const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -109,8 +113,9 @@ const CandidateListFilters = ({
   }));
   feedList.unshift({ label: "All hydrophones", value: "All hydrophones" });
 
-  const [showFilters, setShowFilters] = useState(false);
-
+  if (mdDown) {
+    showFilterButton = false;
+  }
   const [lastPredefinedRange, setLastPredefinedRange] =
     useState<number>(defaultRange);
 
@@ -148,7 +153,7 @@ const CandidateListFilters = ({
   };
 
   const handleToggle = () => {
-    setShowFilters(!showFilters);
+    if (setShowFilters) setShowFilters(!showFilters);
   };
 
   return (
@@ -158,9 +163,10 @@ const CandidateListFilters = ({
         gap: "1rem",
         flexWrap: "wrap",
         width: "100%",
+        alignItems: "flex-end",
       }}
     >
-      <Stack direction="row" spacing={2} sx={{ maxWidth: "100%" }}>
+      <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
         {showTimeRange && (
           <ChartSelect
             name={"timeRange"}
@@ -171,13 +177,39 @@ const CandidateListFilters = ({
         )}
         {showFilterButton && (
           <Button
-            startIcon={<Tune />}
+            startIcon={
+              <Tune
+                sx={{
+                  color: showFilters ? "background.paper" : "text.primary",
+                }}
+              />
+            }
             size="small"
-            variant="outlined"
+            variant={showFilters ? "contained" : "outlined"}
             onClick={handleToggle}
           >
             Filters
           </Button>
+        )}
+        {!mdDown && (
+          <>
+            <Button
+              href="#"
+              size="small"
+              variant="outlined"
+              sx={{ whiteSpace: "nowrap", maxHeight: "31px" }}
+            >
+              Sign up
+            </Button>
+            <Button
+              href="#"
+              size="small"
+              variant="contained"
+              sx={{ whiteSpace: "nowrap", maxHeight: "31px" }}
+            >
+              Log in
+            </Button>
+          </>
         )}
       </Stack>
 

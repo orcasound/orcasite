@@ -110,6 +110,9 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
         className="first-tab"
         sx={tabSx}
         label="Hydrophones"
+        onClick={() => {
+          router.push(`/beta`);
+        }}
         {...a11yProps(0)}
       />
       <Tab sx={tabSx} label="Explore" {...a11yProps(1)} />

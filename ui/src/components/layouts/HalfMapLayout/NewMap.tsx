@@ -8,7 +8,13 @@ import L from "leaflet";
 import { LatLngExpression } from "leaflet";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  Tooltip,
+  ZoomControl,
+} from "react-leaflet";
 import { useMap } from "react-leaflet";
 
 import { useData } from "@/context/DataContext";
@@ -17,6 +23,7 @@ import { Feed } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
 import { Sighting } from "@/types/DataTypes";
+import formatDuration from "@/utils/masterDataHelpers";
 
 import MapPopup from "./MapPopup";
 
@@ -292,6 +299,9 @@ export default function Map() {
           const audioReportsThisFeed = audioReports.filter(
             (d) => d.feedId === f?.id,
           ).length;
+          const sightingsThisFeed = sightings.filter(
+            (s) => s.feedId === f?.id,
+          ).length;
           return (
             <Fragment key={f.slug}>
               {/* // necessary to map circles twice to make them all appear */}
@@ -311,16 +321,18 @@ export default function Map() {
               {audioReportsThisFeed > 0 && (
                 <ReportCount
                   center={f.latLng}
-                  count={audioReportsThisFeed}
+                  count={audioReportsThisFeed + sightingsThisFeed}
                   onClick={() => {
                     if (nowPlayingCandidate) {
                       router.push(`/beta/${f.slug}/candidates`);
-                    } else {
+                    } else if (f.id !== nowPlayingFeed?.id) {
                       autoPlayOnReady.current = false;
                       setNowPlayingFeed(f);
                       setNowPlayingCandidate(null);
                       // setPopupFeed(f);
                       // setPopupDetection(null);
+                    } else {
+                      router.push(`/beta/${f.slug}/candidates`);
                     }
                   }}
                 />
@@ -331,6 +343,15 @@ export default function Map() {
         {sightings?.map((sighting) => {
           if (sighting.newCategory !== "SIGHTING") return null;
           const inRange = sighting.hydrophone !== "out of range";
+          const sightingTimeSeconds =
+            new Date(sighting.created).getTime() / 1000;
+          const currentTimeSeconds = new Date().getTime() / 1000;
+
+          const timeAgo = formatDuration(
+            sightingTimeSeconds,
+            currentTimeSeconds,
+          );
+
           return (
             <Marker
               key={sighting.id}
@@ -340,12 +361,14 @@ export default function Map() {
               opacity={inRange ? 1 : 0.33}
               eventHandlers={{
                 click: () => {
-                  setPopupDetection(sighting);
-                  setPopupFeed(null);
+                  if (smDown) {
+                    setPopupDetection(sighting);
+                    setPopupFeed(null);
+                  }
                 },
               }}
             >
-              {/* <Tooltip
+              <Tooltip
                 className="custom-tooltip"
                 direction="top"
                 offset={[0, 0]}
@@ -356,13 +379,14 @@ export default function Map() {
                   dangerouslySetInnerHTML={{
                     __html: `
                   <strong>${sighting.name}</strong><br />
+                  ${timeAgo} ago<br />
                   ${sighting.created}<br />
                   ${sighting.comments}<br />
                   Hydrophone: ${sighting.hydrophone}
                   `,
                   }}
                 />
-              </Tooltip> */}
+              </Tooltip>
             </Marker>
           );
         })}
