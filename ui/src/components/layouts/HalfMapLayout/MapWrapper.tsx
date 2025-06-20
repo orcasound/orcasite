@@ -119,7 +119,9 @@ export function MapWrapper({
           <CloseIcon />
         </IconButton>
       )}
-      <MapWithNoSSR key={router.pathname} />
+      <MapWithNoSSR
+      // key={router.pathname}
+      />
     </Box>
   );
 }
