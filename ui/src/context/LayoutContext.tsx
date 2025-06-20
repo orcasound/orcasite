@@ -1,3 +1,5 @@
+import { Theme } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import {
   createContext,
   Dispatch,
@@ -15,22 +17,30 @@ type LayoutContextType = {
   setPlaybarExpanded: Dispatch<SetStateAction<boolean>>;
   mobileTab: number;
   setMobileTab: Dispatch<SetStateAction<number>>;
+  candidatePreview: boolean;
+  setCandidatePreview: Dispatch<SetStateAction<boolean>>;
 };
 
 const LayoutContext = createContext<LayoutContextType | null>(null);
 
 const alertHeight = "36px";
 const desktopHeaderHeight = "64px";
+const mobileHeaderHeight = "60px";
 const mobileMenuHeight = "69px";
 
 export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
   const [alertOpen, setAlertOpen] = useState<boolean>(true);
 
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const noAlertHeight = smDown ? mobileHeaderHeight : desktopHeaderHeight;
+
   const headerHeight = alertOpen
-    ? `calc(${alertHeight} + ${desktopHeaderHeight})`
-    : desktopHeaderHeight;
+    ? `calc(${alertHeight} + ${noAlertHeight})`
+    : noAlertHeight;
 
   const [playbarExpanded, setPlaybarExpanded] = useState(false);
+
+  const [candidatePreview, setCandidatePreview] = useState(true);
 
   // menuTab is the state of the mobile <MobileBottomNav>
   const [mobileTab, setMobileTab] = useState(0);
@@ -46,6 +56,8 @@ export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
         setPlaybarExpanded,
         mobileTab,
         setMobileTab,
+        candidatePreview,
+        setCandidatePreview,
       }}
     >
       {children}

@@ -18,6 +18,7 @@ import {
 import { useMap } from "react-leaflet";
 
 import { useData } from "@/context/DataContext";
+import { useLayout } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
@@ -181,6 +182,7 @@ export default function Map() {
     setNowPlayingCandidate,
   } = useNowPlaying();
   const { feeds, filteredData, autoPlayOnReady } = useData();
+  const { setPlaybarExpanded } = useLayout();
 
   const [popupFeed, setPopupFeed] = useState<Feed | null>(null);
   const [popupDetection, setPopupDetection] = useState<Sighting | null>(null);
@@ -332,7 +334,11 @@ export default function Map() {
                       // setPopupFeed(f);
                       // setPopupDetection(null);
                     } else {
-                      router.push(`/beta/${f.slug}/candidates`);
+                      if (smDown) {
+                        setPlaybarExpanded(true);
+                      } else {
+                        router.push(`/beta/${f.slug}/candidates`);
+                      }
                     }
                   }}
                 />

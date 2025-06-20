@@ -367,6 +367,7 @@ export default function AudioAnalyzer({
         justifyContent="space-between"
         alignItems="center"
         my={2.5}
+        px={"1rem"}
       >
         {/* <Box> */}
         {/* <Typography variant="overline" sx={{ fontSize: 18 }}>

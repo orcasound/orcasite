@@ -239,7 +239,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
         <Box
           className="now-playing-drawer"
           sx={{
-            px: mdDown ? "1rem" : "24px",
+            px: mdDown ? 0 : "24px",
             flex: 1,
             overflowY: "auto",
             position: "absolute",

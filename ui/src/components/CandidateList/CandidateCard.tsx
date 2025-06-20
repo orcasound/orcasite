@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
+import { useLayout } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Candidate, CombinedData } from "@/types/DataTypes";
 import formatDuration from "@/utils/masterDataHelpers";
@@ -45,6 +46,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     masterPlayerRef,
     masterPlayerStatus,
   } = useNowPlaying();
+  const { setPlaybarExpanded } = useLayout();
   const router = useRouter();
 
   const candidate = props.candidate;
@@ -131,7 +133,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const playIconDisabled = (
     <PlayCircle
       sx={{
-        opacity: 0,
+        opacity: 0.25,
         height: iconSize,
         width: iconSize,
         // marginRight: smDown ? "-8px" : "-4px",
@@ -192,6 +194,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                 autoPlayOnReady.current = false;
                 setNowPlayingCandidate(candidate);
                 setNowPlayingFeed(null);
+                setPlaybarExpanded(false);
               }}
               style={{
                 width: "100%",

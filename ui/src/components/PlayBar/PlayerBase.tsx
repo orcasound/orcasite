@@ -10,13 +10,14 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import dynamic from "next/dynamic";
-import { MutableRefObject, ReactNode, SetStateAction, useMemo } from "react";
+import { MutableRefObject, ReactNode, useMemo } from "react";
 
 import PlayBarPlayPauseButton from "@/components/PlayBar/CandidatePlayPauseButton";
 import { type PlayerStatus } from "@/components/Player/Player";
 import { VideoJSOptions } from "@/components/Player/VideoJS";
 import { type VideoJSPlayer } from "@/components/Player/VideoJS";
 import { useData } from "@/context/DataContext";
+import { useLayout } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 // import { useData } from "@/context/DataContext";
 import { Feed } from "@/graphql/generated";
@@ -45,7 +46,6 @@ type PlayerBaseProps = {
   image?: string | undefined;
   playerTitle: string | undefined; // change this to player title
   playerSubtitle: string | undefined; // change this to player subtitle
-  setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 
   // Feed only
   timestamp?: number | undefined;
@@ -82,7 +82,10 @@ export function PlayerBase({
 }: PlayerBaseProps) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const { nowPlayingCandidate, nowPlayingFeed } = useNowPlaying();
-  const { feeds, reportCount, filters } = useData();
+  const { reportCount, filters, feeds } = useData();
+  const { playbarExpanded, setPlaybarExpanded, setCandidatePreview } =
+    useLayout();
+
   const feedSlug = useMemo(() => {
     if (nowPlayingCandidate) {
       const feed =
@@ -182,9 +185,17 @@ export function PlayerBase({
                 )}
               </Box>
               <Link
-                href={href}
+                href={!smDown ? href : "#"}
+                onClick={(e) => {
+                  if (smDown) {
+                    e.preventDefault();
+                    setPlaybarExpanded(!playbarExpanded);
+                    setCandidatePreview(false);
+                  }
+                }}
                 sx={{
                   textDecoration: "none",
+                  flex: 1,
                   "&:hover": {
                     color: "text.primary",
                   },
@@ -230,7 +241,7 @@ export function PlayerBase({
                         `${listenerCount} listener${listenerCount !== 1 ? "s" : ""}`}
                       {type === "candidate" && " · " + duration}
                     </Typography>
-                    {!smDown && (
+                    {!smDown && nowPlayingFeed && (
                       <Typography sx={{ color: "text.secondary" }}>
                         {
                           timeRangeSelect.find(
@@ -261,7 +272,9 @@ export function PlayerBase({
                 <DetectionButton />
               </DetectionDialog>
             )}
-          {playerStatus !== "playing" && <DetectionButton disabled={true} />}
+          {playerStatus !== "playing" &&
+            playerStatus !== "loading" &&
+            nowPlayingFeed && <DetectionButton disabled={true} />}
         </Toolbar>
       </AppBar>
     </>

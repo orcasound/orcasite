@@ -2,9 +2,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Box, IconButton, Stack, Theme, useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useMemo } from "react";
 
+import { timeRangeSelect } from "@/components/CandidateList/CandidateListFilters";
 import PlayerTimeDisplay from "@/components/CandidateList/PlayerTimeDisplay";
+import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
 import { useComputedPlaybackFields } from "@/hooks/beta/useComputedPlaybackFields";
 import formatDuration from "@/utils/masterDataHelpers";
@@ -23,12 +25,12 @@ export function MapWrapper({
 }) {
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const {
-    // nowPlayingFeed,
     nowPlayingCandidate,
-    // setNowPlayingCandidate,
-    // setNowPlayingFeed,
+    nowPlayingFeed,
+    setNowPlayingCandidate,
+    setNowPlayingFeed,
   } = useNowPlaying();
-  // const { feeds } = useData();
+  const { filters, feeds } = useData();
   const router = useRouter();
   const { startOffset } = useComputedPlaybackFields(nowPlayingCandidate);
 
@@ -37,20 +39,20 @@ export function MapWrapper({
   const timestampSeconds = new Date(candidateStart).getTime() / 1000;
   const timeAgoString = formatDuration(timestampSeconds, currentTimeSeconds);
 
-  // const feed = useMemo(() => {
-  //   if (nowPlayingCandidate) {
-  //     const canFeed = feeds.find((f) => f.id === nowPlayingCandidate.feedId);
-  //     if (canFeed) {
-  //       return canFeed;
-  //     } else {
-  //       return null;
-  //     }
-  //   } else if (nowPlayingFeed) {
-  //     return nowPlayingFeed;
-  //   } else {
-  //     return null;
-  //   }
-  // }, [feeds, nowPlayingCandidate, nowPlayingFeed]);
+  const feed = useMemo(() => {
+    if (nowPlayingCandidate) {
+      const canFeed = feeds.find((f) => f.id === nowPlayingCandidate.feedId);
+      if (canFeed) {
+        return canFeed;
+      } else {
+        return null;
+      }
+    } else if (nowPlayingFeed) {
+      return nowPlayingFeed;
+    } else {
+      return null;
+    }
+  }, [feeds, nowPlayingCandidate, nowPlayingFeed]);
 
   return (
     <Box className={"map-wrapper"} sx={{ flexGrow: 1, position: "relative" }}>
@@ -68,68 +70,23 @@ export function MapWrapper({
           gap: "4px",
         }}
       >
-        {smDown && (
-          <Stack direction="row" gap=".5rem">
-            <Box
-              sx={{
-                width: "auto",
-                backgroundColor: "background.default",
-                marginBottom: "6px",
-                padding: "6px 12px",
-                borderRadius: "4px",
-                color: "primary.main",
-              }}
-            >
-              {nowPlayingCandidate ? timeAgoString + " ago" : "Last 7 days"}
-            </Box>
-            {false && (
-              <Box sx={{ display: "flex", gap: ".5rem" }}>
-                <Box
-                  sx={{
-                    width: "auto",
-                    backgroundColor: "primary.main",
-                    marginBottom: "6px",
-                    padding: "6px 12px",
-                    borderRadius: "4px",
-                    color: "background.default",
-                    border: "1px solid",
-                    borderColor: "primary.dark",
-                  }}
-                >
-                  Whale
-                </Box>
-                <Box
-                  sx={{
-                    width: "auto",
-                    backgroundColor: "primary.main",
-                    marginBottom: "6px",
-                    padding: "6px 12px",
-                    borderRadius: "4px",
-                    color: "background.default",
-                    border: "1px solid",
-                    borderColor: "primary.dark",
-                  }}
-                >
-                  Vessel
-                </Box>
-                <Box
-                  sx={{
-                    width: "auto",
-                    backgroundColor: "primary.main",
-                    marginBottom: "6px",
-                    padding: "6px 12px",
-                    borderRadius: "4px",
-                    color: "background.default",
-                    border: "1px solid",
-                    borderColor: "primary.dark",
-                  }}
-                >
-                  Other
-                </Box>
-              </Box>
-            )}
-          </Stack>
-        )}
+        <Stack direction="row" gap=".5rem">
+          <Box
+            sx={{
+              width: "auto",
+              backgroundColor: "background.default",
+              marginBottom: "6px",
+              padding: "6px 12px",
+              borderRadius: "4px",
+              color: "primary.main",
+            }}
+          >
+            {nowPlayingCandidate
+              ? timeAgoString + " ago"
+              : timeRangeSelect.find((el) => el.value === filters.timeRange)
+                  ?.label}
+          </Box>
+        </Stack>
         {nowPlayingCandidate && (
           <PlayerTimeDisplay
             masterPlayerTimeRef={masterPlayerTimeRef}
@@ -138,14 +95,14 @@ export function MapWrapper({
         )}
       </Box>
 
-      {nowPlayingCandidate && (
+      {smDown && nowPlayingCandidate && (
         <IconButton
           aria-label="close"
           className="candidate-map-close"
           onClick={() => {
-            router.back();
-            // setNowPlayingFeed(feed);
-            // setNowPlayingCandidate(null);
+            // router.back();
+            setNowPlayingFeed(feed);
+            setNowPlayingCandidate(null);
           }}
           sx={{
             position: "absolute",
@@ -154,6 +111,9 @@ export function MapWrapper({
             color: (theme) => theme.palette.grey[500],
             background: (theme) => theme.palette.background.default,
             zIndex: (theme) => theme.zIndex.drawer + 1,
+            "&:hover": {
+              background: (theme) => theme.palette.background.default,
+            },
           }}
         >
           <CloseIcon />

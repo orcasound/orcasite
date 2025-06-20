@@ -19,7 +19,15 @@ import { useNowPlaying } from "@/context/NowPlayingContext";
 import { Feed } from "@/graphql/generated";
 import darkTheme from "@/styles/darkTheme";
 
-const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
+const HydrophoneDetailTabs = ({
+  children,
+  feed,
+  drawer = false,
+}: {
+  children: ReactNode;
+  feed?: Feed;
+  drawer?: boolean;
+}) => {
   const router = useRouter();
   const { feedSlug } = router.query;
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
@@ -33,8 +41,12 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
     masterPlayerRef,
     masterPlayerStatus,
   } = useNowPlaying();
+
   const { feeds, filters, autoPlayOnReady } = useData();
-  const feed = feeds.find((feed) => feed.slug === feedSlug);
+
+  if (!feed && feedSlug) {
+    feed = feeds.find((feed) => feed.slug === feedSlug);
+  }
 
   // const isCandidateDetail =
   //   !!router.query.feedSlug && !!router.query.candidateId;
@@ -77,15 +89,17 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
     >
       {tabs.map((tab) => {
         const tabSlug = tab.slug;
-        const active = isIndexPage
-          ? tabSlug === ""
-          : isCandidatePage
-            ? tabSlug === "candidates"
-            : tabPage === tabSlug;
+        const active = drawer
+          ? tabSlug === "candidates"
+          : isIndexPage
+            ? tabSlug === ""
+            : isCandidatePage
+              ? tabSlug === "candidates"
+              : tabPage === tabSlug;
         return (
           <Link
             key={tab.title}
-            href={`/beta/${feedSlug}/${tabSlug}`}
+            href={feed ? `/beta/${feed.slug}/${tabSlug}` : "#"}
             style={{
               color: active
                 ? darkTheme.palette.text.primary
@@ -162,31 +176,35 @@ const HydrophoneDetailTabs = ({ children }: { children: ReactNode }) => {
             zIndex: 0,
           }}
         />
-        <Link
-          href={smDown ? "#" : href}
-          onClick={(e) => {
-            if (smDown) {
-              e.preventDefault();
-              router.back();
-            }
-            if (feed) {
-              setNowPlayingFeed(feed);
-              setNowPlayingCandidate(null);
-            }
-          }}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            textDecoration: "none",
-            lineHeight: 1,
-            color: theme.palette.common.white,
-            zIndex: 1,
-            position: "relative",
-          }}
-        >
-          <ArrowBackIos />
-        </Link>
+        {!drawer ? (
+          <Link
+            href={smDown ? "#" : href}
+            onClick={(e) => {
+              if (smDown) {
+                e.preventDefault();
+                router.back();
+              }
+              if (feed) {
+                setNowPlayingFeed(feed);
+                setNowPlayingCandidate(null);
+              }
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              textDecoration: "none",
+              lineHeight: 1,
+              color: theme.palette.common.white,
+              zIndex: 1,
+              position: "relative",
+            }}
+          >
+            <ArrowBackIos />
+          </Link>
+        ) : (
+          <Box></Box>
+        )}
         <Box
           sx={{
             width: "100%",

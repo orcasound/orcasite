@@ -11,7 +11,7 @@ export default function Footer({
 }) {
   // const mdDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-  const { mobileMenuHeight, setPlaybarExpanded } = useLayout();
+  const { mobileMenuHeight } = useLayout();
 
   return (
     <Stack
@@ -42,10 +42,7 @@ export default function Footer({
           mb: smDown ? "2px" : "2rem",
         }}
       >
-        <PlayBar
-          masterPlayerTimeRef={masterPlayerTimeRef}
-          setPlaybarExpanded={setPlaybarExpanded}
-        />
+        <PlayBar masterPlayerTimeRef={masterPlayerTimeRef} />
       </Box>
     </Stack>
   );

@@ -3,7 +3,6 @@ import "videojs-offset";
 import {
   MutableRefObject,
   ReactNode,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -37,7 +36,6 @@ export function CandidatePlayer({
   onAudioPlay,
   onPlay,
   masterPlayerTimeRef,
-  setPlaybarExpanded,
 }: {
   clipDateTime?: string;
   clipNode?: string;
@@ -52,7 +50,6 @@ export function CandidatePlayer({
   onPlayerInit?: (player: VideoJSPlayer) => void;
   onPlay?: () => void;
   masterPlayerTimeRef?: MutableRefObject<number>;
-  setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 }) {
   const {
     masterPlayerRef,
@@ -220,7 +217,6 @@ export function CandidatePlayer({
       playerTime={playerTime}
       onAudioPlay={onAudioPlay}
       handlePlayPauseClickCandidate={handlePlayPauseClick}
-      setPlaybarExpanded={setPlaybarExpanded}
     />
   );
 }

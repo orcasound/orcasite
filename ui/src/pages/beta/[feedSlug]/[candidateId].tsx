@@ -41,7 +41,12 @@ const CandidatePage: NextPageWithLayout = () => {
 
   const { setNowPlayingCandidate, setNowPlayingFeed } = useNowPlaying();
   const { filteredData, sortedCandidates } = useData();
-  const { playbarExpanded, setPlaybarExpanded, setMobileTab } = useLayout();
+  const {
+    playbarExpanded,
+    setPlaybarExpanded,
+    setMobileTab,
+    setCandidatePreview,
+  } = useLayout();
 
   const feed = feeds?.find((f) => f.slug === feedSlug) || ({} as Feed);
 
@@ -129,7 +134,7 @@ const CandidatePage: NextPageWithLayout = () => {
         maxWidth="xl"
         sx={{
           p: 2,
-          pb: 6,
+          pb: 14,
         }}
       >
         <Box>
@@ -204,6 +209,7 @@ const CandidatePage: NextPageWithLayout = () => {
                 variant="contained"
                 onClick={() => {
                   setPlaybarExpanded(!playbarExpanded);
+                  setCandidatePreview(false);
                 }}
                 sx={{
                   width: "100%",

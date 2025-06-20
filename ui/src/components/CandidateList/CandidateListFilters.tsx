@@ -181,6 +181,7 @@ const CandidateListFilters = ({
               <Tune
                 sx={{
                   color: showFilters ? "background.paper" : "text.primary",
+                  minWidth: 0,
                 }}
               />
             }

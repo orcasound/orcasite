@@ -1,5 +1,5 @@
 import { Tooltip } from "@mui/material";
-import React, { MutableRefObject, SetStateAction, useMemo } from "react";
+import React, { MutableRefObject, useMemo } from "react";
 
 import { useData } from "@/context/DataContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
@@ -12,10 +12,8 @@ import LivePlayer from "./LivePlayer";
 
 export default function PlayBar({
   masterPlayerTimeRef,
-  setPlaybarExpanded,
 }: {
   masterPlayerTimeRef?: MutableRefObject<number>;
-  setPlaybarExpanded: React.Dispatch<SetStateAction<boolean>>;
 }) {
   // const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
@@ -134,15 +132,9 @@ export default function PlayBar({
           clipNode={hydrophone || ""}
           marks={marks}
           masterPlayerTimeRef={masterPlayerTimeRef}
-          setPlaybarExpanded={setPlaybarExpanded}
         />
       )}
-      {nowPlayingFeed && (
-        <LivePlayer
-          currentFeed={nowPlayingFeed}
-          setPlaybarExpanded={setPlaybarExpanded}
-        />
-      )}
+      {nowPlayingFeed && <LivePlayer currentFeed={nowPlayingFeed} />}
     </>
   );
 }
