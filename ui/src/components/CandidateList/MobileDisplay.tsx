@@ -37,18 +37,16 @@ export function MobileDisplay({ masterPlayerTimeRef }: Props) {
 
   return (
     <>
-      {mobileTab === 0 && (
-        <Box
-          className={"tab-content"}
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexFlow: "column",
-          }}
-        >
-          <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
-        </Box>
-      )}
+      <Box
+        className={"map-tab-content"}
+        sx={{
+          flex: 1,
+          display: mobileTab === 0 ? "flex" : "none",
+          flexFlow: "column",
+        }}
+      >
+        <MapWrapper masterPlayerTimeRef={masterPlayerTimeRef} />
+      </Box>
       {mobileTab === 1 && (
         <>
           <MobileTabs tabValue={tabValue} setTabValue={setTabValue} />

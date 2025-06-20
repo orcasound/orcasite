@@ -1,7 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, IconButton, Stack, Theme, useMediaQuery } from "@mui/material";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 
 import { timeRangeSelect } from "@/components/CandidateList/CandidateListFilters";
@@ -31,7 +30,6 @@ export function MapWrapper({
     setNowPlayingFeed,
   } = useNowPlaying();
   const { filters, feeds } = useData();
-  const router = useRouter();
   const { startOffset } = useComputedPlaybackFields(nowPlayingCandidate);
 
   const candidateStart = nowPlayingCandidate?.startTimestamp ?? "";
