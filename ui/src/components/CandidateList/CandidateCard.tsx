@@ -11,6 +11,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 import Link from "@/components/Link";
 import { useData } from "@/context/DataContext";
@@ -157,6 +158,23 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const timestampSeconds = new Date(candidate.startTimestamp).getTime() / 1000;
   const timeAgoString = formatDuration(timestampSeconds, currentTimeSeconds);
 
+  const scrollBox = document.querySelector(".mobile-view");
+  const sideList = document.querySelector(".side-list");
+
+  useEffect(() => {
+    const scrollBoxY = sessionStorage.getItem("scrollBox");
+    const sideListY = sessionStorage.getItem("sideList"); // revisit - not working on desktop for some reason
+
+    if (scrollBoxY) {
+      scrollBox?.scrollTo(0, parseInt(scrollBoxY));
+      sessionStorage.removeItem("scrollBox");
+    }
+    if (sideListY) {
+      sideList?.scrollTo(0, parseInt(sideListY));
+      sessionStorage.removeItem("sideList");
+    }
+  }, [scrollBox, sideList]);
+
   return (
     <Card
       key={candidate.id}
@@ -196,6 +214,11 @@ export default function CandidateCard(props: { candidate: Candidate }) {
                 setNowPlayingCandidate(candidate);
                 setNowPlayingFeed(null);
                 setPlaybarExpanded(false);
+                sessionStorage.setItem(
+                  "scrollBox",
+                  String(scrollBox?.scrollTop),
+                );
+                sessionStorage.setItem("sideList", String(sideList?.scrollTop));
               }}
               style={{
                 width: "100%",

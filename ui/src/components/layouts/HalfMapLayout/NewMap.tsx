@@ -321,21 +321,28 @@ export default function Map() {
                   center={f.latLng}
                   count={audioReportsThisFeed + sightingsThisFeed}
                   onClick={() => {
-                    if (nowPlayingCandidate) {
-                      router.push(`/beta/${f.slug}/candidates`);
-                    } else if (f.id !== nowPlayingFeed?.id) {
+                    // if (nowPlayingCandidate) {
+                    //   router.push(`/beta/${f.slug}/candidates`);
+                    // } else if (f.id !== nowPlayingFeed?.id) {
+                    //   autoPlayOnReady.current = false;
+                    //   setNowPlayingFeed(f);
+                    //   setNowPlayingCandidate(null);
+                    //   // setPopupFeed(f);
+                    //   // setPopupDetection(null);
+                    // } else {
+                    if (smDown && f.id === nowPlayingFeed?.id) {
+                      setPlaybarExpanded(true);
+                    } else if (smDown) {
                       autoPlayOnReady.current = false;
                       setNowPlayingFeed(f);
                       setNowPlayingCandidate(null);
-                      // setPopupFeed(f);
-                      // setPopupDetection(null);
                     } else {
-                      if (smDown) {
-                        setPlaybarExpanded(true);
-                      } else {
-                        router.push(`/beta/${f.slug}/candidates`);
-                      }
+                      router.push(`/beta/${f.slug}/candidates`);
+                      autoPlayOnReady.current = false;
+                      setNowPlayingFeed(f);
+                      setNowPlayingCandidate(null);
                     }
+                    // }
                   }}
                 />
               )}

@@ -177,11 +177,11 @@ const CandidateListFilters = ({
         )}
         {showFilterButton && (
           <Button
+            sx={{ minWidth: "auto" }}
             startIcon={
               <Tune
                 sx={{
                   color: showFilters ? "background.paper" : "text.primary",
-                  minWidth: 0,
                 }}
               />
             }
