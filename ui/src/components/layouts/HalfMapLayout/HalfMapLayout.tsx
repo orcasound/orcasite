@@ -247,7 +247,12 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             left: 0,
             width: smDown ? "100%" : "75%",
             borderRight: "1px solid rgba(255,255,255,.5)",
-            height: playbarExpanded ? `calc(100vh - ${headerHeight})` : 0,
+            height:
+              smDown && playbarExpanded
+                ? `calc(100vh)`
+                : playbarExpanded
+                  ? `calc(100vh - ${headerHeight})`
+                  : 0,
             backgroundColor: "background.default",
             zIndex: (theme) => theme.zIndex.drawer + 1,
             transition: "height .66s ease",

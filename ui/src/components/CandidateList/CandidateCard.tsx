@@ -46,7 +46,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
     masterPlayerRef,
     masterPlayerStatus,
   } = useNowPlaying();
-  const { setPlaybarExpanded } = useLayout();
+  const { setPlaybarExpanded, setCandidatePreview } = useLayout();
   const router = useRouter();
 
   const candidate = props.candidate;
@@ -98,6 +98,7 @@ export default function CandidateCard(props: { candidate: Candidate }) {
   const href = feedDetailCandidateHref;
 
   const handlePlay = (candidate: Candidate) => {
+    setCandidatePreview(true);
     autoPlayOnReady.current = true;
     setNowPlayingCandidate(candidate);
     setNowPlayingFeed(null);

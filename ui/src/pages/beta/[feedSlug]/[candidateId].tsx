@@ -141,11 +141,7 @@ const CandidatePage: NextPageWithLayout = () => {
           {" "}
           {smDown && (
             <Link
-              href={"#"}
-              onClick={(e) => {
-                e.preventDefault();
-                router.back();
-              }}
+              href={"/beta/candidates"}
               style={{
                 display: "flex",
                 alignItems: "center",

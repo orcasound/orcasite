@@ -72,13 +72,13 @@ export default function PlayerDetail() {
       {nowPlayingCandidate && !candidatePreview && (
         <AudioAnalyzer isNew={false} bout={bout} feed={portTownsend} />
       )}
-      {/* {nowPlayingFeed && candidatePreview && ( */}
-      <>
-        <HydrophoneDetailTabs drawer={true} feed={feed}>
-          <CandidatesStack feed={feed} showChart={true} />
-        </HydrophoneDetailTabs>
-      </>
-      {/* )} */}
+      {(nowPlayingFeed || (nowPlayingCandidate && candidatePreview)) && (
+        <>
+          <HydrophoneDetailTabs drawer={true} feed={feed}>
+            <CandidatesStack feed={feed} showChart={true} />
+          </HydrophoneDetailTabs>
+        </>
+      )}
     </>
   );
 }

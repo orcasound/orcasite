@@ -4,10 +4,12 @@ import { useRouter } from "next/router";
 import React from "react";
 
 import { useLayout } from "@/context/LayoutContext";
+import { useNowPlaying } from "@/context/NowPlayingContext";
 
 export function MobileBottomNav() {
   const router = useRouter();
   const { mobileTab, setMobileTab } = useLayout();
+  const { setNowPlayingCandidate } = useNowPlaying();
 
   return (
     <BottomNavigation
@@ -37,7 +39,10 @@ export function MobileBottomNav() {
       <BottomNavigationAction
         label="Map"
         icon={<Map />}
-        onClick={() => router.push("/beta")}
+        onClick={() => {
+          router.push("/beta");
+          setNowPlayingCandidate(null);
+        }}
       />
       <BottomNavigationAction
         label="Hydrophones"

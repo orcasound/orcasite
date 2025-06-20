@@ -7,7 +7,7 @@ import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
 import { LatLngExpression } from "leaflet";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -20,13 +20,9 @@ import { useMap } from "react-leaflet";
 import { useData } from "@/context/DataContext";
 import { useLayout } from "@/context/LayoutContext";
 import { useNowPlaying } from "@/context/NowPlayingContext";
-import { Feed } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
-import { Sighting } from "@/types/DataTypes";
 import formatDuration from "@/utils/masterDataHelpers";
-
-import MapPopup from "./MapPopup";
 
 function LeafletTooltipGlobalStyles() {
   return (
@@ -162,17 +158,17 @@ function ReportCount({
   return null;
 }
 
-function MapClickHandler({ onClick }: { onClick: () => void }) {
-  const map = useMap();
-  useEffect(() => {
-    map.on("click", onClick);
-    return () => {
-      map.off("click", onClick);
-    };
-  }, [map, onClick]);
+// function MapClickHandler({ onClick }: { onClick: () => void }) {
+//   const map = useMap();
+//   useEffect(() => {
+//     map.on("click", onClick);
+//     return () => {
+//       map.off("click", onClick);
+//     };
+//   }, [map, onClick]);
 
-  return null;
-}
+//   return null;
+// }
 
 export default function Map() {
   const {
@@ -184,24 +180,24 @@ export default function Map() {
   const { feeds, filteredData, autoPlayOnReady } = useData();
   const { setPlaybarExpanded } = useLayout();
 
-  const [popupFeed, setPopupFeed] = useState<Feed | null>(null);
-  const [popupDetection, setPopupDetection] = useState<Sighting | null>(null);
+  // const [popupFeed, setPopupFeed] = useState<Feed | null>(null);
+  // const [popupDetection, setPopupDetection] = useState<Sighting | null>(null);
 
   // close the popup when the feedSlug changes
   const router = useRouter();
-  const previousFeedSlugRef = useRef<string | string[] | undefined>();
+  // const previousFeedSlugRef = useRef<string | string[] | undefined>();
 
-  useEffect(() => {
-    const currentFeedSlug = router.query.feedSlug;
+  // useEffect(() => {
+  //   const currentFeedSlug = router.query.feedSlug;
 
-    // Run effect only if feedSlug changed
-    if (previousFeedSlugRef.current !== currentFeedSlug) {
-      previousFeedSlugRef.current = currentFeedSlug;
+  //   // Run effect only if feedSlug changed
+  //   if (previousFeedSlugRef.current !== currentFeedSlug) {
+  //     previousFeedSlugRef.current = currentFeedSlug;
 
-      setPopupDetection(null);
-      setPopupFeed(null);
-    }
-  }, [router.query.feedSlug]);
+  //     setPopupDetection(null);
+  //     setPopupFeed(null);
+  //   }
+  // }, [router.query.feedSlug]);
 
   const reports = useMemo(() => {
     // show all reports in filter range for live player view
@@ -290,13 +286,13 @@ export default function Map() {
         />
         <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}" />
         <MapUpdater center={latLng} zoom={zoom} />
-        <MapClickHandler
+        {/* <MapClickHandler
           onClick={() => {
             // close popup when clicking on the map
             setPopupFeed(null);
             setPopupDetection(null);
           }}
-        />
+        /> */}
         {feeds?.map((f) => {
           const audioReportsThisFeed = audioReports.filter(
             (d) => d.feedId === f?.id,
@@ -365,14 +361,14 @@ export default function Map() {
               zIndexOffset={0}
               position={[sighting.latitude, sighting.longitude]}
               opacity={inRange ? 1 : 0.33}
-              eventHandlers={{
-                click: () => {
-                  if (smDown) {
-                    setPopupDetection(sighting);
-                    setPopupFeed(null);
-                  }
-                },
-              }}
+              // eventHandlers={{
+              //   click: () => {
+              //     if (smDown) {
+              //       setPopupDetection(sighting);
+              //       setPopupFeed(null);
+              //     }
+              //   },
+              // }}
             >
               <Tooltip
                 className="custom-tooltip"
@@ -398,7 +394,7 @@ export default function Map() {
         })}
       </MapContainer>
 
-      {(popupFeed || popupDetection) && (
+      {/* {(popupFeed || popupDetection) && (
         <MapPopup
           sighting={popupDetection}
           feed={popupFeed}
@@ -407,7 +403,7 @@ export default function Map() {
             setPopupFeed(null);
           }}
         />
-      )}
+      )} */}
     </>
   );
 }

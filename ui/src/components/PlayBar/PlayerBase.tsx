@@ -189,8 +189,8 @@ export function PlayerBase({
                 onClick={(e) => {
                   if (smDown) {
                     e.preventDefault();
+                    setCandidatePreview(nowPlayingCandidate ? false : true);
                     setPlaybarExpanded(!playbarExpanded);
-                    setCandidatePreview(false);
                   }
                 }}
                 sx={{
