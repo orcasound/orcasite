@@ -137,6 +137,7 @@ defmodule Orcasite.Radio.Bout do
       require_atomic? false
 
       change debug_log()
+
       change fn changeset, _ ->
         end_time = Ash.Changeset.get_argument_or_attribute(changeset, :end_time)
         start_time = Ash.Changeset.get_argument_or_attribute(changeset, :start_time)
@@ -166,6 +167,17 @@ defmodule Orcasite.Radio.Bout do
     mutations do
       create :create_bout, :create
       update :update_bout, :update
+    end
+  end
+
+  json_api do
+    type "bout"
+
+    includes [:feed, :tags]
+
+    routes do
+      base "/bouts"
+      index :index
     end
   end
 end
