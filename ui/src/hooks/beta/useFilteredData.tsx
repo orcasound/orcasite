@@ -28,8 +28,10 @@ export default function useFilteredData(
           el.hydrophone === filters.hydrophone) &&
         (filters.category === "All categories" ||
           el.newCategory.toLowerCase() === filters.category ||
-          (filters.category === "whale + whale (ai)" &&
-            ["whale", "whale (ai)"].includes(el.newCategory.toLowerCase()))) &&
+          (filters.category === "whale + whale (ai) + sightings" &&
+            ["whale", "whale (ai)", "sighting"].includes(
+              el.newCategory.toLowerCase(),
+            ))) &&
         (filters.timeRange === allTime ||
           filters.timeRange === customRange ||
           Date.parse(el.timestampString) >= min) &&

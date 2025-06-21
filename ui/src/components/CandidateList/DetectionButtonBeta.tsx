@@ -29,6 +29,7 @@ export default function DetectionButton({
         // style to look like outlined button
         backgroundColor: disabled ? "rgba(255,255,255,.25)" : "primary.main",
         color: "base.main",
+        borderRadius: "8px",
         // borderColor: "primary.main",
         // borderStyle: "solid",
         // borderWidth: "2px",

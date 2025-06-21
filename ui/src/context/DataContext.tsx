@@ -26,6 +26,7 @@ export interface CandidateFilters {
   sortOrder: "asc" | "desc";
   searchQuery: string;
   chartLegend: "category" | "hydrophone";
+  detectionsGreaterThan: number;
 }
 
 type FeedCountData = {
@@ -35,7 +36,7 @@ type FeedCountData = {
 };
 
 type FeedCounts = {
-  [feed: string]: FeedCountData;
+  [feedId: string]: FeedCountData;
 };
 interface DataContextType {
   feeds: Feed[];
@@ -73,6 +74,7 @@ export const DataProvider = ({
     sortOrder: "desc",
     searchQuery: "",
     chartLegend: "category",
+    detectionsGreaterThan: 1,
   });
 
   const filteredData = useFilteredData(data.combined, filters);
@@ -112,6 +114,7 @@ export const DataProvider = ({
     filteredData,
     filters.timeIncrement,
     filters.sortOrder,
+    filters.detectionsGreaterThan,
   );
 
   const reportCounter = (
@@ -130,9 +133,9 @@ export const DataProvider = ({
       }
     });
 
-    for (const feed in obj) {
+    for (const feedId in obj) {
       categories.forEach((c) => {
-        obj[feed]["counts"][c] = 0;
+        obj[feedId]["counts"][c] = 0;
       });
     }
 

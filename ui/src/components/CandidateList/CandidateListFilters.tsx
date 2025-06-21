@@ -44,6 +44,10 @@ export const timeRangeSelect = [
 
 const timeIncrementSelect = [
   {
+    label: "Group reports within 5 min",
+    value: 5,
+  },
+  {
     label: "Group reports within 15 min",
     value: 15,
   },
@@ -83,12 +87,35 @@ const categorySelect = [
     value: "whale (ai)",
   },
   {
-    label: "Whale + Whale (AI)",
-    value: "whale + whale (ai)",
+    label: "Whale + Whale (AI) + Sightings",
+    value: "whale + whale (ai) + sightings",
   },
   {
     label: "Sightings",
-    value: "sightings",
+    value: "sighting",
+  },
+];
+
+const numberDetectionsSelect = [
+  {
+    label: "1+ detections",
+    value: 1,
+  },
+  {
+    label: "2+ detections",
+    value: 2,
+  },
+  {
+    label: "3+ detections",
+    value: 3,
+  },
+  {
+    label: "4+ detections",
+    value: 4,
+  },
+  {
+    label: "5+ detections",
+    value: 5,
   },
 ];
 
@@ -221,12 +248,12 @@ const CandidateListFilters = ({
           sx={{ maxWidth: "100%" }}
         >
           <SearchBar />
-          <ChartSelect
+          {/* <ChartSelect
             name={"hydrophone"}
             value={filters.hydrophone}
             list={feedList}
             onChange={handleChange}
-          />
+          /> */}
           <ChartSelect
             name={"category"}
             value={filters.category}
@@ -237,6 +264,12 @@ const CandidateListFilters = ({
             name={"timeIncrement"}
             value={filters.timeIncrement}
             list={timeIncrementSelect}
+            onChange={handleChange}
+          />
+          <ChartSelect
+            name={"detectionsGreaterThan"}
+            value={filters.detectionsGreaterThan}
+            list={numberDetectionsSelect}
             onChange={handleChange}
           />
         </Stack>

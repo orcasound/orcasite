@@ -156,15 +156,28 @@ const sortCandidates = (candidates: Candidate[], sortOrder: string) => {
   return sorted;
 };
 
+const filterGreaterThan = (
+  array: Candidate[],
+  detectionsGreaterThan: number,
+) => {
+  return array.filter((c) => {
+    const detectionCount =
+      c.whale + c.vessel + c.other + c["whale (AI)"] + c.sightings;
+    return detectionCount >= detectionsGreaterThan;
+  });
+};
+
 export function useSortedCandidates(
   rawData: CombinedData[],
   timeIncrement: number,
   sortOrder: string,
+  detectionsGreaterThan: number,
 ): Candidate[] {
   return useMemo(() => {
     const inRange = rawData.filter((d) => d.hydrophone !== "out of range");
     const created = createCandidates(inRange, timeIncrement);
     const sorted = sortCandidates(created, sortOrder);
-    return sorted;
-  }, [rawData, timeIncrement, sortOrder]);
+    const filtered = filterGreaterThan(sorted, detectionsGreaterThan);
+    return filtered;
+  }, [rawData, timeIncrement, sortOrder, detectionsGreaterThan]);
 }

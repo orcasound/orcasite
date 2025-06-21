@@ -249,7 +249,7 @@ function HalfMapLayout({ children }: { children: ReactNode }) {
             borderRight: "1px solid rgba(255,255,255,.5)",
             height:
               smDown && playbarExpanded
-                ? `calc(100vh)`
+                ? `calc(100vh)` // height calc gets complex on mobile due to browser bar
                 : playbarExpanded
                   ? `calc(100vh - ${headerHeight})`
                   : 0,
