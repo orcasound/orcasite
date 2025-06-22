@@ -68,6 +68,26 @@ const DetectionsPage: NextPageWithLayout = () => {
         <h1>Reports</h1>
 
         <Paper elevation={1} sx={{ overflow: "auto" }}>
+          <TablePagination
+            component="div"
+            count={candidatesQuery.data?.candidates?.count || 0}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={(e, pg) => {
+              setPage(pg);
+            }}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(Number(e.target.value));
+            }}
+            rowsPerPageOptions={[10, 50, 100, 1000]}
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          />
           <Table>
             <TableHead>
               <TableRow>
