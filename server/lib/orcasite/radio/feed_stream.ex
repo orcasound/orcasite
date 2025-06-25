@@ -319,16 +319,18 @@ defmodule Orcasite.Radio.FeedStream do
       skip_unknown_inputs :*
 
       accept [
-        :start_time,
-        :end_time,
-        :duration,
-        :bucket,
-        :bucket_region,
-        :cloudfront_url,
-        :playlist_path,
-        :playlist_timestamp,
-        :playlist_m3u8_path
-      ]
+               :start_time,
+               :end_time,
+               :duration,
+               :bucket,
+               :bucket_region,
+               :cloudfront_url,
+               :playlist_path,
+               :playlist_timestamp,
+               :playlist_m3u8_path,
+               if(Orcasite.Config.seeding_enabled?(), do: :id)
+             ]
+             |> Enum.reject(&is_nil/1)
 
       upsert_fields [
         :start_time,

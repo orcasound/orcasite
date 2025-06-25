@@ -191,20 +191,21 @@ defmodule Orcasite.Radio.Feed do
       upsert_identity :unique_slug
 
       accept [
-        :id,
-        :name,
-        :node_name,
-        :slug,
-        :intro_html,
-        :image_url,
-        :visible,
-        :bucket,
-        :bucket_region,
-        :cloudfront_url,
-        :dataplicity_id,
-        :orcahello_id,
-        :location_point
-      ]
+               :name,
+               :node_name,
+               :slug,
+               :intro_html,
+               :image_url,
+               :visible,
+               :bucket,
+               :bucket_region,
+               :cloudfront_url,
+               :dataplicity_id,
+               :orcahello_id,
+               :location_point,
+               if(Orcasite.Config.seeding_enabled?(), do: :id)
+             ]
+             |> Enum.reject(&is_nil/1)
 
       upsert_fields [
         :name,

@@ -167,17 +167,19 @@ defmodule Orcasite.Radio.FeedSegment do
       ]
 
       accept [
-        :start_time,
-        :end_time,
-        :duration,
-        :bucket,
-        :bucket_region,
-        :cloudfront_url,
-        :playlist_timestamp,
-        :playlist_m3u8_path,
-        :playlist_path,
-        :file_name
-      ]
+               :start_time,
+               :end_time,
+               :duration,
+               :bucket,
+               :bucket_region,
+               :cloudfront_url,
+               :playlist_timestamp,
+               :playlist_m3u8_path,
+               :playlist_path,
+               :file_name,
+               if(Orcasite.Config.seeding_enabled?(), do: :id)
+             ]
+             |> Enum.reject(&is_nil/1)
 
       argument :feed, :map, allow_nil?: false
       argument :feed_stream, :map
