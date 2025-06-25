@@ -41,7 +41,7 @@ defmodule Orcasite.Radio.Seed do
              where: absent(:limit)
 
     validate fn _change, _context ->
-      if Application.get_env(:orcasite, :enable_prod_seed) do
+      if Application.get_env(:orcasite, :enable_seed_from_prod) do
         :ok
       else
         {:error, message: "Seeding is disabled (this is likely the production server already)"}
@@ -202,7 +202,7 @@ defmodule Orcasite.Radio.Seed do
   end
 
   oban do
-    if Application.compile_env(:orcasite, :enable_prod_seed, false) do
+    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
       scheduled_actions do
         # Every 5 minutes, pull the last 6 minutes of data
         schedule :sync, "*/5 * * * *" do
