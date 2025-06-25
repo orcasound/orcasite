@@ -222,8 +222,8 @@ export default function FeedItem({
                 display="flex"
                 justifyContent="space-between"
               >
-                {categories.map((cat, i) => (
-                  <Typography key={i} component="div" mr={3}>
+                {categories.map((cat) => (
+                  <Typography key={cat} component="div" mr={3}>
                     {
                       recentDetections.filter(
                         ({ category }) => cat === category,
