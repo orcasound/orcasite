@@ -119,6 +119,11 @@ config :spark, :formatter,
 config :ex_aws,
   region: "us-west-2"
 
+# TODO: Remove this and update the magic link `require_interactin?` flags. Just need to verify
+# the unsubscribe magic links in Subscriber and Subscription pages have button copy that makes
+# sense (i.e. "Unsubscribe").
+config :ash_authentication, :bypass_require_interaction_for_magic_link?, true
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
