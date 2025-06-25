@@ -118,7 +118,7 @@ config :orcasite,
 
 # Disable these by copying them to dev.secret.exs and setting them to false
 config :orcasite, enable_seed_from_prod: true
-config :orcasite, delete_old_seeded_records: true
+config :orcasite, auto_delete_seeded_records: true
 
 config :orcasite, :env, :dev
 
