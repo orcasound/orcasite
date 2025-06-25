@@ -56,7 +56,7 @@ config :ex_aws,
 config :orcasite, :env, :test
 
 config :orcasite, enable_seed_from_prod: false
-config :orcasite, delete_old_seeded_records: false
+config :orcasite, auto_delete_seeded_records: false
 
 if __DIR__ |> Path.join("test.secret.exs") |> File.exists?() do
   import_config("test.secret.exs")
