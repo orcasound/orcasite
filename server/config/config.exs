@@ -124,7 +124,7 @@ config :orcasite,
   enable_prod_seed: System.get_env("ENABLE_PROD_SEED", "false") == "true"
 
 config :orcasite,
-  delete_old_seeded_records: System.get_env("DELETE_OLD_SEEDED_RECORDS", "false") == "true"
+  auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "false") == "true"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
