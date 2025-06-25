@@ -65,6 +65,7 @@ defmodule Orcasite.Notifications.Subscriber do
     tokens do
       enabled? true
       token_resource Orcasite.Notifications.Token
+      require_token_presence_for_authentication? true
 
       signing_secret fn _, _ ->
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
