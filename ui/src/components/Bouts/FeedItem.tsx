@@ -248,7 +248,7 @@ export default function FeedItem({
               </Typography>
               <Typography display="flex" alignItems="center" fontSize={14}>
                 <Person sx={{ mr: 1, color: "accent2.main" }} />
-                {listenerCount === undefined ? "-" : listenerCount}
+                {listenerCount ?? "-"}
               </Typography>
             </Box>
           </Box>
