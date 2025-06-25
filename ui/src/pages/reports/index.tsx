@@ -48,9 +48,10 @@ const DetectionsPage: NextPageWithLayout = () => {
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
   // TODO: Filter by feed
+  const offset = page * rowsPerPage;
   const candidatesQuery = useCandidatesQuery({
     limit: rowsPerPage,
-    offset: page * rowsPerPage,
+    offset: offset,
     sort: [{ field: "MIN_TIME", order: "DESC" }],
   });
 
@@ -66,31 +67,34 @@ const DetectionsPage: NextPageWithLayout = () => {
 
       <main>
         <h1>Reports</h1>
-
+        
         <Paper elevation={1} sx={{ overflow: "auto" }}>
-          <TablePagination
-            component="div"
-            count={candidatesQuery.data?.candidates?.count || 0}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={(e, pg) => {
-              setPage(pg);
-            }}
-            onRowsPerPageChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-            }}
-            rowsPerPageOptions={[10, 50, 100, 1000]}
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-            }}
-          />
+          {candidatesQuery.isSuccess && (
+            <TablePagination
+              component="div"
+              count={candidatesQuery.data?.candidates?.count || 0}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(e, pg) => {
+                setPage(pg);
+              }}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+              }}
+              rowsPerPageOptions={[10, 50, 100, 1000]}
+              sx={{
+                borderBottom: 1,
+                borderColor: "divider",
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            />
+           )}
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>#</TableCell>
                 <TableCell>ID</TableCell>
                 <TableCell>Node</TableCell>
                 <TableCell align="right">Detections</TableCell>
@@ -103,12 +107,13 @@ const DetectionsPage: NextPageWithLayout = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {candidates.map((candidate) => (
+              {candidates.map((candidate, index) => (
                 <TableRow
                   key={candidate.id}
                   hover={true}
                   sx={{ ...(!candidate.visible && { opacity: 0.5 }) }}
                 >
+                  <TableCell>{index + offset + 1}</TableCell>
                   <TableCell>{candidate.id}</TableCell>
                   <TableCell sx={{ whiteSpace: "nowrap" }}>
                     {candidate.feed.slug}
@@ -131,7 +136,10 @@ const DetectionsPage: NextPageWithLayout = () => {
                       )
                       .join(", ")}{" "}
                   </TableCell>
-                  <TableCell title={candidate.minTime.toString()}>
+                  <TableCell
+                    title={candidate.minTime.toString()}
+                    sx={{ wordWrap: "anywhere" }}
+                  >
                     {candidate.detections
                       .map((d) => d.description)
                       .filter((d) => typeof d !== "undefined" && d !== null)
