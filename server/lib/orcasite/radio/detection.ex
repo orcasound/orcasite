@@ -195,7 +195,7 @@ defmodule Orcasite.Radio.Detection do
       change manage_relationship(:feed, type: :append)
     end
 
-    if Application.compile_env(:orcasite, :enable_prod_seed, false) do
+    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
       create :seed do
         upsert? true
         upsert_identity :id
