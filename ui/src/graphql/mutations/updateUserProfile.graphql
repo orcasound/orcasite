@@ -1,0 +1,33 @@
+mutation updateUserProfile(
+  $id: ID!
+  $username: String
+  $firstName: String
+  $lastName: String
+  $isScientist: Boolean
+  $organization: String
+) {
+  updateUserProfile(
+    id: $id
+    input: {
+      username: $username
+      firstName: $firstName
+      lastName: $lastName
+      isScientist: $isScientist
+      organization: $organization
+    }
+  ) {
+    result {
+      id
+      username
+      firstName
+      lastName
+      isScientist
+      organization
+    }
+    errors {
+      message
+      code
+      fields
+    }
+  }
+}
