@@ -119,7 +119,7 @@ config :spark, :formatter,
 config :ex_aws,
   region: "us-west-2"
 
-# Compile-time for enabling/disabling writable primary IDs
+# Enables seeding the database from the prod server
 config :orcasite,
   enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "false") == "true"
 

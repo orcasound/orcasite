@@ -117,8 +117,10 @@ config :orcasite,
   audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
 
 # Disable these by copying them to dev.secret.exs and setting them to false
-config :orcasite, enable_seed_from_prod: true
-config :orcasite, auto_delete_seeded_records: true
+config :orcasite, enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "true") == "true"
+
+config :orcasite,
+  auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "true") == "true"
 
 config :orcasite, :env, :dev
 
