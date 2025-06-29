@@ -319,7 +319,7 @@ export default function BoutPage({
       if (!boutStartTime) {
         errors["startTime"] = "Bout start time required";
       }
-      setBoutForm((form) => ({ ...form, errors }));
+      setBoutForm((form) => ({ ...form, isSaving: false, errors }));
     }
   };
 
