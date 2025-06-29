@@ -6,7 +6,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScriptFileName do
     Enum.map(records, fn bout ->
       # Use manual calculation to get encoded ids, e.g.
       # "bout_02yvkc7AvrVDIdCChlSwzP"
-      "orcasound_download_bout__" <> bout.id <> ".py"
+      "download_bout__" <> bout.id <> ".py"
     end)
   end
 end
