@@ -133,8 +133,7 @@ export default function BoutPage({
   );
 
   const timeBuffer = 5; // minutes
-  // Snap to nearest 5 minutes
-  const nearestMinutes = 5;
+  const nearestMinutes = 15;
   const [timelineStartTime, setTimelineStartTime] = useState<Date>(
     roundToNearest(
       subMinutes(targetTime, timeBuffer),
@@ -522,15 +521,17 @@ export default function BoutPage({
               <Typography variant="overline">Bout start</Typography>
             </Box>
             <Box>
-              <IconButton
-                onClick={() =>
-                  (!boutEndTime || playerTime.current < boutEndTime) &&
-                  setBoutStartTime(playerTime.current)
-                }
-                title="Set bout start"
-              >
-                <Start />
-              </IconButton>
+              {currentUser?.moderator && (
+                <IconButton
+                  onClick={() =>
+                    (!boutEndTime || playerTime.current < boutEndTime) &&
+                    setBoutStartTime(playerTime.current)
+                  }
+                  title="Set bout start"
+                >
+                  <Start />
+                </IconButton>
+              )}
             </Box>
             {boutStartTime && (
               <Box>
@@ -566,15 +567,17 @@ export default function BoutPage({
               <Typography variant="overline">Bout end</Typography>
             </Box>
             <Box>
-              <IconButton
-                onClick={() =>
-                  (!boutStartTime || playerTime.current > boutStartTime) &&
-                  setBoutEndTime(playerTime.current)
-                }
-                title="Set bout end"
-              >
-                <Start sx={{ transform: "rotate(180deg)" }} />
-              </IconButton>
+              {currentUser?.moderator && (
+                <IconButton
+                  onClick={() =>
+                    (!boutStartTime || playerTime.current > boutStartTime) &&
+                    setBoutEndTime(playerTime.current)
+                  }
+                  title="Set bout end"
+                >
+                  <Start sx={{ transform: "rotate(180deg)" }} />
+                </IconButton>
+              )}
             </Box>
             {boutEndTime && (
               <Box>
@@ -588,13 +591,15 @@ export default function BoutPage({
                 >
                   {format(boutEndTime, "h:mm:ss")}
                 </Button>
-                <IconButton
-                  onClick={() => setBoutEndTime(undefined)}
-                  title="Clear bout end"
-                  size="small"
-                >
-                  <Clear fontSize="small" />
-                </IconButton>
+                {currentUser?.moderator && (
+                  <IconButton
+                    onClick={() => setBoutEndTime(undefined)}
+                    title="Clear bout end"
+                    size="small"
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                )}
               </Box>
             )}
           </Box>
