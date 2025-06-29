@@ -6,7 +6,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportJsonFileName do
     Enum.map(records, fn bout ->
       # Use manual calculation to get encoded ids, e.g.
       # "bout_02yvkc7AvrVDIdCChlSwzP"
-      bout.id <> ".json"
+      "orcasound_" <> bout.id <> ".json"
     end)
   end
 end

@@ -11,6 +11,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
 
   def export_script(_bout) do
     ~S|
+      #!/usr/bin/env python3
       # A Python script to download an audio bout from live.orcasound.net. This will download ~10 second
       # .ts audio files in a bout-specific folder (orcasound_<bout_id>/) and use `ffmpeg` to combine them into a
       # single audio file in the format specified by the 'ext' option. Example:
@@ -56,7 +57,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
           print(f"{times =}")
           list_file = f"{bout_path}/segments.txt"
 
-          combined_path = f"{bout_path}/{bout_id}.{output_ext}"
+          combined_path = f"{bout_id}.{output_ext}"
 
           write_list_file(feed_segments, ts_path, list_file)
 
@@ -106,6 +107,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
 
           download_files(bout_json)
           combine_files(bout_json, output)
+          print(f"Bout file: {bout_id}.{output}")
     | |> String.replace("\n      ", "\n")
   end
 end
