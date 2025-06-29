@@ -65,6 +65,7 @@ import { roundToNearest } from "@/utils/time";
 import CopyToClipboardButton from "../CopyToClipboard";
 import LoadingSpinner from "../LoadingSpinner";
 import { BoutDetectionsTable } from "./BoutDetectionsTable";
+import BoutExport from "./BoutExport";
 import { BoutNotifications } from "./BoutNotifications";
 import BoutScrubBar from "./BoutScrubBar";
 import { BoutTags } from "./BoutTags";
@@ -642,6 +643,7 @@ export default function BoutPage({
               </Box>
             </Box>
           )}
+          {bout?.startTime && bout.endTime && <BoutExport boutId={bout.id} />}
 
           {currentUser?.moderator && (
             <Box display="flex" alignItems="center" ml={{ sm: 0, md: "auto" }}>
