@@ -10,16 +10,16 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
   end
 
   def export_script(_bout) do
-    ~S|
-      #!/usr/bin/env python3
+    ~S|#!/usr/bin/env python3
       # A Python script to download an audio bout from live.orcasound.net. This will download ~10 second
       # .ts audio files in a bout-specific folder (orcasound_<bout_id>/) and use `ffmpeg` to combine them into a
       # single audio file in the format specified by the 'ext' option. Example:
       # `python <file_name> --ext mp4`
+      import argparse
       import json
       import os
+      import subprocess
       import urllib.request
-      import argparse
       from progress.bar import Bar
 
 
@@ -61,9 +61,10 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
 
           write_list_file(feed_segments, ts_path, list_file)
 
-          os.system(
-              f"ffmpeg -fflags +igndts -f concat -safe 0 -i ./{list_file} -c copy ./{combined_path}"
-          )
+          subprocess.run([
+              "ffmpeg", "-fflags", "+igndts", "-f", "concat", "-safe", "0",
+               "-i", f"./{list_file}", "-c", "copy", f"./{combined_path}"
+          ], check=True)
 
 
       def write_list_file(feed_segments, bout_ts_path, list_file):
@@ -73,7 +74,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
           """
           with open(list_file, "w") as f:
               for segment in feed_segments:
-                  file_path = f"{bout_ts_path}/{segment["file_name"]}"
+                  file_path = f"{bout_ts_path}/{segment['file_name']}"
                   f.write(f"file '{file_path}'\n")
 
 
@@ -108,6 +109,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
           download_files(bout_json)
           combine_files(bout_json, output)
           print(f"Bout file: {bout_id}.{output}")
-    | |> String.replace("\n      ", "\n")
+    |
+    |> String.replace("\n      ", "\n")
   end
 end

@@ -13,17 +13,12 @@ defmodule Orcasite.Radio.Preparations.FeedSegmentsForBout do
     |> Ash.Query.filter(
       expr(
         fragment(
-          "(?) between (?) and (?)",
+          "(?) <= (?) AND (?) >= (?)",
           start_time,
-          ^bout.start_time,
-          ^bout.end_time
-        ) or
-          fragment(
-            "(?) between (?) and (?)",
-            end_time,
-            ^bout.start_time,
-            ^bout.end_time
-          )
+          ^bout.end_time,
+          end_time,
+          ^bout.start_time
+        )
       )
     )
   end
