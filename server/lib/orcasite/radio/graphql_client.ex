@@ -54,16 +54,41 @@ defmodule Orcasite.Radio.GraphqlClient do
     |> then(&(&1 <> "/graphql"))
   end
 
-  defp camelized_public_attrs(resource) do
-    resource
-    |> Ash.Resource.Info.attributes()
-    |> Enum.flat_map(fn
-      %{name: name, public?: true} ->
-        [Absinthe.Adapter.LanguageConventions.to_external_name(to_string(name), [])]
+  def fetch_attributes(resource) do
+    name = resource |> to_string() |> String.split(".") |> List.last()
 
-      _ ->
-        []
-    end)
+    ~s|
+      {
+        __type(name: "#{name}") {
+          fields {
+            name
+          }
+        }
+      }
+      |
+    |> submit()
+    |> parse_response(["data", "__type", "fields"])
+    |> Enum.map(&Map.get(&1, "name"))
+  end
+
+  def camelized_public_attrs(resource) do
+    local_attributes =
+      resource
+      |> Ash.Resource.Info.attributes()
+      |> Enum.flat_map(fn
+        %{name: name, public?: true} ->
+          [Absinthe.Adapter.LanguageConventions.to_external_name(to_string(name), [])]
+
+        _ ->
+          []
+      end)
+      |> MapSet.new()
+
+    fetchable_attributes = fetch_attributes(resource) |> MapSet.new()
+
+    local_attributes
+    |> MapSet.intersection(fetchable_attributes)
+    |> MapSet.to_list()
   end
 
   ### Resources
