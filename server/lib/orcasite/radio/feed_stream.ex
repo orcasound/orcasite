@@ -4,6 +4,13 @@ defmodule Orcasite.Radio.FeedStream do
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
+  resource do
+    description """
+      Represents an m3u8 file in S3 (audio segment manifest, lists .ts files in order with their length).
+      Whenever a feed restarts, a new m3u8 file is created
+    """
+  end
+
   postgres do
     table "feed_streams"
     repo Orcasite.Repo
@@ -26,7 +33,10 @@ defmodule Orcasite.Radio.FeedStream do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdstrm", public?: true
+    uuid_attribute :id,
+      prefix: "fdstrm",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
@@ -83,6 +93,10 @@ defmodule Orcasite.Radio.FeedStream do
     end
   end
 
+  code_interface do
+    define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
+  end
+
   actions do
     defaults [:read, :update, :destroy]
 
@@ -120,6 +134,8 @@ defmodule Orcasite.Radio.FeedStream do
       argument :link_streams?, :boolean, default: false
       argument :bucket, :string
 
+      change manage_relationship(:feed, type: :append)
+
       change fn changeset, _context ->
         path =
           changeset
@@ -155,7 +171,11 @@ defmodule Orcasite.Radio.FeedStream do
         if !changeset.valid? do
           changeset
         else
-          feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+          feed_id =
+            Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+            |> then(&(&1 |> Map.get(:id) || &1 |> Map.get("id")))
+
+          feed = Orcasite.Radio.Feed |> Ash.get!(feed_id)
 
           playlist_timestamp =
             changeset
@@ -213,7 +233,8 @@ defmodule Orcasite.Radio.FeedStream do
     create :create do
       primary? true
       upsert? true
-      upsert_identity :feed_stream_timestamp
+      upsert_identity :playlist_m3u8_path
+      skip_unknown_inputs :*
 
       upsert_fields [
         :start_time,
@@ -250,7 +271,11 @@ defmodule Orcasite.Radio.FeedStream do
       change manage_relationship(:prev_feed_stream, type: :append)
 
       change fn changeset, context ->
-        feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+        feed_id =
+          Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+          |> then(&(&1 |> Map.get(:id) || &1 |> Map.get("id")))
+
+        feed = Orcasite.Radio.Feed |> Ash.get!(feed_id)
 
         playlist_timestamp =
           changeset
@@ -291,18 +316,21 @@ defmodule Orcasite.Radio.FeedStream do
     create :populate_with_segments do
       upsert? true
       upsert_identity :playlist_m3u8_path
+      skip_unknown_inputs :*
 
       accept [
-        :start_time,
-        :end_time,
-        :duration,
-        :bucket,
-        :bucket_region,
-        :cloudfront_url,
-        :playlist_path,
-        :playlist_timestamp,
-        :playlist_m3u8_path
-      ]
+               :start_time,
+               :end_time,
+               :duration,
+               :bucket,
+               :bucket_region,
+               :cloudfront_url,
+               :playlist_path,
+               :playlist_timestamp,
+               :playlist_m3u8_path,
+               if(Orcasite.Config.seeding_enabled?(), do: :id)
+             ]
+             |> Enum.reject(&is_nil/1)
 
       upsert_fields [
         :start_time,
@@ -445,10 +473,6 @@ defmodule Orcasite.Radio.FeedStream do
                end
              end)
     end
-  end
-
-  code_interface do
-    define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
   end
 
   json_api do

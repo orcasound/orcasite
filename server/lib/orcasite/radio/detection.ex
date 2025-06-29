@@ -7,6 +7,10 @@ defmodule Orcasite.Radio.Detection do
 
   alias Orcasite.Radio.{Feed, Candidate}
 
+  resource do
+    description "A single user-submitted report of tagged audio (whale, vessel, other)"
+  end
+
   postgres do
     table "detections"
     repo Orcasite.Repo
@@ -23,8 +27,15 @@ defmodule Orcasite.Radio.Detection do
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
   end
 
+  identities do
+    identity :id, [:id]
+  end
+
   attributes do
-    uuid_attribute :id, prefix: "det", public?: true
+    uuid_attribute :id,
+      prefix: "det",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :source_ip, :string, public?: true
     attribute :playlist_timestamp, :integer, allow_nil?: false, public?: true
@@ -182,6 +193,44 @@ defmodule Orcasite.Radio.Detection do
 
       change manage_relationship(:candidate, type: :append)
       change manage_relationship(:feed, type: :append)
+    end
+
+    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
+      create :seed do
+        upsert? true
+        upsert_identity :id
+
+        skip_unknown_inputs :*
+
+        accept [
+          :id,
+          :source_ip,
+          :playlist_timestamp,
+          :player_offset,
+          :listener_count,
+          :timestamp,
+          :description,
+          :visible,
+          :category
+        ]
+
+        upsert_fields [
+          :source_ip,
+          :playlist_timestamp,
+          :player_offset,
+          :listener_count,
+          :timestamp,
+          :description,
+          :visible,
+          :category
+        ]
+
+        argument :feed, :map
+        argument :candidate, :map
+
+        change manage_relationship(:feed, type: :append)
+        change manage_relationship(:candidate, on_lookup: :relate, on_no_match: {:create, :seed})
+      end
     end
 
     create :submit_detection do

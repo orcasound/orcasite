@@ -90,8 +90,8 @@ config :mime, :extensions, %{
 config :orcasite, Oban,
   repo: Orcasite.Repo,
   # 7 day job retention
-  plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}],
-  queues: [default: 10, email: 10, feeds: 10, audio_images: 10]
+  plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}, {Oban.Plugins.Cron, []}],
+  queues: [default: 10, seed: 2, email: 10, feeds: 10, audio_images: 10]
 
 config :spark, :formatter,
   remove_parens?: true,
@@ -118,6 +118,13 @@ config :spark, :formatter,
 
 config :ex_aws,
   region: "us-west-2"
+
+# Enables seeding the database from the prod server
+config :orcasite,
+  enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "false") == "true"
+
+config :orcasite,
+  auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "false") == "true"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
