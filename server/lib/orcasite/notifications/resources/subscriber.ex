@@ -56,18 +56,13 @@ defmodule Orcasite.Notifications.Subscriber do
     strategies do
       magic_link :manage_subscriptions do
         identity_field :id
+        require_interaction? true
 
         single_use_token? false
         # 4 weeks (in minutes)
         token_lifetime 40_320
 
         sender fn _subscriber, _token, _opts ->
-          # IO.inspect({subscriber, token},
-          #   label:
-          #     "subscriber/token (server/lib/orcasite/notifications/resources/subscriber.ex:#{__ENV__.line})"
-          # )
-
-          # Orcasite.Emails.deliver_magic_link(user, token)
           :ok
         end
       end

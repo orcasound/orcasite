@@ -6,7 +6,7 @@ defmodule OrcasiteWeb.SubscriptionAuthController do
     return_to = get_session(conn, :return_to) || ~p"/"
 
     conn
-    |> clear_session()
+    |> clear_session(:orcasite)
     |> redirect(to: return_to)
   end
 
@@ -32,7 +32,7 @@ defmodule OrcasiteWeb.SubscriptionAuthController do
     return_to = get_session(conn, :return_to) || ~p"/"
 
     conn
-    |> clear_session()
+    |> clear_session(:orcasite)
     |> redirect(to: return_to)
   end
 end

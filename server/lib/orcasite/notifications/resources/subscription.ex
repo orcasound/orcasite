@@ -79,12 +79,6 @@ defmodule Orcasite.Notifications.Subscription do
         token_lifetime 40_320
 
         sender fn _subscription, _token, _opts ->
-          # IO.inspect({subscription, token},
-          #   label:
-          #     "{subscription, token} (server/lib/orcasite/notifications/resources/subscription.ex:#{__ENV__.line})"
-          # )
-
-          # Orcasite.Emails.deliver_magic_link(user, token)
           :ok
         end
       end
