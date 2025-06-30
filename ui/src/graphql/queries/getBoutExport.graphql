@@ -1,0 +1,9 @@
+query boutExport($boutId: ID!) {
+  bout(id: $boutId) {
+    id
+    exportJson
+    exportJsonFileName
+    exportScript
+    exportScriptFileName
+  }
+}

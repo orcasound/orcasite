@@ -303,14 +303,27 @@ export type Bout = {
   category: AudioCategory;
   duration?: Maybe<Scalars["Decimal"]["output"]>;
   endTime?: Maybe<Scalars["DateTime"]["output"]>;
+  /** JSON file for exporting the bout and its feed segments */
+  exportJson?: Maybe<Scalars["String"]["output"]>;
+  exportJsonFileName?: Maybe<Scalars["String"]["output"]>;
+  exportScript?: Maybe<Scalars["String"]["output"]>;
+  exportScriptFileName?: Maybe<Scalars["String"]["output"]>;
   feed?: Maybe<Feed>;
   feedId?: Maybe<Scalars["ID"]["output"]>;
+  feedSegments: Array<FeedSegment>;
   feedStreams: Array<FeedStream>;
   id: Scalars["ID"]["output"];
   itemTags: Array<ItemTag>;
   name?: Maybe<Scalars["String"]["output"]>;
   startTime: Scalars["DateTime"]["output"];
   tags: Array<Tag>;
+};
+
+export type BoutFeedSegmentsArgs = {
+  filter?: InputMaybe<FeedSegmentFilterInput>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  sort?: InputMaybe<Array<InputMaybe<FeedSegmentSortInput>>>;
 };
 
 export type BoutFeedStreamsArgs = {
@@ -417,6 +430,7 @@ export type BoutFilterInput = {
   endTime?: InputMaybe<BoutFilterEndTime>;
   feed?: InputMaybe<FeedFilterInput>;
   feedId?: InputMaybe<BoutFilterFeedId>;
+  feedSegments?: InputMaybe<FeedSegmentFilterInput>;
   feedStreams?: InputMaybe<FeedStreamFilterInput>;
   id?: InputMaybe<BoutFilterId>;
   itemTags?: InputMaybe<ItemTagFilterInput>;
@@ -3125,6 +3139,22 @@ export type BoutQuery = {
   } | null;
 };
 
+export type BoutExportQueryVariables = Exact<{
+  boutId: Scalars["ID"]["input"];
+}>;
+
+export type BoutExportQuery = {
+  __typename?: "RootQueryType";
+  bout?: {
+    __typename?: "Bout";
+    id: string;
+    exportJson?: string | null;
+    exportJsonFileName?: string | null;
+    exportScript?: string | null;
+    exportScriptFileName?: string | null;
+  } | null;
+};
+
 export type CandidateQueryVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
@@ -4630,6 +4660,54 @@ useBoutQuery.fetcher = (
   variables: BoutQueryVariables,
   options?: RequestInit["headers"],
 ) => fetcher<BoutQuery, BoutQueryVariables>(BoutDocument, variables, options);
+
+export const BoutExportDocument = `
+    query boutExport($boutId: ID!) {
+  bout(id: $boutId) {
+    id
+    exportJson
+    exportJsonFileName
+    exportScript
+    exportScriptFileName
+  }
+}
+    `;
+
+export const useBoutExportQuery = <TData = BoutExportQuery, TError = unknown>(
+  variables: BoutExportQueryVariables,
+  options?: Omit<
+    UseQueryOptions<BoutExportQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<BoutExportQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<BoutExportQuery, TError, TData>({
+    queryKey: ["boutExport", variables],
+    queryFn: fetcher<BoutExportQuery, BoutExportQueryVariables>(
+      BoutExportDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useBoutExportQuery.document = BoutExportDocument;
+
+useBoutExportQuery.getKey = (variables: BoutExportQueryVariables) => [
+  "boutExport",
+  variables,
+];
+
+useBoutExportQuery.fetcher = (
+  variables: BoutExportQueryVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<BoutExportQuery, BoutExportQueryVariables>(
+    BoutExportDocument,
+    variables,
+    options,
+  );
 
 export const CandidateDocument = `
     query candidate($id: ID!) {
