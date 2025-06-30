@@ -1,0 +1,8 @@
+fragment CandidateParts on Candidate {
+  id
+  minTime
+  maxTime
+  category
+  detectionCount
+  visible
+}

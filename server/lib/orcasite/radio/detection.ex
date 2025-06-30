@@ -313,6 +313,7 @@ defmodule Orcasite.Radio.Detection do
     create :submit_machine_detection do
       accept [:timestamp, :feed_id, :description]
 
+      change set_attribute(:source_ip, context(:actor_ip))
       change set_attribute(:category, :whale)
       change set_attribute(:source, :machine)
       change set_attribute(:listener_count, 0)
