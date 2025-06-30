@@ -123,6 +123,13 @@ config :ex_aws,
 config :orcasite,
   enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "false") == "true"
 
+# Automates fetching of seeds from the prod server (every 5 minutes by default)
+# Only applies if `ENABLE_SEED_FROM_PROD` is enabled
+config :orcasite,
+  auto_update_seeded_records: System.get_env("AUTO_UPDATE_SEEDED_RECORDS", "false") == "true"
+
+# Automatically delete seeded records (older than 1 hour by default)
+# Only applies if both `ENABLE_SEED_FROM_PROD` and `AUTO_UPDATE_SEEDED_RECORDS` are enabled
 config :orcasite,
   auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "false") == "true"
 

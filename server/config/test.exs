@@ -55,6 +55,8 @@ config :ex_aws,
 
 config :orcasite, :env, :test
 
+# Import locally defined secrets & overrides. This must remain at the bottom of
+# this file so it overrides the configuration defined above.
 if __DIR__ |> Path.join("test.secret.exs") |> File.exists?() do
   import_config("test.secret.exs")
 end

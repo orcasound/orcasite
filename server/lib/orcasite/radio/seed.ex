@@ -202,7 +202,8 @@ defmodule Orcasite.Radio.Seed do
   end
 
   oban do
-    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
+    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) and
+         Application.compile_env(:orcasite, :auto_update_seeded_records, false) do
       scheduled_actions do
         # Every 5 minutes, pull the last 6 minutes of data
         schedule :sync, "*/5 * * * *" do
