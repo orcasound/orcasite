@@ -1,11 +1,6 @@
 query candidate($id: ID!) {
   candidate(id: $id) {
-    id
-    minTime
-    maxTime
-    detectionCount
-    visible
-    category
+    ...CandidateParts
     feed {
       id
       slug
@@ -14,15 +9,7 @@ query candidate($id: ID!) {
       bucket
     }
     detections {
-      id
-      category
-      description
-      listenerCount
-      playlistTimestamp
-      playerOffset
-      timestamp
-      visible
-      sourceIp
+      ...DetectionParts
     }
   }
 }
