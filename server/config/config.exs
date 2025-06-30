@@ -131,7 +131,7 @@ config :orcasite,
 config :orcasite,
   auto_update_seeded_records: System.get_env("AUTO_UPDATE_SEEDED_RECORDS", "false") == "true"
 
-# Automatically delete seeded records (older than 1 hour by default)
+# Automatically delete seeded records, excluding feeds (older than 7 days by default, runs hourly)
 # Only applies if both `ENABLE_SEED_FROM_PROD` and `AUTO_UPDATE_SEEDED_RECORDS` are enabled
 config :orcasite,
   auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "false") == "true"
