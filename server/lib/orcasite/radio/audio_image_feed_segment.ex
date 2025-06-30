@@ -43,6 +43,6 @@ defmodule Orcasite.Radio.AudioImageFeedSegment do
 
   graphql do
     type :audio_image_feed_segment
-    attribute_types [feed_segment_id: :id]
+    attribute_types feed_segment_id: :id
   end
 end

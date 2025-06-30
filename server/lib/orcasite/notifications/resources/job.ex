@@ -41,6 +41,10 @@ defmodule Orcasite.Notifications.Job do
     attribute :meta, :map, writable?: false
   end
 
+  preparations do
+    prepare build(sort: [inserted_at: :desc])
+  end
+
   actions do
     defaults [:read]
 
@@ -109,10 +113,6 @@ defmodule Orcasite.Notifications.Job do
                   inserted_at: {Calendar, :strftime, ["%m/%d %H:%M:%S %Z"]},
                   scheduled_at: {Calendar, :strftime, ["%m/%d %H:%M:%S %Z"]},
                   completed_at: {Calendar, :strftime, ["%m/%d %H:%M:%S %Z"]}
-  end
-
-  preparations do
-    prepare build(sort: [inserted_at: :desc])
   end
 
   def fetch_meta(args) do

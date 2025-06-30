@@ -23,17 +23,18 @@ defmodule Orcasite.Logger do
 
     conn
     |> Conn.register_before_send(fn conn ->
-      Logger.log level, fn ->
+      Logger.log(level, fn ->
         stop = System.monotonic_time()
         diff = System.convert_time_unit(stop - start, :native, :microsecond)
-        Logfmt.encode [
+
+        Logfmt.encode(
           elapsed: "#{diff / 1000}ms",
           method: conn.method,
           path: conn.request_path,
           status: conn.status,
           remote_ip: formatted_ip(conn.remote_ip)
-        ]
-      end
+        )
+      end)
 
       conn
     end)

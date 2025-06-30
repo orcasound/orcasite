@@ -68,6 +68,7 @@ defmodule OrcasiteWeb.RadioTest do
 
     assert %{"data" => %{"submitDetection" => %{"errors" => [], "result" => %{"id" => id}}}} =
              json_response(conn, 200)
+
     assert "det_" <> _ = id
   end
 end

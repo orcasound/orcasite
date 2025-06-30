@@ -5,6 +5,10 @@ defmodule Orcasite.Radio.BoutFeedStream do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  resource do
+    description "Join table between Bout and FeedStream"
+  end
+
   postgres do
     table "bout_feed_streams"
     repo Orcasite.Repo
@@ -25,10 +29,6 @@ defmodule Orcasite.Radio.BoutFeedStream do
   relationships do
     belongs_to :bout, Orcasite.Radio.Bout
     belongs_to :feed_stream, Orcasite.Radio.FeedStream
-  end
-
-  resource do
-    description "Join table between Bout and FeedStream"
   end
 
   actions do

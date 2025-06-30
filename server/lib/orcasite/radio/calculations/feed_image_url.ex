@@ -9,6 +9,7 @@ defmodule Orcasite.Radio.Calculations.FeedImageUrl do
   @impl true
   def calculate(records, opts, _arguments) do
     object = Keyword.get(opts, :object, "thumbnail.png")
+
     Enum.map(records, fn %{node_name: node_name} ->
       feed_s3_url(node_name, object)
     end)
