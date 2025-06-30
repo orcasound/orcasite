@@ -95,6 +95,7 @@ defmodule Orcasite.Radio.FeedStream do
 
   code_interface do
     define :create_from_m3u8_path, action: :from_m3u8_path, args: [:m3u8_path]
+    define :for_timestamp, action: :for_timestamp
   end
 
   actions do
@@ -110,6 +111,22 @@ defmodule Orcasite.Radio.FeedStream do
       argument :feed_id, :string
 
       filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
+    end
+
+    read :for_timestamp do
+      get? true
+
+      argument :timestamp, :utc_datetime_usec, allow_nil?: false
+      argument :feed_id, :string, allow_nil?: false
+
+      prepare build(sort: [start_time: :asc], limit: 1)
+
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 start_time <= ^arg(:timestamp) and
+                 start_time >= datetime_add(^arg(:timestamp), -1, :day) and
+                 (is_nil(end_time) or end_time >= ^arg(:timestamp))
+             )
     end
 
     create :from_m3u8_path do
