@@ -9,6 +9,7 @@ defmodule Orcasite.Repo.Migrations.AddSourceToDetections do
 
   def up do
     alter table(:detections) do
+      modify :feed_id, :uuid, null: false
       add :source, :text, null: false, default: "human"
     end
   end
@@ -16,6 +17,7 @@ defmodule Orcasite.Repo.Migrations.AddSourceToDetections do
   def down do
     alter table(:detections) do
       remove :source
+      modify :feed_id, :uuid, null: true
     end
   end
 end
