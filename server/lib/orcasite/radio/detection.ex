@@ -252,10 +252,6 @@ defmodule Orcasite.Radio.Detection do
 
       argument :feed_id, :string, allow_nil?: false
 
-      argument :category, Orcasite.Types.DetectionCategory do
-        allow_nil? false
-      end
-
       argument :send_notifications, :boolean, default: true
 
       change set_attribute(:source_ip, context(:actor_ip))
