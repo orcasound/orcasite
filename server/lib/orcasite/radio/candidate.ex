@@ -7,6 +7,10 @@ defmodule Orcasite.Radio.Candidate do
 
   alias Orcasite.Radio.{Detection, Feed}
 
+  resource do
+    description "Groups one or many detections based on whether detections of the same category (whale, vessel, other) are within 3 minutes of each other"
+  end
+
   postgres do
     table "candidates"
     repo Orcasite.Repo
@@ -21,8 +25,15 @@ defmodule Orcasite.Radio.Candidate do
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
   end
 
+  identities do
+    identity :id, [:id]
+  end
+
   attributes do
-    uuid_attribute :id, prefix: "cand", public?: true
+    uuid_attribute :id,
+      prefix: "cand",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :detection_count, :integer, public?: true
     attribute :min_time, :utc_datetime_usec, allow_nil?: false, public?: true
@@ -108,6 +119,23 @@ defmodule Orcasite.Radio.Candidate do
 
       change manage_relationship(:feed, type: :append)
       change manage_relationship(:detections, type: :append)
+    end
+
+    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
+      create :seed do
+        upsert? true
+        upsert_identity :id
+
+        accept [:id, :min_time, :max_time, :detection_count, :category, :visible]
+        upsert_fields [:min_time, :max_time, :detection_count, :category, :visible]
+        skip_unknown_inputs :*
+
+        argument :detections, {:array, :map}
+        argument :feed, :map
+
+        change manage_relationship(:feed, type: :append)
+        change manage_relationship(:detections, on_lookup: :relate, on_no_match: {:create, :seed})
+      end
     end
 
     read :find_nearby_candidate do

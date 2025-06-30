@@ -17,7 +17,11 @@ defmodule Orcasite.Application do
         OrcasiteWeb.Telemetry,
         Orcasite.Repo,
         {Orcasite.Cache, []},
-        {Oban, Application.fetch_env!(:orcasite, Oban)},
+        {Oban,
+         AshOban.config(
+           Application.fetch_env!(:orcasite, :ash_domains),
+           Application.fetch_env!(:orcasite, Oban)
+         )},
         {Phoenix.PubSub, Keyword.merge([name: Orcasite.PubSub], pubsub_options)},
         OrcasiteWeb.Presence,
         {Finch, name: Orcasite.Finch},

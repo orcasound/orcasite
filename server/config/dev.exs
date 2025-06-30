@@ -116,4 +116,19 @@ config :orcasite,
   audio_image_bucket: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "dev-audio-viz"),
   audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
 
+# Disable these by setting them to false in your env or dev.secret.exs
+config :orcasite, enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "true") == "true"
+
+config :orcasite,
+  auto_update_seeded_records: System.get_env("AUTO_UPDATE_SEEDED_RECORDS", "true") == "true"
+
+config :orcasite,
+  auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "true") == "true"
+
 config :orcasite, :env, :dev
+
+# Import locally defined secrets & overrides. This must remain at the bottom of
+# this file so it overrides the configuration defined above.
+if __DIR__ |> Path.join("dev.secret.exs") |> File.exists?() do
+  import_config("dev.secret.exs")
+end

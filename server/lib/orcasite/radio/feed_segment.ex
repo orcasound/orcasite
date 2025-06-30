@@ -4,6 +4,10 @@ defmodule Orcasite.Radio.FeedSegment do
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
+  resource do
+    description "Represents a single .ts file from a feed (usually 10 second). A feed_stream has many feed_segments. Used to track timestamps for querying audio from S3"
+  end
+
   postgres do
     table "feed_segments"
     repo Orcasite.Repo
@@ -26,7 +30,10 @@ defmodule Orcasite.Radio.FeedSegment do
   end
 
   attributes do
-    uuid_attribute :id, prefix: "fdseg", public?: true
+    uuid_attribute :id,
+      prefix: "fdseg",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
@@ -160,17 +167,19 @@ defmodule Orcasite.Radio.FeedSegment do
       ]
 
       accept [
-        :start_time,
-        :end_time,
-        :duration,
-        :bucket,
-        :bucket_region,
-        :cloudfront_url,
-        :playlist_timestamp,
-        :playlist_m3u8_path,
-        :playlist_path,
-        :file_name
-      ]
+               :start_time,
+               :end_time,
+               :duration,
+               :bucket,
+               :bucket_region,
+               :cloudfront_url,
+               :playlist_timestamp,
+               :playlist_m3u8_path,
+               :playlist_path,
+               :file_name,
+               if(Orcasite.Config.seeding_enabled?(), do: :id)
+             ]
+             |> Enum.reject(&is_nil/1)
 
       argument :feed, :map, allow_nil?: false
       argument :feed_stream, :map
@@ -185,7 +194,11 @@ defmodule Orcasite.Radio.FeedSegment do
       change manage_relationship(:feed_stream, type: :append)
 
       change fn changeset, context ->
-        feed = Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+        feed_id =
+          Ash.Changeset.get_argument_or_attribute(changeset, :feed)
+          |> then(&(&1 |> Map.get(:id) || &1 |> Map.get("id")))
+
+        feed = Orcasite.Radio.Feed |> Ash.get!(feed_id)
 
         playlist_timestamp =
           changeset

@@ -1,0 +1,5 @@
+mutation seedAll($startTime: DateTime!, $endTime: DateTime!) {
+  seedAll(input: { startTime: $startTime, endTime: $endTime }) {
+    ...SeedParts
+  }
+}

@@ -7,6 +7,10 @@ defmodule Orcasite.Radio.Feed do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  resource do
+    description "Represents hydrophones that record audio under water"
+  end
+
   postgres do
     table "feeds"
     repo Orcasite.Repo
@@ -28,7 +32,7 @@ defmodule Orcasite.Radio.Feed do
   end
 
   attributes do
-    uuid_attribute :id, public?: true
+    uuid_attribute :id, public?: true, writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :name, :string, allow_nil?: false, public?: true
     attribute :node_name, :string, allow_nil?: false, public?: true
@@ -107,9 +111,18 @@ defmodule Orcasite.Radio.Feed do
       authorize_if always()
     end
 
+    bypass action(:get_detections_count) do
+      authorize_if always()
+    end
+
     policy action(:generate_spectrogram) do
       authorize_if actor_attribute_equals(:moderator, true)
     end
+  end
+
+  code_interface do
+    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
+    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end
 
   actions do
@@ -174,11 +187,29 @@ defmodule Orcasite.Radio.Feed do
 
     create :create do
       primary? true
+      upsert? true
+      upsert_identity :unique_slug
 
       accept [
+               :name,
+               :node_name,
+               :slug,
+               :intro_html,
+               :image_url,
+               :visible,
+               :bucket,
+               :bucket_region,
+               :cloudfront_url,
+               :dataplicity_id,
+               :orcahello_id,
+               :location_point,
+               if(Orcasite.Config.seeding_enabled?(), do: :id)
+             ]
+             |> Enum.reject(&is_nil/1)
+
+      upsert_fields [
         :name,
         :node_name,
-        :slug,
         :intro_html,
         :image_url,
         :visible,
@@ -186,7 +217,8 @@ defmodule Orcasite.Radio.Feed do
         :bucket_region,
         :cloudfront_url,
         :dataplicity_id,
-        :orcahello_id
+        :orcahello_id,
+        :location_point
       ]
 
       argument :lat_lng_string, :string do
@@ -253,11 +285,6 @@ defmodule Orcasite.Radio.Feed do
                )
              end)
     end
-  end
-
-  code_interface do
-    define :get_feed_by_slug, action: :get_by_slug, args: [:slug], get?: true
-    define :get_feed_by_node_name, action: :get_by_node_name, args: [:node_name], get?: true
   end
 
   admin do

@@ -152,6 +152,26 @@ Open another terminal session and run these commands to start Next.js:
 
 Once everything finishes starting up, you'll be able to access the UI at [`http://localhost:3000`](http://localhost:3000).
 
+## Database Seeding
+
+The development environment automatically seeds the database with real data from the production server, including detections, audio images, and other records. This happens via background jobs that sync data every 1 minute.
+
+### Configuration
+
+Three environment variables control this behavior:
+
+- `ENABLE_SEED_FROM_PROD` - Enables the seeding feature (default: `true` in dev)
+- `AUTO_UPDATE_SEEDED_RECORDS` - Automatically syncs new data every 1 minute (default: `true` in dev)
+- `AUTO_DELETE_SEEDED_RECORDS` - Automatically removes seeded data hourly if the data is older than 7 days, excluding feeds (default: `true` in dev)
+
+To disable automatic seeding, set these to `false` in your environment (e.g. in `docker-compose.dev.yml`) or in `server/config/dev.secret.exs`:
+
+```elixir
+config :orcasite, enable_seed_from_prod: false
+```
+
+You can also manually trigger seeding from the [`/seed` page](http://localhost:3000/seed) in the UI.
+
 ## Tests
 
 ### UI

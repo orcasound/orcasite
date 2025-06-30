@@ -5,6 +5,10 @@ defmodule Orcasite.Radio.Bout do
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
+  resource do
+    description "A moderator-generated time interval for a feed where there's a specific category of audio going on. Usually 10-90 minutes long."
+  end
+
   postgres do
     table "bouts"
     repo Orcasite.Repo
@@ -17,8 +21,15 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
+  identities do
+    identity :id, [:id]
+  end
+
   attributes do
-    uuid_attribute :id, prefix: "bout", public?: true
+    uuid_attribute :id,
+      prefix: "bout",
+      public?: true,
+      writable?: Orcasite.Config.seeding_enabled?()
 
     attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
@@ -154,6 +165,17 @@ defmodule Orcasite.Radio.Bout do
 
         changeset, _ ->
           changeset
+      end
+    end
+
+    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
+      create :seed do
+        upsert? true
+        upsert_identity :id
+        skip_unknown_inputs :*
+
+        accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
+        upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
       end
     end
 

@@ -90,8 +90,8 @@ config :mime, :extensions, %{
 config :orcasite, Oban,
   repo: Orcasite.Repo,
   # 7 day job retention
-  plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}],
-  queues: [default: 10, email: 10, feeds: 10, audio_images: 10]
+  plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}, {Oban.Plugins.Cron, []}],
+  queues: [default: 10, seed: 2, email: 10, feeds: 10, audio_images: 10]
 
 config :spark, :formatter,
   remove_parens?: true,
@@ -109,7 +109,10 @@ config :spark, :formatter,
       :token,
       :policies,
       :field_policies,
+      :validations,
+      :changes,
       :actions,
+      :oban,
       :admin,
       :json_api,
       :graphql
@@ -118,6 +121,20 @@ config :spark, :formatter,
 
 config :ex_aws,
   region: "us-west-2"
+
+# Enables seeding the database from the prod server
+config :orcasite,
+  enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "false") == "true"
+
+# Automates fetching of seeds from the prod server (every minute by default)
+# Only applies if `ENABLE_SEED_FROM_PROD` is enabled
+config :orcasite,
+  auto_update_seeded_records: System.get_env("AUTO_UPDATE_SEEDED_RECORDS", "false") == "true"
+
+# Automatically delete seeded records, excluding feeds (older than 7 days by default, runs hourly)
+# Only applies if both `ENABLE_SEED_FROM_PROD` and `AUTO_UPDATE_SEEDED_RECORDS` are enabled
+config :orcasite,
+  auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "false") == "true"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
