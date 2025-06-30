@@ -150,7 +150,7 @@
       "type": "uuid"
     },
     {
-      "allow_nil?": true,
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "primary_key?": false,
@@ -346,7 +346,7 @@
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "FB53C9D8FB12387C91B39B3562621E3BAF53BE63B85C14FEEEAA391799440FA5",
+  "hash": "0749C1C80744A273D0B657F5F2BFD13988DF4451EE1326E62B9FA42F157E6BEE",
   "identities": [],
   "multitenancy": {
     "attribute": null,

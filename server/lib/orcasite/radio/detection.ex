@@ -61,6 +61,7 @@ defmodule Orcasite.Radio.Detection do
     belongs_to :feed, Feed do
       public? true
       writable? true
+      allow_nil? false
     end
 
     belongs_to :user, Orcasite.Accounts.User
