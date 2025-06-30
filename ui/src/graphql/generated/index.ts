@@ -3358,9 +3358,9 @@ export type CandidateQuery = {
     id: string;
     minTime: Date;
     maxTime: Date;
+    category?: DetectionCategory | null;
     detectionCount?: number | null;
     visible?: boolean | null;
-    category?: DetectionCategory | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -3380,6 +3380,8 @@ export type CandidateQuery = {
       timestamp: Date;
       visible?: boolean | null;
       sourceIp?: string | null;
+      source: DetectionSource;
+      feedId: string;
     }>;
   } | null;
 };
@@ -5089,12 +5091,7 @@ useBoutExportQuery.fetcher = (
 export const CandidateDocument = `
     query candidate($id: ID!) {
   candidate(id: $id) {
-    id
-    minTime
-    maxTime
-    detectionCount
-    visible
-    category
+    ...CandidateParts
     feed {
       id
       slug
@@ -5103,19 +5100,12 @@ export const CandidateDocument = `
       bucket
     }
     detections {
-      id
-      category
-      description
-      listenerCount
-      playlistTimestamp
-      playerOffset
-      timestamp
-      visible
-      sourceIp
+      ...DetectionParts
     }
   }
 }
-    `;
+    ${CandidatePartsFragmentDoc}
+${DetectionPartsFragmentDoc}`;
 
 export const useCandidateQuery = <TData = CandidateQuery, TError = unknown>(
   variables: CandidateQueryVariables,
