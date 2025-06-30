@@ -17,14 +17,6 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
-  validations do
-    validate string_length(:name, min: 3), where: present(:name), before_action?: true
-  end
-
-  changes do
-    change set_attribute(:name, expr(string_trim(arg(:name)))), where: present(arg(:name))
-  end
-
   attributes do
     uuid_attribute :id, prefix: "bout", public?: true
 
@@ -163,6 +155,25 @@ defmodule Orcasite.Radio.Bout do
     end
   end
 
+  changes do
+    change set_attribute(:name, expr(string_trim(arg(:name)))), where: present(arg(:name))
+  end
+
+  validations do
+    validate string_length(:name, min: 3), where: present(:name), before_action?: true
+  end
+
+  json_api do
+    type "bout"
+
+    includes [:feed, :tags]
+
+    routes do
+      base "/bouts"
+      index :index
+    end
+  end
+
   graphql do
     type :bout
     attribute_types feed_id: :id, feed_stream_id: :id
@@ -175,17 +186,6 @@ defmodule Orcasite.Radio.Bout do
     mutations do
       create :create_bout, :create
       update :update_bout, :update
-    end
-  end
-
-  json_api do
-    type "bout"
-
-    includes [:feed, :tags]
-
-    routes do
-      base "/bouts"
-      index :index
     end
   end
 end

@@ -678,12 +678,13 @@ export type Detection = {
   candidateId?: Maybe<Scalars["ID"]["output"]>;
   category?: Maybe<DetectionCategory>;
   description?: Maybe<Scalars["String"]["output"]>;
-  feed?: Maybe<Feed>;
-  feedId?: Maybe<Scalars["ID"]["output"]>;
+  feed: Feed;
+  feedId: Scalars["ID"]["output"];
   id: Scalars["ID"]["output"];
   listenerCount?: Maybe<Scalars["Int"]["output"]>;
   playerOffset: Scalars["Decimal"]["output"];
   playlistTimestamp: Scalars["Int"]["output"];
+  source: DetectionSource;
   sourceIp?: Maybe<Scalars["String"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
   visible?: Maybe<Scalars["Boolean"]["output"]>;
@@ -747,6 +748,7 @@ export type DetectionFilterInput = {
   or?: InputMaybe<Array<DetectionFilterInput>>;
   playerOffset?: InputMaybe<DetectionFilterPlayerOffset>;
   playlistTimestamp?: InputMaybe<DetectionFilterPlaylistTimestamp>;
+  source?: InputMaybe<DetectionFilterSource>;
   sourceIp?: InputMaybe<DetectionFilterSourceIp>;
   timestamp?: InputMaybe<DetectionFilterTimestamp>;
   visible?: InputMaybe<DetectionFilterVisible>;
@@ -783,6 +785,17 @@ export type DetectionFilterPlaylistTimestamp = {
   lessThan?: InputMaybe<Scalars["Int"]["input"]>;
   lessThanOrEqual?: InputMaybe<Scalars["Int"]["input"]>;
   notEq?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type DetectionFilterSource = {
+  eq?: InputMaybe<DetectionSource>;
+  greaterThan?: InputMaybe<DetectionSource>;
+  greaterThanOrEqual?: InputMaybe<DetectionSource>;
+  in?: InputMaybe<Array<DetectionSource>>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  lessThan?: InputMaybe<DetectionSource>;
+  lessThanOrEqual?: InputMaybe<DetectionSource>;
+  notEq?: InputMaybe<DetectionSource>;
 };
 
 export type DetectionFilterSourceIp = {
@@ -829,6 +842,7 @@ export const DetectionSortField = {
   ListenerCount: "LISTENER_COUNT",
   PlayerOffset: "PLAYER_OFFSET",
   PlaylistTimestamp: "PLAYLIST_TIMESTAMP",
+  Source: "SOURCE",
   SourceIp: "SOURCE_IP",
   Timestamp: "TIMESTAMP",
   Visible: "VISIBLE",
@@ -841,6 +855,13 @@ export type DetectionSortInput = {
   order?: InputMaybe<SortOrder>;
 };
 
+export const DetectionSource = {
+  Human: "HUMAN",
+  Machine: "MACHINE",
+} as const;
+
+export type DetectionSource =
+  (typeof DetectionSource)[keyof typeof DetectionSource];
 export type Feed = {
   __typename?: "Feed";
   audioImages: Array<AudioImage>;
@@ -2577,6 +2598,31 @@ export type BoutPartsFragment = {
   startTime: Date;
 };
 
+export type CandidatePartsFragment = {
+  __typename?: "Candidate";
+  id: string;
+  minTime: Date;
+  maxTime: Date;
+  category?: DetectionCategory | null;
+  detectionCount?: number | null;
+  visible?: boolean | null;
+};
+
+export type DetectionPartsFragment = {
+  __typename?: "Detection";
+  id: string;
+  category?: DetectionCategory | null;
+  description?: string | null;
+  listenerCount?: number | null;
+  playlistTimestamp: number;
+  playerOffset: number;
+  timestamp: Date;
+  visible?: boolean | null;
+  sourceIp?: string | null;
+  source: DetectionSource;
+  feedId: string;
+};
+
 export type ErrorPartsFragment = {
   __typename?: "MutationError";
   code?: string | null;
@@ -3136,9 +3182,9 @@ export type CandidateQuery = {
     id: string;
     minTime: Date;
     maxTime: Date;
+    category?: DetectionCategory | null;
     detectionCount?: number | null;
     visible?: boolean | null;
-    category?: DetectionCategory | null;
     feed: {
       __typename?: "Feed";
       id: string;
@@ -3158,6 +3204,8 @@ export type CandidateQuery = {
       timestamp: Date;
       visible?: boolean | null;
       sourceIp?: string | null;
+      source: DetectionSource;
+      feedId: string;
     }>;
   } | null;
 };
@@ -3347,6 +3395,8 @@ export type CandidatesQuery = {
         timestamp: Date;
         visible?: boolean | null;
         sourceIp?: string | null;
+        source: DetectionSource;
+        feedId: string;
       }>;
     }> | null;
   } | null;
@@ -3371,13 +3421,16 @@ export type DetectionsQuery = {
     results?: Array<{
       __typename?: "Detection";
       id: string;
-      feedId?: string | null;
-      listenerCount?: number | null;
       category?: DetectionCategory | null;
       description?: string | null;
-      playerOffset: number;
+      listenerCount?: number | null;
       playlistTimestamp: number;
+      playerOffset: number;
       timestamp: Date;
+      visible?: boolean | null;
+      sourceIp?: string | null;
+      source: DetectionSource;
+      feedId: string;
       candidate?: { __typename?: "Candidate"; id: string } | null;
     }> | null;
   } | null;
@@ -3613,6 +3666,31 @@ export const BoutPartsFragmentDoc = `
   duration
   endTime
   startTime
+}
+    `;
+export const CandidatePartsFragmentDoc = `
+    fragment CandidateParts on Candidate {
+  id
+  minTime
+  maxTime
+  category
+  detectionCount
+  visible
+}
+    `;
+export const DetectionPartsFragmentDoc = `
+    fragment DetectionParts on Detection {
+  id
+  category
+  description
+  listenerCount
+  playlistTimestamp
+  playerOffset
+  timestamp
+  visible
+  sourceIp
+  source
+  feedId
 }
     `;
 export const ErrorPartsFragmentDoc = `
@@ -4634,12 +4712,7 @@ useBoutQuery.fetcher = (
 export const CandidateDocument = `
     query candidate($id: ID!) {
   candidate(id: $id) {
-    id
-    minTime
-    maxTime
-    detectionCount
-    visible
-    category
+    ...CandidateParts
     feed {
       id
       slug
@@ -4648,19 +4721,12 @@ export const CandidateDocument = `
       bucket
     }
     detections {
-      id
-      category
-      description
-      listenerCount
-      playlistTimestamp
-      playerOffset
-      timestamp
-      visible
-      sourceIp
+      ...DetectionParts
     }
   }
 }
-    `;
+    ${CandidatePartsFragmentDoc}
+${DetectionPartsFragmentDoc}`;
 
 export const useCandidateQuery = <TData = CandidateQuery, TError = unknown>(
   variables: CandidateQueryVariables,
@@ -4980,12 +5046,7 @@ export const CandidatesDocument = `
     count
     hasNextPage
     results {
-      id
-      minTime
-      maxTime
-      category
-      detectionCount
-      visible
+      ...CandidateParts
       feed {
         id
         slug
@@ -4993,20 +5054,13 @@ export const CandidatesDocument = `
         nodeName
       }
       detections {
-        id
-        category
-        description
-        listenerCount
-        playlistTimestamp
-        playerOffset
-        timestamp
-        visible
-        sourceIp
+        ...DetectionParts
       }
     }
   }
 }
-    `;
+    ${CandidatePartsFragmentDoc}
+${DetectionPartsFragmentDoc}`;
 
 export const useCandidatesQuery = <TData = CandidatesQuery, TError = unknown>(
   variables?: CandidatesQueryVariables,
@@ -5055,21 +5109,14 @@ export const DetectionsDocument = `
     count
     hasNextPage
     results {
-      id
-      feedId
-      listenerCount
-      category
-      description
-      playerOffset
-      playlistTimestamp
-      timestamp
+      ...DetectionParts
       candidate {
         id
       }
     }
   }
 }
-    `;
+    ${DetectionPartsFragmentDoc}`;
 
 export const useDetectionsQuery = <TData = DetectionsQuery, TError = unknown>(
   variables?: DetectionsQueryVariables,

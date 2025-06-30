@@ -15,14 +15,7 @@ query detections(
     count
     hasNextPage
     results {
-      id
-      feedId
-      listenerCount
-      category
-      description
-      playerOffset
-      playlistTimestamp
-      timestamp
+      ...DetectionParts
       candidate {
         id
       }
