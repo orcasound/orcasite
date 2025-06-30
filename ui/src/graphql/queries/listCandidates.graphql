@@ -8,12 +8,7 @@ query candidates(
     count
     hasNextPage
     results {
-      id
-      minTime
-      maxTime
-      category
-      detectionCount
-      visible
+      ...CandidateParts
       feed {
         id
         slug
@@ -21,15 +16,7 @@ query candidates(
         nodeName
       }
       detections {
-        id
-        category
-        description
-        listenerCount
-        playlistTimestamp
-        playerOffset
-        timestamp
-        visible
-        sourceIp
+        ...DetectionParts
       }
     }
   }
