@@ -51,10 +51,8 @@ defmodule Orcasite.Accounts.User do
 
         resettable do
           sender fn user, token, opts ->
-            Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-              Orcasite.Accounts.Email.reset_password(user, token, opts)
-              |> Orcasite.Mailer.deliver()
-            end)
+            Orcasite.Accounts.Email.reset_password(user, token, opts)
+            |> Orcasite.Mailer.deliver()
           end
         end
       end
