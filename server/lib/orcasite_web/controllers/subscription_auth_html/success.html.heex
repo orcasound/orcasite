@@ -1,5 +1,12 @@
-<h1>
-  Success! You've been unsubscribed from receiving notifications about {humanize_event(
-    @current_subscription.event_type
-  )}.
-</h1>
+<div class="my-4 grid h-screen place-items-center dark:bg-gray-900">
+  <div class="max-w-xl mx-auto my-3">
+    <div class="w-full flex justify-center py-2 mb-6">
+      <a href="/"><img src="/images/logo.png" alt="Orcasound" class="w-80" /></a>
+    </div>
+    <h1 class="mx-auto">
+      Success! You've been unsubscribed from receiving notifications about {humanize_event(
+        @current_subscription.event_type
+      )}.
+    </h1>
+  </div>
+</div>
