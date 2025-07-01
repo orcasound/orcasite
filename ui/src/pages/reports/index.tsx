@@ -82,7 +82,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                 setRowsPerPage(Number(e.target.value));
               }}
               rowsPerPageOptions={[10, 50, 100, 1000]}
-              showTopBorder={true}
+              showBottomBorder={true}
             />
           )}
           <Table>

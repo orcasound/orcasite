@@ -1,7 +1,7 @@
 import { TablePagination } from "@mui/material";
 import { ElementType } from "react";
 
-interface TablePaginationProps {
+interface TablePaginationWrapperProps {
   count: number;
   page: number;
   rowsPerPage: number;
@@ -10,7 +10,7 @@ interface TablePaginationProps {
   rowsPerPageOptions?: number[];
   component?: ElementType;
   sx?: object;
-  showTopBorder?: boolean;
+  showBottomBorder?: boolean;
 }
 
 const TablePaginationWrapper = ({
@@ -22,9 +22,9 @@ const TablePaginationWrapper = ({
   rowsPerPageOptions = [10, 50, 100, 1000],
   component = "div",
   sx = {},
-  showTopBorder = false,
-}: TablePaginationProps) => {
-  const defaultSx = showTopBorder
+  showBottomBorder = false,
+}: TablePaginationWrapperProps) => {
+  const defaultSx = showBottomBorder
     ? {
         borderBottom: 1,
         borderColor: "divider",
