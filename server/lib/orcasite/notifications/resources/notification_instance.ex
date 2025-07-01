@@ -1,11 +1,17 @@
 defmodule Orcasite.Notifications.NotificationInstance do
   use Ash.Resource,
-  domain: Orcasite.Notifications,
+    domain: Orcasite.Notifications,
     extensions: [AshAdmin.Resource],
     data_layer: Ash.DataLayer.Ets
 
   alias Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta
   alias Orcasite.Notifications.{Notification, Subscription}
+
+  resource do
+    description """
+    Sends a single notification to a subscription
+    """
+  end
 
   attributes do
     uuid_primary_key :id
@@ -30,12 +36,6 @@ defmodule Orcasite.Notifications.NotificationInstance do
   relationships do
     belongs_to :subscription, Subscription
     belongs_to :notification, Notification
-  end
-
-  resource do
-    description """
-    Sends a single notification to a subscription
-    """
   end
 
   actions do

@@ -5,13 +5,13 @@ defmodule Orcasite.Notifications.Token do
     extensions: [AshAuthentication.TokenResource],
     authorizers: Ash.Policy.Authorizer
 
-  token do
-    domain Orcasite.Notifications
-  end
-
   postgres do
     table "subscriber_tokens"
     repo Orcasite.Repo
+  end
+
+  token do
+    domain Orcasite.Notifications
   end
 
   policies do

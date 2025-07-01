@@ -6,6 +6,13 @@ defmodule Orcasite.Notifications.Subscription do
 
   alias Orcasite.Notifications.{Notification, NotificationInstance, Subscriber}
 
+  resource do
+    description """
+    A subscription - relates a subscriber to a notification type and a channel.
+    (i.e. subscribing to :new_detection via :email)
+    """
+  end
+
   postgres do
     table "subscriptions"
     repo Orcasite.Repo
@@ -36,6 +43,16 @@ defmodule Orcasite.Notifications.Subscription do
     update_timestamp :updated_at
   end
 
+  code_interface do
+    define :update_last_notification,
+      action: :update_last_notification,
+      args: [:last_notification]
+
+    define :available_for_notification,
+      action: :available_for_notification,
+      args: [:notification_id, :event_type, {:optional, :minutes_ago}]
+  end
+
   relationships do
     belongs_to :subscriber, Subscriber
     has_many :notification_instances, NotificationInstance
@@ -49,25 +66,9 @@ defmodule Orcasite.Notifications.Subscription do
     belongs_to :last_notification, Notification
   end
 
-  code_interface do
-    define :update_last_notification,
-      action: :update_last_notification,
-      args: [:last_notification]
-
-    define :available_for_notification,
-      action: :available_for_notification,
-      args: [:notification_id, :event_type, {:optional, :minutes_ago}]
-  end
-
-  resource do
-    description """
-    A subscription - relates a subscriber to a notification type and a channel.
-    (i.e. subscribing to :new_detection via :email)
-    """
-  end
-
   authentication do
     domain Orcasite.Notifications
+    session_identifier :jti
 
     strategies do
       magic_link :unsubscribe do
@@ -78,12 +79,6 @@ defmodule Orcasite.Notifications.Subscription do
         token_lifetime 40_320
 
         sender fn _subscription, _token, _opts ->
-          # IO.inspect({subscription, token},
-          #   label:
-          #     "{subscription, token} (server/lib/orcasite/notifications/resources/subscription.ex:#{__ENV__.line})"
-          # )
-
-          # Orcasite.Emails.deliver_magic_link(user, token)
           :ok
         end
       end
@@ -92,6 +87,7 @@ defmodule Orcasite.Notifications.Subscription do
     tokens do
       enabled? true
       token_resource Orcasite.Notifications.Token
+      require_token_presence_for_authentication? false
 
       signing_secret fn _, _ ->
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}

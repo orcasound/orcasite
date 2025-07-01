@@ -34,6 +34,6 @@ defmodule Orcasite.Utils do
     |> elem(0)
     |> Jason.decode!()
     |> Map.get("error")
-    |> IO.puts
+    |> IO.puts()
   end
 end

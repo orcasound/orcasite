@@ -6,6 +6,12 @@ defmodule Orcasite.Notifications.Subscriber do
 
   alias Orcasite.Notifications.{Subscription}
 
+  resource do
+    description """
+    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
+    """
+  end
+
   postgres do
     table "subscribers"
     repo Orcasite.Repo
@@ -39,24 +45,24 @@ defmodule Orcasite.Notifications.Subscriber do
     has_many :subscriptions, Subscription
   end
 
+  code_interface do
+    define :by_email, args: [:email]
+  end
+
   authentication do
     domain Orcasite.Notifications
+    session_identifier :jti
 
     strategies do
       magic_link :manage_subscriptions do
         identity_field :id
+        require_interaction? true
 
         single_use_token? false
         # 4 weeks (in minutes)
         token_lifetime 40_320
 
         sender fn _subscriber, _token, _opts ->
-          # IO.inspect({subscriber, token},
-          #   label:
-          #     "subscriber/token (server/lib/orcasite/notifications/resources/subscriber.ex:#{__ENV__.line})"
-          # )
-
-          # Orcasite.Emails.deliver_magic_link(user, token)
           :ok
         end
       end
@@ -65,21 +71,12 @@ defmodule Orcasite.Notifications.Subscriber do
     tokens do
       enabled? true
       token_resource Orcasite.Notifications.Token
+      require_token_presence_for_authentication? false
 
       signing_secret fn _, _ ->
         {:ok, Application.get_env(:orcasite, OrcasiteWeb.Endpoint)[:secret_key_base]}
       end
     end
-  end
-
-  code_interface do
-    define :by_email, args: [:email]
-  end
-
-  resource do
-    description """
-    A subscriber object. Can relate to an individual, an organization, a newsletter, or an admin.
-    """
   end
 
   actions do

@@ -5,13 +5,13 @@ defmodule Orcasite.Accounts.Token do
     extensions: [AshAuthentication.TokenResource],
     authorizers: [Ash.Policy.Authorizer]
 
-  token do
-    domain Orcasite.Accounts
-  end
-
   postgres do
     table "tokens"
     repo Orcasite.Repo
+  end
+
+  token do
+    domain Orcasite.Accounts
   end
 
   policies do

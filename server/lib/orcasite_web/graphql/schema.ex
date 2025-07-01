@@ -5,15 +5,14 @@ defmodule OrcasiteWeb.Schema do
 
   use AshGraphql, domains: @domains
 
-  import_types Absinthe.Type.Custom
-  import_types OrcasiteWeb.Graphql.Types.Accounts
-
+  import_types(Absinthe.Type.Custom)
+  import_types(OrcasiteWeb.Graphql.Types.Accounts)
 
   query do
   end
 
   mutation do
-    import_fields :accounts_user_mutations
+    import_fields(:accounts_user_mutations)
   end
 
   subscription do

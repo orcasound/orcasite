@@ -20,7 +20,8 @@ defmodule Orcasite.Notifications.Changes.ExtractNotificationInstanceMeta do
     with {:get_sub, {:ok, subscription}} <-
            {:get_sub, Ash.get(Subscription, changeset.arguments.subscription)},
          {:get_notif, {:ok, notification}} <-
-           {:get_notif, Ash.get(Notification, changeset.arguments.notification, authorize?: false)} do
+           {:get_notif,
+            Ash.get(Notification, changeset.arguments.notification, authorize?: false)} do
       changeset
       |> Ash.Changeset.change_attribute(:meta, %{
         email: Map.get(subscription.meta, "email"),

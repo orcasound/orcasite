@@ -164,19 +164,14 @@ defmodule Orcasite.Radio.Feed do
          )
          |> then(fn query ->
            if not is_nil(to_time) do
-             query
-             |> where(
-               [d],
-               d.timestamp <= ^to_time
-             )
+             where(query, [d], d.timestamp <= ^to_time)
            else
              query
            end
          end)
          |> then(fn query ->
            if not is_nil(category) do
-             query
-             |> where([d], d.category == ^category)
+             where(query, [d], d.category == ^category)
            else
              query
            end

@@ -40,6 +40,7 @@ defmodule Orcasite.Accounts.User do
 
   authentication do
     domain Orcasite.Accounts
+    session_identifier :jti
 
     strategies do
       password :password do
@@ -50,10 +51,8 @@ defmodule Orcasite.Accounts.User do
 
         resettable do
           sender fn user, token, opts ->
-            Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-              Orcasite.Accounts.Email.reset_password(user, token, opts)
-              |> Orcasite.Mailer.deliver()
-            end)
+            Orcasite.Accounts.Email.reset_password(user, token, opts)
+            |> Orcasite.Mailer.deliver()
           end
         end
       end
@@ -63,6 +62,7 @@ defmodule Orcasite.Accounts.User do
       enabled? true
       token_resource Orcasite.Accounts.Token
       signing_secret Orcasite.Accounts.Secrets
+      require_token_presence_for_authentication? false
     end
 
     select_for_senders [:id, :email, :first_name, :last_name]

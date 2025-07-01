@@ -25,7 +25,7 @@ defmodule Orcasite.Notifications.Email do
       assigns
       |> Map.put(
         :unsubscribe_url,
-        url(~p"/s/auth/subscription/unsubscribe?token=#{assigns.unsubscribe_token}")
+        url(~p"/s/unsubscribe?token=#{assigns.unsubscribe_token}")
       )
 
     """
@@ -106,7 +106,7 @@ defmodule Orcasite.Notifications.Email do
       assigns
       |> Map.put(
         :unsubscribe_url,
-        url(~p"/s/auth/subscription/unsubscribe?token=#{assigns.unsubscribe_token}")
+        url(~p"/s/subscription/unsubscribe?token=#{assigns.unsubscribe_token}")
       )
 
     """

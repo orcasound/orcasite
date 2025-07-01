@@ -25,13 +25,13 @@ defmodule OrcasiteWeb.ChannelCase do
     end
   end
 
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Orcasite.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Orcasite.Repo, {:shared, self()})
     end
+
     :ok
   end
-
 end
