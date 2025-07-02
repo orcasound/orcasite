@@ -2,13 +2,11 @@ import {
   Close,
   Feedback,
   Home,
-  Menu,
+  Menu as MenuIcon,
   Notifications,
 } from "@mui/icons-material";
 import {
-  AppBar,
   Box,
-  Button,
   Divider,
   Drawer,
   IconButton,
@@ -17,39 +15,18 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
-  Typography,
 } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 
-import Link from "@/components/Link";
 import wordmark from "@/public/wordmark/wordmark-white.svg";
-import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
+import { displayMobileOnly } from "@/styles/responsive";
 import { analytics } from "@/utils/analytics";
 
-export default function Header({
-  onBrandClick,
-}: {
-  onBrandClick?: () => void;
-}) {
-  return (
-    <AppBar
-      position="static"
-      sx={{
-        // Keep header above the side drawer
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-      }}
-    >
-      <Toolbar>
-        <Mobile onBrandClick={onBrandClick} />
-        <Desktop />
-      </Toolbar>
-    </AppBar>
-  );
-}
+import UserMenu from "./AccountMenu";
+import Brand from "./Brand";
 
-function Mobile({
+export default function Mobile({
   window,
   onBrandClick,
 }: {
@@ -103,9 +80,10 @@ function Mobile({
           color="inherit"
           onClick={handleMenuToggle}
         >
-          {menuIsOpen ? <Close /> : <Menu />}
+          {menuIsOpen ? <Close /> : <MenuIcon />}
         </IconButton>
         <Brand onClick={onBrandClick} />
+        <UserMenu sx={{ marginLeft: "auto", paddingLeft: 1 }} />
       </Box>
       <nav>
         <Drawer
@@ -171,117 +149,5 @@ function Mobile({
         </Drawer>
       </nav>
     </Box>
-  );
-}
-
-function Desktop() {
-  const pages = [
-    {
-      label: "About us",
-      url: "https://www.orcasound.net/",
-      onClick: () => analytics.nav.aboutTabClicked(),
-    },
-    {
-      label: "Send feedback",
-      url: "https://forms.gle/wKpAnxzUh9a5LMfd7",
-      onClick: () => analytics.nav.feedbackTabClicked(),
-    },
-  ];
-  return (
-    <Box sx={{ ...displayDesktopOnly, width: "100%" }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: 1,
-        }}
-      >
-        <Brand />
-        <Box sx={{ display: "flex" }}>
-          {pages.map((page) => (
-            <Button
-              onClick={() => page.onClick && page.onClick()}
-              href={page.url}
-              target="_blank"
-              key={page.label}
-              sx={{
-                my: 2,
-                mx: 1,
-                color: "base.contrastText",
-                display: "block",
-              }}
-            >
-              {page.label}
-            </Button>
-          ))}
-          <Link
-            href="https://docs.google.com/forms/d/1oYSTa3QeAAG-G_eTxjabrXd264zVARId9tp2iBRWpFs/edit"
-            title="Get notified when there's whale activity."
-            target="_blank"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textDecoration: "none",
-              textTransform: "uppercase",
-              "&:hover": { color: "#ccc" },
-              mx: 1,
-            }}
-            onClick={() => analytics.nav.notificationsClicked()}
-          >
-            <Button
-              variant="outlined"
-              // color="info"
-              startIcon={<Notifications />}
-              sx={{
-                borderRadius: 8,
-                backgroundColor: "white",
-                "&:hover": {
-                  borderColor: "#a2d1cf",
-                  backgroundColor: "#efefef",
-                },
-                "&:focus": {
-                  borderColor: "#a2d1cf",
-                  backgroundColor: "#efefef",
-                },
-              }}
-            >
-              Get notified
-            </Button>
-          </Link>
-        </Box>
-      </Box>
-    </Box>
-  );
-}
-
-function Brand({ onClick }: { onClick?: () => void }) {
-  return (
-    <Typography variant="h6" noWrap overflow="visible">
-      <Link
-        href="/"
-        color="inherit"
-        underline="none"
-        sx={{
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onClick={() => {
-          if (onClick) onClick();
-          analytics.nav.logoClicked();
-        }}
-      >
-        <Image
-          src={wordmark.src}
-          alt="Orcasound"
-          width={140}
-          height={60}
-          priority={true}
-        />
-      </Link>
-    </Typography>
   );
 }
