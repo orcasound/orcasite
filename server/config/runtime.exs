@@ -21,7 +21,7 @@ if System.get_env("PHX_SERVER") do
   config :orcasite, OrcasiteWeb.Endpoint, server: true
 end
 
-config :orcasite, :prod_host, System.get_env("HOST_URL", "live.orcasound.net")
+config :orcasite, :prod_host, System.get_env("PROD_HOST_URL", "live.orcasound.net")
 
 if config_env() == :prod do
   database_url =
