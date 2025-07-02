@@ -163,18 +163,23 @@ const DetectionsPage: NextPageWithLayout = () => {
             {candidatesQuery.isSuccess && (
               <TableFooter>
                 <TableRow>
-                  <TablePaginationWrapper
-                    count={candidatesQuery.data?.candidates?.count || 0}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={(e, pg) => {
-                      setPage(pg);
-                    }}
-                    onRowsPerPageChange={(e) => {
-                      setRowsPerPage(Number(e.target.value));
-                    }}
-                    rowsPerPageOptions={[10, 50, 100, 1000]}
-                  />
+                  <TableCell
+                    colSpan={currentUser?.moderator ? 9 : 8}
+                    sx={{ padding: 0 }}
+                  >
+                    <TablePaginationWrapper
+                      count={candidatesQuery.data?.candidates?.count || 0}
+                      page={page}
+                      rowsPerPage={rowsPerPage}
+                      onPageChange={(e, pg) => {
+                        setPage(pg);
+                      }}
+                      onRowsPerPageChange={(e) => {
+                        setRowsPerPage(Number(e.target.value));
+                      }}
+                      rowsPerPageOptions={[10, 50, 100, 1000]}
+                    />
+                  </TableCell>
                 </TableRow>
               </TableFooter>
             )}
