@@ -1,0 +1,13 @@
+fragment DetectionParts on Detection {
+  id
+  category
+  description
+  listenerCount
+  playlistTimestamp
+  playerOffset
+  timestamp
+  visible
+  sourceIp
+  source
+  feedId
+}
