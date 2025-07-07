@@ -36,6 +36,10 @@ defmodule Orcasite.Accounts.User do
 
   relationships do
     has_many :item_tags, Orcasite.Radio.ItemTag
+
+    has_many :valid_api_keys, Orcasite.Accounts.ApiKey do
+      filter expr(valid)
+    end
   end
 
   authentication do
@@ -55,6 +59,11 @@ defmodule Orcasite.Accounts.User do
             |> Orcasite.Mailer.deliver()
           end
         end
+      end
+
+      api_key :api_key do
+        api_key_relationship :valid_api_keys
+        api_key_hash_attribute :api_key_hash
       end
     end
 
@@ -159,6 +168,11 @@ defmodule Orcasite.Accounts.User do
                 _, _, _ ->
                   {:ok, []}
               end)
+    end
+
+    read :sign_in_with_api_key do
+      argument :api_key, :string, allow_nil?: false
+      prepare AshAuthentication.Strategy.ApiKey.SignInPreparation
     end
   end
 

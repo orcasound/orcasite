@@ -72,6 +72,7 @@ defmodule Orcasite.Notifications.Subscription do
 
     strategies do
       magic_link :unsubscribe do
+        require_interaction? true
         identity_field :id
 
         single_use_token? false
