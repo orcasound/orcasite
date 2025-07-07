@@ -88,8 +88,7 @@ defmodule Orcasite.Mixfile do
       {
         :ash_authentication_phoenix,
         # Magic link submit_label override fix for unsub link
-        github: "skanderm/ash_authentication_phoenix",
-        ref: "01cff68c675aa35827ea3a3b8ec17ead62d48637"
+        github: "team-alembic/ash_authentication_phoenix", ref: "104b3b"
       },
       {:syn, "~> 3.3"},
       {:mjml, "~> 4.0"},
