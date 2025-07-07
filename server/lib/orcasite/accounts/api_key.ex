@@ -54,10 +54,16 @@ defmodule Orcasite.Accounts.ApiKey do
   actions do
     defaults [:read, :destroy]
 
-    update :update do
-      primary? true
-      accept [:disabled_at]
+    update :set_expiration do
+      accept [:expires_at]
+      require_atomic? false
+      validate __MODULE__.Validations.StillValid
+      validate __MODULE__.Validations.ValidExpiration
+    end
+
+    update :disable do
       validate attributes_absent(:disabled_at)
+      change set_attribute(:disabled_at, &DateTime.utc_now/0)
     end
 
     create :create do
