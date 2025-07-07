@@ -87,12 +87,16 @@ defmodule Orcasite.Radio.Detection do
       authorize_if always()
     end
 
-    bypass action_type(:create) do
+    bypass action(:seed) do
       authorize_if always()
     end
 
-    bypass action(:update_candidate) do
+    bypass action(:submit_detection) do
       authorize_if always()
+    end
+
+    bypass action(:submit_machine_detection) do
+      authorize_if actor_attribute_equals(:detection_bot, true)
     end
 
     policy changing_attributes([:visible]) do
@@ -213,6 +217,7 @@ defmodule Orcasite.Radio.Detection do
         accept [
           :id,
           :source_ip,
+          :source,
           :playlist_timestamp,
           :player_offset,
           :listener_count,
@@ -224,6 +229,7 @@ defmodule Orcasite.Radio.Detection do
 
         upsert_fields [
           :source_ip,
+          :source,
           :playlist_timestamp,
           :player_offset,
           :listener_count,
@@ -309,6 +315,7 @@ defmodule Orcasite.Radio.Detection do
     create :submit_machine_detection do
       accept [:timestamp, :feed_id, :description]
 
+      change set_attribute(:user_id, actor(:id))
       change set_attribute(:source_ip, context(:actor_ip))
       change set_attribute(:category, :whale)
       change set_attribute(:source, :machine)
@@ -316,10 +323,13 @@ defmodule Orcasite.Radio.Detection do
 
       change before_action(fn change, _context ->
                feed_stream =
-                 Orcasite.Radio.FeedStream.for_timestamp!(%{
-                   feed_id: change.attributes.feed_id,
-                   timestamp: change.attributes.timestamp
-                 })
+                 Orcasite.Radio.FeedStream.for_timestamp!(
+                   %{
+                     feed_id: change.attributes.feed_id,
+                     timestamp: change.attributes.timestamp
+                   },
+                   authorize?: false
+                 )
 
                # Get feed stream for detection timestamp, fetch
                # playlist timestamp and calculat player offset
@@ -364,6 +374,7 @@ defmodule Orcasite.Radio.Detection do
       :listener_count,
       :timestamp,
       :description,
+      :source,
       :category,
       :inserted_at
     ]
