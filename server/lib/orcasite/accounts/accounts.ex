@@ -4,6 +4,7 @@ defmodule Orcasite.Accounts do
   resources do
     resource Orcasite.Accounts.User
     resource Orcasite.Accounts.Token
+    resource Orcasite.Accounts.ApiKey
   end
 
   admin do

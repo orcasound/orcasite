@@ -47,6 +47,10 @@ defmodule OrcasiteWeb.Router do
     plug :accepts, ["json"]
     plug :load_from_bearer
     plug :set_actor_ip
+
+    plug AshAuthentication.Strategy.ApiKey.Plug,
+      resource: Orcasite.Accounts.User,
+      required?: false
   end
 
   pipeline :graphql do
