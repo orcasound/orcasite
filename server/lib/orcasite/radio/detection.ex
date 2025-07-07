@@ -332,7 +332,7 @@ defmodule Orcasite.Radio.Detection do
                  )
 
                # Get feed stream for detection timestamp, fetch
-               # playlist timestamp and calculat player offset
+               # playlist timestamp and calculate player offset
                change
                |> Ash.Changeset.force_change_attributes(%{
                  playlist_timestamp: DateTime.to_unix(feed_stream.start_time),
