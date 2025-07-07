@@ -24,7 +24,7 @@ defmodule OrcasiteWeb.JsonApi.DetectionsTest do
                    "player_offset" => _,
                    "playlist_timestamp" => _,
                    "timestamp" => _,
-                   "source" => "MACHINE"
+                   "source" => "machine"
                  },
                  "id" => _,
                  "links" => %{},
