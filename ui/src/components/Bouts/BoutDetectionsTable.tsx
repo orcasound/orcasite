@@ -26,7 +26,10 @@ export function BoutDetectionsTable({
   playerControls,
 }: {
   detections: Array<
-    Pick<Detection, "id" | "category" | "timestamp" | "description"> & {
+    Pick<
+      Detection,
+      "id" | "category" | "timestamp" | "description" | "source"
+    > & {
       candidate?: Maybe<Pick<Candidate, "id">>;
     }
   >;
@@ -44,6 +47,7 @@ export function BoutDetectionsTable({
             <TableCell>#</TableCell>
             <TableCell>ID</TableCell>
             <TableCell>Category</TableCell>
+            <TableCell>Source</TableCell>
             <TableCell>Description</TableCell>
             <TableCell align="right">Timestamp</TableCell>
             <TableCell align="right">Candidate</TableCell>
@@ -79,6 +83,9 @@ export function BoutDetectionsTable({
                 </TableCell>
                 <TableCell>
                   <Chip label={det.category} />
+                </TableCell>
+                <TableCell>
+                  <Chip label={det.source} />
                 </TableCell>
                 <TableCell>{det.description}</TableCell>
                 <TableCell

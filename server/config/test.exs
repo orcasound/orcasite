@@ -53,6 +53,7 @@ config :ex_aws,
   ],
   region: "us-west-2"
 
+config :bcrypt_elixir, log_rounds: 1
 config :orcasite, :env, :test
 
 # Import locally defined secrets & overrides. This must remain at the bottom of

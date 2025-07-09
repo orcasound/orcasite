@@ -1,7 +1,8 @@
 defmodule OrcasiteWeb.ModeratorTest do
   use OrcasiteWeb.ConnCase
 
-  import OrcasiteWeb.TestSupport.AuthenticationHelper
+  import OrcasiteWeb.TestSupport.AuthenticationHelper,
+    only: [create_user: 1, create_user: 2, sign_in_user: 2]
 
   @moderator_params %{
     email: "moderator@example.com",

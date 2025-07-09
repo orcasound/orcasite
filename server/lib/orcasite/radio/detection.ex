@@ -45,6 +45,12 @@ defmodule Orcasite.Radio.Detection do
     attribute :description, :string, public?: true
     attribute :visible, :boolean, default: true, public?: true
 
+    attribute :source, __MODULE__.Types.Source do
+      default :human
+      allow_nil? false
+      public? true
+    end
+
     attribute :category, Orcasite.Types.DetectionCategory do
       # TODO: Figure out what to do with old detections
       # without a category
@@ -65,6 +71,8 @@ defmodule Orcasite.Radio.Detection do
 
     belongs_to :feed, Feed do
       public? true
+      writable? true
+      allow_nil? false
     end
 
     belongs_to :user, Orcasite.Accounts.User
@@ -79,12 +87,16 @@ defmodule Orcasite.Radio.Detection do
       authorize_if always()
     end
 
-    bypass action_type(:create) do
+    bypass action(:seed) do
       authorize_if always()
     end
 
-    bypass action(:update_candidate) do
+    bypass action(:submit_detection) do
       authorize_if always()
+    end
+
+    bypass action(:submit_machine_detection) do
+      authorize_if actor_attribute_equals(:detection_bot, true)
     end
 
     policy changing_attributes([:visible]) do
@@ -205,6 +217,7 @@ defmodule Orcasite.Radio.Detection do
         accept [
           :id,
           :source_ip,
+          :source,
           :playlist_timestamp,
           :player_offset,
           :listener_count,
@@ -216,6 +229,7 @@ defmodule Orcasite.Radio.Detection do
 
         upsert_fields [
           :source_ip,
+          :source,
           :playlist_timestamp,
           :player_offset,
           :listener_count,
@@ -244,25 +258,13 @@ defmodule Orcasite.Radio.Detection do
 
       argument :feed_id, :string, allow_nil?: false
 
-      argument :playlist_timestamp, :integer, allow_nil?: false
-      argument :player_offset, :decimal, allow_nil?: false
-      argument :listener_count, :integer, allow_nil?: true
-      argument :description, :string
-
-      argument :category, Orcasite.Types.DetectionCategory do
-        allow_nil? false
-      end
-
       argument :send_notifications, :boolean, default: true
 
-      change set_attribute(:playlist_timestamp, arg(:playlist_timestamp))
-      change set_attribute(:player_offset, arg(:player_offset))
-      change set_attribute(:listener_count, arg(:listener_count))
-      change set_attribute(:description, arg(:description))
-      change set_attribute(:category, arg(:category))
       change set_attribute(:source_ip, context(:actor_ip))
 
       change manage_relationship(:feed_id, :feed, type: :append)
+
+      change __MODULE__.Changes.UpdateCandidate
 
       change fn
         changeset, %{actor: %Orcasite.Accounts.User{} = actor} ->
@@ -274,9 +276,10 @@ defmodule Orcasite.Radio.Detection do
       end
 
       change fn changeset, _context ->
-        playlist_timestamp = changeset |> Ash.Changeset.get_argument(:playlist_timestamp)
-        player_offset = changeset |> Ash.Changeset.get_argument(:player_offset)
-        category = changeset |> Ash.Changeset.get_argument(:category)
+        playlist_timestamp =
+          changeset |> Ash.Changeset.get_argument_or_attribute(:playlist_timestamp)
+
+        player_offset = changeset |> Ash.Changeset.get_argument_or_attribute(:player_offset)
 
         changeset
         |> Ash.Changeset.change_attribute(
@@ -287,44 +290,6 @@ defmodule Orcasite.Radio.Detection do
           })
         )
         |> Ash.Changeset.after_action(fn changeset, detection ->
-          # Happens first
-          # Find or create candidate, update detection with candidate
-          candidate =
-            Candidate
-            |> Ash.Query.for_read(:find_nearby_candidate, %{
-              timestamp: detection.timestamp,
-              feed_id: detection.feed_id,
-              category: category
-            })
-            |> Ash.read!()
-            |> case do
-              [] ->
-                Candidate
-                |> Ash.Changeset.for_create(:create, %{
-                  min_time: detection.timestamp,
-                  max_time: detection.timestamp,
-                  detection_count: 1,
-                  feed: %{id: detection.feed_id},
-                  category: category
-                })
-                |> Ash.create!()
-
-              [candidate] ->
-                candidate
-                |> Ash.Changeset.for_update(:update, %{
-                  detection_count: candidate.detection_count + 1,
-                  min_time: datetime_min(candidate.min_time, detection.timestamp),
-                  max_time: datetime_max(candidate.max_time, detection.timestamp)
-                })
-                |> Ash.update!(authorize?: false)
-            end
-
-          detection
-          |> Ash.Changeset.for_update(:update_candidate, %{candidate: candidate})
-          |> Ash.update(authorize?: false)
-        end)
-        |> Ash.Changeset.after_action(fn changeset, detection ->
-          # Happens second
           detection =
             detection
             |> Ash.load!([:feed, :candidate])
@@ -344,38 +309,45 @@ defmodule Orcasite.Radio.Detection do
         end)
       end
 
-      change after_action(fn _change, detection, _context ->
-               Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-                 feed = detection |> Ash.load!(:feed) |> Map.get(:feed)
+      change __MODULE__.Changes.GenerateSpectrograms
+    end
 
-                 # minutes
-                 buffer = 5
-                 now = DateTime.utc_now()
+    create :submit_machine_detection do
+      accept [:timestamp, :feed_id, :description]
 
-                 start_time = detection.timestamp |> DateTime.add(-buffer, :minute)
+      change set_attribute(:user_id, actor(:id))
+      change set_attribute(:source_ip, context(:actor_ip))
+      change set_attribute(:category, :whale)
+      change set_attribute(:source, :machine)
+      change set_attribute(:listener_count, 0)
 
-                 plus_buffer =
-                   detection.timestamp
-                   |> DateTime.add(buffer, :minute)
+      change before_action(fn change, _context ->
+               feed_stream =
+                 Orcasite.Radio.FeedStream.for_timestamp!(
+                   %{
+                     feed_id: change.attributes.feed_id,
+                     timestamp: change.attributes.timestamp
+                   },
+                   authorize?: false
+                 )
 
-                 end_time =
-                   plus_buffer
-                   |> DateTime.compare(now)
-                   |> case do
-                     :gt -> now
-                     _ -> plus_buffer
-                   end
-
-                 feed
-                 |> Ash.Changeset.for_update(:generate_spectrogram, %{
-                   start_time: start_time,
-                   end_time: end_time
-                 })
-                 |> Ash.update(authorize?: false)
-               end)
-
-               {:ok, detection}
+               # Get feed stream for detection timestamp, fetch
+               # playlist timestamp and calculate player offset
+               change
+               |> Ash.Changeset.force_change_attributes(%{
+                 playlist_timestamp: DateTime.to_unix(feed_stream.start_time),
+                 player_offset:
+                   DateTime.diff(
+                     change.attributes.timestamp,
+                     feed_stream.start_time,
+                     :millisecond
+                   ) /
+                     1000
+               })
              end)
+
+      change __MODULE__.Changes.UpdateCandidate
+      change __MODULE__.Changes.GenerateSpectrograms
     end
   end
 
@@ -402,6 +374,7 @@ defmodule Orcasite.Radio.Detection do
       :listener_count,
       :timestamp,
       :description,
+      :source,
       :category,
       :inserted_at
     ]
@@ -412,6 +385,7 @@ defmodule Orcasite.Radio.Detection do
       base "/detections"
 
       index :index
+      post :submit_machine_detection
     end
   end
 
@@ -427,20 +401,6 @@ defmodule Orcasite.Radio.Detection do
     mutations do
       create :submit_detection, :submit_detection
       update :set_detection_visible, :set_visible
-    end
-  end
-
-  defp datetime_min(time_1, time_2) do
-    case DateTime.compare(time_1, time_2) do
-      :lt -> time_1
-      _ -> time_2
-    end
-  end
-
-  defp datetime_max(time_1, time_2) do
-    case DateTime.compare(time_1, time_2) do
-      :gt -> time_1
-      _ -> time_2
     end
   end
 

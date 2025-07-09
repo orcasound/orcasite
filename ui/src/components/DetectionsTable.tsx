@@ -40,7 +40,19 @@ export default function DetectionsTable({
   candidate,
   onDetectionUpdate,
 }: {
-  detections: Detection[];
+  detections: Pick<
+    Detection,
+    | "id"
+    | "visible"
+    | "timestamp"
+    | "playerOffset"
+    | "playlistTimestamp"
+    | "category"
+    | "listenerCount"
+    | "source"
+    | "sourceIp"
+    | "description"
+  >[];
   feed: Pick<Feed, "slug" | "nodeName" | "bucket">;
   candidate: Pick<Candidate, "id" | "visible">;
   onDetectionUpdate: () => void;
@@ -102,6 +114,7 @@ export default function DetectionsTable({
             <TableCell>Node</TableCell>
             <TableCell>Listeners</TableCell>
             <TableCell>Category</TableCell>
+            <TableCell>Source</TableCell>
             <TableCell>Description</TableCell>
             <TableCell align="right">Timestamp</TableCell>
             {currentUser?.moderator && (
@@ -134,6 +147,9 @@ export default function DetectionsTable({
                 <TableCell>{feed.slug}</TableCell>
                 <TableCell>{detection.listenerCount}</TableCell>
                 <TableCell>{detection.category?.toLowerCase()}</TableCell>
+                <TableCell>
+                  <Chip label={detection.source} />
+                </TableCell>
                 <TableCell>{detection.description}</TableCell>
                 <TableCell align="right" title={detection.timestamp.toString()}>
                   {formatTimestamp(detection.timestamp)}

@@ -23,6 +23,7 @@ defmodule Orcasite.Accounts.User do
     attribute :last_name, :string, public?: true
     attribute :admin, :boolean, default: false, allow_nil?: false, public?: true
     attribute :moderator, :boolean, default: false, allow_nil?: false, public?: true
+    attribute :detection_bot, :boolean, default: false, allow_nil?: false, public?: true
 
     attribute :username, :string do
       public? true
@@ -95,6 +96,10 @@ defmodule Orcasite.Accounts.User do
     end
 
     bypass action(:sign_in_with_password) do
+      authorize_if always()
+    end
+
+    bypass action(:sign_in_with_api_key) do
       authorize_if always()
     end
 

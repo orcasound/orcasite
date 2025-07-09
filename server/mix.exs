@@ -119,7 +119,8 @@ defmodule Orcasite.Mixfile do
       {:sourceror, "~> 1.7", only: [:dev, :test]},
       {:recase, "~> 0.5"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
-      {:ash_oban, "~> 0.4.9"}
+      {:ash_oban, "~> 0.4.9"},
+      {:faker, "~> 0.19.0-alpha.1", only: :test}
     ]
   end
 
