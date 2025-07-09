@@ -28,7 +28,7 @@ import { TimelineTickerLayer } from "./TimelineTickerLayer";
 
 export const TICKER_HEIGHT = 30;
 const SPECTROGRAM_HEIGHT = 300;
-const PIXEL_ZOOM_FACTOR = 50;
+export const PIXEL_ZOOM_FACTOR = 50;
 
 export type SpectrogramControls = {
   goToTime: (time: Date) => void;
@@ -131,7 +131,6 @@ export default function SpectrogramTimeline({
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [zoomLevel, setZoomLevel] = useState<number>(8);
   const [windowStartTime, setWindowStartTimeUnthrottled] = useState<Date>();
   const [windowEndTime, setWindowEndTimeUnthrottled] = useState<Date>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,6 +149,14 @@ export default function SpectrogramTimeline({
     { trailing: false },
   );
 
+  const initialZoom = calculateInitialZoom({
+    playerTimeRef,
+    boutStartTime,
+    boutEndTime,
+    timelineEndTime,
+  });
+
+  const [zoomLevel, setZoomLevel] = useState<number>(initialZoom ?? 8);
   const minZoom = 2;
   const maxZoom = 1600;
 
@@ -470,4 +477,18 @@ export default function SpectrogramTimeline({
       </Box>
     </>
   );
+}
+
+function calculateInitialZoom({
+  playerTimeRef,
+  boutStartTime,
+  boutEndTime,
+  timelineEndTime,
+}: {
+  playerTimeRef: MutableRefObject<Date>;
+  boutStartTime?: Date;
+  boutEndTime?: Date;
+  timelineEndTime?: Date;
+}) {
+  return 8;
 }
