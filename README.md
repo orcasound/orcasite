@@ -154,7 +154,10 @@ Once everything finishes starting up, you'll be able to access the UI at [`http:
 
 ## Database Seeding
 
-The development environment automatically seeds the database with real data from the production server, including detections, audio images, and other records. This happens via background jobs that sync data every 1 minute.
+The development environment automatically seeds the database with real data from the production server, including detections, audio images, and other records. This happens via background jobs that sync data every 1 minute. Note: Seeded resources will only work with feeds that match production (i.e. with the same `id` and `slug`). Clear your data with `mix ecto.drop` and re-initialize it with `mix ecto.setup` to get the latest data from the production servers.
+
+### Seeding on setup
+Running `mix run priv/repo/seeds.exs` will seed all production data from the last hour, and the last 100 bouts, audio images, and detections. This script is included when `mix ecto.setup` is run.
 
 ### Configuration
 
@@ -162,7 +165,7 @@ Three environment variables control this behavior:
 
 - `ENABLE_SEED_FROM_PROD` - Enables the seeding feature (default: `true` in dev)
 - `AUTO_UPDATE_SEEDED_RECORDS` - Automatically syncs new data every 1 minute (default: `true` in dev)
-- `AUTO_DELETE_SEEDED_RECORDS` - Automatically removes seeded data hourly if the data is older than 7 days, excluding feeds (default: `true` in dev)
+- `AUTO_DELETE_SEEDED_RECORDS` - Automatically removes all data hourly if the data is older than 7 days, excluding feeds (default: `true` in dev). Note: If you pull data older than 7 days and this setting is turned on, this will delete that data on the hour. Turn this setting off if you'd like to work with data older than a week.
 
 To disable automatic seeding, set these to `false` in your environment (e.g. in `docker-compose.dev.yml`) or in `server/config/dev.secret.exs`:
 
@@ -170,7 +173,8 @@ To disable automatic seeding, set these to `false` in your environment (e.g. in 
 config :orcasite, enable_seed_from_prod: false
 ```
 
-You can also manually trigger seeding from the [`/seed` page](http://localhost:3000/seed) in the UI.
+### Manual seeding
+You can also manually trigger seeding from the [`/seed` page](http://localhost:3000/seed) in the UI. This lets you choose whatever resources you want to pull and within a time range of your choosing.
 
 ## Tests
 
