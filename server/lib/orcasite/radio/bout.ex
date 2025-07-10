@@ -207,9 +207,9 @@ defmodule Orcasite.Radio.Bout do
     change set_attribute(:name, expr(string_trim(arg(:name)))), where: present(arg(:name))
   end
 
-  validations do
-    validate string_length(:name, min: 3), where: present(:name), before_action?: true
-  end
+  # validations do
+  #   validate string_length(:name, min: 3), where: present(:name), before_action?: true
+  # end
 
   json_api do
     type "bout"
