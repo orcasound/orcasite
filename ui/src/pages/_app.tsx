@@ -44,7 +44,7 @@ const ReactQueryDevtoolsProd = React.lazy(() =>
   })),
 );
 
-type SetSocket = (sock: Socket) => Socket;
+type SetSocket = (sock: Socket) => void;
 export const SocketContext = createContext<{
   socket?: MutableRefObject<Socket | undefined>;
   setSocket?: SetSocket;

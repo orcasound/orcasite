@@ -19,7 +19,7 @@ export default function useSocket() {
   useEffect(() => {
     let newSocket: Socket | undefined;
     if (isBrowser) {
-      const newSocket = new Socket(socketEndpoint, {
+      newSocket = new Socket(socketEndpoint, {
         ...(userToken && { params: { token: userToken } }),
       });
 
