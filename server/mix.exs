@@ -52,7 +52,7 @@ defmodule Orcasite.Mixfile do
       {:phoenix_live_view, "~> 1.0.10"},
       {:phoenix_live_dashboard, "~> 0.8.0"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.3.1", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.16"},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
