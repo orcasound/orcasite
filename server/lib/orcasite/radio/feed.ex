@@ -3,7 +3,7 @@ defmodule Orcasite.Radio.Feed do
 
   use Ash.Resource,
     domain: Orcasite.Radio,
-    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshOban],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -84,7 +84,30 @@ defmodule Orcasite.Radio.Feed do
     end
   end
 
+  oban do
+    triggers do
+      trigger :store_latest_listener_count do
+        scheduler_cron "*/5 * * * *"
+        action :store_latest_listener_count
+        worker_read_action :read
+        queue :default
+        worker_module_name __MODULE__.AshOban.StoreLatestListenerCount.Worker
+        scheduler_module_name __MODULE__.AshOban.StoreLatestListenerCount.Scheduler
+      end
+    end
+  end
+
   relationships do
+    has_many :listener_counts, Orcasite.Radio.FeedListenerCount do
+      public? true
+    end
+
+    has_one :latest_listener_count, Orcasite.Radio.FeedListenerCount do
+      public? true
+      from_many? true
+      sort timestamp: :desc
+    end
+
     has_many :feed_streams, Orcasite.Radio.FeedStream do
       public? true
     end
@@ -103,6 +126,10 @@ defmodule Orcasite.Radio.Feed do
   end
 
   policies do
+    bypass AshOban.Checks.AshObanInteraction do
+      authorize_if always()
+    end
+
     bypass actor_attribute_equals(:admin, true) do
       authorize_if always()
     end
@@ -280,6 +307,13 @@ defmodule Orcasite.Radio.Feed do
                )
              end)
     end
+
+    update :store_latest_listener_count do
+      require_atomic? false
+      accept []
+
+      change __MODULE__.Changes.StoreLatestListenerCount
+    end
   end
 
   admin do
@@ -295,7 +329,7 @@ defmodule Orcasite.Radio.Feed do
   json_api do
     type "feed"
 
-    includes [:feed_streams]
+    includes [:feed_streams, :listener_counts]
 
     routes do
       base "/feeds"
