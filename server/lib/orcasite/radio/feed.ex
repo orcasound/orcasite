@@ -329,7 +329,7 @@ defmodule Orcasite.Radio.Feed do
   json_api do
     type "feed"
 
-    includes [:feed_streams, :listener_counts]
+    includes [:feed_streams, :listener_counts, :latest_listener_count]
 
     routes do
       base "/feeds"
