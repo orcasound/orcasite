@@ -1,5 +1,11 @@
 import { Download } from "@mui/icons-material";
-import { Box, IconButton, Popover, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  Popover,
+  Typography,
+} from "@mui/material";
 import JSZip from "jszip";
 import { useRef, useState } from "react";
 
@@ -7,46 +13,55 @@ import { useBoutExportQuery } from "@/graphql/generated";
 
 export default function BoutExport({ boutId }: { boutId: string }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const { refetch } = useBoutExportQuery({ boutId }, { enabled: false });
 
   const handleClick = () => {
-    refetch().then(({ data }) => {
-      const bout = data?.bout;
-      if (bout) {
-        const {
-          exportJson,
-          exportJsonFileName,
-          exportScript,
-          exportScriptFileName,
-        } = bout;
+    setIsLoading(true);
+    refetch()
+      .then(({ data }) => {
+        const bout = data?.bout;
+        if (bout) {
+          const {
+            exportJson,
+            exportJsonFileName,
+            exportScript,
+            exportScriptFileName,
+          } = bout;
 
-        if (
-          exportJson &&
-          exportJsonFileName &&
-          exportScript &&
-          exportScriptFileName
-        ) {
-          const zip = new JSZip();
-          zip.file(exportJsonFileName, exportJson);
-          zip.file(exportScriptFileName, exportScript);
-          zip.generateAsync({ type: "blob" }).then((content) => {
-            download(`orcasound_${bout.id}.zip`, content);
-          });
+          if (
+            exportJson &&
+            exportJsonFileName &&
+            exportScript &&
+            exportScriptFileName
+          ) {
+            const zip = new JSZip();
+            zip.file(exportJsonFileName, exportJson);
+            zip.file(exportScriptFileName, exportScript);
+            zip.generateAsync({ type: "blob" }).then((content) => {
+              download(`orcasound_${bout.id}.zip`, content);
+            });
 
-          if (buttonRef.current) {
-            setAnchorEl(buttonRef.current);
-            if (timeoutRef.current) {
-              clearTimeout(timeoutRef.current);
+            if (buttonRef.current) {
+              setAnchorEl(buttonRef.current);
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+              }
+              timeoutRef.current = window.setTimeout(() => {
+                setAnchorEl(null);
+              }, 3000);
             }
-            timeoutRef.current = window.setTimeout(() => {
-              setAnchorEl(null);
-            }, 3000);
           }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        console.error("Failed to export bout:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const open = Boolean(anchorEl);
@@ -69,8 +84,13 @@ export default function BoutExport({ boutId }: { boutId: string }) {
         <Typography variant="overline">Export bout</Typography>
       </Box>
       <Box>
-        <IconButton onClick={handleClick} title="Export bout" ref={buttonRef}>
-          <Download />
+        <IconButton
+          onClick={handleClick}
+          title="Export bout"
+          ref={buttonRef}
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress size={24} /> : <Download />}
         </IconButton>
       </Box>
 
