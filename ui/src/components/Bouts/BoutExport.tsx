@@ -40,19 +40,20 @@ export default function BoutExport({ boutId }: { boutId: string }) {
             const zip = new JSZip();
             zip.file(exportJsonFileName, exportJson);
             zip.file(exportScriptFileName, exportScript);
-            zip.generateAsync({ type: "blob" }).then((content) => {
-              download(`orcasound_${bout.id}.zip`, content);
-            });
 
-            if (buttonRef.current) {
-              setAnchorEl(buttonRef.current);
-              if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
+            return zip.generateAsync({ type: "blob" }).then((content) => {
+              download(`orcasound_${bout.id}.zip`, content);
+
+              if (buttonRef.current) {
+                setAnchorEl(buttonRef.current);
+                if (timeoutRef.current) {
+                  clearTimeout(timeoutRef.current);
+                }
+                timeoutRef.current = window.setTimeout(() => {
+                  setAnchorEl(null);
+                }, 3000);
               }
-              timeoutRef.current = window.setTimeout(() => {
-                setAnchorEl(null);
-              }, 3000);
-            }
+            });
           }
         }
       })
