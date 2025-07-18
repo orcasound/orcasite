@@ -13,9 +13,10 @@ import Head from "next/head";
 import { Socket } from "phoenix";
 import {
   createContext,
+  MutableRefObject,
   ReactElement,
   ReactNode,
-  SetStateAction,
+  useRef,
   useState,
 } from "react";
 import React from "react";
@@ -43,9 +44,10 @@ const ReactQueryDevtoolsProd = React.lazy(() =>
   })),
 );
 
+type SetSocket = (sock: Socket) => void;
 export const SocketContext = createContext<{
-  socket?: Socket;
-  setSocket?: React.Dispatch<SetStateAction<Socket | undefined>>;
+  socket?: MutableRefObject<Socket | undefined>;
+  setSocket?: SetSocket;
 }>({});
 
 // App needs to be customized in order to make MUI work with SSR
@@ -53,7 +55,8 @@ export const SocketContext = createContext<{
 // https://github.com/mui/material-ui/blob/master/examples/material-ui-nextjs-pages-router-ts/pages/_app.tsx
 export default function OrcasiteApp(props: AppPropsWithLayout) {
   const { Component, pageProps } = props;
-  const [socket, setSocket] = useState<Socket>();
+  const socket = useRef<Socket>();
+  const setSocket = (sock: Socket) => (socket.current = sock);
 
   // Allow pages to define custom per-page layout
   // Based on https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript

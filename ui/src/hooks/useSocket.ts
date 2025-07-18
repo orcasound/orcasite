@@ -17,17 +17,17 @@ export default function useSocket() {
     typeof currentUser?.token === "string" ? currentUser?.token : undefined;
 
   useEffect(() => {
-    let socket: Socket | undefined;
+    let newSocket: Socket | undefined;
     if (isBrowser) {
-      const socket = new Socket(socketEndpoint, {
+      newSocket = new Socket(socketEndpoint, {
         ...(userToken && { params: { token: userToken } }),
       });
 
-      socket.connect();
-      setSocket?.(socket);
+      newSocket.connect();
+      setSocket?.(newSocket);
     }
-    return () => socket?.disconnect();
+    return () => newSocket?.disconnect();
   }, [setSocket, userToken]);
 
-  return socket;
+  return socket?.current;
 }

@@ -49,4 +49,10 @@ defmodule OrcasiteWeb.Presence do
 
     {:ok, state}
   end
+
+  def fetch(_topic, presences) do
+    for {key, %{metas: metas}} <- presences, into: %{} do
+      {key, %{metas: metas, count: Enum.count(metas)}}
+    end
+  end
 end

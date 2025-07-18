@@ -17,17 +17,16 @@ export default function useFeedPresence(feedId?: string) {
     let channel: Channel | undefined;
 
     if (socket && feedId) {
-      const newChannel = socket.channel(`feed:${feedId}`, {});
-      channel = newChannel;
+      channel = socket.channel(`feed:${feedId}`, {});
 
-      const presence = new Presence(newChannel);
+      const presence = new Presence(channel);
       presence.onSync(() => {
         const state = Object.fromEntries(
           presence.list((id, pres) => [id, pres]),
         );
         setFeedPresence(state[feedId]);
       });
-      newChannel.join();
+      channel.join();
     }
 
     return () => {
@@ -46,14 +45,13 @@ export function useListenerCount(feedSlug: string) {
     let channel: Channel | undefined;
 
     if (socket) {
-      const newChannel = socket.channel(`listener_counts:${feedSlug}`, {});
-      channel = newChannel;
+      channel = socket.channel(`listener_counts:${feedSlug}`, {});
 
       channel.on("listener_counts_state", (payload) => {
         setListenerCount(payload.count || 0);
       });
 
-      newChannel.join();
+      channel.join();
     }
 
     return () => {
