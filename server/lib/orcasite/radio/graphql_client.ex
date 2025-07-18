@@ -29,7 +29,7 @@ defmodule Orcasite.Radio.GraphqlClient do
         query: query
       })
     )
-    |> Finch.request(Orcasite.Finch)
+    |> Finch.request(Orcasite.Finch, receive_timeout: :timer.seconds(60))
     |> case do
       {:ok, %{body: body}} -> Jason.decode(body)
       resp -> resp
