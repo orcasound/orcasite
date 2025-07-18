@@ -7,7 +7,6 @@ import {
   TableCell,
   TableFooter,
   TableHead,
-  TablePagination,
   TableRow,
 } from "@mui/material";
 import Head from "next/head";
@@ -15,6 +14,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
+import TablePaginationWrapper from "@/components/TablePaginationWrapper";
 import {
   CandidatesQuery,
   useCandidatesQuery,
@@ -67,10 +67,10 @@ const DetectionsPage: NextPageWithLayout = () => {
 
       <main>
         <h1>Reports</h1>
-        
+
         <Paper elevation={1} sx={{ overflow: "auto" }}>
           {candidatesQuery.isSuccess && (
-            <TablePagination
+            <TablePaginationWrapper
               component="div"
               count={candidatesQuery.data?.candidates?.count || 0}
               page={page}
@@ -82,15 +82,9 @@ const DetectionsPage: NextPageWithLayout = () => {
                 setRowsPerPage(Number(e.target.value));
               }}
               rowsPerPageOptions={[10, 50, 100, 1000]}
-              sx={{
-                borderBottom: 1,
-                borderColor: "divider",
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-              }}
+              showBottomBorder={true}
             />
-           )}
+          )}
           <Table>
             <TableHead>
               <TableRow>
@@ -169,18 +163,23 @@ const DetectionsPage: NextPageWithLayout = () => {
             {candidatesQuery.isSuccess && (
               <TableFooter>
                 <TableRow>
-                  <TablePagination
-                    count={candidatesQuery.data?.candidates?.count || 0}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={(e, pg) => {
-                      setPage(pg);
-                    }}
-                    onRowsPerPageChange={(e) => {
-                      setRowsPerPage(Number(e.target.value));
-                    }}
-                    rowsPerPageOptions={[10, 50, 100, 1000]}
-                  />
+                  <TableCell
+                    colSpan={currentUser?.moderator ? 9 : 8}
+                    sx={{ padding: 0 }}
+                  >
+                    <TablePaginationWrapper
+                      count={candidatesQuery.data?.candidates?.count || 0}
+                      page={page}
+                      rowsPerPage={rowsPerPage}
+                      onPageChange={(e, pg) => {
+                        setPage(pg);
+                      }}
+                      onRowsPerPageChange={(e) => {
+                        setRowsPerPage(Number(e.target.value));
+                      }}
+                      rowsPerPageOptions={[10, 50, 100, 1000]}
+                    />
+                  </TableCell>
                 </TableRow>
               </TableFooter>
             )}
