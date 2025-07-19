@@ -311,3 +311,19 @@ function toLocalISOString(date: Date) {
 SeedPage.getLayout = getSimpleLayout;
 
 export default SeedPage;
+
+// Hide the seed page in production when ENABLE_SEED_FROM_PROD is false
+export async function getStaticProps() {
+  // Check if seeding from production is enabled
+  const enableSeedFromProd = process.env.ENABLE_SEED_FROM_PROD === "true";
+
+  if (!enableSeedFromProd) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {}, // Return empty props when seeding is enabled
+  };
+}
