@@ -155,7 +155,11 @@ export default function SpectrogramTimeline({
 
   useEffect(() => {
     setZoomLevel(
-      calculateInitialZoom({ boutStartTime, boutEndTime, spectrogramWindow }),
+      calculateInitialZoom({
+        boutStartTime,
+        boutEndTime,
+        spectrogramWindow: spectrogramWindow.current,
+      }),
     );
   }, [boutStartTime, boutEndTime, spectrogramWindow]);
 
@@ -487,16 +491,16 @@ function calculateInitialZoom({
 }: {
   boutStartTime?: Date;
   boutEndTime?: Date;
-  spectrogramWindow: MutableRefObject<HTMLDivElement | null>;
+  spectrogramWindow: HTMLDivElement | null;
 }) {
-  if (boutStartTime && boutEndTime && spectrogramWindow.current) {
+  if (boutStartTime && boutEndTime && spectrogramWindow) {
     const boutDurationMinutes =
       differenceInMilliseconds(boutEndTime, boutStartTime) / 1000 / 60;
 
     const boutExtent = 0.4; // Cover about 40% of the window
     const targetWindowTime = boutDurationMinutes / boutExtent;
 
-    const windowWidth = spectrogramWindow.current.clientWidth;
+    const windowWidth = spectrogramWindow.clientWidth;
 
     // zoom_factor * zoom = pixelsPerMinute
     // targetWindowTime [minutes] * pixelsPerMinute = windowWidth
