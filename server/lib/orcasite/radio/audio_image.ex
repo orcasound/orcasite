@@ -81,6 +81,10 @@ defmodule Orcasite.Radio.AudioImage do
     end
   end
 
+  code_interface do
+    define :generate_spectrogram
+  end
+
   actions do
     defaults [:read, :destroy, create: :*, update: :*]
 
@@ -260,7 +264,7 @@ defmodule Orcasite.Radio.AudioImage do
       require_atomic? false
       change set_attribute(:status, :processing)
 
-      change after_action(fn _change, image, _context ->
+      change after_transaction(fn _change, {:ok, image}, _context ->
                # Only one feed segment at a time for now
                [feed_segment] = image |> Ash.load!(:feed_segments) |> Map.get(:feed_segments)
 

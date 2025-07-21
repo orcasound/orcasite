@@ -289,13 +289,14 @@ defmodule Orcasite.Radio.Feed do
                # we can change this to a single spectrogram with all those audio segments
 
                feed_segments =
-                 Orcasite.Radio.FeedSegment
-                 |> Ash.Query.for_read(:for_feed_range, %{
-                   feed_id: change.data.id,
-                   start_time: change.arguments.start_time,
-                   end_time: change.arguments.end_time
-                 })
-                 |> Ash.read!(authorize?: false)
+                 Orcasite.Radio.FeedSegment.for_feed_range!(
+                   %{
+                     feed_id: change.data.id,
+                     start_time: change.arguments.start_time,
+                     end_time: change.arguments.end_time
+                   },
+                   authorize?: false
+                 )
 
                audio_image_inputs = feed_segments |> Enum.map(&%{feed_segment_id: &1.id})
 
