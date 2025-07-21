@@ -10,7 +10,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
   end
 
   def export_script(_bout) do
-    ~S|#!/usr/bin/env python3
+    (~S|#!/usr/bin/env python3
       # A Python script to download an audio bout from live.orcasound.net. This will download ~10 second
       # .ts audio files in a bout-specific folder (orcasound_<bout_id>/) and use `ffmpeg` to combine them into a
       # single audio file in the format specified by the 'ext' option. Example:
@@ -20,7 +20,8 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
       import os
       import subprocess
       import urllib.request
-      from progress.bar import Bar
+      import sys
+      import time
 
 
       def load_file(file_name):
@@ -29,18 +30,32 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
               return json.loads(bout_data)
 
 
+      def progress_bar(iteration, total, prefix='', suffix='', length=30, fill='█'):
+          percent = ("{0:.1f}").format(100 * (iteration / float(total)))
+          filled_length = int(length * iteration // total)
+          bar = fill * filled_length + '-' * (length - filled_length)
+          sys.stdout.write(f'\r{prefix} | <> "|{bar}|" <> ~S|{percent}% {suffix}')
+
+
       def download_files(bout_json):
           bout_id = bout_json["id"]
           bout_ts_path = f"{bout_id}/ts"
           os.makedirs(bout_ts_path, exist_ok=True)  # Requires python >= 3.5
           feed_segments = bout_json["feed_segments"]
-          with Bar("Downloading files", max=len(feed_segments)) as bar:
-              for segment in feed_segments:
-                  file_name = segment["file_name"]
-                  file_path = f"{bout_ts_path}/{file_name}"
-                  if not os.path.exists(file_path):
-                      urllib.request.urlretrieve(segment["s3_url"], file_path)
-                  bar.next()
+          for iteration, segment in enumerate(feed_segments):
+            file_name = segment["file_name"]
+            file_path = f"{bout_ts_path}/{file_name}"
+            if not os.path.exists(file_path):
+                urllib.request.urlretrieve(segment["s3_url"], file_path)
+            progress_bar(
+                iteration + 1,
+                len(feed_segments),
+                prefix="Downloading...",
+                suffix=f"[{iteration + 1} / {len(feed_segments)} files]",
+                length=30,
+                fill="█",
+            )
+          print("\n")
 
 
       def combine_files(bout_json, output_ext):
@@ -53,18 +68,23 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
           feed_segments = sorted(
               bout_json["feed_segments"], key=lambda seg: seg["start_time"]
           )
-          times = [seg["start_time"] for seg in feed_segments]
-          print(f"{times =}")
           list_file = f"{bout_path}/segments.txt"
 
           combined_path = f"{bout_id}.{output_ext}"
 
           write_list_file(feed_segments, ts_path, list_file)
 
-          subprocess.run([
-              "ffmpeg", "-fflags", "+igndts", "-f", "concat", "-safe", "0",
-               "-i", f"./{list_file}", "-c", "copy", f"./{combined_path}"
-          ], check=True)
+          cmd = ["ffmpeg", "-fflags", "+igndts", "-f", "concat", "-safe", "0", "-i", f"./{list_file}"]
+
+          if output_ext in ["mp4", "wav"]:
+              cmd.extend(["-c", "copy"])
+
+          cmd.append(f"./{combined_path}")
+
+          res = subprocess.run(cmd)
+
+          if res.returncode != 0:
+              raise "ffmpeg failed, see ffmpeg output"
 
 
       def write_list_file(feed_segments, bout_ts_path, list_file):
@@ -109,7 +129,7 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
           download_files(bout_json)
           combine_files(bout_json, output)
           print(f"Bout file: {bout_id}.{output}")
-    |
+    |)
     |> String.replace("\n      ", "\n")
   end
 end
