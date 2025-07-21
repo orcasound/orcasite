@@ -102,6 +102,10 @@ defmodule Orcasite.Radio.FeedSegment do
     end
   end
 
+  code_interface do
+    define :for_feed_range
+  end
+
   actions do
     defaults [:read, :update, :destroy]
 
