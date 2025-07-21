@@ -74,10 +74,17 @@ defmodule Orcasite.Radio.Bout.Calculations.BoutExportScript do
 
           write_list_file(feed_segments, ts_path, list_file)
 
-          subprocess.run([
-              "ffmpeg", "-fflags", "+igndts", "-f", "concat", "-safe", "0",
-               "-i", f"./{list_file}", "-c", "copy", f"./{combined_path}"
-          ], check=True)
+          cmd = ["ffmpeg", "-fflags", "+igndts", "-f", "concat", "-safe", "0", "-i", f"./{list_file}"]
+
+          if output_ext in ["mp4", "wav"]:
+              cmd.extend(["-c", "copy"])
+
+          cmd.append(f"./{combined_path}")
+
+          res = subprocess.run(cmd)
+
+          if res.returncode != 0:
+              raise "ffmpeg failed, see ffmpeg output"
 
 
       def write_list_file(feed_segments, bout_ts_path, list_file):
