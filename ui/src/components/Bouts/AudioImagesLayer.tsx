@@ -90,7 +90,7 @@ export function AudioImagesLayer({
                 backgroundColor: (theme) => theme.palette.accent2.main,
                 ...(audioImage.status === "complete" && {
                   backgroundImage: `url('${audioImageUrl}')`,
-                  backgroundSize: "auto 100%",
+                  backgroundSize: "100% 100%",
                 }),
               }}
               display="flex"
