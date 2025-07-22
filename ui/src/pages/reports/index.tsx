@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Head from "next/head";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import {
@@ -55,13 +55,12 @@ const DetectionsPage: NextPageWithLayout = () => {
     sort: [{ field: "MIN_TIME", order: "DESC" }],
   });
 
-  const candidates = useMemo(
-    () => candidatesQuery?.data?.candidates?.results ?? [],
-    [candidatesQuery?.data?.candidates?.results],
-  );
+  const candidatesData = candidatesQuery?.data?.candidates;
+  const candidates = candidatesData?.results ?? [];
+  const candidatesCount = candidatesData?.count ?? 0;
 
   const paginationProps = {
-    count: candidatesQuery.data?.candidates?.count || 0,
+    count: candidatesCount,
     page: page,
     rowsPerPage: rowsPerPage,
     onPageChange: (_e: unknown, newPage: number) => setPage(newPage),
