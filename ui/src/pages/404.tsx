@@ -1,30 +1,11 @@
 import { Box, Button, Container, Typography } from "@mui/material";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import Link from "@/components/Link";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const Custom404: NextPageWithLayout = () => {
-  const router = useRouter();
-  const [countdown, setCountdown] = useState(10);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          router.push("/");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [router]);
-
   return (
     <div>
       <Head>
@@ -41,6 +22,7 @@ const Custom404: NextPageWithLayout = () => {
               justifyContent: "center",
               textAlign: "center",
               minHeight: "50vh",
+              mt: 4,
               gap: 3,
             }}
           >
@@ -56,13 +38,12 @@ const Custom404: NextPageWithLayout = () => {
               Page Not Found
             </Typography>
 
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              The page you&#39;re looking for doesn&#39;t exist.
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary">
-              Redirecting to home in <strong>{countdown}</strong> second
-              {countdown !== 1 ? "s" : ""}...
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mb: 2, textWrap: "balance" }}
+            >
+              {"The page you're looking for doesn't exist."}
             </Typography>
 
             <Link href="/" underline="none">
