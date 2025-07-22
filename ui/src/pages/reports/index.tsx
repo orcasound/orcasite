@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Head from "next/head";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import {
@@ -55,10 +55,21 @@ const DetectionsPage: NextPageWithLayout = () => {
     sort: [{ field: "MIN_TIME", order: "DESC" }],
   });
 
-  const candidates = useMemo(
-    () => candidatesQuery?.data?.candidates?.results ?? [],
-    [candidatesQuery?.data?.candidates?.results],
-  );
+  const candidatesData = candidatesQuery?.data?.candidates;
+  const candidates = candidatesData?.results ?? [];
+  const candidatesCount = candidatesData?.count ?? 0;
+
+  const paginationProps = {
+    count: candidatesCount,
+    page: page,
+    rowsPerPage: rowsPerPage,
+    onPageChange: (_e: unknown, newPage: number) => setPage(newPage),
+    onRowsPerPageChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(Number(e.target.value));
+    },
+    rowsPerPageOptions: [10, 50, 100, 1000],
+  };
+
   return (
     <div>
       <Head>
@@ -67,21 +78,12 @@ const DetectionsPage: NextPageWithLayout = () => {
 
       <main>
         <h1>Reports</h1>
-        
+
         <Paper elevation={1} sx={{ overflow: "auto" }}>
           {candidatesQuery.isSuccess && (
             <TablePagination
+              {...paginationProps}
               component="div"
-              count={candidatesQuery.data?.candidates?.count || 0}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={(e, pg) => {
-                setPage(pg);
-              }}
-              onRowsPerPageChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
-              }}
-              rowsPerPageOptions={[10, 50, 100, 1000]}
               sx={{
                 borderBottom: 1,
                 borderColor: "divider",
@@ -90,7 +92,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                 alignItems: "center",
               }}
             />
-           )}
+          )}
           <Table>
             <TableHead>
               <TableRow>
@@ -169,18 +171,7 @@ const DetectionsPage: NextPageWithLayout = () => {
             {candidatesQuery.isSuccess && (
               <TableFooter>
                 <TableRow>
-                  <TablePagination
-                    count={candidatesQuery.data?.candidates?.count || 0}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={(e, pg) => {
-                      setPage(pg);
-                    }}
-                    onRowsPerPageChange={(e) => {
-                      setRowsPerPage(Number(e.target.value));
-                    }}
-                    rowsPerPageOptions={[10, 50, 100, 1000]}
-                  />
+                  <TablePagination {...paginationProps} />
                 </TableRow>
               </TableFooter>
             )}
