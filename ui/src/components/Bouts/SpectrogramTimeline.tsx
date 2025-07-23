@@ -29,6 +29,8 @@ import { TimelineTickerLayer } from "./TimelineTickerLayer";
 export const TICKER_HEIGHT = 30;
 const SPECTROGRAM_HEIGHT = 300;
 const PIXEL_ZOOM_FACTOR = 50;
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 1600;
 
 export type SpectrogramControls = {
   goToTime: (time: Date) => void;
@@ -131,7 +133,6 @@ export default function SpectrogramTimeline({
   // Full spectrogram container
   const spectrogramWindow = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [zoomLevel, setZoomLevel] = useState<number>(8);
   const [windowStartTime, setWindowStartTimeUnthrottled] = useState<Date>();
   const [windowEndTime, setWindowEndTimeUnthrottled] = useState<Date>();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,8 +151,17 @@ export default function SpectrogramTimeline({
     { trailing: false },
   );
 
-  const minZoom = 2;
-  const maxZoom = 1600;
+  const [zoomLevel, setZoomLevel] = useState<number>(8);
+
+  useEffect(() => {
+    setZoomLevel(
+      calculateInitialZoom({
+        boutStartTime,
+        boutEndTime,
+        spectrogramWindow: spectrogramWindow.current,
+      }),
+    );
+  }, [boutStartTime, boutEndTime]);
 
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
@@ -189,9 +199,10 @@ export default function SpectrogramTimeline({
   if (spectrogramControls) {
     spectrogramControls.current = {
       goToTime,
-      zoomIn: () => setZoomLevel((zoom) => _.clamp(zoom * 2, minZoom, maxZoom)),
+      zoomIn: () =>
+        setZoomLevel((zoom) => _.clamp(zoom * 2, MIN_ZOOM, MAX_ZOOM)),
       zoomOut: () =>
-        setZoomLevel((zoom) => _.clamp(zoom / 2, minZoom, maxZoom)),
+        setZoomLevel((zoom) => _.clamp(zoom / 2, MIN_ZOOM, MAX_ZOOM)),
     };
   }
 
@@ -375,6 +386,7 @@ export default function SpectrogramTimeline({
 
   return (
     <>
+      {zoomLevel}
       <Box
         ref={spectrogramWindow}
         position="relative"
@@ -470,4 +482,38 @@ export default function SpectrogramTimeline({
       </Box>
     </>
   );
+}
+
+function calculateInitialZoom({
+  boutStartTime,
+  boutEndTime,
+  spectrogramWindow,
+}: {
+  boutStartTime?: Date;
+  boutEndTime?: Date;
+  spectrogramWindow: HTMLDivElement | null;
+}) {
+  if (boutStartTime && boutEndTime && spectrogramWindow) {
+    const boutDurationMinutes =
+      differenceInMilliseconds(boutEndTime, boutStartTime) / 1000 / 60;
+
+    const boutExtent = 0.4; // Cover about 40% of the window
+    const targetWindowTime = boutDurationMinutes / boutExtent;
+
+    const windowWidth = spectrogramWindow.clientWidth;
+
+    // zoom_factor * zoom = pixelsPerMinute
+    // targetWindowTime [minutes] * pixelsPerMinute = windowWidth
+    // => zoom = windowWidth / (targetWindowTime * zoom_factor)
+    const zoom = windowWidth / (targetWindowTime * PIXEL_ZOOM_FACTOR);
+
+    // Snap to nearest factor of 2
+    return _.clamp(
+      Math.pow(2, Math.round(Math.log2(zoom))),
+      MIN_ZOOM,
+      MAX_ZOOM,
+    );
+  } else {
+    return 8;
+  }
 }
