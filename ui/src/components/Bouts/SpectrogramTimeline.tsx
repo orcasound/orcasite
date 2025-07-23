@@ -161,7 +161,7 @@ export default function SpectrogramTimeline({
         spectrogramWindow: spectrogramWindow.current,
       }),
     );
-  }, [boutStartTime, boutEndTime, spectrogramWindow]);
+  }, [boutStartTime, boutEndTime]);
 
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
