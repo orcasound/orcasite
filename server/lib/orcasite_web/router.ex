@@ -150,7 +150,8 @@ defmodule OrcasiteWeb.Router do
       auth_routes_prefix: "/auth",
       as: :subscriber,
       overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default],
-      token_as_route_param?: false
+      token_as_route_param?: false,
+      path: "/subscriber/manage_subscriptions"
     )
 
     magic_sign_in_route(
@@ -159,7 +160,8 @@ defmodule OrcasiteWeb.Router do
       as: :subscription,
       auth_routes_prefix: "/auth",
       overrides: [OrcasiteWeb.SubscriptionOverrides, AshAuthentication.Phoenix.Overrides.Default],
-      token_as_route_param?: false
+      token_as_route_param?: false,
+      path: "/subscription/unsubscribe"
     )
 
     auth_routes_for Orcasite.Notifications.Subscription,
