@@ -31,6 +31,7 @@ const SPECTROGRAM_HEIGHT = 300;
 const PIXEL_ZOOM_FACTOR = 50;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 1600;
+const DEFAULT_ZOOM = 32;
 
 export type SpectrogramControls = {
   goToTime: (time: Date) => void;
@@ -151,7 +152,7 @@ export default function SpectrogramTimeline({
     { trailing: false },
   );
 
-  const [zoomLevel, setZoomLevel] = useState<number>(8);
+  const [zoomLevel, setZoomLevel] = useState<number>(DEFAULT_ZOOM);
 
   useEffect(() => {
     setZoomLevel(
@@ -161,7 +162,9 @@ export default function SpectrogramTimeline({
         spectrogramWindow: spectrogramWindow.current,
       }),
     );
-  }, [boutStartTime, boutEndTime]);
+    // Only run on initial load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
@@ -386,7 +389,6 @@ export default function SpectrogramTimeline({
 
   return (
     <>
-      {zoomLevel}
       <Box
         ref={spectrogramWindow}
         position="relative"
@@ -514,6 +516,6 @@ function calculateInitialZoom({
       MAX_ZOOM,
     );
   } else {
-    return 8;
+    return DEFAULT_ZOOM;
   }
 }
