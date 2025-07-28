@@ -91,7 +91,7 @@ defmodule Orcasite.Mixfile do
         github: "team-alembic/ash_authentication_phoenix", ref: "104b3b"
       },
       {:syn, "~> 3.3"},
-      {:mjml, "~> 4.0"},
+      {:mjml, "~> 5.2"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
       {:ash_uuid, "~> 1.1.2"},
       {:ash_graphql, "~> 1.7.3"},
