@@ -75,6 +75,10 @@ defmodule Orcasite.Notifications.Workers.SendNotificationEmail do
     :ok
   end
 
+  @impl Oban.Worker
+  @doc "Takes max 10 seconds"
+  def timeout(_job), do: :timer.seconds(20)
+
   defp email_for_notif(params, "new_detection"),
     do: Orcasite.Notifications.Email.new_detection_email(params)
 

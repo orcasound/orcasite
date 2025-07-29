@@ -14,4 +14,8 @@ defmodule Orcasite.Radio.Workers.UpdateFeedSegments do
     |> Ash.Changeset.for_update(:update_segments)
     |> Ash.update(authorize?: false)
   end
+
+  @impl Oban.Worker
+  @doc "Takes max 2 minutes, add 50%"
+  def timeout(_job), do: :timer.minutes(3)
 end
