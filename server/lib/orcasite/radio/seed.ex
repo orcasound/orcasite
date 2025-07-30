@@ -202,14 +202,12 @@ defmodule Orcasite.Radio.Seed do
         schedule :time_range, "* * * * *" do
           action :time_range
           queue :seed
-          timeout 60_000
           worker_module_name __MODULE__.AshOban.TimeRange.Worker
         end
 
         schedule :latest, "@hourly" do
           action :latest
           queue :seed
-          timeout 60_000
           worker_module_name __MODULE__.AshOban.Latest.Worker
         end
 
@@ -217,7 +215,6 @@ defmodule Orcasite.Radio.Seed do
           schedule :delete_old, "@hourly" do
             action :delete_old
             queue :seed
-            timeout 60_000
             worker_module_name __MODULE__.AshOban.DeleteOld.Worker
           end
         end

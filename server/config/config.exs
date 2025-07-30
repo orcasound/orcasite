@@ -90,7 +90,11 @@ config :mime, :extensions, %{
 config :orcasite, Oban,
   repo: Orcasite.Repo,
   # 7 day job retention
-  plugins: [{Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}, {Oban.Plugins.Cron, []}],
+  plugins: [
+    Oban.Plugins.Lifeline,
+    Oban.Plugins.Cron,
+    {Oban.Plugins.Pruner, max_age: 7 * 24 * 60 * 60}
+  ],
   queues: [default: 10, seed: 2, email: 10, feeds: 10, audio_images: 20]
 
 config :spark, :formatter,
