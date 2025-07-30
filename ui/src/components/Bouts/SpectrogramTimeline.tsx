@@ -330,7 +330,7 @@ export default function SpectrogramTimeline({
     if (wasPlaying.current) {
       playerControls?.current?.play();
     }
-  }, [wasPlaying, playerControls]);
+  }, [playerControls]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -350,7 +350,7 @@ export default function SpectrogramTimeline({
     if (wasPlaying.current) {
       playerControls?.current?.play();
     }
-  }, [wasPlaying, playerControls]);
+  }, [playerControls]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !spectrogramWindow.current) return;
