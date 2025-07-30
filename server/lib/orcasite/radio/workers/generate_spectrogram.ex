@@ -38,4 +38,10 @@ defmodule Orcasite.Radio.Workers.GenerateSpectrogram do
         error
     end
   end
+
+  @impl Oban.Worker
+  @doc """
+  Takes max 1 minute (for 10s of audio), add 50%. The 1 minute is due to lambda cold start.
+  """
+  def timeout(_job), do: :timer.seconds(90)
 end
