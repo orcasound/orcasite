@@ -1,6 +1,8 @@
 import {
   ArrowRight,
   Clear,
+  FastForwardOutlined,
+  FastRewindOutlined,
   GraphicEq,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
@@ -349,6 +351,7 @@ export default function BoutPage({
                 display: "flex",
                 alignItems: "center",
                 "&:hover": { color: (theme) => theme.palette.accent2.main },
+                width: "fit-content",
               }}
               href={"/bouts"}
             >
@@ -508,7 +511,28 @@ export default function BoutPage({
             display="flex"
             flexDirection="column"
             alignItems="center"
-            minWidth={120}
+            minWidth={90}
+          >
+            <Box>
+              <Typography variant="overline">Skip backward</Typography>
+            </Box>
+            <Box>
+              <IconButton
+                onClick={() => {
+                  spectrogramControls.current?.skipBackward();
+                }}
+                title="Skip backward"
+              >
+                <FastRewindOutlined />
+              </IconButton>
+            </Box>
+          </Box>
+
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            minWidth={90}
             sx={
               boutForm.errors.startTime
                 ? {
@@ -562,7 +586,7 @@ export default function BoutPage({
             display="flex"
             flexDirection="column"
             alignItems="center"
-            minWidth={120}
+            minWidth={90}
           >
             <Box>
               <Typography variant="overline">Bout end</Typography>
@@ -608,7 +632,27 @@ export default function BoutPage({
             display="flex"
             flexDirection="column"
             alignItems="center"
-            minWidth={120}
+            minWidth={90}
+          >
+            <Box>
+              <Typography variant="overline">Skip forward</Typography>
+            </Box>
+            <Box>
+              <IconButton
+                onClick={() => {
+                  spectrogramControls.current?.skipForward();
+                }}
+                title="Skip forward"
+              >
+                <FastForwardOutlined />
+              </IconButton>
+            </Box>
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            minWidth={90}
           >
             <Box>
               <Typography variant="overline">Share bout</Typography>
@@ -622,7 +666,7 @@ export default function BoutPage({
               display="flex"
               flexDirection="column"
               alignItems="center"
-              minWidth={120}
+              minWidth={90}
             >
               <Box>
                 <Typography variant="overline">Create spectrograms</Typography>
