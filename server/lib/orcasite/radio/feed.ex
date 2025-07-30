@@ -356,6 +356,7 @@ defmodule Orcasite.Radio.Feed do
 
   graphql do
     type :feed
+    nullable_fields [:maintainer_emails]
 
     queries do
       read_one :feed, :get_by_slug, allow_nil?: false
