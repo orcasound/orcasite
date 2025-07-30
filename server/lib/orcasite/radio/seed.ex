@@ -25,7 +25,7 @@ defmodule Orcasite.Radio.Seed do
   code_interface do
     define :feeds
     define :resource
-    define :all
+    define :time_range
     define :latest_resource
     define :latest
     define :delete_old
@@ -52,7 +52,7 @@ defmodule Orcasite.Radio.Seed do
   actions do
     defaults [:read]
 
-    action :all, {:array, :struct} do
+    action :time_range, {:array, :struct} do
       constraints items: [instance_of: __MODULE__]
       description "Seed feeds, then the rest of the resources"
       argument :end_time, :utc_datetime_usec, default: &DateTime.utc_now/0
@@ -69,9 +69,6 @@ defmodule Orcasite.Radio.Seed do
           for feed <- feeds, resource <- [:feed_segment, :detection, :audio_image, :bout] do
             {feed, resource}
           end
-
-        seed_params
-        |> Enum.map(fn {feed, resource} -> {feed.slug, resource} end)
 
         seed_params
         |> Stream.map(fn {feed, resource} ->
@@ -101,9 +98,6 @@ defmodule Orcasite.Radio.Seed do
           for feed <- feeds, resource <- [:detection, :audio_image, :bout] do
             {feed, resource}
           end
-
-        seed_params
-        |> Enum.map(fn {feed, resource} -> {feed.slug, resource} end)
 
         seed_params
         |> Stream.map(fn {feed, resource} ->
@@ -145,9 +139,8 @@ defmodule Orcasite.Radio.Seed do
           |> Ash.Query.filter(feed_id: feed.id, inserted_at: [less_than: before])
           |> Ash.bulk_destroy(:destroy, %{}, authorize?: false)
         end)
+        |> then(&{:ok, &1})
       end
-
-      :ok
     end
 
     create :feeds do
@@ -206,16 +199,25 @@ defmodule Orcasite.Radio.Seed do
          Application.compile_env(:orcasite, :auto_update_seeded_records, false) do
       scheduled_actions do
         # Every minute, pull the last 2 minutes of data
-        schedule :sync, "* * * * *" do
-          action :all
+        schedule :time_range, "* * * * *" do
+          action :time_range
           queue :seed
-          worker_module_name __MODULE__.AshOban.Sync.Worker
+          timeout 60_000
+          worker_module_name __MODULE__.AshOban.TimeRange.Worker
+        end
+
+        schedule :latest, "@hourly" do
+          action :latest
+          queue :seed
+          timeout 60_000
+          worker_module_name __MODULE__.AshOban.Latest.Worker
         end
 
         if Application.compile_env(:orcasite, :auto_delete_seeded_records, false) do
           schedule :delete_old, "@hourly" do
             action :delete_old
             queue :seed
+            timeout 60_000
             worker_module_name __MODULE__.AshOban.DeleteOld.Worker
           end
         end
@@ -230,7 +232,7 @@ defmodule Orcasite.Radio.Seed do
       create :seed_feeds, :feeds
       create :seed_resource, :resource
       create :seed_latest_resource, :latest_resource
-      action :seed_all, :all
+      action :seed_all, :time_range
     end
   end
 
