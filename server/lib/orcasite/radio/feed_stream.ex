@@ -69,6 +69,7 @@ defmodule Orcasite.Radio.FeedStream do
   relationships do
     belongs_to :feed, Orcasite.Radio.Feed do
       public? true
+      writable? true
     end
 
     belongs_to :prev_feed_stream, Orcasite.Radio.FeedStream do
@@ -345,22 +346,25 @@ defmodule Orcasite.Radio.FeedStream do
                :playlist_path,
                :playlist_timestamp,
                :playlist_m3u8_path,
-               if(Orcasite.Config.seeding_enabled?(), do: :id)
+               if(Orcasite.Config.seeding_enabled?(), do: :id),
+               if(Orcasite.Config.seeding_enabled?(), do: :feed_id)
              ]
              |> Enum.reject(&is_nil/1)
 
       upsert_fields [
-        :start_time,
-        :end_time,
-        :duration,
-        :bucket,
-        :bucket_region,
-        :cloudfront_url,
-        :playlist_path,
-        :playlist_timestamp,
-        :playlist_m3u8_path,
-        :updated_at
-      ]
+                      :start_time,
+                      :end_time,
+                      :duration,
+                      :bucket,
+                      :bucket_region,
+                      :cloudfront_url,
+                      :playlist_path,
+                      :playlist_timestamp,
+                      :playlist_m3u8_path,
+                      :updated_at,
+                      if(Orcasite.Config.seeding_enabled?(), do: :feed_id)
+                    ]
+                    |> Enum.reject(&is_nil/1)
 
       argument :feed_segments, {:array, :map}
       argument :feed, :map
