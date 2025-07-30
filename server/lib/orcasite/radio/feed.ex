@@ -47,6 +47,8 @@ defmodule Orcasite.Radio.Feed do
     attribute :dataplicity_id, :string, public?: true
     attribute :orcahello_id, :string, public?: true
 
+    attribute :maintainer_emails, {:array, :string}, allow_nil?: false, public?: true, default: []
+
     create_timestamp :inserted_at
     update_timestamp :updated_at
   end
@@ -144,6 +146,18 @@ defmodule Orcasite.Radio.Feed do
 
     policy action(:generate_spectrogram) do
       authorize_if actor_attribute_equals(:moderator, true)
+    end
+  end
+
+  field_policies do
+    field_policy [:maintainer_emails] do
+      authorize_if actor_attribute_equals(:admin, true)
+      authorize_if actor_attribute_equals(:moderator, true)
+      authorize_if actor_attribute_equals(:detection_bot, true)
+    end
+
+    field_policy :* do
+      authorize_if always()
     end
   end
 
@@ -265,7 +279,8 @@ defmodule Orcasite.Radio.Feed do
         :bucket_region,
         :cloudfront_url,
         :dataplicity_id,
-        :orcahello_id
+        :orcahello_id,
+        :maintainer_emails
       ]
 
       argument :lat_lng_string, :string do

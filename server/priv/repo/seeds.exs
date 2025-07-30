@@ -1,6 +1,6 @@
 require Ash.Query
 
-Orcasite.Radio.Seed.all(%{
+Orcasite.Radio.Seed.time_range(%{
   end_time: DateTime.utc_now(),
   start_time: DateTime.add(DateTime.utc_now(), -1, :hour)
 })

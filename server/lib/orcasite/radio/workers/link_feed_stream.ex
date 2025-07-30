@@ -69,4 +69,8 @@ defmodule Orcasite.Radio.Workers.LinkFeedStream do
 
     :ok
   end
+
+  @impl Oban.Worker
+  @doc "Takes max 1 minute, add 50 percent"
+  def timeout(_job), do: :timer.seconds(90)
 end
