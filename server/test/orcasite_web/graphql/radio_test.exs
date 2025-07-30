@@ -71,4 +71,64 @@ defmodule OrcasiteWeb.RadioTest do
 
     assert "det_" <> _ = id
   end
+
+  describe "feeds query" do
+    test "succeeds for public fields", %{conn: conn, feed: %{id: feed_id, slug: feed_slug}} do
+      assert %{
+               "data" => %{
+                 "feeds" => [%{"id" => ^feed_id, "slug" => ^feed_slug}]
+               }
+             } =
+               conn
+               |> post("/graphql", %{
+                 "query" => """
+                 {
+                   feeds {
+                     id
+                     slug
+                   }
+                 }
+                 """
+               })
+               |> json_response(200)
+    end
+
+    test "succeeds for forbidden fields", %{conn: conn, feed: %{id: feed_id, slug: feed_slug}} do
+      assert %{
+               "data" => %{
+                 "feeds" => [
+                   %{
+                     "id" => ^feed_id,
+                     "maintainerEmails" => nil,
+                     "slug" => ^feed_slug
+                   }
+                 ]
+               },
+               "errors" => [
+                 %{
+                   "code" => "forbidden_field",
+                   "fields" => [],
+                   "locations" => [%{"column" => 5, "line" => 5}],
+                   "message" => "forbidden field",
+                   "path" => ["feeds", 0, "maintainerEmails"],
+                   "short_message" => "forbidden field",
+                   "vars" => %{}
+                 }
+               ]
+             } =
+               conn
+               |> post("/graphql", %{
+                 "query" => """
+                 {
+                   feeds {
+                     id
+                     slug
+                     maintainerEmails
+                   }
+                 }
+                 """
+               })
+               |> json_response(200)
+    end
+  end
 end
