@@ -31,6 +31,7 @@ const SPECTROGRAM_HEIGHT = 300;
 const PIXEL_ZOOM_FACTOR = 50;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 1600;
+const DEFAULT_ZOOM = 32;
 
 export type SpectrogramControls = {
   goToTime: (time: Date) => void;
@@ -150,8 +151,9 @@ export default function SpectrogramTimeline({
     200,
     { trailing: false },
   );
+  const wasPlaying = useRef<boolean>(false);
 
-  const [zoomLevel, setZoomLevel] = useState<number>(8);
+  const [zoomLevel, setZoomLevel] = useState<number>(DEFAULT_ZOOM);
 
   useEffect(() => {
     setZoomLevel(
@@ -161,7 +163,9 @@ export default function SpectrogramTimeline({
         spectrogramWindow: spectrogramWindow.current,
       }),
     );
-  }, [boutStartTime, boutEndTime]);
+    // Only run on initial load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // X position of visible window relative to browser
   const windowStartX = useRef<number>(0);
@@ -285,6 +289,7 @@ export default function SpectrogramTimeline({
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
+    wasPlaying.current = !playerControls?.current?.paused();
     windowStartX.current =
       e.touches[0].pageX - (spectrogramWindow.current?.offsetLeft ?? 0);
     windowScrollX.current = spectrogramWindow.current?.scrollLeft ?? 0;
@@ -322,10 +327,14 @@ export default function SpectrogramTimeline({
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
-  }, []);
+    if (wasPlaying.current) {
+      playerControls?.current?.play();
+    }
+  }, [playerControls]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    wasPlaying.current = !playerControls?.current?.paused();
     windowStartX.current =
       e.pageX - (spectrogramWindow.current?.offsetLeft ?? 0);
     windowScrollX.current = spectrogramWindow.current?.scrollLeft ?? 0;
@@ -338,7 +347,10 @@ export default function SpectrogramTimeline({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  }, []);
+    if (wasPlaying.current) {
+      playerControls?.current?.play();
+    }
+  }, [playerControls]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !spectrogramWindow.current) return;
@@ -386,7 +398,6 @@ export default function SpectrogramTimeline({
 
   return (
     <>
-      {zoomLevel}
       <Box
         ref={spectrogramWindow}
         position="relative"
@@ -514,6 +525,6 @@ function calculateInitialZoom({
       MAX_ZOOM,
     );
   } else {
-    return 8;
+    return DEFAULT_ZOOM;
   }
 }

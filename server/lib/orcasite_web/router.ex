@@ -94,7 +94,7 @@ defmodule OrcasiteWeb.Router do
 
     forward("/", Absinthe.Plug.GraphiQL,
       schema: Module.concat(["OrcasiteWeb.Schema"]),
-      interface: :playground,
+      interface: :simple,
       json_codec: Jason,
       before_send: {__MODULE__, :absinthe_before_send},
       socket: OrcasiteWeb.UserSocket
