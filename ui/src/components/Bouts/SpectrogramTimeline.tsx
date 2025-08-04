@@ -3,8 +3,12 @@ import { Box } from "@mui/material";
 import {
   addMilliseconds,
   addMinutes,
+  addSeconds,
+  clamp,
   differenceInMilliseconds,
+  min,
   subMilliseconds,
+  subSeconds,
 } from "date-fns";
 import _ from "lodash";
 import {
@@ -37,6 +41,8 @@ export type SpectrogramControls = {
   goToTime: (time: Date) => void;
   zoomIn: () => void;
   zoomOut: () => void;
+  skipForward: () => void;
+  skipBackward: () => void;
 };
 
 function centerWindow(
@@ -207,6 +213,38 @@ export default function SpectrogramTimeline({
         setZoomLevel((zoom) => _.clamp(zoom * 2, MIN_ZOOM, MAX_ZOOM)),
       zoomOut: () =>
         setZoomLevel((zoom) => _.clamp(zoom / 2, MIN_ZOOM, MAX_ZOOM)),
+      skipForward: () => {
+        const duration = windowDuration({
+          spectrogramWindow: spectrogramWindow.current,
+          zoomLevel,
+        });
+        if (duration) {
+          skipTime({
+            goToTime,
+            duration,
+            timelineStartTime,
+            timelineEndTime,
+            playerTimeRef,
+            windowDurationSeconds: duration,
+          });
+        }
+      },
+      skipBackward: () => {
+        const duration = windowDuration({
+          spectrogramWindow: spectrogramWindow.current,
+          zoomLevel,
+        });
+        if (duration) {
+          skipTime({
+            goToTime,
+            duration: -duration,
+            timelineStartTime,
+            timelineEndTime,
+            playerTimeRef,
+            windowDurationSeconds: duration,
+          });
+        }
+      },
     };
   }
 
@@ -526,5 +564,51 @@ function calculateInitialZoom({
     );
   } else {
     return DEFAULT_ZOOM;
+  }
+}
+
+// The time duration in seconds of the spectrogram window
+function windowDuration({
+  spectrogramWindow,
+  zoomLevel,
+}: {
+  spectrogramWindow: HTMLDivElement | null;
+  zoomLevel: number;
+}) {
+  if (spectrogramWindow) {
+    const windowWidth = spectrogramWindow.clientWidth;
+    const pixelsPerSecond = (PIXEL_ZOOM_FACTOR * zoomLevel) / 60;
+
+    return windowWidth / pixelsPerSecond;
+  }
+}
+
+function skipTime({
+  goToTime,
+  duration,
+  timelineStartTime,
+  timelineEndTime,
+  playerTimeRef,
+  windowDurationSeconds,
+}: {
+  goToTime: (time: Date) => void;
+  duration: number;
+  timelineStartTime: Date;
+  timelineEndTime: Date;
+  playerTimeRef: MutableRefObject<Date>;
+  windowDurationSeconds: number;
+}) {
+  if (playerTimeRef.current) {
+    const targetTime = addSeconds(playerTimeRef.current, duration);
+    const clamped = clamp(targetTime, {
+      // Playhead should stop at 1/2 of window duration for both start and end
+      start: addSeconds(timelineStartTime, windowDurationSeconds / 2),
+      end: subSeconds(
+        min([timelineEndTime, new Date()]),
+        windowDurationSeconds / 2,
+      ),
+    });
+
+    return goToTime(clamped);
   }
 }
