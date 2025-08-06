@@ -311,8 +311,10 @@ function toLocalISOString(date: Date) {
 SeedPage.getLayout = getSimpleLayout;
 
 export async function getStaticProps() {
-  const enableSeedFromProd = process.env.ENABLE_SEED_FROM_PROD === "true";
-  // Hide the seed page when `ENABLE_SEED_FROM_PROD` isn't enabled
+  const enableSeedFromProd = process.env.ENABLE_SEED_FROM_PROD
+    ? process.env.ENABLE_SEED_FROM_PROD === "true"
+    : process.env.NODE_ENV === "development"; // default to enabled in dev
+
   return !enableSeedFromProd ? { notFound: true } : { props: {} };
 }
 
