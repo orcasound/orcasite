@@ -47,6 +47,8 @@ import SpectrogramTimeline, {
   SpectrogramControls,
 } from "@/components/Bouts/SpectrogramTimeline";
 import { BoutPlayer, PlayerControls } from "@/components/Player/BoutPlayer";
+import DetectionDialog from "@/components/Player/DetectionDialog";
+import type { VideoJSPlayer } from "@/components/Player/VideoJS";
 import {
   AudioCategory,
   BoutQuery,
@@ -60,6 +62,7 @@ import {
   useUpdateBoutMutation,
 } from "@/graphql/generated";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
+import useFeedPresence from "@/hooks/useFeedPresence";
 import { roundToNearest } from "@/utils/time";
 
 import CopyToClipboardButton from "../CopyToClipboard";
@@ -101,10 +104,15 @@ export default function BoutPage({
     [],
   );
   const playerControls = useRef<PlayerControls>();
-  const setPlayerControls = useCallback(
-    (controls: PlayerControls) => (playerControls.current = controls),
-    [],
-  );
+  const [videoJsPlayer, setVideoJsPlayer] = useState<
+    VideoJSPlayer | undefined
+  >();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const setPlayerControls = useCallback((controls: PlayerControls) => {
+    playerControls.current = controls;
+    setVideoJsPlayer(controls.player);
+    setIsPlaying(!controls.paused());
+  }, []);
   const spectrogramControls = useRef<SpectrogramControls>();
 
   const [cachedPlayerTime, setCachedPlayerTime] = useState<Date>(targetTime);
@@ -162,6 +170,26 @@ export default function BoutPage({
     max: Date;
   }>({ min: timelineStartTime, max: timelineEndTime });
 
+  // Track player play/pause state from the embedded Video.js player
+  useEffect(() => {
+    const player = videoJsPlayer;
+    if (!player) return;
+    const onPlaying = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onWaiting = () => setIsPlaying(false);
+    const onError = () => setIsPlaying(false);
+    player.on("playing", onPlaying);
+    player.on("pause", onPause);
+    player.on("waiting", onWaiting);
+    player.on("error", onError);
+    return () => {
+      player.off("playing", onPlaying);
+      player.off("pause", onPause);
+      player.off("waiting", onWaiting);
+      player.off("error", onError);
+    };
+  }, [videoJsPlayer]);
+
   const expandTimelineStart = useCallback(() => {
     setTimelineStartTime((timelineStartTime) =>
       roundToNearest(
@@ -214,6 +242,14 @@ export default function BoutPage({
     [feedStreamQueryResult],
   );
   const feedStream = feedStreams[0];
+  const playlistTimestampNum = feedStream
+    ? Number(feedStream.playlistTimestamp)
+    : undefined;
+  const getOffsetSeconds = () =>
+    feedStream && playerTime.current
+      ? playerTime.current.valueOf() / 1000 -
+        Number(feedStream.playlistTimestamp)
+      : undefined;
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
 
@@ -236,6 +272,15 @@ export default function BoutPage({
     ),
     ({ id }) => id,
   );
+
+  // Listener count via Presence (same approach as Player.tsx)
+  const feedPresence = useFeedPresence(feed.slug);
+  const listenerCount: number = Array.isArray(
+    (feedPresence as Record<string, unknown[] | undefined> | undefined)?.metas,
+  )
+    ? ((feedPresence as Record<string, unknown[] | undefined>)?.metas?.length ??
+      0)
+    : 0;
 
   const [boutForm, setBoutForm] = useState<{
     errors: Record<string, string>;
@@ -604,6 +649,36 @@ export default function BoutPage({
               </Box>
             )}
           </Box>
+          {feedStream && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              minWidth={120}
+            >
+              <Box>
+                <Typography variant="overline">Add detection</Typography>
+              </Box>
+              <Box>
+                <DetectionDialog
+                  feed={feed}
+                  timestamp={playlistTimestampNum}
+                  isPlaying={isPlaying}
+                  getPlayerTime={getOffsetSeconds}
+                  listenerCount={listenerCount}
+                >
+                  <IconButton
+                    title="Add detection"
+                    color="secondary"
+                    size="small"
+                    aria-label="Add detection"
+                  >
+                    <GraphicEq />
+                  </IconButton>
+                </DetectionDialog>
+              </Box>
+            </Box>
+          )}
           <Box
             display="flex"
             flexDirection="column"
