@@ -8,7 +8,7 @@ FROM elixir:1.17-otp-27-alpine@sha256:a1428b2bf7c25dcea1f40fec1991dc931c4307235a
 
 RUN apk --no-cache --update add \
     # General deps
-    bash git curl rsync \
+    bash git curl rsync cmake \
     # Elixir
     inotify-tools build-base \
     # NPM

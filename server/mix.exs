@@ -5,7 +5,7 @@ defmodule Orcasite.Mixfile do
     [
       app: :orcasite,
       version: "0.0.1",
-      elixir: "~> 1.12",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
