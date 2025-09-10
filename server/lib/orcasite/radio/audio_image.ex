@@ -97,6 +97,7 @@ defmodule Orcasite.Radio.AudioImage do
         offset? true
         countable true
         default_limit 100
+        max_page_size 1000
       end
 
       filter expr(
