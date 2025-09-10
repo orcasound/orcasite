@@ -29,6 +29,7 @@ defmodule Orcasite.Radio.Detection do
 
   identities do
     identity :id, [:id]
+    identity :idempotency_key, [:idempotency_key]
   end
 
   attributes do
@@ -57,6 +58,10 @@ defmodule Orcasite.Radio.Detection do
       # allow_nil? false
       public? true
     end
+
+    attribute :idempotency_key, :string,
+      public?: true,
+      description: "Optional unique key for this detection"
 
     create_timestamp :inserted_at
     update_timestamp :updated_at
@@ -313,7 +318,7 @@ defmodule Orcasite.Radio.Detection do
     end
 
     create :submit_machine_detection do
-      accept [:timestamp, :feed_id, :description]
+      accept [:timestamp, :feed_id, :description, :idempotency_key]
 
       change set_attribute(:user_id, actor(:id))
       change set_attribute(:source_ip, context(:actor_ip))

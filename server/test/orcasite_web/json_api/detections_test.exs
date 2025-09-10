@@ -14,6 +14,16 @@ defmodule OrcasiteWeb.JsonApi.DetectionsTest do
 
   describe "detections api machine submission" do
     test "succeeds with bot user", %{conn: conn, api_key: api_key, feed: feed} do
+      params = %{
+        data: %{
+          attributes: %{
+            timestamp: DateTime.to_iso8601(DateTime.utc_now()),
+            feed_id: feed.id,
+            idempotency_key: "idempotency"
+          }
+        }
+      }
+
       assert %{
                "data" => %{
                  "attributes" => %{
@@ -42,15 +52,28 @@ defmodule OrcasiteWeb.JsonApi.DetectionsTest do
                conn
                |> put_req_header("content-type", "application/vnd.api+json")
                |> put_req_header("authorization", "Bearer #{api_key}")
-               |> post("/api/json/detections", %{
-                 data: %{
-                   attributes: %{
-                     timestamp: DateTime.to_iso8601(DateTime.utc_now()),
-                     feed_id: feed.id
-                   }
-                 }
-               })
+               |> post("/api/json/detections", params)
                |> json_response(201)
+
+      assert %{
+               "errors" => [
+                 %{
+                   "code" => "invalid_attribute",
+                   "id" => _,
+                   "meta" => %{},
+                   "status" => "400",
+                   "title" => "InvalidAttribute",
+                   "source" => %{"pointer" => "/data/attributes/idempotency_key"},
+                   "detail" => "has already been taken"
+                 }
+               ],
+               "jsonapi" => %{"version" => "1.0"}
+             } =
+               conn
+               |> put_req_header("content-type", "application/vnd.api+json")
+               |> put_req_header("authorization", "Bearer #{api_key}")
+               |> post("/api/json/detections", params)
+               |> json_response(400)
     end
 
     test "fails without user", %{conn: conn, feed: feed} do
