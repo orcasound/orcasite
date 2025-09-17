@@ -21,7 +21,7 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 4. Navigate to [localhost:4000](http://localhost:4000) to access the API server
 
 > **Note**
-> This assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
+> This assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/) and, if you are running Windows, you have started [Docker Desktop](https://dev.to/connectalamin/how-to-install-docker-on-windows-1011-complete-guide-3o7k).
 
 ### Running in Docker
 
