@@ -3,7 +3,7 @@ defmodule Orcasite.Radio.Detection.Changes.SendNotification do
 
   @impl Ash.Resource.Change
   def change(changeset, _opts, _context) do
-    Ash.Changeset.after_transaction(changeset, fn change, detection ->
+    Ash.Changeset.after_transaction(changeset, fn _change, detection ->
       detection = Ash.load!(detection, [:candidate, :feed])
 
       Orcasite.Notifications.Notification.notify_new_detection(

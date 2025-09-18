@@ -4,7 +4,7 @@ defmodule Orcasite.Notifications.Notification.Validations.RecentDetection do
   @impl Ash.Resource.Validation
   def validate(change, _opts, _context) do
     change
-    |> Ash.Changeset.get_argument(change, :detection)
+    |> Ash.Changeset.get_argument(:detection)
     |> Map.get(:timestamp)
     |> DateTime.compare(
       DateTime.utc_now()
