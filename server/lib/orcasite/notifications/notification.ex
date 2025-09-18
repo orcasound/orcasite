@@ -188,7 +188,7 @@ defmodule Orcasite.Notifications.Notification do
         allow_nil? false
       end
 
-      change set_attribute(:event_type, :confirmed_candidate)
+      change set_attribute(:event_type, :live_bout)
 
       change before_action(fn changeset, _context ->
                bout_id =
@@ -254,7 +254,7 @@ defmodule Orcasite.Notifications.Notification do
         allow_nil? false
       end
 
-      change set_attribute(:event_type, :live_bout)
+      change set_attribute(:event_type, :confirmed_candidate)
 
       change before_action(fn changeset, _context ->
                bout_id =
@@ -279,6 +279,8 @@ defmodule Orcasite.Notifications.Notification do
       argument :detection, :map, allow_nil?: false
       argument :feed, :map, allow_nil?: false
       argument :candidate, :map, allow_nil?: false
+
+      validate __MODULE__.Validations.RecentDetection
 
       change set_attribute(:event_type, :new_detection)
 

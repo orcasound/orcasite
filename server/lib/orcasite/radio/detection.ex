@@ -1,7 +1,7 @@
 defmodule Orcasite.Radio.Detection do
   use Ash.Resource,
     domain: Orcasite.Radio,
-    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshOban],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -300,14 +300,7 @@ defmodule Orcasite.Radio.Detection do
             |> Ash.load!([:feed, :candidate])
 
           if Ash.Changeset.get_argument(changeset, :send_notifications) do
-            Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-              Orcasite.Notifications.Notification.notify_new_detection(
-                detection,
-                detection.candidate,
-                detection.feed,
-                authorize?: false
-              )
-            end)
+            AshOban.run_trigger(detection, :send_notification)
           end
 
           {:ok, detection}
@@ -353,6 +346,22 @@ defmodule Orcasite.Radio.Detection do
 
       change __MODULE__.Changes.UpdateCandidate
       change __MODULE__.Changes.GenerateSpectrograms
+      change run_oban_trigger(:send_notification)
+    end
+
+    update :send_notification do
+      accept []
+      change __MODULE__.SendNotification
+    end
+  end
+
+  oban do
+    triggers do
+      trigger :send_notification do
+        action :send_notification
+        scheduler_cron false
+        worker_module_name __MODULE__.AshOban.SendNotification.Worker
+      end
     end
   end
 
