@@ -100,6 +100,8 @@ You will need to install Erlang, Elixir, and Node.js. You can use a tool like [`
 
 Language-level dependencies can be found under `.tool-versions`.
 
+To install Erlang and Elixir on Windows, you can use `choco install elixir`.
+
 ##### Database
 
 You will need to install Postgres and set up the `postgres` user with a password. The default connection details are:
@@ -119,6 +121,9 @@ Orcasite uses [PostGIS](http://postgis.net/) for location data inside of Postgre
 ```shell
 brew install postgis
 ```
+
+To install postgis on Windows, run Stack Builder after installing postgres, and select
+PostGIS under Spatial Extensions.
 
 ### Getting everything running
 
