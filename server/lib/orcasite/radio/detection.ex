@@ -84,24 +84,13 @@ defmodule Orcasite.Radio.Detection do
   end
 
   policies do
-    bypass actor_attribute_equals(:admin, true) do
-      authorize_if always()
-    end
-
-    bypass action_type(:read) do
-      authorize_if always()
-    end
-
-    bypass action(:seed) do
-      authorize_if always()
-    end
-
-    bypass action(:submit_detection) do
-      authorize_if always()
-    end
-
-    bypass action(:submit_machine_detection) do
-      authorize_if actor_attribute_equals(:detection_bot, true)
+    bypass always() do
+      authorize_if AshOban.Checks.AshObanInteraction
+      authorize_if actor_attribute_equals(:admin, true)
+      authorize_if action_type(:read)
+      authorize_if action(:seed)
+      authorize_if action(:submit_detection)
+      authorize_if action(:submit_machine_detection)
     end
 
     policy changing_attributes([:visible]) do
