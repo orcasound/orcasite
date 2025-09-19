@@ -29,6 +29,7 @@ import {
   DetectionCategory,
   Feed,
   useDetectionsQuery,
+  useGetCurrentUserQuery,
 } from "@/graphql/generated";
 import { useListenerCount } from "@/hooks/useFeedPresence";
 import { formatTimestamp } from "@/utils/time";
@@ -42,6 +43,7 @@ export default function FeedItem({
   feed: Pick<Feed, "id" | "name" | "slug" | "online">;
   onStatUpdate?: (feedId: string, stat: string, value: number) => void;
 }) {
+  const { currentUser } = useGetCurrentUserQuery().data ?? {};
   const [showTable, setShowTable] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<DetectionCategory>();
   const theme = useTheme();
@@ -155,14 +157,16 @@ export default function FeedItem({
             mb: { xs: 3, sm: 0 },
           }}
         >
-          <Link
-            href={`/bouts/new/${feed.slug}`}
-            sx={{ alignSelf: { sm: "flex-end" } }}
-          >
-            <Button size="small" variant="outlined" startIcon={<Add />}>
-              New bout
-            </Button>
-          </Link>
+          {currentUser?.moderator && (
+            <Link
+              href={`/bouts/new/${feed.slug}`}
+              sx={{ alignSelf: { sm: "flex-end" } }}
+            >
+              <Button size="small" variant="outlined" startIcon={<Add />}>
+                New bout
+              </Button>
+            </Link>
+          )}
           <Box
             display="flex"
             flexDirection={{ xs: "column", sm: "row" }}
