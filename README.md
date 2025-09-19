@@ -39,15 +39,7 @@ This will build an image locally with all the dependencies you need. It will als
 
 The [quick start](#quick-start) setup is great for getting the project up and running, but if you want to do development, you'll want to be able to modify the source code without re-building an entire Docker image.
 
-### Setup options
-
-There are several options for how to set up your dev environment:
-
-- [VS Code with dev containers](#using-vs-code)
-- [Using docker-compose](#using-docker-compose-directly)
-- [Directly on your machine](#set-up-directly-on-machine)
-
-Once you have one of these up and running, see the [Getting everything running](#getting-everything-running) section for how to start the project.
+### Setup
 
 #### Using VS Code
 
@@ -61,69 +53,6 @@ This project comes with a [devcontainer.json configuration](https://code.visuals
 > ```
 >
 > This provides recommended editor settings for this project. You can also see & install recommended extensions by opening the command palette (Cmd+Shift+P) and selecting "Extensions: Show Recommended Extensions".
-
-#### Using docker-compose directly
-
-If you prefer not to use VS Code dev containers, the easiest way to develop in docker is by starting up docker-compose manually (using the dev compose file):
-
-```shell
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
-```
-
-> **Note**
-> You can also set the `COMPOSE_FILE` environment variable to avoid having to specify the compose files every time. This one-liner will do that for you no matter which subdirectory you're in:
->
-> ```shell
-> export COMPOSE_FILE=`git rev-parse --show-toplevel`/docker-compose.yml:`git rev-parse --show-toplevel`/docker-compose.dev.yml
-> ```
->
-> After setting COMPOSE_FILE, you can just run `docker-compose up -d` from anywhere in the project.
-
-Once you have the services started, you can start a session inside the `web` container:
-
-```shell
-docker-compose exec web bash
-```
-
-From here you can run the [commands below](#getting-everything-running) to get everything started.
-
-> **Note**
-> The `docker-compose` setup uses bind mounting for the source files, which means if you edit the source on your host file system, the changes will get picked up and live reloaded in your browser.
-
-#### Set up directly on machine
-
-If Docker doesn't suit your needs, you can follow these instructions to get everything running directly on your machine.
-
-##### Language
-
-You will need to install Erlang, Elixir, and Node.js. You can use a tool like [`asdf`](https://github.com/asdf-vm/asdf) to manage your language dependencies.
-
-Language-level dependencies can be found under `.tool-versions`.
-
-To install Erlang and Elixir on Windows, you can use `choco install elixir`.
-
-##### Database
-
-You will need to install Postgres and set up the `postgres` user with a password. The default connection details are:
-
-```text
-username: "postgres"
-password: "postgres"
-database: "orcasite_dev"
-hostname: "localhost"
-port: 5432
-```
-
-You can pass in custom values using env variables. Full details can be found in [`dev.exs`](config/dev.exs).
-
-Orcasite uses [PostGIS](http://postgis.net/) for location data inside of Postgres. To install on MacOS, run
-
-```shell
-brew install postgis
-```
-
-To install postgis on Windows, run Stack Builder after installing postgres, and select
-PostGIS under Spatial Extensions.
 
 ### Getting everything running
 
@@ -146,6 +75,8 @@ In a new terminal session, from the root directory:
 The server should soon be available at [`http://localhost:4000`](http://localhost:4000).
 
 #### UI
+
+If using Windows, edit the `ui/package.json` file to change `${UI_PORT:-3000}` to `3000` both times it occurs.
 
 Open another terminal session and run these commands to start Next.js:
 
