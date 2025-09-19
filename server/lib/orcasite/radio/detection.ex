@@ -351,7 +351,8 @@ defmodule Orcasite.Radio.Detection do
 
     update :send_notification do
       accept []
-      change __MODULE__.SendNotification
+      require_atomic? false
+      change __MODULE__.Changes.SendNotification
     end
   end
 
@@ -360,6 +361,7 @@ defmodule Orcasite.Radio.Detection do
       trigger :send_notification do
         action :send_notification
         scheduler_cron false
+        queue :email
         worker_module_name __MODULE__.AshOban.SendNotification.Worker
       end
     end
