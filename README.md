@@ -41,8 +41,6 @@ The [quick start](#quick-start) setup is great for getting the project up and ru
 
 ### Setup
 
-#### Using VS Code
-
 This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker-compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container (assuming [you've installed docker and the dev containers extension](https://code.visualstudio.com/docs/devcontainers/containers#_installation)). Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
 
 > **Tip**
@@ -93,7 +91,7 @@ Once everything finishes starting up, you'll be able to access the UI at [`http:
 The development environment automatically seeds the database with real data from the production server, including detections, audio images, and other records. This happens via background jobs that sync data every 1 minute.
 
 > **Note:**
-> Seeded resources will only work with feeds that match production (i.e. with the same `id` and `slug`). Clear your data with `mix ecto.drop` and re-initialize it with `mix ecto.setup` to get the latest data from the production servers.
+> Seeded resources will only work with feeds that match production (i.e., with the same `id` and `slug`). Clear your data with `mix ecto.drop` and re-initialize it with `mix ecto.setup` to get the latest data from the production servers.
 
 ### Seeding on setup
 
