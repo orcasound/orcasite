@@ -213,39 +213,6 @@ defmodule Orcasite.Notifications.Notification do
       change atomic_update(:notified_count_updated_at, expr(now()))
     end
 
-    create :notify_bout do
-      description "Create a notification for a live bout"
-      argument :bout_id, :string, allow_nil?: false
-
-      argument :message, :string do
-        description """
-        What primary message subscribers will get (e.g. 'Southern Resident Killer Whales calls
-        and clicks can be heard at Orcasound Lab!')
-        """
-
-        allow_nil? false
-      end
-
-      change set_attribute(:event_type, :live_bout)
-
-      change before_action(fn changeset, _context ->
-               bout_id =
-                 Ash.Changeset.get_argument(changeset, :bout_id)
-
-               bout =
-                 Orcasite.Radio.Bout
-                 |> Ash.get(bout_id)
-                 |> Ash.load!(:feed)
-
-               changeset
-               |> Ash.Changeset.force_change_attribute(:meta, %{
-                 bout_id: bout_id,
-                 node: bout.feed.slug,
-                 message: Ash.Changeset.get_argument(changeset, :message)
-               })
-             end)
-    end
-
     create :notify_confirmed_candidate do
       description "Create a notification for confirmed candidate (i.e. detection group)"
       argument :candidate_id, :string, allow_nil?: false
@@ -292,7 +259,7 @@ defmodule Orcasite.Notifications.Notification do
         allow_nil? false
       end
 
-      change set_attribute(:event_type, :confirmed_candidate)
+      change set_attribute(:event_type, :live_bout)
 
       change before_action(fn changeset, _context ->
                bout_id =
