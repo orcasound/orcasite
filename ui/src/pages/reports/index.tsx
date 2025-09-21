@@ -30,10 +30,21 @@ const getCategoryCounts = (candidate: CandidateQueryResult) => {
   return candidate.detections.reduce(
     (counts, detection) => {
       const category = detection.category;
-      if (category && category in counts) {
-        counts[category] += 1;
-      } else if (category) {
-        counts[category] = 1;
+      if (category) {
+        counts[category] = (counts[category] || 0) + 1;
+      }
+      return counts;
+    },
+    {} as Record<string, number>,
+  );
+};
+
+const getSourceCounts = (candidate: CandidateQueryResult) => {
+  return candidate.detections.reduce(
+    (counts, detection) => {
+      const source = detection.source;
+      if (source) {
+        counts[source] = (counts[source] || 0) + 1;
       }
       return counts;
     },
@@ -102,6 +113,7 @@ const DetectionsPage: NextPageWithLayout = () => {
                 <TableCell align="right">Detections</TableCell>
                 <TableCell align="right">Timestamp</TableCell>
                 <TableCell>Categories</TableCell>
+                <TableCell>Source</TableCell>
                 <TableCell>Descriptions</TableCell>
 
                 {currentUser?.moderator && <TableCell>Status</TableCell>}
@@ -131,12 +143,34 @@ const DetectionsPage: NextPageWithLayout = () => {
                     {formatTimestamp(candidate.minTime)}
                   </TableCell>
                   <TableCell>
-                    {Object.entries(getCategoryCounts(candidate))
-                      .map(
-                        ([category, count]) =>
-                          `${category.toLowerCase()} [${count}]`,
-                      )
-                      .join(", ")}{" "}
+                    {Object.entries(getCategoryCounts(candidate)).map(
+                      ([category, count]) => (
+                        <Chip
+                          key={category}
+                          label={`${category.toLowerCase()} ${count}`}
+                          size="small"
+                          sx={{
+                            mb: 0.5,
+                          }}
+                        />
+                      ),
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {Object.entries(getSourceCounts(candidate)).map(
+                      ([source, count]) => (
+                        <Chip
+                          key={source}
+                          label={`${source.toLowerCase()} ${count}`}
+                          size="small"
+                          variant="outlined"
+                          color="primary"
+                          sx={{
+                            mb: 0.5,
+                          }}
+                        />
+                      ),
+                    )}
                   </TableCell>
                   <TableCell
                     title={candidate.minTime.toString()}
