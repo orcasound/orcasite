@@ -15,22 +15,23 @@ Please check out the [CONTRIBUTING](CONTRIBUTING.md) doc for tips on making a su
 
 ## Quick Start
 
-1. Load the Docker Configuration: `docker-compose up`
+1. Load the Docker Configuration: `docker compose up`
 2. Wait for containers to start up
 3. Navigate to [localhost:3000](http://localhost:3000) to view the website
 4. Navigate to [localhost:4000](http://localhost:4000) to access the API server
 
 > **Note**
-> This assumes you have installed [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/) and, if you are running Windows, you have started [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/).
+> This assumes you have installed [docker](https://docs.docker.com/engine/install/). If you're running Windows,
+> ensure [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) is installed and running.
 
 ### Running in Docker
 
-Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have both [docker](https://docs.docker.com/v17.09/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/) installed on your machine.
+Docker is the quickest way to get the project up and running, especially if you haven't already set up Erlang/Elixir/Node. The only requirement is that you have [docker](https://docs.docker.com/engine/install/) installed on your machine.
 
-Once you clone the repository, you can just run docker-compose in the root directory:
+Once you clone the repository, you can just run `docker compose` in the root directory:
 
 ```shell
-docker-compose up
+docker compose up
 ```
 
 This will build an image locally with all the dependencies you need. It will also pull a pre-built image from [Docker Hub](https://hub.docker.com/r/orcasound/orcasite) for the database, automatically configure everything, and both the Phoenix and Next.js servers. The orcasite page will be accessible at [`http://localhost:3000`](http://localhost:3000) as soon as the `web` container finishes starting up.
@@ -41,7 +42,7 @@ The [quick start](#quick-start) setup is great for getting the project up and ru
 
 ### Setup
 
-This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker-compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container (assuming [you've installed docker and the dev containers extension](https://code.visualstudio.com/docs/devcontainers/containers#_installation)). Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
+This project comes with a [devcontainer.json configuration](https://code.visualstudio.com/docs/devcontainers/containers) which can be used with VS Code. This takes care of all the `docker compose` stuff in the background so you don't have to worry about it. When you open the project in VS Code, it should prompt you to start it in a dev container (assuming [you've installed docker and the dev containers extension](https://code.visualstudio.com/docs/devcontainers/containers#_installation)). Once the dev container starts, you can open a new terminal window in VS Code to run commands. See [the commands below](#getting-everything-running) for how to get everything started.
 
 > **Tip**
 > For a better VS Code experience, copy the example settings file:
