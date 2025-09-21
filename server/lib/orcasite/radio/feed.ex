@@ -261,7 +261,14 @@ defmodule Orcasite.Radio.Feed do
         description "A comma-separated string of longitude and latitude"
       end
 
+      argument :maintainer_emails, {:array, :string}, default: []
+
       change &change_lat_lng/2
+
+      change fn changeset, _context ->
+        maintainer_emails = Ash.Changeset.get_argument(changeset, :maintainer_emails) || []
+        Ash.Changeset.change_attribute(changeset, :maintainer_emails, maintainer_emails)
+      end
     end
 
     update :update do
