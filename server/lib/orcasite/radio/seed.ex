@@ -61,7 +61,7 @@ defmodule Orcasite.Radio.Seed do
         default: fn -> DateTime.utc_now() |> DateTime.add(-2, :minute) end
 
       run fn %{arguments: %{start_time: start_time, end_time: end_time}}, _ ->
-        __MODULE__.feeds()
+        __MODULE__.feeds!()
 
         feeds = Orcasite.Radio.Feed |> Ash.read!()
 
@@ -90,7 +90,7 @@ defmodule Orcasite.Radio.Seed do
       argument :limit, :integer, allow_nil?: false, default: 100
 
       run fn %{arguments: %{limit: limit}}, _ ->
-        __MODULE__.feeds()
+        __MODULE__.feeds!()
 
         feeds = Orcasite.Radio.Feed |> Ash.read!()
 
