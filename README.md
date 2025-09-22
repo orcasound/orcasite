@@ -75,8 +75,6 @@ The server should soon be available at [`http://localhost:4000`](http://localhos
 
 #### UI
 
-If using Windows, edit the `ui/package.json` file to change `${UI_PORT:-3000}` to `3000` both times it occurs.
-
 Open another terminal session and run these commands to start Next.js:
 
 ```shell
