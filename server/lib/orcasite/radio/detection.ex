@@ -93,7 +93,7 @@ defmodule Orcasite.Radio.Detection do
     end
 
     bypass action(:submit_machine_detection) do
-       authorize_if actor_attribute_equals(:detection_bot, true)
+      authorize_if actor_attribute_equals(:detection_bot, true)
     end
 
     policy changing_attributes([:visible]) do
