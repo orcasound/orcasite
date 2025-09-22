@@ -79,6 +79,23 @@ defmodule Orcasite.Notifications.Subscriber do
     end
   end
 
+  validations do
+    validate fn changeset, _context ->
+      # Check if email subscriber already exists
+      with email when is_binary(email) <- changeset |> Ash.Changeset.get_argument(:email),
+           %{action_type: :create} <- changeset,
+           {:get, {:error, _}} <- {:get, Orcasite.Notifications.Subscriber.by_email(email)} do
+        :ok
+      else
+        {:get, other} ->
+          {:error, [field: :email, message: "email already exists"]}
+
+        err ->
+          :ok
+      end
+    end
+  end
+
   actions do
     defaults [:create, :read, :update, :destroy]
 
@@ -151,23 +168,6 @@ defmodule Orcasite.Notifications.Subscriber do
           ],
           type: :create
         )
-      end
-    end
-  end
-
-  validations do
-    validate fn changeset, _context ->
-      # Check if email subscriber already exists
-      with email when is_binary(email) <- changeset |> Ash.Changeset.get_argument(:email),
-           %{action_type: :create} <- changeset,
-           {:get, {:error, _}} <- {:get, Orcasite.Notifications.Subscriber.by_email(email)} do
-        :ok
-      else
-        {:get, other} ->
-          {:error, [field: :email, message: "email already exists"]}
-
-        err ->
-          :ok
       end
     end
   end

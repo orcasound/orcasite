@@ -26,10 +26,6 @@ defmodule Orcasite.Accounts.ApiKey do
     attribute :expires_at, :utc_datetime_usec
   end
 
-  code_interface do
-    define :create
-  end
-
   calculations do
     calculate :invalid,
               :boolean,
@@ -39,6 +35,10 @@ defmodule Orcasite.Accounts.ApiKey do
               )
 
     calculate :valid, :boolean, expr(not invalid)
+  end
+
+  code_interface do
+    define :create
   end
 
   relationships do

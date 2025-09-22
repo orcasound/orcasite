@@ -4,4 +4,6 @@ defmodule Orcasite.Notifications.Event do
   def humanize(:confirmed_candidate, true), do: "confirmed candidates"
   def humanize(:new_detection, false), do: "new detection"
   def humanize(:new_detection, true), do: "new detections"
+  def humanize(:live_bout, false), do: "live bout"
+  def humanize(:live_bout, true), do: "live bouts"
 end

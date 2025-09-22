@@ -86,19 +86,6 @@ defmodule Orcasite.Radio.Feed do
     end
   end
 
-  oban do
-    triggers do
-      trigger :store_latest_listener_count do
-        scheduler_cron "*/5 * * * *"
-        action :store_latest_listener_count
-        worker_read_action :read
-        queue :default
-        worker_module_name __MODULE__.AshOban.StoreLatestListenerCount.Worker
-        scheduler_module_name __MODULE__.AshOban.StoreLatestListenerCount.Scheduler
-      end
-    end
-  end
-
   relationships do
     has_many :listener_counts, Orcasite.Radio.FeedListenerCount do
       public? true
@@ -329,6 +316,19 @@ defmodule Orcasite.Radio.Feed do
       accept []
 
       change __MODULE__.Changes.StoreLatestListenerCount
+    end
+  end
+
+  oban do
+    triggers do
+      trigger :store_latest_listener_count do
+        scheduler_cron "*/5 * * * *"
+        action :store_latest_listener_count
+        worker_read_action :read
+        queue :default
+        worker_module_name __MODULE__.AshOban.StoreLatestListenerCount.Worker
+        scheduler_module_name __MODULE__.AshOban.StoreLatestListenerCount.Scheduler
+      end
     end
   end
 

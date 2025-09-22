@@ -1,7 +1,7 @@
 defmodule Orcasite.Radio.Detection do
   use Ash.Resource,
     domain: Orcasite.Radio,
-    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
+    extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource, AshOban],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -84,20 +84,12 @@ defmodule Orcasite.Radio.Detection do
   end
 
   policies do
-    bypass actor_attribute_equals(:admin, true) do
-      authorize_if always()
-    end
-
-    bypass action_type(:read) do
-      authorize_if always()
-    end
-
-    bypass action(:seed) do
-      authorize_if always()
-    end
-
-    bypass action(:submit_detection) do
-      authorize_if always()
+    bypass always() do
+      authorize_if AshOban.Checks.AshObanInteraction
+      authorize_if actor_attribute_equals(:admin, true)
+      authorize_if action_type(:read)
+      authorize_if action(:seed)
+      authorize_if action(:submit_detection)
     end
 
     bypass action(:submit_machine_detection) do
@@ -300,14 +292,7 @@ defmodule Orcasite.Radio.Detection do
             |> Ash.load!([:feed, :candidate])
 
           if Ash.Changeset.get_argument(changeset, :send_notifications) do
-            Task.Supervisor.async_nolink(Orcasite.TaskSupervisor, fn ->
-              Orcasite.Notifications.Notification.notify_new_detection(
-                detection,
-                detection.candidate,
-                detection.feed,
-                authorize?: false
-              )
-            end)
+            AshOban.run_trigger(detection, :send_notification)
           end
 
           {:ok, detection}
@@ -353,6 +338,24 @@ defmodule Orcasite.Radio.Detection do
 
       change __MODULE__.Changes.UpdateCandidate
       change __MODULE__.Changes.GenerateSpectrograms
+      change run_oban_trigger(:send_notification)
+    end
+
+    update :send_notification do
+      accept []
+      require_atomic? false
+      change __MODULE__.Changes.SendNotification
+    end
+  end
+
+  oban do
+    triggers do
+      trigger :send_notification do
+        action :send_notification
+        scheduler_cron false
+        queue :email
+        worker_module_name __MODULE__.AshOban.SendNotification.Worker
+      end
     end
   end
 
