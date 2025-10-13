@@ -78,7 +78,7 @@ defmodule Orcasite.Mixfile do
       {:corsica, "~> 2.1"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:ash, "~> 3.5.6"},
+      {:ash, "~> 3.6.2"},
       {:ash_admin, "~> 0.13.4"},
       {:ash_postgres, "~> 2.2"},
       {:picosat_elixir, "~> 0.2.3"},
