@@ -65,6 +65,10 @@ defmodule Orcasite.Radio.AudioImage do
     timestamps()
   end
 
+  code_interface do
+    define :generate_spectrogram
+  end
+
   relationships do
     belongs_to :feed, Orcasite.Radio.Feed do
       allow_nil? false
@@ -79,10 +83,6 @@ defmodule Orcasite.Radio.AudioImage do
       through Orcasite.Radio.AudioImageFeedSegment
       public? true
     end
-  end
-
-  code_interface do
-    define :generate_spectrogram
   end
 
   actions do

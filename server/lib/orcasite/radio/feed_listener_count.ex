@@ -29,6 +29,12 @@ defmodule Orcasite.Radio.FeedListenerCount do
     timestamps()
   end
 
+  relationships do
+    belongs_to :feed, Orcasite.Radio.Feed do
+      public? true
+    end
+  end
+
   actions do
     defaults [:read, create: :*, update: :*]
 
@@ -46,9 +52,13 @@ defmodule Orcasite.Radio.FeedListenerCount do
     end
   end
 
-  relationships do
-    belongs_to :feed, Orcasite.Radio.Feed do
-      public? true
+  json_api do
+    type "listener_count"
+
+    routes do
+      base "/listener_counts"
+
+      index :index
     end
   end
 
@@ -58,16 +68,6 @@ defmodule Orcasite.Radio.FeedListenerCount do
 
     queries do
       list :listener_count, :index
-    end
-  end
-
-  json_api do
-    type "listener_count"
-
-    routes do
-      base "/listener_counts"
-
-      index :index
     end
   end
 end
