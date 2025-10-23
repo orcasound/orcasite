@@ -15,7 +15,7 @@ defmodule Orcasite.Radio.Detection.Changes.UpdateCandidate do
           feed_id: detection.feed_id,
           category: detection.category
         })
-        |> Ash.read!()
+        |> Ash.read!(load: :detections, authorize?: false)
         |> case do
           [] ->
             Candidate
@@ -29,11 +29,26 @@ defmodule Orcasite.Radio.Detection.Changes.UpdateCandidate do
             |> Ash.create!()
 
           [candidate] ->
+            detections =
+              candidate.detections
+              |> Kernel.++([detection])
+              |> Enum.uniq_by(& &1.id)
+
+            detection_count = Enum.count(detections)
+
+            min_time =
+              tl(detections)
+              |> Enum.reduce(hd(detections).timestamp, &datetime_min(&1.timestamp, &2))
+
+            max_time =
+              tl(detections)
+              |> Enum.reduce(hd(detections).timestamp, &datetime_max(&1.timestamp, &2))
+
             candidate
             |> Ash.Changeset.for_update(:update, %{
-              detection_count: candidate.detection_count + 1,
-              min_time: datetime_min(candidate.min_time, detection.timestamp),
-              max_time: datetime_max(candidate.max_time, detection.timestamp)
+              detection_count: detection_count,
+              min_time: min_time,
+              max_time: max_time
             })
             |> Ash.update!(authorize?: false)
         end
