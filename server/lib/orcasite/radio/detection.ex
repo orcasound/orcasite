@@ -307,7 +307,7 @@ defmodule Orcasite.Radio.Detection do
       upsert_identity :idempotency_key
 
       accept [:timestamp, :feed_id, :description, :idempotency_key]
-      upsert_fields [:timestamp, :feed_id, :description, :playlist_timestamp, :player_offset]
+      upsert_fields [:timestamp, :description, :playlist_timestamp, :player_offset]
 
       change set_attribute(:user_id, actor(:id))
       change set_attribute(:source_ip, context(:actor_ip))
