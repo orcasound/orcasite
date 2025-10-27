@@ -1,0 +1,68 @@
+<mjml>
+<mj-body>
+<mj-section>
+  <mj-column>
+
+    <mj-text font-size="20px" font-family="helvetica">
+      A new detection has been submitted at {{ node_name }} ({{ node }})!
+    </mj-text>
+
+    <mj-text font-size="20px" font-family="helvetica">
+      Description: {{#if meta["description"]}}{{ meta["description"] }}{{else}}(no description){{/if}}
+    </mj-text>
+    {{#if meta["listener_count"] }}
+      <mj-text font-size="20px" font-family="helvetica">
+        Listeners: {{ meta["listener_count"] }}
+      </mj-text>
+    {{/if}}
+    {{#if meta["candidate_id"] }}
+      <mj-text font-size="20px" font-family="helvetica">
+        Review here: <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}?utm_source=email&utm_medium=email&utm_campaign=notifications">{{ meta["candidate_id"] }}</a>
+      </mj-text>
+    {{/if}}
+    {{#if node && meta["start_time"] && meta["category"] }}
+      <mj-text font-size="20px" font-family="helvetica">
+        <a href="https://live.orcasound.net/bouts/new/{{ node }}?time={{ meta["start_time"] }}&category={{ meta["category"] }}&utm_source=email&utm_medium=email&utm_campaign=notifications">Start a new bout</a>
+      </mj-text>
+    {{/if}}
+
+    {{#if notifications_since_count > 0}}
+      <mj-text font-size="20px" font-family="helvetica">
+        There have been {{ notifications_since_count }} other detections since the last notification.
+      </mj-text>
+      <mj-table>
+      <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
+        <th style="padding: 0 5px 0 0;">Feed</th>
+        <th style="padding: 0 15px; text-align: right;">#</th>
+        <th style="padding: 0 0 0 15px;">Description</th>
+        <th style="padding: 0 0 0 15px;">Action</th>
+      </tr>
+      {{#each notifications_since as |notif_meta|}}
+        <tr>
+          <td style="padding: 0 5px 0 0;white-space:nowrap;">{{ notif_meta["node"] }}</td>
+          <td style="padding: 0 15px;text-align:right;">{{ notif_meta["listener_count"] }}</td>
+          <td style="padding: 0 0 0 15px;">{{ notif_meta["description"] }}</td>
+          <td style="padding: 0 0 0 15px;">
+            {{#if notif_meta["candidate_id"] }}
+              <a href="https://live.orcasound.net/reports/{{meta["candidate_id"]}}?utm_source=email&utm_medium=email&utm_campaign=notifications">Review</a>
+            {{/if}}
+          </td>
+        </tr>
+      {{/each}}
+    </mj-table>
+    {{/if}}
+
+
+    <mj-text font-size="20px">
+      Listen here: <a href="https://live.orcasound.net/listen/{{node}}?utm_source=email&utm_medium=email&utm_campaign=notifications">https://live.orcasound.net/listen/{{ node }}</a>
+    </mj-text>
+
+    {{#if unsubscribe_token }}
+      <mj-text font-size="20px">
+        If you no longer wish to receive these emails, you can <a href="{{unsubscribe_url}}">unsubscribe</a>.
+      </mj-text>
+    {{/if}}
+  </mj-column>
+</mj-section>
+</mj-body>
+</mjml>
