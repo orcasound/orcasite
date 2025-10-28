@@ -18,88 +18,117 @@ defmodule OrcasiteWeb.JsonApi.DetectionsTest do
         data: %{
           attributes: %{
             timestamp: DateTime.to_iso8601(DateTime.utc_now()),
+            description: "Description",
             feed_id: feed.id,
             idempotency_key: "idempotency"
           }
         }
       }
 
-      assert %{
-               "data" => %{
-                 "attributes" => %{
-                   "category" => "whale",
-                   "description" => nil,
-                   "inserted_at" => _,
-                   "listener_count" => 0,
-                   "player_offset" => _,
-                   "playlist_timestamp" => _,
-                   "timestamp" => _,
-                   "source" => "machine"
-                 },
-                 "id" => _,
-                 "links" => %{},
-                 "meta" => %{},
-                 "relationships" => %{
-                   "candidate" => %{"links" => %{}, "meta" => %{}},
-                   "feed" => %{"links" => %{}, "meta" => %{}}
-                 },
-                 "type" => "detection"
-               },
-               "jsonapi" => %{"version" => "1.0"},
-               "links" => %{"self" => "http://www.example.com/api/json/detections"},
-               "meta" => %{}
-             } =
-               conn
-               |> put_req_header("content-type", "application/vnd.api+json")
-               |> put_req_header("authorization", "Bearer #{api_key}")
-               |> post("/api/json/detections", params)
-               |> json_response(201)
-
-      assert %{
-               "errors" => [
-                 %{
-                   "code" => "invalid_attribute",
+      capture_log(fn ->
+        assert %{
+                 "data" => %{
+                   "attributes" => %{
+                     "category" => "whale",
+                     "description" => "Description",
+                     "inserted_at" => _,
+                     "listener_count" => 0,
+                     "player_offset" => _,
+                     "playlist_timestamp" => _,
+                     "timestamp" => _,
+                     "source" => "machine"
+                   },
                    "id" => _,
+                   "links" => %{},
                    "meta" => %{},
-                   "status" => "400",
-                   "title" => "InvalidAttribute",
-                   "source" => %{"pointer" => "/data/attributes/idempotency_key"},
-                   "detail" => "has already been taken"
-                 }
-               ],
-               "jsonapi" => %{"version" => "1.0"}
-             } =
-               conn
-               |> put_req_header("content-type", "application/vnd.api+json")
-               |> put_req_header("authorization", "Bearer #{api_key}")
-               |> post("/api/json/detections", params)
-               |> json_response(400)
+                   "relationships" => %{
+                     "candidate" => %{"links" => %{}, "meta" => %{}},
+                     "feed" => %{"links" => %{}, "meta" => %{}}
+                   },
+                   "type" => "detection"
+                 },
+                 "jsonapi" => %{"version" => "1.0"},
+                 "links" => %{"self" => "http://www.example.com/api/json/detections"},
+                 "meta" => %{}
+               } =
+                 conn
+                 |> put_req_header("content-type", "application/vnd.api+json")
+                 |> put_req_header("authorization", "Bearer #{api_key}")
+                 |> post("/api/json/detections", params)
+                 |> json_response(201)
+      end)
+
+      updated_params = %{
+        data: %{
+          attributes: %{
+            timestamp: DateTime.to_iso8601(DateTime.utc_now() |> DateTime.add(-1, :minute)),
+            feed_id: feed.id,
+            description: "New description",
+            idempotency_key: "idempotency"
+          }
+        }
+      }
+
+      capture_log(fn ->
+        assert %{
+                 "data" => %{
+                   "attributes" => %{
+                     "category" => "whale",
+                     "description" => "New description",
+                     "inserted_at" => _,
+                     "listener_count" => 0,
+                     "player_offset" => _,
+                     "playlist_timestamp" => _,
+                     "timestamp" => _,
+                     "source" => "machine"
+                   },
+                   "id" => _,
+                   "links" => %{},
+                   "meta" => %{},
+                   "relationships" => %{
+                     "candidate" => %{"links" => %{}, "meta" => %{}},
+                     "feed" => %{"links" => %{}, "meta" => %{}}
+                   },
+                   "type" => "detection"
+                 },
+                 "jsonapi" => %{"version" => "1.0"},
+                 "links" => %{"self" => "http://www.example.com/api/json/detections"},
+                 "meta" => %{}
+               } =
+                 conn
+                 |> put_req_header("content-type", "application/vnd.api+json")
+                 |> put_req_header("authorization", "Bearer #{api_key}")
+                 |> post("/api/json/detections", updated_params)
+                 |> json_response(201)
+      end)
     end
 
     test "fails without user", %{conn: conn, feed: feed} do
-      assert %{
-               "errors" => [
-                 %{
-                   "code" => "forbidden",
-                   "detail" => "forbidden",
-                   "id" => _,
-                   "status" => "403",
-                   "title" => "Forbidden"
-                 }
-               ],
-               "jsonapi" => %{"version" => "1.0"}
-             } =
-               conn
-               |> put_req_header("content-type", "application/vnd.api+json")
-               |> post("/api/json/detections", %{
-                 data: %{
-                   attributes: %{
-                     timestamp: DateTime.to_iso8601(DateTime.utc_now()),
-                     feed_id: feed.id
+      capture_log(fn ->
+        assert %{
+                 "errors" => [
+                   %{
+                     "code" => "forbidden",
+                     "detail" => "forbidden",
+                     "id" => _,
+                     "status" => "403",
+                     "title" => "Forbidden"
                    }
-                 }
-               })
-               |> json_response(403)
+                 ],
+                 "jsonapi" => %{"version" => "1.0"}
+               } =
+                 conn
+                 |> put_req_header("content-type", "application/vnd.api+json")
+                 |> post("/api/json/detections", %{
+                   data: %{
+                     attributes: %{
+                       timestamp: DateTime.to_iso8601(DateTime.utc_now()),
+                       feed_id: feed.id
+                     }
+                   }
+                 })
+                 |> json_response(403)
+      end)
     end
   end
 end

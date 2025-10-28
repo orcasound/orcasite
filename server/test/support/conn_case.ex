@@ -28,6 +28,8 @@ defmodule OrcasiteWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import OrcasiteWeb.ConnCase
+
+      import ExUnit.CaptureLog
     end
   end
 
