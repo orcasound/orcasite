@@ -143,6 +143,8 @@ defmodule Orcasite.Radio.Candidate do
     end
 
     read :find_nearby_candidate do
+      get? true
+
       argument :category, Orcasite.Types.DetectionCategory do
         allow_nil? false
       end
