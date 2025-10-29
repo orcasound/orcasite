@@ -95,6 +95,10 @@ defmodule Orcasite.Radio.Candidate do
     end
   end
 
+  code_interface do
+    define :find_nearby_candidate
+  end
+
   actions do
     defaults [:read, :destroy]
 
@@ -139,44 +143,20 @@ defmodule Orcasite.Radio.Candidate do
     end
 
     read :find_nearby_candidate do
-      get? true
-
       argument :category, Orcasite.Types.DetectionCategory do
         allow_nil? false
       end
 
-      argument :timestamp, :utc_datetime
+      argument :timestamp, :utc_datetime, allow_nil?: false
       argument :within_minutes, :integer, default: 3
-      argument :feed_id, :string
+      argument :feed_id, :string, allow_nil?: false
 
-      prepare fn query, _context ->
-        require Ash.Query
-        timestamp = Ash.Query.get_argument(query, :timestamp)
-        within_minutes = Ash.Query.get_argument(query, :within_minutes)
-        category = Ash.Query.get_argument(query, :category)
-
-        feed_id =
-          Ash.Query.get_argument(query, :feed_id)
-          |> AshUUID.identify_format()
-          |> case do
-            :raw ->
-              Ash.Query.get_argument(query, :feed_id)
-
-            _ ->
-              "feed_" <> id = Ash.Query.get_argument(query, :feed_id)
-              {:ok, feed_id} = AshUUID.Encoder.decode(id)
-              feed_id
-          end
-
-        min_time = DateTime.add(timestamp, -within_minutes, :minute)
-        max_time = DateTime.add(timestamp, within_minutes, :minute)
-
-        query
-        |> Ash.Query.filter(
-          feed_id == ^feed_id and ^max_time >= min_time and max_time >= ^min_time and
-            category == ^category
-        )
-      end
+      filter expr(
+               feed_id == ^arg(:feed_id) and
+                 category == ^arg(:category) and
+                 min_time <= datetime_add(^arg(:timestamp), ^arg(:within_minutes), :minute) and
+                 max_time >= datetime_add(^arg(:timestamp), -(^arg(:within_minutes)), :minute)
+             )
     end
 
     update :update do
