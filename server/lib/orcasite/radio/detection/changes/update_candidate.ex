@@ -28,7 +28,27 @@ defmodule Orcasite.Radio.Detection.Changes.UpdateCandidate do
             })
             |> Ash.create!()
 
-          [candidate | _] ->
+          candidates ->
+            # Choose candidate that's closest to detection's timestamps
+            candidate =
+              Enum.sort_by(
+                candidates,
+                fn candidate ->
+                  [
+                    {candidate.min_time, detection.start_time},
+                    {candidate.min_time, detection.end_time},
+                    {candidate.max_time, detection.start_time},
+                    {candidate.max_time, detection.end_time}
+                  ]
+                  |> Enum.map(fn {t1, t2} ->
+                    Kernel.abs(DateTime.diff(t1, t2, :millisecond))
+                  end)
+                  |> Enum.min()
+                end,
+                :asc
+              )
+              |> Enum.at(0)
+
             detections =
               candidate.detections
               |> Kernel.++([detection])
