@@ -28,7 +28,7 @@ defmodule Orcasite.Radio.Detection.Changes.UpdateCandidate do
             })
             |> Ash.create!()
 
-          [candidate] ->
+          [candidate | _] ->
             detections =
               candidate.detections
               |> Kernel.++([detection])
