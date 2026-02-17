@@ -225,6 +225,7 @@ defmodule Orcasite.Radio.Feed do
                :cloudfront_url,
                :dataplicity_id,
                :orcahello_id,
+               :maintainer_emails,
                :location_point,
                if(Orcasite.Config.seeding_enabled?(), do: :id)
              ]
@@ -241,6 +242,7 @@ defmodule Orcasite.Radio.Feed do
         :cloudfront_url,
         :dataplicity_id,
         :orcahello_id,
+        :maintainer_emails,
         :location_point
       ]
 

@@ -55,6 +55,15 @@ const SeedPage: NextPageWithLayout = () => {
     message: "",
   });
 
+  const onMutationError = (error: unknown) => {
+    setSeedForm((form) => ({
+      ...form,
+      isSaving: false,
+      saved: true,
+      message: error instanceof Error ? error.message : "Seeding failed",
+    }));
+  };
+
   const onSuccess = (response: SeedFeedsResult | SeedResourceResult) => {
     const { result, errors } = response;
     if (errors && errors.length > 0) {
@@ -83,11 +92,13 @@ const SeedPage: NextPageWithLayout = () => {
       onSuccess(seedFeeds);
       feedsQuery.refetch();
     },
+    onError: onMutationError,
   });
   const seedResourceMutation = useSeedResourceMutation({
     onSuccess: ({ seedResource }: { seedResource: SeedResourceResult }) => {
       onSuccess(seedResource);
     },
+    onError: onMutationError,
   });
 
   const seedAllMutation = useSeedAllMutation({
@@ -111,13 +122,18 @@ const SeedPage: NextPageWithLayout = () => {
           return `${count} ${lowerCaseResource(resource)}${count === 1 ? "" : "s"}`;
         })
         .join(", ");
+
       setSeedForm((form) => ({
         ...form,
         isSaving: false,
         saved: true,
-        message: `Seeded ${countString}`,
+        message:
+          countString.length > 0
+            ? `Seeded ${countString}`
+            : "No records were seeded. Check server logs for feed/seed errors.",
       }));
     },
+    onError: onMutationError,
   });
 
   const handleSubmit = () => {
@@ -311,7 +327,12 @@ function toLocalISOString(date: Date) {
 SeedPage.getLayout = getSimpleLayout;
 
 export async function getStaticProps() {
-  const enableSeedFromProd = process.env.ENABLE_SEED_FROM_PROD === "true";
+  const seedFlag = process.env.ENABLE_SEED_FROM_PROD;
+  const gqlEndpoint = process.env.NEXT_PUBLIC_GQL_ENDPOINT ?? "";
+  // The local dev stack runs with a localhost GraphQL endpoint.
+  const isLocalDevStack = gqlEndpoint.includes("localhost");
+  const enableSeedFromProd = seedFlag ? seedFlag === "true" : isLocalDevStack;
+
   // Hide the seed page when `ENABLE_SEED_FROM_PROD` isn't enabled
   return !enableSeedFromProd ? { notFound: true } : { props: {} };
 }
