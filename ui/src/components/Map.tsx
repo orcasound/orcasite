@@ -10,15 +10,18 @@ import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 import { Feed, FeedsQuery } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
+import { CascadiaSighting } from "@/types/DataTypes";
 
 export default function Map({
   setMap,
   currentFeed,
   feeds,
+  sightings,
 }: {
   setMap?: (map: LeafletMap) => void;
   currentFeed?: Pick<Feed, "slug" | "latLng">;
   feeds: FeedsQuery["feeds"];
+  sightings: CascadiaSighting[];
 }) {
   const router = useRouter();
 

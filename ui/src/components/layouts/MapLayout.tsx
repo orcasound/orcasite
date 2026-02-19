@@ -9,6 +9,7 @@ import { ReactElement, ReactNode, useEffect, useState } from "react";
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import { useSightings } from "@/hooks/useSightings";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 import Player, { PlayerSpacer } from "../Player";
@@ -45,6 +46,8 @@ function MapLayout({ children }: { children: ReactNode }) {
   const [map, setMap] = useState<LeafletMap>();
   const feeds = useFeedsQuery().data?.feeds ?? [];
   const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
+
+  const sightings = useSightings().data?.results ?? [];
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
@@ -110,6 +113,7 @@ function MapLayout({ children }: { children: ReactNode }) {
               setMap={setMap}
               currentFeed={currentFeed}
               feeds={feeds}
+              sightings={sightings}
             />
           </Box>
           <ToggleDrawerButton
