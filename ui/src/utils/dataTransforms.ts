@@ -12,7 +12,7 @@ import {
   standardizeFeedName,
 } from "./dataHelpers";
 
-const toAudioCategory = (
+const toNewCategory = (
   detection: DetectionsResult,
 ): AudioDetection["newCategory"] => {
   if (detection.source === "MACHINE") return "WHALE (AI)";
@@ -39,7 +39,7 @@ export function transformAudioDetections(
     type: "audio",
     hydrophone: lookupFeedName(el.feedId!, feeds),
     comments: el.description,
-    newCategory: toAudioCategory(el),
+    newCategory: toNewCategory(el),
     timestampString: el.timestamp.toString(),
   }));
 }
@@ -47,9 +47,10 @@ export function transformAudioDetections(
 export function transformSightings(
   sightings: CascadiaSighting[],
   feeds: Feed[],
+  radius?: number,
 ): Sighting[] {
   // standardize data
-  const radius = 3;
+  if (radius === undefined) radius = 3; // default radius in miles for assigning sightings to hydrophones
   const addLat = radius / 69;
   const addLong = (lat: number) =>
     radius / (69 * Math.cos((lat * Math.PI) / 180));

@@ -98,6 +98,10 @@ export const oneDay = 24 * 60 * 60 * 1000;
 export const allTime = -1;
 export const customRange = -2;
 
+export const getDateMsAgo = (durationMs: number, nowMs = Date.now()) => {
+  return new Date(nowMs - durationMs);
+};
+
 export const addMilliseconds = (dateString: string, secondsToAdd: number) => {
   const originalDate = new Date(dateString);
   originalDate.setMilliseconds(originalDate.getMilliseconds() + secondsToAdd);
@@ -106,10 +110,12 @@ export const addMilliseconds = (dateString: string, secondsToAdd: number) => {
 
 export const subtractMilliseconds = (
   dateString: string,
-  secondsToAdd: number,
+  secondsToSubtract: number,
 ) => {
   const originalDate = new Date(dateString);
-  originalDate.setMilliseconds(originalDate.getMilliseconds() - secondsToAdd);
+  originalDate.setMilliseconds(
+    originalDate.getMilliseconds() - secondsToSubtract,
+  );
   return originalDate?.toISOString();
 };
 

@@ -16,10 +16,14 @@ type CombinedDataObject = {
   feeds: Feed[];
 };
 
-export function useCombinedData(useLiveData: boolean): CombinedDataObject {
+export function useCombinedData(): CombinedDataObject {
   //// ORCASOUND
   // get feeds and detections based on live/seed toggle in development UI
-  const audioDetections = useDetectionsQuery().data?.detections?.results ?? [];
+  const detectionsResults = useDetectionsQuery().data?.detections?.results;
+  const audioDetections = useMemo(
+    () => detectionsResults ?? [],
+    [detectionsResults],
+  );
 
   const seedFeeds = useFeedsQuery().data?.feeds ?? ([] as Feed[]);
   const feeds = seedFeeds as Feed[];
