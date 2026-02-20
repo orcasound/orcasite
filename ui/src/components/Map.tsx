@@ -34,7 +34,7 @@ export default function Map({
   sightings,
   detections,
 }: {
-  setMap?: (map: LeafletMap) => void;
+  setMap?: (map: LeafletMap | null) => void; // adding null to type to allow hot-reload safety guard
   currentFeed?: Pick<Feed, "slug" | "latLng">;
   feeds: FeedsQuery["feeds"];
   sightings: CascadiaSighting[] | undefined;
@@ -51,15 +51,20 @@ export default function Map({
     iconSize: [30, 30],
   });
 
+  const defaultCenter: [number, number] = [48.1, -122.75];
+
   return (
     <>
       <LeafletTooltipGlobalStyles />
       <MapContainer
-        center={[48.27, -123.23]}
+        center={defaultCenter}
         zoom={9}
         maxZoom={13}
         style={{ height: "100%", width: "100%" }}
-        ref={setMap}
+        ref={(instance) => {
+          // hot-reload safety guard to prevent setting map to a stale Leaflet instance
+          setMap?.(instance ?? null);
+        }}
         zoomControl={false}
         //TODO: Disable attribution on mobile only
         attributionControl={false}

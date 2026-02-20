@@ -37,7 +37,7 @@ export function useCombinedData(): CombinedDataObject {
   //// ACARTIA sightings
   // get detections
   const sightingResults = useSightings().data?.results;
-  // standardize data
+  // add standardized fields to sightings data
   const sightings = useMemo(
     () => transformSightings(sightingResults, feeds),
     [sightingResults, feeds],

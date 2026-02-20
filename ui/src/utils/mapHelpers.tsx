@@ -11,8 +11,6 @@ export function LeafletTooltipGlobalStyles() {
           maxWidth: "300px",
           minWidth: "200px",
           textWrap: "wrap",
-          // whiteSpace: "wrap",
-          // wordWrap: "break-word",
           fontSize: "0.875rem", // Or use theme.typography.body2.fontSize if inside a function
           borderRadius: "4px",
           padding: "8px",
@@ -121,24 +119,6 @@ export function ReportCount({
       marker.removeFrom(map);
     };
   }, [center, count, map, onClick]);
-
-  return null;
-}
-
-export function MapUpdater({
-  center,
-  zoom,
-}: {
-  center: LatLngExpression;
-  zoom: number;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (center && zoom) {
-      map.setView(center, zoom); // or map.panTo(center); map.setZoom(zoom);
-    }
-  }, [center, zoom, map]);
 
   return null;
 }

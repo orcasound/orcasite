@@ -22,6 +22,10 @@ const MapWithNoSSR = dynamic(() => import("../Map"), {
   ssr: false,
 });
 
+const DEFAULT_CENTER: [number, number] = [48.1, -122.75];
+const DEFAULT_ZOOM = 8.5;
+const FEED_ZOOM = 12;
+
 const feedFromSlug = (feedSlug: string) => ({
   id: feedSlug,
   name: feedSlug,
@@ -47,9 +51,8 @@ function MapLayout({ children }: { children: ReactNode }) {
   const feed = isDynamic ? feedFromSlug(slug) : feedFromQuery;
 
   const [currentFeed, setCurrentFeed] = useState(feed);
-  const [map, setMap] = useState<LeafletMap>();
+  const [map, setMap] = useState<LeafletMap | undefined>();
   const feeds = useFeedsQuery().data?.feeds ?? [];
-  const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
 
   // Added: data call
   const sightings = useSightings().data?.results;
@@ -61,13 +64,27 @@ function MapLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed);
-      map?.setZoom(9);
-      map?.panTo(feed.latLng);
     }
-    if (!feed && !currentFeed && firstOnlineFeed) {
-      setCurrentFeed(firstOnlineFeed);
+  }, [feed, currentFeed]);
+
+  // update map zoom / center based on feed in url, separately from currentFeed, so that map returns to default view but UI still reflects most-recently selected feed in player
+  useEffect(() => {
+    if (!map) return;
+
+    // hot-reload safety guard to prevent calling map.setView on a stale Leaflet instance
+    const mapWithPane = map as LeafletMap & { _mapPane?: unknown };
+    if (!mapWithPane._mapPane) return;
+
+    // Keep current viewport while route feed slug exists but feed query is still resolving to avoid jarring resets between page routes.
+    if (slug && !feed) return;
+
+    if (feed) {
+      map.setView([feed.latLng.lat, feed.latLng.lng], FEED_ZOOM);
+      return;
     }
-  }, [feed, map, currentFeed, firstOnlineFeed]);
+
+    map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+  }, [map, feed, slug]);
 
   const invalidateSize = () => {
     if (map) {
@@ -118,7 +135,10 @@ function MapLayout({ children }: { children: ReactNode }) {
         >
           <Box sx={{ flexGrow: 1 }}>
             <MapWithNoSSR
-              setMap={setMap}
+              setMap={(nextMap) => {
+                // hot-reload safety guard to prevent setting map to a stale Leaflet instance
+                setMap(nextMap ?? undefined);
+              }}
               currentFeed={currentFeed}
               feeds={feeds}
               sightings={sightings}
