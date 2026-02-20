@@ -13,7 +13,6 @@ import {
   useFeedQuery,
   useFeedsQuery,
 } from "@/graphql/generated";
-import { useCombinedData } from "@/hooks/useCombinedData";
 import { useSightings } from "@/hooks/useSightings";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
@@ -55,7 +54,6 @@ function MapLayout({ children }: { children: ReactNode }) {
   // Added: data call
   const sightings = useSightings().data?.results;
   const detections = useDetectionsQuery().data?.detections?.results;
-  const combined = useCombinedData().combined;
 
   // End: sightings data call
 

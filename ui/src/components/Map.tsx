@@ -18,7 +18,7 @@ import { Feed, FeedsQuery } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
 import { CascadiaSighting, DetectionsResult } from "@/types/DataTypes";
-import formatDuration from "@/utils/dataHelpers";
+import formatDuration, { cleanSightingsDescription } from "@/utils/dataHelpers";
 // Added: new map helpers
 import {
   AudibleRadiusCircles,
@@ -136,7 +136,7 @@ export default function Map({
                 <strong>${sighting.name}</strong><br />
                 ${timeAgo} ago<br />
                 ${sighting.created}<br />
-                ${sighting.comments}<br />
+                ${cleanSightingsDescription(sighting.comments)}
                 `,
                   }}
                 />
