@@ -13,7 +13,9 @@
     "format": "prettier . --write",
     "codegen": "graphql-codegen",
     "analyze": "ANALYZE=true next build",
-    "prepare": "cd .. && husky ui/.husky"
+    "prepare": "cd .. && husky ui/.husky",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest --passWithNoTests"
   },
   "dependencies": {
     "@emotion/cache": "^11.13.1",
@@ -72,6 +74,7 @@
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "3.3.3",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "vitest": "^4.0.18"
   }
 }
