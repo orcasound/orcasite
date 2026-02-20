@@ -13,7 +13,7 @@ import {
 import { addMinutes, formatDuration, subHours } from "date-fns";
 import _ from "lodash";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -31,7 +31,10 @@ import { NextPageWithLayout } from "@/pages/_app";
 
 const SeedPage: NextPageWithLayout = () => {
   const feedsQuery = useFeedsQuery();
-  const feeds = feedsQuery.data?.feeds ?? [];
+  const feeds = useMemo(
+    () => feedsQuery.data?.feeds ?? [],
+    [feedsQuery.data?.feeds],
+  );
   const resources = Object.values(SeedResource);
 
   const [startTime, setStartTime] = useState(() => subHours(new Date(), 1));
