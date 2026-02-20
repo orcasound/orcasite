@@ -23,7 +23,7 @@ const MapWithNoSSR = dynamic(() => import("../Map"), {
 });
 
 const DEFAULT_CENTER: [number, number] = [48.1, -122.75];
-const DEFAULT_ZOOM = 8.5;
+const DEFAULT_ZOOM = 8;
 const FEED_ZOOM = 12;
 
 const feedFromSlug = (feedSlug: string) => ({
