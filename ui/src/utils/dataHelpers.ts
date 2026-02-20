@@ -62,16 +62,6 @@ export const standardizeFeedName = (name: string) => {
   }
 };
 
-export const lookupFeedName = (id: string, feedList: Feed[]) => {
-  let name = "feed name not found";
-  feedList.forEach((feed) => {
-    if (id === feed.id) {
-      name = feed.name;
-    }
-  });
-  return standardizeFeedName(name);
-};
-
 export const lookupFeedId = (name: string, feedList: Feed[]) => {
   let id = "feed id not found";
   const standardizedName = standardizeFeedName(name);
@@ -82,6 +72,26 @@ export const lookupFeedId = (name: string, feedList: Feed[]) => {
     }
   });
   return id;
+};
+
+export const lookupFeedName = (id: string, feedList: Feed[]) => {
+  let name = "feed name not found";
+  feedList.forEach((feed) => {
+    if (id === feed.id) {
+      name = feed.name;
+    }
+  });
+  return standardizeFeedName(name);
+};
+
+export const lookupFeedSlug = (id: string, feedList: Feed[]) => {
+  let slug = "feed slug not found";
+  feedList.forEach((feed) => {
+    if (id === feed.id) {
+      slug = feed.slug;
+    }
+  });
+  return slug;
 };
 
 const now = new Date();

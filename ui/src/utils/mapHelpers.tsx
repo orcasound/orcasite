@@ -74,10 +74,12 @@ export function ReportCount({
   onClick,
 }: {
   center: LatLngExpression;
-  count: number;
+  count?: number;
   onClick?: () => void;
 }) {
   const map = useMap();
+
+  if (!count) count = 0;
 
   useEffect(() => {
     if (!center) return;

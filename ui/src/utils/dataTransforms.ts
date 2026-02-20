@@ -9,6 +9,7 @@ import {
 import {
   lookupFeedId,
   lookupFeedName,
+  lookupFeedSlug,
   standardizeFeedName,
 } from "./dataHelpers";
 
@@ -32,12 +33,13 @@ export function transformAudioDetections(
   detections: DetectionsResult[],
   feeds: Feed[],
 ): AudioDetection[] {
-  if (!feeds.length) return [];
+  if (!feeds.length || !detections.length) return [];
 
   return detections.map((el) => ({
     ...el,
     type: "audio",
-    hydrophone: lookupFeedName(el.feedId!, feeds),
+    standardizedFeedName: lookupFeedName(el.feedId!, feeds),
+    feedSlug: lookupFeedSlug(el.feedId!, feeds),
     comments: el.description,
     newCategory: toNewCategory(el),
     timestampString: el.timestamp.toString(),
@@ -45,17 +47,18 @@ export function transformAudioDetections(
 }
 
 export function transformSightings(
-  sightings: CascadiaSighting[],
+  sightings: CascadiaSighting[] | undefined,
   feeds: Feed[],
   radius?: number,
 ): Sighting[] {
+  if (!sightings || !sightings.length || !feeds.length) return [];
   // standardize data
   if (radius === undefined) radius = 3; // default radius in miles for assigning sightings to hydrophones
   const addLat = radius / 69;
   const addLong = (lat: number) =>
     radius / (69 * Math.cos((lat * Math.PI) / 180));
 
-  const feedCoordinates = feeds.map((feed) => ({
+  const feedBoundingBoxes = feeds.map((feed) => ({
     name: feed.name,
     lat: feed.latLng.lat,
     lng: feed.latLng.lng,
@@ -65,9 +68,9 @@ export function transformSightings(
     maxLng: feed.latLng.lng + addLong(feed.latLng.lat),
   }));
 
-  const assignSightingHydrophone = (sighting: CascadiaSighting) => {
-    let hydrophone: string = "out of range";
-    feedCoordinates.forEach((feed) => {
+  const assignSightingsToHydrophones = (sighting: CascadiaSighting) => {
+    let hydrophone = "out of range";
+    feedBoundingBoxes.forEach((feed) => {
       const inLatRange =
         sighting.latitude >= feed.minLat && sighting.latitude <= feed.maxLat;
       const inLngRange =
@@ -82,13 +85,22 @@ export function transformSightings(
 
   if (!Array.isArray(sightings)) return [];
 
-  return sightings.map((el) => ({
-    ...el,
-    type: "sightings",
-    newCategory: "SIGHTING",
-    hydrophone: assignSightingHydrophone(el),
-    feedId: lookupFeedId(assignSightingHydrophone(el), feeds ?? []),
-    timestampString: el.created.replace(" ", "T") + "Z",
-    timestamp: new Date(el.created.replace(" ", "T") + "Z"),
-  }));
+  const transformedSightings: Sighting[] = sightings.map((el): Sighting => {
+    const feedName = assignSightingsToHydrophones(el);
+    const feedId = lookupFeedId(feedName, feeds);
+    const feedSlug = lookupFeedSlug(feedId, feeds);
+
+    return {
+      ...el,
+      type: "sightings",
+      newCategory: "SIGHTING",
+      standardizedFeedName: feedName,
+      feedSlug: feedSlug,
+      feedId: feedId,
+      timestampString: el.created.replace(" ", "T") + "Z",
+      timestamp: new Date(el.created.replace(" ", "T") + "Z"),
+    };
+  });
+
+  return transformedSightings;
 }

@@ -4,7 +4,7 @@ import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
@@ -13,6 +13,7 @@ import {
   useFeedQuery,
   useFeedsQuery,
 } from "@/graphql/generated";
+import { useCombinedData } from "@/hooks/useCombinedData";
 import { useSightings } from "@/hooks/useSightings";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
@@ -52,14 +53,9 @@ function MapLayout({ children }: { children: ReactNode }) {
   const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
 
   // Added: data call
-  const { data } = useSightings();
-  const sightings = useMemo(() => data?.results ?? [], [data]);
-
-  const detectionsResults = useDetectionsQuery().data?.detections?.results;
-  const detections = useMemo(
-    () => detectionsResults ?? [],
-    [detectionsResults],
-  );
+  const sightings = useSightings().data?.results;
+  const detections = useDetectionsQuery().data?.detections?.results;
+  const combined = useCombinedData().combined;
 
   // End: sightings data call
 

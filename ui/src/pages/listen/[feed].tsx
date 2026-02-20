@@ -10,13 +10,19 @@ import {
   getMapStaticProps,
 } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
+import ReportCount from "@/components/ReportCount";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import { useCombinedData } from "@/hooks/useCombinedData";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const FeedPage: NextPageWithLayout = () => {
   const router = useRouter();
   const slug = router.query.feed as string;
   const feed = useFeedQuery({ slug: slug }).data?.feed;
+
+  const combinedData = useCombinedData().combined;
+
+  const detectionsThisFeed = combinedData?.filter((d) => d.feedSlug === slug);
 
   if (!feed) return null;
 
@@ -43,6 +49,9 @@ const FeedPage: NextPageWithLayout = () => {
               <Typography color="textPrimary">{feed.name}</Typography>
             </Breadcrumbs>
             <h1>{feed.name}</h1>
+            <Box sx={{ mb: 3, mt: -1 }}>
+              <ReportCount detectionArray={detectionsThisFeed} />
+            </Box>
             <div
               style={{ position: "relative", width: "100%", height: "15em" }}
             >

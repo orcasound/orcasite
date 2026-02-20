@@ -37,8 +37,8 @@ export default function Map({
   setMap?: (map: LeafletMap) => void;
   currentFeed?: Pick<Feed, "slug" | "latLng">;
   feeds: FeedsQuery["feeds"];
-  sightings: CascadiaSighting[];
-  detections: DetectionsResult[];
+  sightings: CascadiaSighting[] | undefined;
+  detections: DetectionsResult[] | undefined | null;
 }) {
   const router = useRouter();
 
@@ -73,7 +73,7 @@ export default function Map({
 
         {/* Feed icons with red circles for detection count and audible radius */}
         {feeds.map((feed) => {
-          const audioDetectionsThisFeed = detections.filter(
+          const audioDetectionsThisFeed = detections?.filter(
             (d) => d.feedId === feed?.id,
           ).length;
 

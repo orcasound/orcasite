@@ -13,7 +13,8 @@ export type DetectionsResult = DetectionsResultList[number];
 
 export interface AudioDetection extends Omit<DetectionsResult, "candidate"> {
   type: "audio";
-  hydrophone: string;
+  standardizedFeedName: string;
+  feedSlug: string;
   comments: string | null | undefined;
   newCategory:
     | "WHALE (HUMAN)"
@@ -49,7 +50,8 @@ export interface CascadiaSighting {
 
 export interface Sighting extends CascadiaSighting {
   type: "sightings";
-  hydrophone: string;
+  standardizedFeedName: string;
+  feedSlug: string;
   feedId: string;
   newCategory: "SIGHTING";
   timestamp: Date;

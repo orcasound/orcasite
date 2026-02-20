@@ -36,29 +36,25 @@ export function useCombinedData(): CombinedDataObject {
 
   //// ACARTIA sightings
   // get detections
-  const { data: sightingsData, isSuccess: isSuccessSightings } = useSightings();
-  const dataSightings = useMemo(
-    () => sightingsData?.results ?? [],
-    [sightingsData],
-  );
+  const sightingResults = useSightings().data?.results;
   // standardize data
-  const datasetSightings = useMemo(
-    () => transformSightings(dataSightings, feeds),
-    [dataSightings, feeds],
+  const sightings = useMemo(
+    () => transformSightings(sightingResults, feeds),
+    [sightingResults, feeds],
   );
 
   const combined: CombinedData[] = useMemo(() => {
-    return [...datasetAudio, ...datasetSightings];
-  }, [datasetAudio, datasetSightings]);
+    return [...datasetAudio, ...sightings];
+  }, [datasetAudio, sightings]);
 
   const dataset = useMemo(() => {
     return {
       audio: datasetAudio,
-      sightings: datasetSightings,
+      sightings: sightings,
       combined: combined,
       feeds: feeds,
-      isSuccessSightings: isSuccessSightings,
+      isSuccessSightings: !!sightingResults,
     };
-  }, [datasetAudio, datasetSightings, combined, feeds, isSuccessSightings]);
+  }, [datasetAudio, sightings, combined, feeds, sightingResults]);
   return dataset;
 }
