@@ -4,11 +4,15 @@ import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ReactElement, ReactNode, useEffect, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from "react";
 
 import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
-import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import {
+  useDetectionsQuery,
+  useFeedQuery,
+  useFeedsQuery,
+} from "@/graphql/generated";
 import { useSightings } from "@/hooks/useSightings";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
@@ -47,7 +51,17 @@ function MapLayout({ children }: { children: ReactNode }) {
   const feeds = useFeedsQuery().data?.feeds ?? [];
   const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
 
-  const sightings = useSightings().data?.results ?? [];
+  // Added: data call
+  const { data } = useSightings();
+  const sightings = useMemo(() => data?.results ?? [], [data]);
+
+  const detectionsResults = useDetectionsQuery().data?.detections?.results;
+  const detections = useMemo(
+    () => detectionsResults ?? [],
+    [detectionsResults],
+  );
+
+  // End: sightings data call
 
   // update the currentFeed only if there's a new feed
   useEffect(() => {
@@ -114,6 +128,7 @@ function MapLayout({ children }: { children: ReactNode }) {
               currentFeed={currentFeed}
               feeds={feeds}
               sightings={sightings}
+              detections={detections}
             />
           </Box>
           <ToggleDrawerButton
