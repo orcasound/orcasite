@@ -58,6 +58,13 @@ if config_env() == :prod do
     config :orcasite, :feed_stream_queue_url, System.get_env("FEED_STREAM_QUEUE_URL")
   end
 
+  # Shipnoise backend API URL (the separate shipnoise API service)
+  # Requests to /api/shipnoise/* are proxied to this URL
+  # Example: SHIPNOISE_API_URL=https://api.shipnoise.net
+  if System.get_env("SHIPNOISE_API_URL", "") != "" do
+    config :orcasite, :shipnoise_api_url, System.get_env("SHIPNOISE_API_URL")
+  end
+
   config :orcasite, OrcasiteWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [

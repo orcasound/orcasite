@@ -62,6 +62,18 @@ defmodule OrcasiteWeb.Router do
     plug AshGraphql.Plug
   end
 
+  # Proxy shipnoise backend API (separate service) — before the catch-all NextJS forward
+  scope "/api/shipnoise" do
+    pipe_through(:api)
+
+    shipnoise_url = System.get_env("SHIPNOISE_API_URL", "http://localhost:5000")
+
+    forward("/", ReverseProxyPlug,
+      upstream: shipnoise_url,
+      error_callback: &__MODULE__.log_reverse_proxy_error/1
+    )
+  end
+
   scope "/api/json" do
     pipe_through(:api)
 
