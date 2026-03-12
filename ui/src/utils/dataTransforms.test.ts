@@ -65,7 +65,7 @@ describe("transformAudioDetections", () => {
     expect(transformAudioDetections([], [])).toEqual([]);
   });
 
-  it("maps source/category to newCategory and enriches feed metadata", () => {
+  it("preserves source/category and enriches feed metadata", () => {
     const feeds = [makeFeed("f-1", "North SJC", "north-sjc", 48.1, -122.75)];
     const machine = makeDetection({
       id: "d-machine",
@@ -81,8 +81,10 @@ describe("transformAudioDetections", () => {
     const transformed = transformAudioDetections([machine, human], feeds);
 
     expect(transformed).toHaveLength(2);
-    expect(transformed[0].newCategory).toBe("WHALE (AI)");
-    expect(transformed[1].newCategory).toBe("WHALE (HUMAN)");
+    expect(transformed[0].source).toBe("MACHINE");
+    expect(transformed[0].category).toBe("WHALE");
+    expect(transformed[1].source).toBe("HUMAN");
+    expect(transformed[1].category).toBe("WHALE");
     expect(transformed[0].standardizedFeedName).toBe("North San Juan Channel");
     expect(transformed[0].feedSlug).toBe("north-sjc");
     expect(transformed[0].type).toBe("audio");
@@ -98,11 +100,12 @@ describe("transformSightings", () => {
 
     expect(transformed).toHaveLength(1);
     expect(transformed[0].type).toBe("sightings");
-    expect(transformed[0].newCategory).toBe("SIGHTING");
     expect(transformed[0].standardizedFeedName).toBe("North San Juan Channel");
     expect(transformed[0].feedId).toBe("f-1");
     expect(transformed[0].feedSlug).toBe("north-sjc");
-    expect(transformed[0].timestampString).toBe("2025-01-01T17:25:00Z");
+    expect(transformed[0].timestamp.toISOString()).toBe(
+      "2025-01-01T17:25:00.000Z",
+    );
   });
 
   it("marks out-of-range sightings with fallback feed identifiers", () => {

@@ -1,5 +1,7 @@
 import { Feed } from "@/graphql/generated";
 import {
+  AIDetection,
+  AIDetectionRaw,
   AudioDetection,
   CascadiaSighting,
   DetectionsResult,
@@ -13,22 +15,6 @@ import {
   standardizeFeedName,
 } from "./dataHelpers";
 
-const toNewCategory = (
-  detection: DetectionsResult,
-): AudioDetection["newCategory"] => {
-  if (detection.source === "MACHINE") return "WHALE (AI)";
-
-  switch (detection.category) {
-    case "WHALE":
-      return "WHALE (HUMAN)";
-    case "VESSEL":
-    case "OTHER":
-      return detection.category;
-    default:
-      return "uncategorized";
-  }
-};
-
 export function transformAudioDetections(
   detections: DetectionsResult[],
   feeds: Feed[],
@@ -41,8 +27,6 @@ export function transformAudioDetections(
     standardizedFeedName: lookupFeedName(el.feedId!, feeds),
     feedSlug: lookupFeedSlug(el.feedId!, feeds),
     comments: el.description,
-    newCategory: toNewCategory(el),
-    timestampString: el.timestamp.toString(),
   }));
 }
 
@@ -68,7 +52,7 @@ export function transformSightings(
     maxLng: feed.latLng.lng + addLong(feed.latLng.lat),
   }));
 
-  const assignSightingsToHydrophones = (sighting: CascadiaSighting) => {
+  const assignSightingToHydrophone = (sighting: CascadiaSighting) => {
     let hydrophone = "out of range";
     feedBoundingBoxes.forEach((feed) => {
       const inLatRange =
@@ -86,21 +70,62 @@ export function transformSightings(
   if (!Array.isArray(sightings)) return [];
 
   const transformedSightings: Sighting[] = sightings.map((el): Sighting => {
-    const feedName = assignSightingsToHydrophones(el);
+    const feedName = assignSightingToHydrophone(el);
     const feedId = lookupFeedId(feedName, feeds);
     const feedSlug = lookupFeedSlug(feedId, feeds);
 
     return {
       ...el,
       type: "sightings",
-      newCategory: "SIGHTING",
       standardizedFeedName: feedName,
       feedSlug: feedSlug,
       feedId: feedId,
-      timestampString: el.created.replace(" ", "T") + "Z",
       timestamp: new Date(el.created.replace(" ", "T") + "Z"),
     };
   });
 
   return transformedSightings;
 }
+
+export const transformAIDetection = (
+  raw: AIDetectionRaw,
+  feeds: Feed[],
+): AIDetection => {
+  const standardizedFeedName = standardizeFeedName(
+    raw.location?.name ?? "unknown",
+  );
+  const feedId = lookupFeedId(standardizedFeedName, feeds);
+
+  return {
+    ...raw,
+    id: raw.id ?? crypto.randomUUID(),
+    type: "ai",
+    standardizedFeedName,
+    feedId,
+    feedSlug: lookupFeedSlug(feedId, feeds),
+    comments: raw.comments,
+    timestamp: new Date(raw.timestamp),
+    annotations: raw.annotations ?? [],
+    found:
+      raw.found?.toLowerCase() === "yes"
+        ? "yes"
+        : raw.found?.toLowerCase() === "no"
+          ? "no"
+          : raw.found?.toLowerCase() === "don't know"
+            ? "don't know"
+            : null,
+    reviewState: !raw.reviewed
+      ? "unreviewed"
+      : raw.found?.toLowerCase() === "yes"
+        ? "confirmed"
+        : raw.found?.toLowerCase() === "no"
+          ? "falsepositive"
+          : "unknown",
+    tags: raw.tags
+      ? raw.tags
+          .split(";")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [],
+  };
+};
