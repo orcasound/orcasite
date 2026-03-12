@@ -35,8 +35,20 @@ export default async function handler(
           : undefined,
     });
 
-    const data = await response.json();
-    return res.status(response.status).json(data);
+    const contentType = response.headers.get("content-type") ?? "";
+    const hasBody = response.status !== 204 && response.status !== 304;
+
+    if (!hasBody) {
+      return res.status(response.status).end();
+    }
+
+    if (contentType.includes("application/json")) {
+      const data = await response.json();
+      return res.status(response.status).json(data);
+    }
+
+    const text = await response.text();
+    return res.status(response.status).send(text);
   } catch (error) {
     console.error("Shipnoise proxy error:", error);
     return res.status(502).json({ error: "Failed to reach shipnoise backend" });
