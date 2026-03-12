@@ -23,6 +23,9 @@ end
 
 config :orcasite, :prod_host, System.get_env("PROD_HOST_URL", "live.orcasound.net")
 
+config :orcasite, :shipnoise_api_url,
+  System.get_env("SHIPNOISE_API_URL", "http://localhost:5000")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

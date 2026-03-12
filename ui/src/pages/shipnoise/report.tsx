@@ -277,12 +277,15 @@ function buildDisplayFields(issue: Issue): DisplayField[] {
 const ShipnoiseReportPage: NextPageWithLayout = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [selected, setSelected] = useState<Issue | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
         const res = await fetch("/api/shipnoise/issues");
+        if (!res.ok)
+          throw new Error(`Request failed with status ${res.status}`);
         const data = await res.json();
         const sorted = Array.isArray(data)
           ? [...data].sort(
@@ -292,6 +295,7 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
         setIssues(sorted);
       } catch (err) {
         console.error("Fetch error:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -311,6 +315,23 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
       >
         <Typography sx={{ color: "#475569", fontSize: "18px" }}>
           Loading data...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography sx={{ color: "#ef4444", fontSize: "18px" }}>
+          Failed to load data. Please try again later.
         </Typography>
       </Box>
     );

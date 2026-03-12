@@ -66,10 +66,8 @@ defmodule OrcasiteWeb.Router do
   scope "/api/shipnoise" do
     pipe_through(:api)
 
-    shipnoise_url = System.get_env("SHIPNOISE_API_URL", "http://localhost:5000")
-
     forward("/", ReverseProxyPlug,
-      upstream: shipnoise_url,
+      upstream: fn -> Application.get_env(:orcasite, :shipnoise_api_url, "http://localhost:5000") end,
       error_callback: &__MODULE__.log_reverse_proxy_error/1
     )
   end

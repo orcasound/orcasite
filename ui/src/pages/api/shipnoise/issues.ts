@@ -29,7 +29,6 @@ export default async function handler(
       console.error("Upstream returned non-JSON payload:", parseError);
       return res.status(502).json({
         error: "Upstream response was not valid JSON",
-        debug: rawBody.slice(0, 120),
       });
     }
   } catch (error) {

@@ -81,7 +81,7 @@ const AvailableRecordings: React.FC<AvailableRecordingsProps> = ({
 
     const script = document.createElement("script");
     script.id = "mcjs";
-    script.src = MAILCHIMP_SCRIPT + "?v=" + new Date().getTime();
+    script.src = MAILCHIMP_SCRIPT;
     script.async = true;
     document.body.appendChild(script);
   }, []);
