@@ -18,13 +18,13 @@ export default async function handler(
       signal: controller.signal,
     } as RequestInit);
 
-    clearTimeout(timeout);
-
     if (!response.ok) {
+      clearTimeout(timeout);
       throw new Error(`Upstream request failed with ${response.status}`);
     }
 
     const rawBody = await response.text();
+    clearTimeout(timeout);
 
     try {
       const sanitized = rawBody.replace(/^\)\]\}'/, "").trim();
