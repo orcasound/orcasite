@@ -13,7 +13,13 @@ import {
 } from "@mui/material";
 import Head from "next/head";
 import Link from "next/link";
-import { ReactElement, type ReactNode, useEffect, useState } from "react";
+import {
+  ReactElement,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { getShipnoiseLayout } from "@/components/Shipnoise/ShipnoiseLayout";
 import { type NextPageWithLayout } from "@/pages/_app";
@@ -279,6 +285,17 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [selected, setSelected] = useState<Issue | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!selected) return;
+    dialogRef.current?.focus();
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelected(null);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [selected]);
 
   useEffect(() => {
     async function load() {
@@ -445,6 +462,10 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
                       >
                         <Button
                           variant="contained"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelected(issue);
+                          }}
                           sx={{
                             borderRadius: "999px",
                             bgcolor: "#1f2937",
@@ -469,6 +490,11 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
           {/* Modal */}
           {selected && (
             <Box
+              role="dialog"
+              aria-modal="true"
+              aria-label="Issue Details"
+              ref={dialogRef}
+              tabIndex={-1}
               sx={{
                 position: "fixed",
                 inset: 0,
@@ -480,6 +506,7 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
                 px: { xs: 2, sm: 3 },
                 py: 3,
                 backdropFilter: "blur(6px)",
+                outline: "none",
               }}
             >
               <Paper
