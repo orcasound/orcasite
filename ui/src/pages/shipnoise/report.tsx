@@ -287,11 +287,10 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
         if (!res.ok)
           throw new Error(`Request failed with status ${res.status}`);
         const data = await res.json();
-        const sorted = Array.isArray(data)
-          ? [...data].sort(
-              (a, b) => getIssueTimestamp(b) - getIssueTimestamp(a),
-            )
-          : [];
+        const issues = Array.isArray(data) ? data : (data?.data ?? []);
+        const sorted = [...issues].sort(
+          (a, b) => getIssueTimestamp(b) - getIssueTimestamp(a),
+        );
         setIssues(sorted);
       } catch (err) {
         console.error("Fetch error:", err);
