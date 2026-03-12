@@ -283,7 +283,7 @@ const ShipnoiseReportPage: NextPageWithLayout = () => {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/api/shipnoise/issues");
+        const res = await fetch("/api/shipnoise-issues");
         if (!res.ok)
           throw new Error(`Request failed with status ${res.status}`);
         const data = await res.json();
