@@ -60,7 +60,7 @@ function MapLayout({ children }: { children: ReactNode }) {
 
   // End: sightings data call
 
-  // update the currentFeed only if there's a new feed
+  // update the currentFeed only if there's a new feed in the route
   useEffect(() => {
     if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed);

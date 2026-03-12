@@ -16,13 +16,6 @@ export interface AudioDetection extends Omit<DetectionsResult, "candidate"> {
   standardizedFeedName: string;
   feedSlug: string;
   comments: string | null | undefined;
-  newCategory:
-    | "WHALE (HUMAN)"
-    | "VESSEL"
-    | "OTHER"
-    | "WHALE (AI)"
-    | "uncategorized";
-  timestampString: string;
 }
 
 export interface CascadiaSighting {
@@ -53,12 +46,65 @@ export interface Sighting extends CascadiaSighting {
   standardizedFeedName: string;
   feedSlug: string;
   feedId: string;
-  newCategory: "SIGHTING";
   timestamp: Date;
-  timestampString: string;
 }
 
-export type CombinedData = AudioDetection | Sighting;
+export interface AIDetectionLocation {
+  name: string;
+  longitude: number;
+  latitude: number;
+}
+
+export interface AIDetectionAnnotation {
+  id: number;
+  startTime: number;
+  endTime: number;
+  confidence: number;
+}
+
+export type AIDetectionFound = "yes" | "no" | "don't know" | null;
+
+export type AIDetectionReviewState =
+  | "confirmed"
+  | "falsepositive"
+  | "unknown"
+  | "unreviewed";
+
+export interface AIDetectionRaw {
+  id: string | null;
+  audioUri: string | null;
+  spectrogramUri: string | null;
+  location: AIDetectionLocation;
+  timestamp: string;
+  annotations: AIDetectionAnnotation[] | null;
+  reviewed: boolean;
+  found: string | null;
+  comments: string | null;
+  confidence: number;
+  moderator: string | null;
+  moderated: string | null;
+  tags: string | null;
+}
+
+export interface AIDetection
+  extends Omit<
+    AIDetectionRaw,
+    "id" | "timestamp" | "annotations" | "found" | "tags"
+  > {
+  id: string;
+  type: "ai";
+  standardizedFeedName: string;
+  feedSlug?: string;
+  feedId?: string;
+  comments: string | null;
+  timestamp: Date;
+  annotations: AIDetectionAnnotation[];
+  found: AIDetectionFound;
+  reviewState: AIDetectionReviewState;
+  tags: string[];
+}
+
+export type CombinedData = AudioDetection | AIDetection | Sighting;
 
 // future type for transformed data object
 // export interface Candidate {

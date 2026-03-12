@@ -48,10 +48,8 @@ const FeedPage: NextPageWithLayout = () => {
               </Link>
               <Typography color="textPrimary">{feed.name}</Typography>
             </Breadcrumbs>
-            <h1>{feed.name}</h1>
-            <Box sx={{ mb: 3, mt: -1 }}>
-              <ReportCount detectionArray={detectionsThisFeed} />
-            </Box>
+            <h1 style={{ marginBottom: 0 }}>{feed.name}</h1>
+            <ReportCount feedSlug={slug} />
             <div
               style={{ position: "relative", width: "100%", height: "15em" }}
             >
