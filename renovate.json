@@ -12,7 +12,7 @@
     },
     {
       "description": "Weekly Docker dependency updates on Mondays",
-      "matchManagers": ["dockerfile"],
+      "matchManagers": ["dockerfile", "docker-compose"],
       "schedule": ["after 5am on monday"],
       "prConcurrentLimit": 3
     },
