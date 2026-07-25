@@ -128,6 +128,7 @@ defmodule Orcasite.Radio.Detection do
         offset? true
         countable true
         default_limit 100
+        max_page_size 1000
       end
 
       argument :feed_id, :string
@@ -141,6 +142,7 @@ defmodule Orcasite.Radio.Detection do
         offset? true
         countable true
         default_limit 100
+        max_page_size 1000
       end
 
       argument :category, Orcasite.Types.DetectionCategory do
