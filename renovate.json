@@ -1,0 +1,90 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "timezone": "America/Los_Angeles",
+  "packageRules": [
+    {
+      "description": "Monthly updates for GitHub Actions, grouped together",
+      "matchManagers": ["github-actions"],
+      "groupName": "actions",
+      "schedule": ["after 5am on the first day of the month"],
+      "prConcurrentLimit": 3
+    },
+    {
+      "description": "Weekly Docker dependency updates on Mondays",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "schedule": ["after 5am on monday"],
+      "prConcurrentLimit": 3
+    },
+    {
+      "description": "Ignore odd-numbered Node.js major versions in Docker (non-LTS). Even-numbered releases are also skipped for the first 6 months, but there is no way to configure that here yet.",
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["node"],
+      "allowedVersions": "/^([0-9]*[02468])\\.(\\d+)/"
+    },
+    {
+      "description": "Weekly Elixir/Mix dependency updates on Mondays",
+      "matchManagers": ["mix"],
+      "schedule": ["after 5am on monday"],
+      "prConcurrentLimit": 3
+    },
+    {
+      "description": "Weekly npm dependency updates on Mondays",
+      "matchManagers": ["npm"],
+      "schedule": ["after 5am on monday"],
+      "prConcurrentLimit": 3
+    },
+    {
+      "description": "Group miscellaneous npm dependencies (catch-all, excludes packages that get individual PRs)",
+      "matchManagers": ["npm"],
+      "excludePackageNames": ["typescript", "phoenix", "@types/node"],
+      "groupName": "misc"
+    },
+    {
+      "description": "Group Next.js and React framework dependencies",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["next", "react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "frameworks"
+    },
+    {
+      "description": "Group MUI, Emotion, and Fontsource styling dependencies",
+      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["^@mui/", "^@emotion/", "^@fontsource/"],
+      "groupName": "styles"
+    },
+    {
+      "description": "Group GraphQL and data fetching dependencies",
+      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["^graphql$", "^@graphql-codegen/", "^@tanstack/react-query"],
+      "groupName": "requests"
+    },
+    {
+      "description": "Group Leaflet and map dependencies",
+      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["^leaflet", "^react-leaflet$", "^@types/leaflet$"],
+      "groupName": "map"
+    },
+    {
+      "description": "Group Video.js player dependencies",
+      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["^video\\.js$", "^videojs", "^@types/video\\.js$"],
+      "groupName": "player"
+    },
+    {
+      "description": "Group ESLint, Prettier, and code style dependencies",
+      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["^eslint", "^@typescript-eslint/", "^prettier$", "^lint-staged$", "^husky$"],
+      "groupName": "code-style"
+    },
+    {
+      "description": "Ignore eslint-plugin-unused-imports versions 4.0 - 4.1",
+      "matchPackageNames": ["eslint-plugin-unused-imports"],
+      "allowedVersions": "< 4.0.0 || >= 4.2.0"
+    },
+    {
+      "description": "Ignore @typescript-eslint/eslint-plugin versions 8.0 - 8.9",
+      "matchPackageNames": ["@typescript-eslint/eslint-plugin"],
+      "allowedVersions": "< 8.0.0 || >= 8.10.0"
+    }
+  ]
+}
