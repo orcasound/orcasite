@@ -61,26 +61,24 @@ defmodule Orcasite.Radio.Seed do
         default: fn -> DateTime.utc_now() |> DateTime.add(-2, :minute) end
 
       run fn %{arguments: %{start_time: start_time, end_time: end_time}}, _ ->
-        __MODULE__.feeds()
+        with {:ok, feeds} <- seed_and_load_feeds() do
+          seed_params =
+            for feed <- feeds, resource <- [:feed_segment, :detection, :audio_image, :bout] do
+              {feed, resource}
+            end
 
-        feeds = Orcasite.Radio.Feed |> Ash.read!()
-
-        seed_params =
-          for feed <- feeds, resource <- [:feed_segment, :detection, :audio_image, :bout] do
-            {feed, resource}
-          end
-
-        seed_params
-        |> Stream.map(fn {feed, resource} ->
-          __MODULE__.resource!(%{
-            resource: resource,
-            start_time: start_time,
-            end_time: end_time,
-            feed_id: feed.id
-          })
-        end)
-        |> Enum.to_list()
-        |> then(&{:ok, &1})
+          seed_params
+          |> Stream.map(fn {feed, resource} ->
+            __MODULE__.resource!(%{
+              resource: resource,
+              start_time: start_time,
+              end_time: end_time,
+              feed_id: feed.id
+            })
+          end)
+          |> Enum.to_list()
+          |> then(&{:ok, &1})
+        end
       end
     end
 
@@ -90,25 +88,23 @@ defmodule Orcasite.Radio.Seed do
       argument :limit, :integer, allow_nil?: false, default: 100
 
       run fn %{arguments: %{limit: limit}}, _ ->
-        __MODULE__.feeds()
+        with {:ok, feeds} <- seed_and_load_feeds() do
+          seed_params =
+            for feed <- feeds, resource <- [:detection, :audio_image, :bout] do
+              {feed, resource}
+            end
 
-        feeds = Orcasite.Radio.Feed |> Ash.read!()
-
-        seed_params =
-          for feed <- feeds, resource <- [:detection, :audio_image, :bout] do
-            {feed, resource}
-          end
-
-        seed_params
-        |> Stream.map(fn {feed, resource} ->
-          __MODULE__.latest_resource!(%{
-            resource: resource,
-            limit: limit,
-            feed_id: feed.id
-          })
-        end)
-        |> Enum.to_list()
-        |> then(&{:ok, &1})
+          seed_params
+          |> Stream.map(fn {feed, resource} ->
+            __MODULE__.latest_resource!(%{
+              resource: resource,
+              limit: limit,
+              feed_id: feed.id
+            })
+          end)
+          |> Enum.to_list()
+          |> then(&{:ok, &1})
+        end
       end
     end
 
@@ -241,6 +237,21 @@ defmodule Orcasite.Radio.Seed do
       :bout -> Orcasite.Radio.Bout
       :feed_segment -> Orcasite.Radio.FeedSegment
       :feed_stream -> Orcasite.Radio.FeedStream
+    end
+  end
+
+  defp seed_and_load_feeds do
+    with {:ok, _} <- __MODULE__.feeds(),
+         {:ok, feeds} <- Ash.read(Orcasite.Radio.Feed, authorize?: false) do
+      case feeds do
+        [] ->
+          {:error,
+           message:
+             "No feeds were seeded. Run `seedFeeds` first and inspect server logs for feed seeding errors."}
+
+        _ ->
+          {:ok, feeds}
+      end
     end
   end
 end
