@@ -12,7 +12,7 @@ defmodule Orcasite.Radio.Seed.Utils do
       attr = Absinthe.Adapter.Underscore.to_internal_name(key, [])
 
       cond do
-        writable_attr?(resource, attr) ->
+        writable_attr?(resource, attr) and include_attribute_input?(resource, attr, val) ->
           [{attr, val}]
 
         many_relationship?(resource, attr) ->
@@ -28,6 +28,16 @@ defmodule Orcasite.Radio.Seed.Utils do
       end
     end)
     |> Map.new()
+  end
+
+  def include_attribute_input?(resource, key, value) do
+    case Ash.Resource.Info.attribute(resource, key) do
+      %{allow_nil?: false} when is_nil(value) ->
+        false
+
+      _ ->
+        true
+    end
   end
 
   def writable_attr?(resource, key) do
