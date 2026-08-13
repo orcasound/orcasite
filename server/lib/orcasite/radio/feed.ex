@@ -274,6 +274,7 @@ defmodule Orcasite.Radio.Feed do
         description "A comma-separated string of longitude and latitude"
       end
 
+      change &prefill_lat_lng_string/2
       change &change_lat_lng/2
     end
 
@@ -366,6 +367,23 @@ defmodule Orcasite.Radio.Feed do
 
     mutations do
       update :generate_feed_spectrograms, :generate_spectrogram
+    end
+  end
+
+  # Forms built from this action (e.g. Ash Admin's edit page) render the
+  # lat_lng_string argument, which would otherwise start out empty since the
+  # coordinates live in the location_point attribute.
+  defp prefill_lat_lng_string(changeset, _context) do
+    case {Ash.Changeset.fetch_argument(changeset, :lat_lng_string),
+          Orcasite.Types.Geometry.lat_lng_string(Map.get(changeset.data, :location_point))} do
+      {{:ok, submitted}, _} when is_binary(submitted) ->
+        changeset
+
+      {_, current} when is_binary(current) ->
+        Ash.Changeset.set_argument(changeset, :lat_lng_string, current)
+
+      _ ->
+        changeset
     end
   end
 
