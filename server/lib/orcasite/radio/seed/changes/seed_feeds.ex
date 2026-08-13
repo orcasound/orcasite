@@ -3,6 +3,8 @@ defmodule Orcasite.Radio.Seed.Changes.SeedFeeds do
 
   alias Orcasite.Radio.Seed.Utils
 
+  require Logger
+
   @impl true
   def change(changeset, _opts, _context) do
     changeset
@@ -17,10 +19,14 @@ defmodule Orcasite.Radio.Seed.Changes.SeedFeeds do
       |> Ash.bulk_create(Orcasite.Radio.Feed, :create, return_errors?: true, authorize?: false)
       |> case do
         %{status: :success} ->
+          Logger.info("Successfully seeded #{count} feeds")
+
           change
           |> Ash.Changeset.force_change_attribute(:seeded_count, count)
 
         %{errors: errors} ->
+          Logger.error("Error while seeding feeds: #{inspect(errors)}")
+
           change
           |> Ash.Changeset.add_error(errors)
       end
