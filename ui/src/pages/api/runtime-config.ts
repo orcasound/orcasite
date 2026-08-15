@@ -22,8 +22,10 @@ export default function handler(_req: NextApiRequest, res: NextApiResponse) {
   // could serve the previous app's values.
   res.setHeader("Cache-Control", "public, max-age=60, must-revalidate");
 
-  // JSON.stringify escapes the values; guard the one sequence that could still
-  // break out of an inline script context if a value ever contains it.
+  // This is served as an external script, not inlined into HTML, so </script>
+  // breakout does not apply and JSON.stringify alone would do. Escaping "<"
+  // anyway keeps the payload safe if it is ever inlined instead. The values are
+  // operator-set config vars, not user input.
   const serialized = JSON.stringify(config).replace(/</g, "\\u003c");
 
   res.status(200).send(`window.${RUNTIME_CONFIG_GLOBAL}=${serialized};`);
