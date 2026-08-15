@@ -41,11 +41,11 @@ export default function MyDocument(
         {/*
             Per-environment config, injected at request time rather than inlined
             at build time so a promoted slug picks up the serving app's values.
-            Deliberately synchronous: it must run before the deferred app
-            bundles. See src/utils/runtimeConfig.ts.
+            Deferred, like Next's own bundles: deferred scripts run in document
+            order, and this sits in <head> ahead of them, so it still executes
+            first without blocking the parser. See src/utils/runtimeConfig.ts.
         */}
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <script src="/api/runtime-config" />
+        <script src="/api/runtime-config" defer />
         <DocumentHeadTags {...props} />
       </Head>
       <body>
