@@ -10,6 +10,7 @@ import Drawer from "@/components/Drawer";
 import Header from "@/components/Header";
 import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
 import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
+import { getRuntimeConfig } from "@/utils/runtimeConfig";
 
 import Player, { PlayerSpacer } from "../Player";
 
@@ -23,7 +24,9 @@ const feedFromSlug = (feedSlug: string) => ({
   slug: feedSlug,
   nodeName: feedSlug,
   // TODO: pass in bucket from dynamic feed instead of env/hardcoding
-  bucket: process.env.NEXT_PUBLIC_S3_BUCKET ?? "audio-orcasound-net",
+  // Resolved per call rather than at module scope so it reflects the app
+  // serving the request, not the one the bundle was built in.
+  bucket: getRuntimeConfig().s3Bucket,
   // TODO: figure out which coordinates to use for dynamic feeds
   latLng: { lat: 47.6, lng: -122.3 },
 });

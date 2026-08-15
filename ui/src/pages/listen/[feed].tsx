@@ -10,7 +10,7 @@ import {
   getMapStaticProps,
 } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
-import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import { useFeedQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const FeedPage: NextPageWithLayout = () => {
@@ -69,21 +69,14 @@ const FeedPage: NextPageWithLayout = () => {
 FeedPage.getLayout = getMapLayout;
 
 export async function getStaticPaths() {
-  const queryClient = new QueryClient();
-
-  let response;
-  try {
-    response = await queryClient.fetchQuery({
-      queryKey: useFeedsQuery.getKey(),
-      queryFn: useFeedsQuery.fetcher(),
-    });
-  } catch (error) {
-    console.error(error);
-  }
-
+  // Nothing is prerendered at build time. The build runs in one Heroku app and
+  // the slug is promoted to others, so a build-time feed list describes the
+  // wrong environment -- it previously emitted pages for development-only test
+  // hydrophones, which would then be served from production. "blocking"
+  // generates each page on first request against the serving app's own API, and
+  // the revalidate below keeps it fresh from there.
   return {
-    paths:
-      response?.feeds.map((feed) => ({ params: { feed: feed.slug } })) ?? [],
+    paths: [],
     fallback: "blocking",
   };
 }

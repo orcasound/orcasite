@@ -38,6 +38,14 @@ export default function MyDocument(
         <link rel="icon" href="/favicon.ico?v=2" sizes="48x48" />
         <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
         <meta name="emotion-insertion-point" content="" />
+        {/*
+            Per-environment config, injected at request time rather than inlined
+            at build time so a promoted slug picks up the serving app's values.
+            Deliberately synchronous: it must run before the deferred app
+            bundles. See src/utils/runtimeConfig.ts.
+        */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="/api/runtime-config" />
         <DocumentHeadTags {...props} />
       </Head>
       <body>

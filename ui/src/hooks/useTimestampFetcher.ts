@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-if (!process.env.NEXT_PUBLIC_S3_BUCKET) {
-  throw new Error("NEXT_PUBLIC_S3_BUCKET is not set");
-}
+// Every function here takes its bucket as an argument -- callers pass
+// feed.bucket from the API -- so there is nothing environment-specific to
+// assert at module load.
 
 const getBucketBase = (bucket: string) => `https://${bucket}.s3.amazonaws.com`;
 
