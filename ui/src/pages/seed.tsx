@@ -310,9 +310,14 @@ function toLocalISOString(date: Date) {
 
 SeedPage.getLayout = getSimpleLayout;
 
-export async function getStaticProps() {
+// Per request, not at build time. getStaticProps ran during the build, so
+// whether this page existed was decided by the app the artifact was built in
+// rather than the app serving the request -- and one artifact is promoted
+// across dev, staging and production. Hiding the page is presentation only;
+// the seed actions are refused server-side by Orcasite.Radio.Seed's policy.
+export async function getServerSideProps() {
   const enableSeedFromProd = process.env.ENABLE_SEED_FROM_PROD === "true";
-  // Hide the seed page when `ENABLE_SEED_FROM_PROD` isn't enabled
+
   return !enableSeedFromProd ? { notFound: true } : { props: {} };
 }
 
