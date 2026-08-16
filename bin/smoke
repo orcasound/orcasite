@@ -237,13 +237,17 @@ else
 fi
 
 # AshJsonApi, and a different query path through ash_sql than GraphQL takes.
-json_type="$(curl -sS -o /dev/null -w '%{content_type}' --max-time "$TIMEOUT" \
+# Status and content type together: JSON:API error documents carry the same
+# media type, so a 500 would otherwise look like a pass.
+json_result="$(curl "${CURL_OPTS[@]}" -o /dev/null -w '%{http_code} %{content_type}' \
     -H 'Accept: application/vnd.api+json' "$BASE/api/json/feeds")"
+json_code="${json_result%% *}"
+json_type="${json_result#* }"
 
-case "$json_type" in
-    application/vnd.api+json*) pass "/api/json/feeds -> $json_type" ;;
-    *) fail "/api/json/feeds returned content-type '$json_type'" \
-        "expected application/vnd.api+json" ;;
+case "$json_code:$json_type" in
+    200:application/vnd.api+json*) pass "/api/json/feeds -> $json_code $json_type" ;;
+    *) fail "/api/json/feeds -> $json_code $json_type" \
+        "expected 200 and application/vnd.api+json" ;;
 esac
 
 # ash_authentication renders these; a broken upgrade shows up as a 500 here
