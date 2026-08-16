@@ -137,6 +137,27 @@ Because one artifact serves every environment, anything captured while it is bui
 
 Local development builds and runs in a single environment, where inlining is harmless, so [`ui/.env.development`](ui/.env.development) sets `NEXT_PUBLIC_*` normally.
 
+### Smoke checks
+
+Run [`bin/smoke`](bin/smoke) against an app after promoting to it:
+
+```shell
+bin/smoke https://live.orcasound.net
+```
+
+It exits non-zero if anything fails. The checks are self-configuring rather than
+hardcoded: they ask the app's own API what it should be showing and confirm the
+pages agree, so the same command works against any environment. An app serving
+another environment's data disagrees with its own API, which is the failure this
+deployment model invites and the reason these exist.
+
+Set `EXPECT_SEED_PAGE=1` for an environment where seeding is deliberately
+enabled; elsewhere `/seed` is expected to be absent.
+
+Nothing runs these automatically. The `health-check` job in
+[`heroku.yaml`](.github/workflows/heroku.yaml) fires on GitHub deployment
+events, which slug promotions no longer produce.
+
 ### Console
 
 ```shell

@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+# Post-deploy checks for a running Orcasite app.
+#
+#     bin/smoke https://live.orcasound.net
+#
+# Deploys promote one prebuilt artifact across dev, staging and production, so
+# the failure worth catching is an app serving another environment's data or
+# configuration. These checks are deliberately self-configuring: rather than
+# comparing against hardcoded expectations, they ask the app's own API what it
+# should be showing and check that the pages agree. A page baked in a different
+# environment disagrees with the API of the one serving it.
+#
+# Exits non-zero if any check fails.
+
+set -uo pipefail
+
+BASE="${1:-}"
+
+if [ -z "$BASE" ]; then
+    echo "usage: bin/smoke <base-url>    e.g. bin/smoke https://live.orcasound.net" >&2
+    exit 64
+fi
+
+BASE="${BASE%/}"
+TIMEOUT=45
+failures=0
+
+pass() { printf '  \033[32mok\033[0m   %s\n' "$1"; }
+fail() {
+    printf '  \033[31mFAIL\033[0m %s\n' "$1"
+    [ $# -gt 1 ] && printf '       %s\n' "$2"
+    failures=$((failures + 1))
+}
+
+get() { curl -sS --max-time "$TIMEOUT" "$BASE$1" 2>/dev/null; }
+status() { curl -sS -o /dev/null -w '%{http_code}' --max-time "$TIMEOUT" "$BASE$1" 2>/dev/null; }
+
+expect_status() {
+    local path="$1" want="$2" got
+    got="$(status "$path")"
+    if [ "$got" = "$want" ]; then
+        pass "$path -> $got"
+    else
+        fail "$path -> $got (expected $want)"
+    fi
+}
+
+echo "Smoke checking $BASE"
+
+# --- Reachability -----------------------------------------------------------
+echo
+echo "Routes"
+expect_status / 200
+expect_status /listen 200
+
+# --- Per-environment configuration -----------------------------------------
+# Injected per request, so it must describe the app answering the request. If
+# this reports another environment's bucket, the artifact is serving build-time
+# configuration and audio URLs point at the wrong place.
+echo
+echo "Runtime configuration"
+config="$(get /api/runtime-config)"
+
+if [ -z "$config" ]; then
+    fail "/api/runtime-config returned nothing"
+    bucket=""
+else
+    bucket="$(printf '%s' "$config" | grep -o '"s3Bucket":"[^"]*"' | cut -d'"' -f4)"
+
+    if [ -n "$bucket" ]; then
+        pass "s3Bucket = $bucket"
+    else
+        # An empty bucket is the deliberate last-resort fallback in
+        # ui/src/utils/runtimeConfig.ts, and means injection failed.
+        fail "no s3Bucket in /api/runtime-config" "$config"
+    fi
+fi
+
+# Loaded before the app bundle; without it the page falls back to defaults.
+if get /listen | grep -q '<script src="/api/runtime-config"'; then
+    pass "config script present in served HTML"
+else
+    fail "config script missing from /listen"
+fi
+
+# --- Pages must agree with this app's own API -------------------------------
+echo
+echo "Feeds match this environment's API"
+api_slugs="$(curl -sS --max-time "$TIMEOUT" -X POST "$BASE/graphql" \
+    -H 'Content-Type: application/json' \
+    -d '{"query":"query { feeds { slug } }"}' 2>/dev/null |
+    grep -o '"slug":"[^"]*"' | cut -d'"' -f4 | sort)"
+
+if [ -z "$api_slugs" ]; then
+    fail "no feeds returned from $BASE/graphql" "same-origin GraphQL may be unreachable"
+else
+    pass "API reports $(printf '%s\n' "$api_slugs" | wc -l | tr -d ' ') feeds"
+
+    listen_html="$(get /listen)"
+    missing=""
+    while IFS= read -r slug; do
+        [ -z "$slug" ] && continue
+        printf '%s' "$listen_html" | grep -q -- "$slug" || missing="$missing $slug"
+    done <<<"$api_slugs"
+
+    if [ -z "$missing" ]; then
+        pass "/listen lists every feed this API reports"
+    else
+        fail "/listen is missing feeds this API reports:$missing" \
+            "the page was probably rendered against a different environment"
+    fi
+
+    # A feed this API does not have must 404, not render. This is the original
+    # bug: pages prerendered from another environment's feed list were served
+    # everywhere, including hydrophones that only exist in development.
+    first_slug="$(printf '%s\n' "$api_slugs" | head -1)"
+    expect_status "/listen/$first_slug" 200
+
+    for absent in paul-test rpi-steve-test; do
+        if printf '%s\n' "$api_slugs" | grep -qx -- "$absent"; then
+            pass "/listen/$absent skipped (this environment really has it)"
+        else
+            expect_status "/listen/$absent" 404
+        fi
+    done
+fi
+
+expect_status /listen/definitely-not-a-real-feed 404
+
+# --- Nothing environment-specific baked into the bundle ---------------------
+# Endpoints resolve same-origin precisely so one artifact can serve every app.
+# An absolute host here means a build-time capture crept back in.
+echo
+echo "Client bundle"
+chunks="$(printf '%s' "${listen_html:-$(get /listen)}" |
+    grep -o '/_next/static/chunks/[^"]*\.js' | sort -u | head -12)"
+
+if [ -z "$chunks" ]; then
+    fail "found no client chunks to inspect"
+else
+    baked=""
+    while IFS= read -r chunk; do
+        [ -z "$chunk" ] && continue
+        found="$(get "$chunk" | grep -oh 'https\?://[a-z0-9.-]*/graphql\|wss\?://[a-z0-9.:-]*/socket' || true)"
+        [ -n "$found" ] && baked="$baked $found"
+    done <<<"$chunks"
+
+    if [ -z "$baked" ]; then
+        pass "no absolute API host baked into $(printf '%s\n' "$chunks" | wc -l | tr -d ' ') chunks"
+    else
+        fail "absolute API host in client bundle:$baked"
+    fi
+fi
+
+# --- Developer tooling should not be public ---------------------------------
+# Visibility follows ENABLE_SEED_FROM_PROD for the serving app. Pass
+# EXPECT_SEED_PAGE=1 for an environment where seeding is deliberately on.
+echo
+echo "Seed page"
+if [ "${EXPECT_SEED_PAGE:-0}" = "1" ]; then
+    expect_status /seed 200
+else
+    expect_status /seed 404
+fi
+
+echo
+if [ "$failures" -eq 0 ]; then
+    echo "All checks passed."
+    exit 0
+fi
+
+echo "$failures check(s) failed."
+exit 1
