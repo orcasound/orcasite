@@ -145,14 +145,21 @@ Run [`bin/smoke`](bin/smoke) against an app after promoting to it:
 bin/smoke https://live.orcasound.net
 ```
 
-It exits non-zero if anything fails. The checks are self-configuring rather than
-hardcoded: they ask the app's own API what it should be showing and confirm the
-pages agree, so the same command works against any environment. An app serving
-another environment's data disagrees with its own API, which is the failure this
-deployment model invites and the reason these exist.
+It exits non-zero if anything fails. Most checks are self-configuring: they ask
+the app's own API what it should be showing and confirm the pages agree, so the
+same command works against any environment. An app serving another environment's
+data disagrees with its own API, which is the failure this deployment model
+invites and the reason these exist. The feed comparison runs in both directions,
+because the failure that prompted this showed up as a page listing *extra*
+feeds — production serving a page built from development's list.
 
-Set `EXPECT_SEED_PAGE=1` for an environment where seeding is deliberately
-enabled; elsewhere `/seed` is expected to be absent.
+Two checks carry knowledge the app cannot supply, and both take an override:
+
+- `EXPECT_SEED_PAGE=1` where seeding is deliberately enabled; elsewhere `/seed`
+  is expected to be absent.
+- `ABSENT_SLUGS` lists feeds that exist only in development, so elsewhere they
+  must not resolve. A nonsense slug cannot cover this: a slug that never existed
+  anywhere was never prerendered either.
 
 Nothing runs these automatically. The `health-check` job in
 [`heroku.yaml`](.github/workflows/heroku.yaml) fires on GitHub deployment
