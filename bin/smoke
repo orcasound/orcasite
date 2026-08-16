@@ -209,6 +209,51 @@ else
     fi
 fi
 
+# --- Server surfaces the pages do not reach ---------------------------------
+# The checks above exercise Phoenix, Absinthe, Ash and Postgres through one
+# GraphQL read. These cover paths that dependency upgrades touch but nothing
+# else here would notice: the websocket stack, the JSON:API layer, and the
+# authentication pages.
+echo
+echo "Server surfaces"
+
+# Cowboy, cowlib and websock_adapter. Must be HTTP/1.1 -- an upgrade over HTTP/2
+# is rejected with 400, which looks like a broken socket rather than a broken
+# request.
+#
+# A successful upgrade leaves the connection open with nothing to read, so curl
+# waits out its timeout and exits 28. That is the expected shape of a pass: the
+# status line is what matters, so use a short timeout and drop the complaint.
+ws_key="$(head -c 16 /dev/urandom | base64)"
+ws_code="$(curl -sS --http1.1 -o /dev/null -w '%{http_code}' --max-time 10 \
+    -H 'Connection: Upgrade' -H 'Upgrade: websocket' \
+    -H 'Sec-WebSocket-Version: 13' -H "Sec-WebSocket-Key: $ws_key" \
+    "$BASE/socket/websocket?vsn=2.0.0" 2>/dev/null)"
+
+if [ "$ws_code" = "101" ]; then
+    pass "/socket/websocket -> 101 (upgrade accepted)"
+else
+    fail "/socket/websocket -> $ws_code (expected 101)" "live audio and detections use this"
+fi
+
+# AshJsonApi, and a different query path through ash_sql than GraphQL takes.
+# Status and content type together: JSON:API error documents carry the same
+# media type, so a 500 would otherwise look like a pass.
+json_result="$(curl "${CURL_OPTS[@]}" -o /dev/null -w '%{http_code} %{content_type}' \
+    -H 'Accept: application/vnd.api+json' "$BASE/api/json/feeds")"
+json_code="${json_result%% *}"
+json_type="${json_result#* }"
+
+case "$json_code:$json_type" in
+    200:application/vnd.api+json*) pass "/api/json/feeds -> $json_code $json_type" ;;
+    *) fail "/api/json/feeds -> $json_code $json_type" \
+        "expected 200 and application/vnd.api+json" ;;
+esac
+
+# ash_authentication renders these; a broken upgrade shows up as a 500 here
+# well before anyone tries to sign in.
+expect_status /sign-in 200
+
 # --- Developer tooling should not be public ---------------------------------
 # OPERATOR KNOWLEDGE. Visibility follows ENABLE_SEED_FROM_PROD for the serving
 # app, which cannot be read from the app's public surface without trusting the
