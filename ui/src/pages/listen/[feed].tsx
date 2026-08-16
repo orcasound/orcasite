@@ -10,7 +10,8 @@ import {
   getMapStaticProps,
 } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
-import { useFeedQuery, useFeedsQuery } from "@/graphql/generated";
+import { isMissingRecordError } from "@/graphql/client";
+import { useFeedQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
 const FeedPage: NextPageWithLayout = () => {
@@ -69,21 +70,14 @@ const FeedPage: NextPageWithLayout = () => {
 FeedPage.getLayout = getMapLayout;
 
 export async function getStaticPaths() {
-  const queryClient = new QueryClient();
-
-  let response;
-  try {
-    response = await queryClient.fetchQuery({
-      queryKey: useFeedsQuery.getKey(),
-      queryFn: useFeedsQuery.fetcher(),
-    });
-  } catch (error) {
-    console.error(error);
-  }
-
+  // Nothing is prerendered at build time. The build runs in one Heroku app and
+  // the slug is promoted to others, so a build-time feed list describes the
+  // wrong environment -- it previously emitted pages for development-only test
+  // hydrophones, which would then be served from production. "blocking"
+  // generates each page on first request against the serving app's own API, and
+  // the revalidate below keeps it fresh from there.
   return {
-    paths:
-      response?.feeds.map((feed) => ({ params: { feed: feed.slug } })) ?? [],
+    paths: [],
     fallback: "blocking",
   };
 }
@@ -91,10 +85,26 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }: { params: { feed: string } }) {
   const queryClient = new QueryClient();
   await getMapStaticProps(queryClient);
-  await queryClient.prefetchQuery({
-    queryKey: useFeedQuery.getKey({ slug: params.feed }),
-    queryFn: useFeedQuery.fetcher({ slug: params.feed }),
-  });
+
+  try {
+    // fetchQuery rather than prefetchQuery: prefetch swallows the error, which
+    // would dehydrate a page with no feed and cache a blank 200 for a slug that
+    // does not exist. The API returns `data: null` plus an error for an unknown
+    // slug, which the fetcher in graphql/client.ts turns into a throw.
+    await queryClient.fetchQuery({
+      queryKey: useFeedQuery.getKey({ slug: params.feed }),
+      queryFn: useFeedQuery.fetcher({ slug: params.feed }),
+    });
+  } catch (error) {
+    // Only a genuinely missing feed becomes a 404. Network failures, timeouts
+    // and server errors are rethrown so Next serves a 500 and caches nothing --
+    // turning a brief API outage into 404s for every valid feed page, cached for
+    // a minute each, would be far worse than failing the request.
+    if (!isMissingRecordError(error, "feed")) throw error;
+
+    // Revalidated so a feed added later stops 404ing on its own.
+    return { notFound: true as const, revalidate: 60 };
+  }
 
   return {
     props: {

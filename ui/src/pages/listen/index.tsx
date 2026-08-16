@@ -47,7 +47,12 @@ const FeedsPage: NextPageWithLayout = () => {
 
 FeedsPage.getLayout = getMapLayout;
 
-export async function getStaticProps() {
+// Rendered per request, not at build time. getStaticProps ran during the slug
+// build and baked that environment's feed list into the page; because the slug
+// is built once and promoted across Heroku apps, production ended up listing
+// development's hydrophones. Feed `online` status is also live data that a
+// build-time snapshot cannot represent.
+export async function getServerSideProps() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({

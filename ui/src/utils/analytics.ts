@@ -1,7 +1,20 @@
 import ReactGA from "react-ga4";
 
-export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
+import { getRuntimeConfig } from "@/utils/runtimeConfig";
+
 let analyticsInitialized = false;
+
+// Reads the tracking ID lazily rather than at module load: it is injected at
+// request time so a promoted slug reports to the serving app's property.
+export function initializeAnalytics() {
+  if (analyticsInitialized) return;
+
+  const trackingId = getRuntimeConfig().gaId;
+  if (!trackingId) return;
+
+  ReactGA.initialize(trackingId);
+  analyticsInitialized = true;
+}
 
 const about = {
   sampleAudioPlayed: (exampleTitle: string) =>
@@ -79,11 +92,8 @@ const stream = {
 
 function sendEvent(...eventParams: Parameters<typeof ReactGA.event>) {
   try {
-    if (GA_TRACKING_ID) {
-      if (!analyticsInitialized) {
-        ReactGA.initialize(GA_TRACKING_ID);
-        analyticsInitialized = true;
-      }
+    initializeAnalytics();
+    if (analyticsInitialized) {
       ReactGA.event(...eventParams);
     }
   } catch (e) {
