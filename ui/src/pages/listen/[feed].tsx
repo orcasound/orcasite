@@ -84,10 +84,22 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }: { params: { feed: string } }) {
   const queryClient = new QueryClient();
   await getMapStaticProps(queryClient);
-  await queryClient.prefetchQuery({
-    queryKey: useFeedQuery.getKey({ slug: params.feed }),
-    queryFn: useFeedQuery.fetcher({ slug: params.feed }),
-  });
+
+  try {
+    // fetchQuery rather than prefetchQuery: prefetch swallows the error, which
+    // would dehydrate a page with no feed and cache a blank 200 for a slug that
+    // does not exist. The API returns `data: null` plus an error for an unknown
+    // slug, which the fetcher in graphql/client.ts turns into a throw.
+    await queryClient.fetchQuery({
+      queryKey: useFeedQuery.getKey({ slug: params.feed }),
+      queryFn: useFeedQuery.fetcher({ slug: params.feed }),
+    });
+  } catch {
+    // Revalidated so this recovers on its own: an unknown slug stays a 404, but
+    // a feed added later -- or a transient API failure -- resolves within the
+    // window rather than being cached as missing indefinitely.
+    return { notFound: true as const, revalidate: 60 };
+  }
 
   return {
     props: {
