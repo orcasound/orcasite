@@ -4,9 +4,13 @@ defmodule Orcasite.Radio.Checks.SeedFromProdEnabled do
 
   Read at request time rather than compile time. Deploys build one artifact and
   promote it across apps, so a compile-time answer describes the app the
-  artifact was built in rather than the app serving the request. `config.exs` is
-  evaluated at boot, so `Application.get_env/3` here reflects the serving app's
-  own `ENABLE_SEED_FROM_PROD`.
+  artifact was built in rather than the app serving the request.
+
+  The value is set in `config/runtime.exs`, which runs at boot under both Mix
+  and a release. `config.exs` sets it too, for the `Application.compile_env/3`
+  calls that decide whether the seed actions exist at all -- but that copy is
+  frozen into the artifact under a release, so it must not be what authorizes a
+  request.
   """
   use Ash.Policy.SimpleCheck
 
