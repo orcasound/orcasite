@@ -45,6 +45,49 @@ export function endpointUrl(): string {
   return serverEndpoint;
 }
 
+type GraphQLError = {
+  message: string;
+  path?: (string | number)[];
+};
+
+/**
+ * A well-formed GraphQL response that carried errors.
+ *
+ * Distinct from a transport failure (fetch rejecting, a non-JSON body), so
+ * callers can tell "the API answered, and the answer was an error" from "the
+ * API could not be reached" -- which matter differently.
+ */
+export class GraphQLResponseError extends Error {
+  readonly errors: GraphQLError[];
+
+  constructor(errors: GraphQLError[]) {
+    super(errors[0]?.message ?? "GraphQL request failed");
+    this.name = "GraphQLResponseError";
+    this.errors = errors;
+  }
+}
+
+/**
+ * Whether an error means the requested record does not exist.
+ *
+ * The schema marks these lookups non-nullable, so a missing record surfaces as
+ * `data: null` plus "Cannot return null for non-nullable field" naming the
+ * field. There is no error code to key off, so match the field path and that
+ * condition, and treat everything else -- network failures, timeouts, internal
+ * server errors -- as what it is. Callers that turn missing records into 404s
+ * must not do the same to a transient outage.
+ */
+export function isMissingRecordError(error: unknown, field: string): boolean {
+  return (
+    error instanceof GraphQLResponseError &&
+    error.errors.some(
+      (graphQLError) =>
+        graphQLError.path?.[graphQLError.path.length - 1] === field &&
+        /non-?nullable/i.test(graphQLError.message),
+    )
+  );
+}
+
 export const fetchParams = () => {
   return {
     headers: {
@@ -69,8 +112,7 @@ export function fetcher<TData, TVariables>(
     const json = await res.json();
 
     if (json.errors && (!json.data || Object.keys(json.data).length === 0)) {
-      const { message } = json.errors[0];
-      throw new Error(message);
+      throw new GraphQLResponseError(json.errors);
     }
 
     return json.data as TData;

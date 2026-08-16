@@ -10,6 +10,7 @@ import {
   getMapStaticProps,
 } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
+import { isMissingRecordError } from "@/graphql/client";
 import { useFeedQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
@@ -94,10 +95,14 @@ export async function getStaticProps({ params }: { params: { feed: string } }) {
       queryKey: useFeedQuery.getKey({ slug: params.feed }),
       queryFn: useFeedQuery.fetcher({ slug: params.feed }),
     });
-  } catch {
-    // Revalidated so this recovers on its own: an unknown slug stays a 404, but
-    // a feed added later -- or a transient API failure -- resolves within the
-    // window rather than being cached as missing indefinitely.
+  } catch (error) {
+    // Only a genuinely missing feed becomes a 404. Network failures, timeouts
+    // and server errors are rethrown so Next serves a 500 and caches nothing --
+    // turning a brief API outage into 404s for every valid feed page, cached for
+    // a minute each, would be far worse than failing the request.
+    if (!isMissingRecordError(error, "feed")) throw error;
+
+    // Revalidated so a feed added later stops 404ing on its own.
     return { notFound: true as const, revalidate: 60 };
   }
 
