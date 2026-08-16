@@ -23,6 +23,16 @@ end
 
 config :orcasite, :prod_host, System.get_env("PROD_HOST_URL", "live.orcasound.net")
 
+# Also set in config.exs, which Application.compile_env/3 reads to decide whether
+# the seed actions are compiled in at all. Repeating it here is redundant while
+# the server runs under Mix, since config.exs is re-evaluated at boot -- but it
+# would not be under a release, where config.exs is frozen into the artifact and
+# only runtime.exs runs at startup. Orcasite.Radio.Checks.SeedFromProdEnabled and
+# the validation in Orcasite.Radio.Seed authorize on this value, so it has to
+# describe the app serving the request under either model.
+config :orcasite,
+  enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "false") == "true"
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
