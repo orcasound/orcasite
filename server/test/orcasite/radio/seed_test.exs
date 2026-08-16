@@ -10,6 +10,10 @@ defmodule Orcasite.Radio.SeedTest do
   before failing partway through on a nested create.
 
   A policy now covers every action type, so seeding is refused up front.
+
+  Nothing here invokes a seed action that would be permitted to run. Seeding
+  reaches the production API over the network and writes records; these tests
+  are about whether it is allowed, not about doing it.
   """
 
   use Orcasite.DataCase, async: false
@@ -30,8 +34,8 @@ defmodule Orcasite.Radio.SeedTest do
       :ok
     end
 
-    test "the generic time_range action is forbidden outright" do
-      assert {:error, %Ash.Error.Forbidden{}} = run_time_range()
+    test "the generic time_range action is not authorized" do
+      refute Ash.can?({Seed, :time_range}, nil)
     end
 
     test "creating feeds is rejected" do
@@ -62,18 +66,17 @@ defmodule Orcasite.Radio.SeedTest do
       :ok
     end
 
-    test "authorization no longer refuses the generic time_range action" do
-      # Not asserting success -- that would reach the prod GraphQL API. Only
-      # that the policy is no longer what stops it.
-      refute match?({:error, %Ash.Error.Forbidden{}}, run_time_range())
+    test "the generic time_range action is authorized" do
+      assert Ash.can?({Seed, :time_range}, nil)
     end
   end
 
-  defp run_time_range do
-    Seed
-    |> Ash.ActionInput.for_action(:time_range, %{})
-    |> Ash.run_action()
-  end
+  # Ash.can?/2 rather than running the action. Running :time_range executes it:
+  # it seeds feeds from the production API over the network, reads them back,
+  # and seeds a resource per feed. An earlier version of this test did that in
+  # CI, which reached live.orcasound.net and then crashed in a spawned task
+  # outside the sandboxed connection. Authorization is what these tests are
+  # about, so check it directly and leave the side effects alone.
 
   defp error_message(error), do: Exception.message(error)
 end
