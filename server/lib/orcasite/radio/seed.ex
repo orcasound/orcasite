@@ -1,10 +1,26 @@
 defmodule Orcasite.Radio.Seed do
   use Ash.Resource,
     domain: Orcasite.Radio,
+    authorizers: [Ash.Policy.Authorizer],
     extensions: [AshGraphql.Resource, AshOban]
 
   resource do
     description "Non-persisted resource to seed records from specific time ranges from Orcasite prod"
+  end
+
+  # These mutations are exposed in the GraphQL schema unconditionally, and the
+  # changes behind them call Ash.bulk_create/4 with authorize?: false, so the
+  # target resources' own policies never run. This is the only place seeding can
+  # be gated, and without it the seed mutations are reachable by anyone.
+  #
+  # Checked at request time so the answer follows the app serving the request
+  # rather than the app the artifact was built in. The compile-time flags
+  # elsewhere decide whether the seed actions exist at all; this decides whether
+  # they may be invoked here and now.
+  policies do
+    policy always() do
+      authorize_if Orcasite.Radio.Checks.SeedFromProdEnabled
+    end
   end
 
   attributes do
