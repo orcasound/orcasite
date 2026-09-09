@@ -26,6 +26,7 @@ describe("SignInForm", () => {
 
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
+    expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmit).toHaveBeenCalledWith({ email: "", password: "" });
   });
 

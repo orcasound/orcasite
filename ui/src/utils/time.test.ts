@@ -38,10 +38,7 @@ describe("roundToNearest", () => {
     }
   });
 
-  it("anchors larger units to the epoch, not to the local clock", () => {
-    // Rounding divides the raw timestamp, so a 15 minute unit lands on a quarter hour
-    // of UTC whatever the local timezone is. An implementation using local getMinutes()
-    // would pass every test above and only diverge here, in a half-hour-offset zone.
+  it("rounds to units larger than a minute", () => {
     expect(
       roundToNearest(
         new Date("2024-03-01T12:07:00.000Z"),
