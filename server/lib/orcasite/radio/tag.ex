@@ -2,7 +2,7 @@ defmodule Orcasite.Radio.Tag do
   use Ash.Resource,
     otp_app: :orcasite,
     domain: Orcasite.Radio,
-    extensions: [AshAdmin.Resource, AshGraphql.Resource, AshSlug, AshUUID],
+    extensions: [AshAdmin.Resource, AshGraphql.Resource, AshJsonApi.Resource, AshSlug, AshUUID],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -85,6 +85,13 @@ defmodule Orcasite.Radio.Tag do
 
       change slugify(:name, into: :slug)
     end
+  end
+
+  json_api do
+    # No routes -- tags are only ever reached as an include (e.g. from bouts).
+    # The type is still required so resource identifiers and included resources
+    # serialize with a non-null "type".
+    type "tag"
   end
 
   graphql do

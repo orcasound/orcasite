@@ -20,10 +20,9 @@ import {
   useState,
 } from "react";
 import React from "react";
-import ReactGA from "react-ga4";
 
 import theme from "@/styles/theme";
-import { GA_TRACKING_ID } from "@/utils/analytics";
+import { initializeAnalytics } from "@/utils/analytics";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -32,10 +31,6 @@ export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
-
-if (GA_TRACKING_ID) {
-  ReactGA.initialize(GA_TRACKING_ID);
-}
 
 // From https://tanstack.com/query/latest/docs/framework/react/devtools#modern-bundlers
 const ReactQueryDevtoolsProd = React.lazy(() =>
@@ -83,6 +78,12 @@ export default function OrcasiteApp(props: AppPropsWithLayout) {
     // @ts-expect-error toggleQueryDevtools doesn't exist on window
     window.toggleQueryDevtools = () =>
       setShowReactQueryDevtoolsProd((old) => !old);
+  }, []);
+
+  // In an effect rather than at module scope so the runtime config injected by
+  // /api/runtime-config is in place before the tracking ID is read.
+  React.useEffect(() => {
+    initializeAnalytics();
   }, []);
 
   return (

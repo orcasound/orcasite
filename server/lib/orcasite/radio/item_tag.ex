@@ -2,7 +2,7 @@ defmodule Orcasite.Radio.ItemTag do
   use Ash.Resource,
     otp_app: :orcasite,
     domain: Orcasite.Radio,
-    extensions: [AshAdmin.Resource, AshGraphql.Resource, AshUUID],
+    extensions: [AshAdmin.Resource, AshGraphql.Resource, AshJsonApi.Resource, AshUUID],
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer]
 
@@ -122,6 +122,11 @@ defmodule Orcasite.Radio.ItemTag do
         |> Ash.Changeset.manage_relationship(:user, current_user, type: :append)
       end
     end
+  end
+
+  json_api do
+    # No routes -- item tags are only ever reached as an include.
+    type "item_tag"
   end
 
   graphql do

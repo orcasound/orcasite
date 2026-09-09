@@ -125,13 +125,57 @@ The new version (v3) is currently under development, rapidly changing, and has n
 
 ## Deployment
 
-For the moment, this app is running in a Heroku instance with `mix phx.server`. To access the console, run:
+For the moment, this app is running in a Heroku instance with `mix phx.server`. A single prebuilt artifact is promoted through the pipeline — dev to staging to production — rather than each environment building its own.
+
+### Configuration is resolved at runtime, not at build time
+
+Because one artifact serves every environment, anything captured while it is built describes the environment it was built in rather than the one serving the request. Environment-specific values must therefore be read at runtime:
+
+- **Server.** [`config/runtime.exs`](server/config/runtime.exs) and [`config/prod.exs`](server/config/prod.exs) are evaluated at boot, so they see each app's own config vars. Values reached through `Application.compile_env/2` are the exception: they are captured when the artifact is compiled, so they cannot express per-app configuration, and Elixir validates them against the runtime value at startup. Avoid `compile_env` for anything that differs between environments. The cache adapter in [`cache.ex`](server/lib/orcasite/cache.ex) is one, keyed off whether `REDIS_URL` is set.
+- **UI.** Next inlines `NEXT_PUBLIC_*` into the client bundle at build time, so [`ui/.env.production`](ui/.env.production) deliberately defines none. The GraphQL and socket endpoints resolve same-origin in the browser ([`client.ts`](ui/src/graphql/client.ts), [`useSocket.ts`](ui/src/hooks/useSocket.ts)); remaining per-environment values are injected per request by [`runtime-config.ts`](ui/src/pages/api/runtime-config.ts) and read through [`runtimeConfig.ts`](ui/src/utils/runtimeConfig.ts).
+- **Pages.** `getStaticProps` and `getStaticPaths` run during the build, so pages showing environment-specific data must not rely on them. [`listen/index.tsx`](ui/src/pages/listen/index.tsx) uses `getServerSideProps` and renders on every request; [`listen/[feed].tsx`](ui/src/pages/listen/[feed].tsx) prerenders no paths, generating each page on first request and revalidating it after 60 seconds.
+
+Local development builds and runs in a single environment, where inlining is harmless, so [`ui/.env.development`](ui/.env.development) sets `NEXT_PUBLIC_*` normally.
+
+### Smoke checks
+
+Run [`bin/smoke`](bin/smoke) against an app after promoting to it:
+
+```shell
+bin/smoke https://live.orcasound.net
+```
+
+It exits non-zero if anything fails. Most checks are self-configuring: they ask
+the app's own API what it should be showing and confirm the pages agree, so the
+same command works against any environment. An app serving another environment's
+data disagrees with its own API, which is the failure this deployment model
+invites and the reason these exist. The feed comparison runs in both directions,
+because the failure that prompted this showed up as a page listing *extra*
+feeds — production serving a page built from development's list.
+
+Two checks carry knowledge the app cannot supply, and both take an override:
+
+- `EXPECT_SEED_PAGE=1` where seeding is deliberately enabled; elsewhere `/seed`
+  is expected to be absent.
+- `ABSENT_SLUGS` lists feeds that exist only in development, so elsewhere they
+  must not resolve. A nonsense slug cannot cover this: a slug that never existed
+  anywhere was never prerendered either.
+
+Nothing runs these automatically. The `health-check` job in
+[`heroku.yaml`](.github/workflows/heroku.yaml) fires on GitHub deployment
+events, which slug promotions no longer produce.
+
+### Console
 
 ```shell
 heroku run -a <app_name> FEED_STREAM_QUEUE_URL="" REDIS_URL="" POOL_SIZE=1 iex -- -S mix
 ```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).
+
+### Logs
+
+Application logs are collected by [Mezmo](https://www.mezmo.com/).
 
 ## Emails
 
