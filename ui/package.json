@@ -8,12 +8,16 @@
     "build:dev": "dotenv -c development npm run build",
     "start": "next start -p ${UI_PORT:-3000}",
     "start:dev": "dotenv -c development npm run start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "next lint --dir src --dir test",
+    "lint:fix": "next lint --fix --dir src --dir test",
     "format": "prettier . --write",
     "codegen": "graphql-codegen",
     "analyze": "ANALYZE=true next build",
-    "prepare": "cd .. && husky ui/.husky"
+    "prepare": "cd .. && husky ui/.husky",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify": "npm run typecheck && npm run test && npm run lint"
   },
   "dependencies": {
     "@emotion/cache": "^11.13.1",
@@ -56,6 +60,10 @@
     "@graphql-codegen/typescript-react-query": "^6.1.0",
     "@next/bundle-analyzer": "^14.2.15",
     "@tanstack/react-query-devtools": "^5.59.15",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/leaflet": "^1.9.14",
     "@types/lodash": "^4.17.13",
     "@types/node": "22.7.5",
@@ -70,8 +78,11 @@
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-unused-imports": "^3.2.0",
     "husky": "^9.1.6",
+    "jsdom": "^26.1.0",
     "lint-staged": "^15.2.10",
     "prettier": "3.3.3",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.0.18"
   }
 }

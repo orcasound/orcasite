@@ -23,7 +23,9 @@
         "unusedExports": true,
         "ignoreExports": [
           "src/pages", // pages are automatically imported by nextjs
-          "codegen.ts"
+          "codegen.ts",
+          "vitest.config.mts",
+          "test" // helpers are imported by test files, which the rule scans narrowly
         ]
       }
     ]

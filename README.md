@@ -121,7 +121,25 @@ You can also manually trigger seeding from the [`/seed` page](http://localhost:3
 
 ### UI
 
-The new version (v3) is currently under development, rapidly changing, and has no tests yet.
+[Vitest](https://vitest.dev) with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/), from `ui/`:
+
+```shell
+npm run verify      # typecheck, then tests, then lint
+npm test            # tests only, once
+npm run test:watch  # tests only, re-running on change
+npm run typecheck   # tsc --noEmit
+```
+
+Tests live next to the code they cover, as `*.test.ts` / `*.test.tsx`, except for anything under `src/pages/`, which Next treats as a route regardless of the filename. Page and API tests go in `ui/test/` instead.
+
+### Server
+
+From `server/`:
+
+```shell
+mix test                        # everything
+mix test test/path/to_test.exs:42  # one test, by line
+```
 
 ## Deployment
 
@@ -150,7 +168,7 @@ the app's own API what it should be showing and confirm the pages agree, so the
 same command works against any environment. An app serving another environment's
 data disagrees with its own API, which is the failure this deployment model
 invites and the reason these exist. The feed comparison runs in both directions,
-because the failure that prompted this showed up as a page listing *extra*
+because the failure that prompted this showed up as a page listing _extra_
 feeds — production serving a page built from development's list.
 
 Two checks carry knowledge the app cannot supply, and both take an override:
