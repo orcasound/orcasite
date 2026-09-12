@@ -5,7 +5,9 @@ import {
   ListItem,
   MenuItem,
   Select,
+  TablePagination,
 } from "@mui/material";
+import { keepPreviousData } from "@tanstack/react-query";
 import Head from "next/head";
 import { useCallback, useMemo, useState } from "react";
 
@@ -17,6 +19,8 @@ import type { NextPageWithLayout } from "@/pages/_app";
 
 const BoutsPage: NextPageWithLayout = () => {
   const [sortField, setSortField] = useState("name");
+  const [pastBoutsPage, setPastBoutsPage] = useState(0);
+  const [pastBoutsPerPage, setPastBoutsPerPage] = useState(50);
   const [sortStats, setSortStats] = useState<
     Record<string, Record<string, number>>
   >({});
@@ -27,13 +31,37 @@ const BoutsPage: NextPageWithLayout = () => {
   const currentBouts =
     useBoutsQuery({
       filter: { endTime: { isNil: true } },
-      sort: { field: "START_TIME" },
+      sort: { field: "START_TIME", order: "DESC" },
     }).data?.bouts?.results ?? [];
-  const pastBouts =
-    useBoutsQuery({
+
+  const pastBoutsQuery = useBoutsQuery(
+    {
       filter: { endTime: { isNil: false } },
-      sort: { field: "START_TIME" },
-    }).data?.bouts?.results ?? [];
+      sort: { field: "START_TIME", order: "DESC" },
+      limit: pastBoutsPerPage,
+      offset: pastBoutsPage * pastBoutsPerPage,
+    },
+    // each page is its own query key, so without this the list empties while
+    // the next page loads and everything below it jumps
+    { placeholderData: keepPreviousData },
+  );
+  const pastBouts = pastBoutsQuery.data?.bouts?.results ?? [];
+  const pastBoutsCount = pastBoutsQuery.data?.bouts?.count ?? 0;
+
+  const pastBoutsPagination = {
+    count: pastBoutsCount,
+    page: pastBoutsPage,
+    rowsPerPage: pastBoutsPerPage,
+    onPageChange: (_e: unknown, newPage: number) => setPastBoutsPage(newPage),
+    onRowsPerPageChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPastBoutsPerPage(Number(e.target.value));
+      setPastBoutsPage(0);
+    },
+    // Bout's :index action sets no max_page_size, so Ash's default of 250 is the
+    // ceiling; a larger option would be clamped server side while the offset
+    // kept advancing, hiding rows
+    rowsPerPageOptions: [10, 50, 100, 250],
+  };
 
   const handleStatUpdate = useCallback(
     (feedId: string, stat: string, value: number) => {
@@ -121,6 +149,16 @@ const BoutsPage: NextPageWithLayout = () => {
         >
           <h2>Bouts</h2>
           <Box>
+            {pastBoutsQuery.isSuccess && (
+              <TablePagination
+                {...pastBoutsPagination}
+                component="div"
+                sx={{
+                  borderBottom: 1,
+                  borderColor: "divider",
+                }}
+              />
+            )}
             <List>
               {pastBouts.map((bout) => (
                 <ListItem key={bout.id}>
@@ -128,6 +166,9 @@ const BoutsPage: NextPageWithLayout = () => {
                 </ListItem>
               ))}
             </List>
+            {pastBoutsQuery.isSuccess && (
+              <TablePagination {...pastBoutsPagination} component="div" />
+            )}
           </Box>
         </Box>
       </main>
