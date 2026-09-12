@@ -28,6 +28,7 @@ import {
   useNotifyConfirmedCandidateMutation,
   useSetDetectionVisibleMutation,
 } from "@/graphql/generated";
+import { ReportBoutList } from "@/modules/reports/ReportBoutList";
 import { analytics } from "@/utils/analytics";
 import { formatTimestamp } from "@/utils/time";
 
@@ -53,8 +54,11 @@ export default function DetectionsTable({
     | "sourceIp"
     | "description"
   >[];
-  feed: Pick<Feed, "slug" | "nodeName" | "bucket">;
-  candidate: Pick<Candidate, "id" | "visible">;
+  feed: Pick<Feed, "id" | "slug" | "name" | "nodeName" | "bucket">;
+  candidate: Pick<
+    Candidate,
+    "id" | "visible" | "minTime" | "maxTime" | "category"
+  >;
   onDetectionUpdate: () => void;
 }) {
   const offsetPadding = 15;
@@ -181,6 +185,15 @@ export default function DetectionsTable({
             ))}
         </TableBody>
       </Table>
+
+      {candidate?.category && (
+        <ReportBoutList
+          feed={feed}
+          minTime={candidate.minTime}
+          maxTime={candidate.maxTime}
+          category={candidate.category}
+        />
+      )}
 
       {currentUser?.moderator && (
         <Box sx={{ marginTop: 10 }}>
