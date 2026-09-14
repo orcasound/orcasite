@@ -1,13 +1,13 @@
 import type { FeedPartsFragment } from "@/graphql/generated";
 
-import { uniqueId } from "./sequence";
-
-// Defaults are valid and boring; a test overrides only the fields its assertion is about
+// Defaults are valid and boring; a test overrides only the fields its assertion is
+// about. The id is explicit so a test's rows don't depend on what ran before it
 export function buildFeed(
+  id: string,
   overrides: Partial<FeedPartsFragment> = {},
 ): FeedPartsFragment {
   return {
-    id: uniqueId("feed"),
+    id,
     name: "Orcasound Lab",
     slug: "orcasound-lab",
     nodeName: "rpi_orcasound_lab",
