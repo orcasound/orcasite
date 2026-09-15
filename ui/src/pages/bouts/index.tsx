@@ -16,6 +16,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import BoutItem from "@/components/Bouts/BoutItem";
 import FeedItem from "@/components/Bouts/FeedItem";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { useBoutsQuery, useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 
@@ -172,6 +173,9 @@ const BoutsPage: NextPageWithLayout = () => {
                 </Typography>
                 <Button onClick={() => pastBoutsQuery.refetch()}>Retry</Button>
               </Box>
+            )}
+            {pastBoutsQuery.isPending && !pastBoutsReady.current && (
+              <LoadingSpinner my={4} />
             )}
             <List sx={{ opacity: pastBoutsQuery.isPlaceholderData ? 0.5 : 1 }}>
               {pastBouts.map((bout) => (
