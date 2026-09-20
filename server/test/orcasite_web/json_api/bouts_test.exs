@@ -50,5 +50,36 @@ defmodule OrcasiteWeb.JsonApi.BoutsTest do
       assert %{"type" => "tag", "attributes" => %{"name" => "seagull", "slug" => "seagull"}} =
                Enum.find(response["included"], &(&1["id"] == tag_id))
     end
+
+    test "an included tag says what kind of thing it names and which identifier it cites", %{
+      conn: conn
+    } do
+      Orcasite.Radio.Tag
+      |> Ash.read_one!(authorize?: false)
+      |> Ash.Changeset.for_update(:update, %{kind: :animal, iri: "SSA:0000908"},
+        authorize?: false
+      )
+      |> Ash.update!()
+
+      response =
+        conn
+        |> put_req_header("accept", "application/vnd.api+json")
+        |> get("/api/json/bouts", %{"include" => "tags"})
+        |> json_response(200)
+
+      assert [%{"attributes" => %{"kind" => "animal", "iri" => "SSA:0000908"}}] =
+               Enum.filter(response["included"], &(&1["type"] == "tag"))
+    end
+
+    test "an unclassified tag is included with a null kind and iri", %{conn: conn} do
+      response =
+        conn
+        |> put_req_header("accept", "application/vnd.api+json")
+        |> get("/api/json/bouts", %{"include" => "tags"})
+        |> json_response(200)
+
+      assert [%{"attributes" => %{"name" => "seagull", "kind" => nil, "iri" => nil}}] =
+               Enum.filter(response["included"], &(&1["type"] == "tag"))
+    end
   end
 end

@@ -7,20 +7,33 @@ defmodule Orcasite.Radio.Tag do
     authorizers: [Ash.Policy.Authorizer]
 
   resource do
-    description "Tag definition with a name, description, and unique slug"
+    description "Tag definition with a name, description, unique slug, and optionally what kind of thing it names and the external identifier for it"
   end
 
   postgres do
     table "tags"
     repo Orcasite.Repo
 
+    # The case-insensitive name index below is a custom index, so say which field a
+    # violation belongs to; otherwise it is reported against `id`.
+    unique_index_names [
+      {[:name], "tags_lower_name_index", "is already a tag, differing only by case"}
+    ]
+
     custom_indexes do
       index ["name gin_trgm_ops"], name: "tags_name_gin_index", using: "gin"
+
+      # Animals, signal types and everything else share this one table, so it is the
+      # only place a name collision between those vocabularies can be caught.
+      index ["lower(name)"], name: "tags_lower_name_index", unique: true
     end
   end
 
   identities do
     identity :unique_slug, [:slug]
+
+    # Any number of tags may have no iri (nils are distinct); no two may cite the same one.
+    identity :unique_iri, [:iri]
   end
 
   attributes do
@@ -28,6 +41,30 @@ defmodule Orcasite.Radio.Tag do
     attribute :name, :string, public?: true, allow_nil?: false
     attribute :description, :string, public?: true
     attribute :slug, :string, public?: true, allow_nil?: false
+
+    attribute :kind, :atom do
+      public? true
+      constraints one_of: [:animal, :signal, :other]
+
+      description """
+      What the tag names: an `animal` (a species, ecotype, pod, matriline or individual),
+      a `signal` (a call type such as S01), or `other` (vessels, recording quality,
+      project markers). `other` is an answer, not a fallback -- it tells a consumer the
+      tag is safe to skip. Nil means nobody has classified the tag yet.
+      """
+    end
+
+    attribute :iri, :string do
+      public? true
+
+      description """
+      The identifier this tag cites in an external catalogue, as a CURIE or a full IRI.
+      An `animal` tag cites the salish-sea/animals register: `SSA:0000020` is J pod.
+      Unlike the name and the slug, it survives the tag being renamed. Nil is normal:
+      free-text tags stay legal, and an `animal` tag with no iri is how a gap in the
+      register shows up.
+      """
+    end
 
     timestamps()
   end
@@ -52,6 +89,16 @@ defmodule Orcasite.Radio.Tag do
 
     policy action_type(:read) do
       authorize_if always()
+    end
+  end
+
+  validations do
+    # A prefix, a colon and a local part, with no whitespace: `SSA:0000020` or
+    # `https://example.org/x`. Deliberately loose -- it is here to stop a name being
+    # pasted into the identifier field, not to know every catalogue's format.
+    validate match(:iri, ~r/\A[A-Za-z][A-Za-z0-9+.-]*:\S+\z/) do
+      where present(:iri)
+      message "must be an identifier such as SSA:0000020, not a name"
     end
   end
 
