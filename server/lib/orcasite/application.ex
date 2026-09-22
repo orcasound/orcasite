@@ -4,14 +4,6 @@ defmodule Orcasite.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-    pub_sub_redis = Application.get_env(:orcasite, :pub_sub_redis, [])
-
-    pubsub_options =
-      case(Keyword.get(pub_sub_redis, :enabled)) do
-        true -> Keyword.merge(pub_sub_redis, adapter: Phoenix.PubSub.Redis)
-        _ -> []
-      end
-
     children =
       [
         OrcasiteWeb.Telemetry,
@@ -22,7 +14,7 @@ defmodule Orcasite.Application do
            Application.fetch_env!(:orcasite, :ash_domains),
            Application.fetch_env!(:orcasite, Oban)
          )},
-        {Phoenix.PubSub, Keyword.merge([name: Orcasite.PubSub], pubsub_options)},
+        {Phoenix.PubSub, name: Orcasite.PubSub},
         OrcasiteWeb.Presence,
         {Finch, name: Orcasite.Finch},
         {Task.Supervisor, name: Orcasite.TaskSupervisor},

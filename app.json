@@ -27,11 +27,10 @@
       },
       "addons": [
         "heroku-postgresql:essential-0",
-        "autoidle:hobby-web",
-        "heroku-redis:mini"
+        "autoidle:hobby-web"
       ],
       "scripts": {
-        "postdeploy": "REDIS_URL=\"\" POOL_SIZE=2 mix run priv/repo/seeds.exs"
+        "postdeploy": "POOL_SIZE=2 mix run priv/repo/seeds.exs"
       }
     }
   }
