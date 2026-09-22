@@ -30,11 +30,6 @@ config :orcasite, Oban, testing: :inline
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :orcasite, :cache_adapter, Nebulex.Adapters.Local
-
-config :hammer,
-  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
-
 config :orcasite, OrcasiteWeb.BasicAuth, username: "admin", password: "password"
 config :ash_graphql, :policies, show_policy_breakdowns?: true
 config :ash, :pub_sub, debug?: true
