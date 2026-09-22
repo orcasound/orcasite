@@ -27,7 +27,6 @@ defmodule Orcasite.Mixfile do
         :logger,
         :runtime_tools,
         :inets,
-        :phoenix_pubsub_redis,
         :os_mon
       ]
     ]
@@ -95,10 +94,7 @@ defmodule Orcasite.Mixfile do
       {:ash_json_api, "~> 1.2"},
       {:open_api_spex, "~> 3.16"},
       {:redoc_ui_plug, "~> 0.2.1"},
-      {:phoenix_pubsub_redis, "~> 3.0.1"},
       {:nebulex, "~> 2.5"},
-      {:nebulex_redis_adapter, "~> 2.3"},
-      {:hammer_backend_redis, "~> 6.1"},
       {:hammer, "~> 6.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_unit_notifier, "~> 1.2", only: :test},
