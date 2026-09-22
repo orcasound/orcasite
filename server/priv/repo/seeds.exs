@@ -1,11 +1,11 @@
 require Ash.Query
 
-Orcasite.Radio.Seed.time_range(%{
+Orcasite.Radio.Seed.time_range!(%{
   end_time: DateTime.utc_now(),
   start_time: DateTime.add(DateTime.utc_now(), -1, :hour)
 })
 
-Orcasite.Radio.Seed.latest()
+Orcasite.Radio.Seed.latest!()
 
 # Create admin account
 strategy = AshAuthentication.Info.strategy!(Orcasite.Accounts.User, :password)

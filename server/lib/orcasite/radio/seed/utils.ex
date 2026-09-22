@@ -1,18 +1,27 @@
 defmodule Orcasite.Radio.Seed.Utils do
-  def prepare_results(results, resource) do
+  @doc """
+  Converts production's GraphQL results into inputs for `resource`.
+
+  With an `action`, top-level fields are kept only if that action accepts them.
+  Production exposes fields the local action may not take (a feed's
+  `maintainerEmails`, for one), and a single unaccepted input fails the whole
+  bulk create. Nested relationships are still filtered by writability, since
+  the actions that consume them are chosen by the parent action.
+  """
+  def prepare_results(results, resource, action \\ nil) do
     results
     |> Enum.map(fn result ->
-      convert_result(result, resource)
+      convert_result(result, resource, action)
     end)
   end
 
-  def convert_result(result, resource) do
+  def convert_result(result, resource, action \\ nil) do
     result
     |> Enum.flat_map(fn {key, val} ->
       attr = Absinthe.Adapter.Underscore.to_internal_name(key, [])
 
       cond do
-        writable_attr?(resource, attr) ->
+        input?(resource, action, attr) ->
           [{attr, val}]
 
         many_relationship?(resource, attr) ->
@@ -28,6 +37,15 @@ defmodule Orcasite.Radio.Seed.Utils do
       end
     end)
     |> Map.new()
+  end
+
+  defp input?(resource, nil, key), do: writable_attr?(resource, key)
+
+  defp input?(resource, action, key) do
+    %{accept: accept, arguments: arguments} = Ash.Resource.Info.action(resource, action)
+
+    key in Enum.map(accept, &to_string/1) or
+      key in Enum.map(arguments, &to_string(&1.name))
   end
 
   def writable_attr?(resource, key) do
