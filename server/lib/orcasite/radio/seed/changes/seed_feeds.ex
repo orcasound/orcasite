@@ -9,7 +9,7 @@ defmodule Orcasite.Radio.Seed.Changes.SeedFeeds do
     |> Ash.Changeset.before_action(fn change ->
       feeds =
         Orcasite.Radio.GraphqlClient.get_feeds()
-        |> Utils.prepare_results(Orcasite.Radio.Feed)
+        |> Utils.prepare_results(Orcasite.Radio.Feed, :create)
 
       count = Enum.count(feeds)
 
