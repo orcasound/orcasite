@@ -385,24 +385,25 @@ defmodule Orcasite.Radio.FeedStream do
                %{feed: feed, feed_segments: existing_feed_segments} =
                  feed_stream |> Ash.load!([:feed, feed_segments: file_name_query])
 
-               feed_segments = request_and_parse_manifest(feed_stream, feed)
+               with {:ok, feed_segments} <- request_and_parse_manifest(feed_stream, feed) do
+                 existing_file_names =
+                   existing_feed_segments |> MapSet.new(& &1.file_name)
 
-               existing_file_names = existing_feed_segments |> Enum.map(& &1.file_name)
+                 # Only insert segments not already present
+                 insert_segments =
+                   feed_segments
+                   |> Enum.reject(&MapSet.member?(existing_file_names, &1.file_name))
 
-               # Only insert segments not already present
-               insert_segments =
-                 feed_segments
-                 |> Enum.filter(&(&1.file_name not in existing_file_names))
-
-               insert_segments
-               |> Ash.bulk_create(Orcasite.Radio.FeedSegment, :create,
-                 upsert?: true,
-                 upsert_identity: :feed_segment_path,
-                 stop_on_error?: true
-               )
-               |> case do
-                 %{status: :success} -> {:ok, feed_stream}
-                 %{errors: error} -> {:error, error}
+                 insert_segments
+                 |> Ash.bulk_create(Orcasite.Radio.FeedSegment, :create,
+                   upsert?: true,
+                   upsert_identity: :feed_segment_path,
+                   stop_on_error?: true
+                 )
+                 |> case do
+                   %{status: :success} -> {:ok, feed_stream}
+                   %{errors: error} -> {:error, error}
+                 end
                end
              end)
     end
@@ -469,7 +470,7 @@ defmodule Orcasite.Radio.FeedStream do
                feed_stream
                |> request_and_parse_manifest()
                |> case do
-                 feed_segments when is_list(feed_segments) and length(feed_segments) > 0 ->
+                 {:ok, [_ | _] = feed_segments} ->
                    duration =
                      feed_segments
                      |> Enum.map(&Map.get(&1, :duration))
@@ -489,8 +490,11 @@ defmodule Orcasite.Radio.FeedStream do
                    |> Ash.Changeset.change_attribute(:end_time, end_time)
                    |> Ash.Changeset.change_attribute(:duration, duration)
 
-                 _ ->
+                 {:ok, []} ->
                    change
+
+                 {:error, reason} ->
+                   Ash.Changeset.add_error(change, inspect(reason))
                end
              end)
     end
@@ -515,73 +519,63 @@ defmodule Orcasite.Radio.FeedStream do
     end
   end
 
+  @doc """
+  Fetches the stream's HLS manifest from S3 and parses it into FeedSegment
+  attribute maps, ordered by segment start time.
+  """
+  @spec request_and_parse_manifest(t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
   def request_and_parse_manifest(feed_stream, feed \\ nil) do
-    playlist_start_time = feed_stream.start_time
-    playlist_path = feed_stream.playlist_path
+    with {:ok, body} <- Orcasite.Radio.AwsClient.get_stream_manifest_body(feed_stream) do
+      parse_manifest(body, feed_stream, feed)
+    end
+  end
 
-    {:ok, body} = Orcasite.Radio.AwsClient.get_stream_manifest_body(feed_stream)
+  @doc """
+  Parses an HLS media playlist body into FeedSegment attribute maps.
 
-    body
-    |> String.split("#")
-    # Looks like "EXTINF:10.005378,\nlive000.ts\n"
-    |> Enum.filter(&String.contains?(&1, "EXTINF"))
-    |> Enum.reduce(
-      [],
-      fn extinf_string, acc ->
-        with %{"duration" => duration_string, "file_name" => file_name} <-
-               Regex.named_captures(
-                 ~r|EXTINF:(?<duration>[^,]+),\n(?<file_name>[^\n]+)|,
-                 extinf_string
-               ) do
-          duration = Decimal.new(duration_string)
+  Segment times are derived by accumulating `#EXTINF` durations from the
+  stream's `start_time`, which comes from the S3 folder name. Any other tags
+  in the playlist, including `#EXT-X-PROGRAM-DATE-TIME`, are ignored.
+  """
+  @spec parse_manifest(String.t(), t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
+  def parse_manifest(body, feed_stream, feed \\ nil) do
+    with {:ok, %ExM3U8.MediaPlaylist{timeline: timeline}} <-
+           ExM3U8.deserialize_media_playlist(body, []) do
+      {segments, _offset_ms} =
+        Enum.reduce(timeline, {[], Decimal.new(0)}, fn
+          %ExM3U8.Tags.Segment{uri: file_name, duration: duration_float},
+          {acc, start_offset_ms} ->
+            duration = Decimal.from_float(duration_float)
+            end_offset_ms = duration |> Decimal.mult(1000) |> Decimal.add(start_offset_ms)
 
-          start_offset =
-            Enum.map(acc, & &1.duration)
-            |> Enum.reduce(Decimal.new("0"), &Decimal.add/2)
-            |> Decimal.mult(1000)
+            segment =
+              %{
+                start_time: offset_time(feed_stream.start_time, start_offset_ms),
+                end_time: offset_time(feed_stream.start_time, end_offset_ms),
+                duration: duration,
+                bucket: feed_stream.bucket,
+                bucket_region: feed_stream.bucket_region,
+                cloudfront_url: feed_stream.cloudfront_url,
+                playlist_timestamp: feed_stream.playlist_timestamp,
+                playlist_m3u8_path: feed_stream.playlist_m3u8_path,
+                playlist_path: feed_stream.playlist_path,
+                file_name: file_name,
+                segment_path: feed_stream.playlist_path <> file_name,
+                feed: feed,
+                feed_stream: feed_stream
+              }
 
-          end_offset =
-            duration
-            |> Decimal.mult(1000)
-            |> Decimal.add(start_offset)
-            |> Decimal.round()
+            {[segment | acc], end_offset_ms}
 
-          start_time =
-            DateTime.add(
-              playlist_start_time,
-              Decimal.to_integer(Decimal.round(start_offset)),
-              :millisecond
-            )
+          _other_tag, state ->
+            state
+        end)
 
-          end_time =
-            DateTime.add(
-              playlist_start_time,
-              Decimal.to_integer(end_offset),
-              :millisecond
-            )
+      {:ok, Enum.reverse(segments)}
+    end
+  end
 
-          [
-            %{
-              start_time: start_time,
-              end_time: end_time,
-              duration: duration,
-              bucket: feed_stream.bucket,
-              bucket_region: feed_stream.bucket_region,
-              cloudfront_url: feed_stream.cloudfront_url,
-              playlist_timestamp: feed_stream.playlist_timestamp,
-              playlist_m3u8_path: feed_stream.playlist_m3u8_path,
-              playlist_path: playlist_path,
-              file_name: file_name,
-              segment_path: playlist_path <> file_name,
-              feed: feed,
-              feed_stream: feed_stream
-            }
-            | acc
-          ]
-        else
-          _ -> acc
-        end
-      end
-    )
+  defp offset_time(start_time, offset_ms) do
+    DateTime.add(start_time, offset_ms |> Decimal.round() |> Decimal.to_integer(), :millisecond)
   end
 end
