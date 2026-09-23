@@ -39,6 +39,12 @@ defmodule Orcasite.Radio.FeedSegment do
     attribute :end_time, :utc_datetime_usec, public?: true
     attribute :duration, :decimal, public?: true
 
+    attribute :program_date_time, :utc_datetime_usec do
+      public? true
+
+      description "Start time declared by the node in the playlist's #EXT-X-PROGRAM-DATE-TIME tag, when present. Recorded but not yet used for start_time; see orcasite#1041"
+    end
+
     attribute :bucket, :string, public?: true
     attribute :bucket_region, :string, public?: true
     attribute :cloudfront_url, :string, public?: true
@@ -162,6 +168,7 @@ defmodule Orcasite.Radio.FeedSegment do
         :duration,
         :start_time,
         :end_time,
+        :program_date_time,
         :bucket,
         :bucket_region,
         :cloudfront_url,
@@ -174,6 +181,7 @@ defmodule Orcasite.Radio.FeedSegment do
                :start_time,
                :end_time,
                :duration,
+               :program_date_time,
                :bucket,
                :bucket_region,
                :cloudfront_url,

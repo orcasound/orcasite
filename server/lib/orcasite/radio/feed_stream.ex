@@ -534,17 +534,21 @@ defmodule Orcasite.Radio.FeedStream do
   Parses an HLS media playlist body into FeedSegment attribute maps.
 
   Segment times are derived by accumulating `#EXTINF` durations from the
-  stream's `start_time`, which comes from the S3 folder name. Any other tags
-  in the playlist, including `#EXT-X-PROGRAM-DATE-TIME`, are ignored.
+  stream's `start_time`, which comes from the S3 folder name. When a segment
+  is preceded by an `#EXT-X-PROGRAM-DATE-TIME` tag, its timestamp is carried
+  as `program_date_time` but does not affect the computed times (see #1041).
   """
   @spec parse_manifest(String.t(), t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
   def parse_manifest(body, feed_stream, feed \\ nil) do
     with {:ok, %ExM3U8.MediaPlaylist{timeline: timeline}} <-
            ExM3U8.deserialize_media_playlist(body, []) do
-      {segments, _offset_ms} =
-        Enum.reduce(timeline, {[], Decimal.new(0)}, fn
+      {segments, _offset_ms, _program_date_time} =
+        Enum.reduce(timeline, {[], Decimal.new(0), nil}, fn
+          %ExM3U8.Tags.ProgramDateTime{date: date}, {acc, offset_ms, _} ->
+            {acc, offset_ms, date}
+
           %ExM3U8.Tags.Segment{uri: file_name, duration: duration_float},
-          {acc, start_offset_ms} ->
+          {acc, start_offset_ms, program_date_time} ->
             duration = Decimal.from_float(duration_float)
             end_offset_ms = duration |> Decimal.mult(1000) |> Decimal.add(start_offset_ms)
 
@@ -553,6 +557,7 @@ defmodule Orcasite.Radio.FeedStream do
                 start_time: offset_time(feed_stream.start_time, start_offset_ms),
                 end_time: offset_time(feed_stream.start_time, end_offset_ms),
                 duration: duration,
+                program_date_time: program_date_time,
                 bucket: feed_stream.bucket,
                 bucket_region: feed_stream.bucket_region,
                 cloudfront_url: feed_stream.cloudfront_url,
@@ -565,7 +570,7 @@ defmodule Orcasite.Radio.FeedStream do
                 feed_stream: feed_stream
               }
 
-            {[segment | acc], end_offset_ms}
+            {[segment | acc], end_offset_ms, nil}
 
           _other_tag, state ->
             state

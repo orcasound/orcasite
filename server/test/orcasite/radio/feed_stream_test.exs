@@ -67,6 +67,20 @@ defmodule Orcasite.Radio.FeedStreamTest do
       assert Enum.map(segments, & &1.file_name) == ["live000.ts", "live001.ts", "live002.ts"]
     end
 
+    test "records each segment's program date time in UTC without shifting its computed times" do
+      assert {:ok, [first, second | _]} =
+               FeedStream.parse_manifest(@program_date_time_manifest, @feed_stream)
+
+      assert first.program_date_time == ~U[2026-09-22 07:00:14.675Z]
+      assert second.program_date_time == ~U[2026-09-22 07:00:24.680Z]
+      assert first.start_time == @start_time
+    end
+
+    test "leaves program date time nil for the legacy format" do
+      assert {:ok, segments} = FeedStream.parse_manifest(@legacy_manifest, @feed_stream)
+      assert Enum.all?(segments, &is_nil(&1.program_date_time))
+    end
+
     test "derives segment times by accumulating durations from the stream start" do
       assert {:ok, [first, second, third]} =
                FeedStream.parse_manifest(@legacy_manifest, @feed_stream)
