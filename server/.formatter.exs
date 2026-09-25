@@ -1,5 +1,6 @@
 [
   import_deps: [
+    :ash_events,
     :ecto,
     :ecto_sql,
     :phoenix,
