@@ -7,7 +7,7 @@ import L from "leaflet";
 import { useRouter } from "next/router";
 import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 
-import { Feed, FeedsQuery } from "@/graphql/generated";
+import { Feed } from "@/graphql/generated";
 import hydrophoneActiveIconImage from "@/public/icons/hydrophone-active.svg";
 import hydrophoneDefaultIconImage from "@/public/icons/hydrophone-default.svg";
 
@@ -18,7 +18,7 @@ export default function Map({
 }: {
   setMap?: (map: LeafletMap) => void;
   currentFeed?: Pick<Feed, "slug" | "latLng">;
-  feeds: FeedsQuery["feeds"];
+  feeds: Pick<Feed, "slug" | "latLng">[];
 }) {
   const router = useRouter();
 
