@@ -107,6 +107,9 @@ defmodule OrcasiteWeb.Router do
     forward("/mailbox", Plug.Swoosh.MailboxPreview)
   end
 
+  # The sign-out confirmation page submits `<.form method="delete">`, which is a
+  # POST with `_method=delete`. Plug.MethodOverride only runs in the :parsers
+  # pipeline, after routing, so each sign_out_route also needs a POST route.
   scope "/" do
     pipe_through :browser
 
@@ -119,6 +122,7 @@ defmodule OrcasiteWeb.Router do
     auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController, path: "/admin"
 
     sign_out_route OrcasiteWeb.SubscriberAuthController
+    post "/sign-out", OrcasiteWeb.SubscriberAuthController, :sign_out
   end
 
   scope "/" do
@@ -134,15 +138,21 @@ defmodule OrcasiteWeb.Router do
       overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
     )
 
-    sign_out_route OrcasiteWeb.AuthController, "/admin/sign-out"
+    sign_out_route OrcasiteWeb.AuthController, "/admin/sign-out", as: :admin
+    post "/admin/sign-out", OrcasiteWeb.AuthController, :sign_out
     ash_admin "/admin"
   end
 
   scope "/s" do
     # Subscription routes
     pipe_through :browser
-    sign_out_route OrcasiteWeb.SubscriberAuthController, "/subscriber/sign-out"
-    sign_out_route OrcasiteWeb.SubscriptionAuthController, "/subscription/sign-out"
+    sign_out_route OrcasiteWeb.SubscriberAuthController, "/subscriber/sign-out", as: :subscriber
+    post "/subscriber/sign-out", OrcasiteWeb.SubscriberAuthController, :sign_out
+
+    sign_out_route OrcasiteWeb.SubscriptionAuthController, "/subscription/sign-out",
+      as: :subscription
+
+    post "/subscription/sign-out", OrcasiteWeb.SubscriptionAuthController, :sign_out
 
     magic_sign_in_route(
       Orcasite.Notifications.Subscriber,
@@ -196,7 +206,9 @@ defmodule OrcasiteWeb.Router do
         conn
 
       %{request_path: "/admin" <> _} ->
-        Phoenix.Controller.redirect(conn, to: "/admin/sign-in")
+        conn
+        |> Phoenix.Controller.redirect(to: "/admin/sign-in")
+        |> halt()
 
       _ ->
         conn
