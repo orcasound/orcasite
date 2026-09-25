@@ -198,7 +198,9 @@ defmodule OrcasiteWeb.Router do
         conn
 
       %{request_path: "/admin" <> _} ->
-        Phoenix.Controller.redirect(conn, to: "/admin/sign-in")
+        conn
+        |> Phoenix.Controller.redirect(to: "/admin/sign-in")
+        |> halt()
 
       _ ->
         conn
