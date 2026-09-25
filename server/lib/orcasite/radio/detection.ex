@@ -255,6 +255,10 @@ defmodule Orcasite.Radio.Detection do
         :category
       ]
 
+      # The attribute allows nil for old detections, but new ones need a category
+      # to find or create their candidate.
+      require_attributes [:category]
+
       argument :feed_id, :string, allow_nil?: false
 
       argument :send_notifications, :boolean, default: true
