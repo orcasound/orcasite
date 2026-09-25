@@ -176,6 +176,12 @@ defmodule Orcasite.Radio.Bout do
 
         accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
         upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
+
+        # Production's tags on the bout, ids included: upserted with production's kind
+        # and iri, and joined once, without a user (see Changes.SeedTags).
+        argument :tags, {:array, :map}, default: []
+
+        change {__MODULE__.Changes.SeedTags, []}
       end
     end
 

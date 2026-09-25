@@ -37,7 +37,9 @@ defmodule Orcasite.Radio.Tag do
   end
 
   attributes do
-    uuid_primary_key :id
+    # Writable only where seeding from production is on, so a seeded tag keeps its
+    # production id and the item_tags that reference it line up (as Bout does).
+    uuid_primary_key :id, writable?: Orcasite.Config.seeding_enabled?()
     attribute :name, :string, public?: true, allow_nil?: false
     attribute :description, :string, public?: true
     attribute :slug, :string, public?: true, allow_nil?: false
@@ -131,6 +133,20 @@ defmodule Orcasite.Radio.Tag do
       accept [:name, :description]
 
       change slugify(:name, into: :slug)
+    end
+
+    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
+      # A tag as production has it, id included, so the vocabulary and its classification
+      # (kind, iri) reach review apps with the bouts that carry it.
+      create :seed do
+        upsert? true
+        upsert_fields [:name, :description, :slug, :kind, :iri]
+        skip_unknown_inputs :*
+
+        accept [:id, :name, :description, :kind, :iri]
+
+        change slugify(:name, into: :slug)
+      end
     end
   end
 
