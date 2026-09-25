@@ -69,8 +69,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   // Panning keys off the map becoming available, not off the feed changing.
   useEffect(() => {
     if (map && currentFeed) {
-      map.setZoom(9);
-      map.panTo(currentFeed.latLng);
+      map.setView(currentFeed.latLng, 9);
     }
   }, [map, currentFeed]);
 
