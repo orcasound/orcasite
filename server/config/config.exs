@@ -6,6 +6,7 @@
 import Config
 
 config :phoenix, :json_library, Jason
+config :geo_postgis, json_library: Jason
 
 # General application configuration
 config :orcasite,
@@ -81,6 +82,9 @@ config :orcasite, :ecto_repos, [Orcasite.Repo]
 config :orcasite, :ash_domains, [Orcasite.Notifications, Orcasite.Accounts, Orcasite.Radio]
 config :orcasite, :ash_uuid, migration_default?: true
 config :ash, :custom_types, geometry: Orcasite.Types.Geometry
+# Count string length in codepoints, matching Postgres. Required since Ash 3.33, see
+# https://hexdocs.pm/ash/backwards-compatibility-config.html#default_string_length_count
+config :ash, default_string_length_count: :codepoints
 config :ash_graphql, :default_managed_relationship_type_name_template, :action_name
 config :ash_graphql, :json_type, :json
 
