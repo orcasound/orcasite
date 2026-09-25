@@ -7,13 +7,15 @@ defmodule Orcasite.Repo.Migrations.UpgradeAshFunctionsExtensions1 do
 
   use Ecto.Migration
 
+  # The function runs with an empty search_path, so `ash_raise_error` must be
+  # schema-qualified. The generated version left it unqualified.
   def up do
     execute("""
     CREATE OR REPLACE FUNCTION ash_required(value ANYCOMPATIBLE, payload jsonb)
     RETURNS ANYCOMPATIBLE AS $$
     BEGIN
       IF value IS NULL THEN
-        RETURN ash_raise_error(payload, value);
+        RETURN public.ash_raise_error(payload, value);
       END IF;
 
       RETURN value;
