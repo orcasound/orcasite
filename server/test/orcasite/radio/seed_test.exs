@@ -71,6 +71,85 @@ defmodule Orcasite.Radio.SeedTest do
     end
   end
 
+  # Only in a build that compiled the seed actions in (ENABLE_SEED_FROM_PROD=true at
+  # compile time, as review apps are built). CI builds without it, so this describe is
+  # absent there; run it locally with the flag set. No network: the inputs are shaped as
+  # Seed.Utils.prepare_results shapes production's GraphQL answer.
+  if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
+    describe "seeding a bout carries its tags" do
+      alias Orcasite.Radio.{Bout, ItemTag, Tag}
+      alias Orcasite.Radio.Seed.Utils
+
+      setup do
+        set_seeding(true)
+        feed = Orcasite.Generators.Radio.create_feed!()
+        {:ok, feed: feed}
+      end
+
+      @tag_id "2f514656-c30e-4456-8776-dd32e779e7db"
+
+      defp prod_bout(feed, bout_id) do
+        %{
+          "id" => bout_id,
+          "category" => "BIOPHONY",
+          "startTime" => "2026-09-01T10:00:00.000000Z",
+          "endTime" => "2026-09-01T10:30:00.000000Z",
+          "name" => "Bigg's at the Lab",
+          "duration" => "1800.0",
+          "feed" => %{"id" => feed.id},
+          "tags" => [
+            %{
+              "id" => @tag_id,
+              "name" => "Bigg's",
+              "description" => "Bigg's killer whale",
+              "slug" => "biggs",
+              "kind" => "animal",
+              "iri" => "SSA:0000002"
+            }
+          ]
+        }
+      end
+
+      defp seed!(feed, bout_id) do
+        [prod_bout(feed, bout_id)]
+        |> Utils.prepare_results(Bout)
+        |> Ash.bulk_create!(Bout, :seed, return_errors?: true, authorize?: false)
+      end
+
+      test "creates the tag with production's id, kind and iri, joined without a user", %{
+        feed: feed
+      } do
+        %{status: :success} = seed!(feed, "bout_0306cqy89bUJPOhwzu8zUB")
+
+        tag = Ash.get!(Tag, @tag_id, authorize?: false)
+        assert tag.name == "Bigg's"
+        assert tag.kind == :animal
+        assert tag.iri == "SSA:0000002"
+
+        [join] = Ash.read!(ItemTag, authorize?: false)
+        assert join.tag_id == @tag_id
+        assert join.bout_id == "bout_0306cqy89bUJPOhwzu8zUB"
+        assert is_nil(join.user_id)
+      end
+
+      test "seeding the same bout again adds no second tag or join row", %{feed: feed} do
+        %{status: :success} = seed!(feed, "bout_031YvAeJ4O13YgkbQlc8yJ")
+        %{status: :success} = seed!(feed, "bout_031YvAeJ4O13YgkbQlc8yJ")
+
+        assert Ash.count!(Tag, authorize?: false) == 1
+        assert Ash.count!(ItemTag, authorize?: false) == 1
+      end
+
+      test "a tag already here is related, not duplicated", %{feed: feed} do
+        %{status: :success} = seed!(feed, "bout_030FlcX4eVsufvH9R1xbHh")
+        %{status: :success} = seed!(feed, "bout_034OmhwjtcnA8JwRVVb5Av")
+
+        assert Ash.count!(Tag, authorize?: false) == 1
+        assert Ash.count!(ItemTag, authorize?: false) == 2
+      end
+    end
+  end
+
   # Ash.can?/2 rather than running the action. Running :time_range executes it:
   # it seeds feeds from the production API over the network, reads them back,
   # and seeds a resource per feed. An earlier version of this test did that in
