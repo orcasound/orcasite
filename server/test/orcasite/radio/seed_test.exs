@@ -140,6 +140,20 @@ defmodule Orcasite.Radio.SeedTest do
         assert Ash.count!(ItemTag, authorize?: false) == 1
       end
 
+      test "a tag made here by hand, under its own id, is reused and classified", %{feed: feed} do
+        local = Ash.create!(Tag, %{name: "bigg's"}, authorize?: false)
+        assert local.id != @tag_id
+
+        %{status: :success} = seed!(feed, "bout_0306cqy89bUJPOhwzu8zUB")
+
+        assert Ash.count!(Tag, authorize?: false) == 1
+        tag = Ash.get!(Tag, local.id, authorize?: false)
+        assert tag.kind == :animal
+        assert tag.iri == "SSA:0000002"
+        [join] = Ash.read!(ItemTag, authorize?: false)
+        assert join.tag_id == local.id
+      end
+
       test "a tag already here is related, not duplicated", %{feed: feed} do
         %{status: :success} = seed!(feed, "bout_030FlcX4eVsufvH9R1xbHh")
         %{status: :success} = seed!(feed, "bout_034OmhwjtcnA8JwRVVb5Av")

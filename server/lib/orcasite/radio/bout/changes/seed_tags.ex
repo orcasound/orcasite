@@ -21,7 +21,7 @@ defmodule Orcasite.Radio.Bout.Changes.SeedTags do
 
     Ash.Changeset.after_action(changeset, fn _changeset, bout ->
       Enum.each(tags, fn attrs ->
-        tag = Ash.create!(Tag, attrs, action: :seed, authorize?: false)
+        tag = seed_tag(attrs)
 
         joined? =
           ItemTag
@@ -38,5 +38,31 @@ defmodule Orcasite.Radio.Bout.Changes.SeedTags do
 
       {:ok, bout}
     end)
+  end
+
+  # Names are unique case-insensitively, so a tag someone already made here by hand
+  # ("SRKW" with a local id) would collide with production's row of the same name. Reuse
+  # it, giving it production's classification, and only create when there is no such tag;
+  # then Tag.seed's upsert by id covers re-seeds.
+  defp seed_tag(attrs) do
+    name = attrs["name"] || attrs[:name]
+
+    existing =
+      Tag
+      |> Ash.Query.filter(fragment("lower(?)", name) == ^String.downcase(name))
+      |> Ash.read_one!(authorize?: false)
+
+    case existing do
+      nil ->
+        Ash.create!(Tag, attrs, action: :seed, authorize?: false)
+
+      tag ->
+        updates =
+          Map.new(["description", "kind", "iri"], fn key ->
+            {String.to_atom(key), attrs[key] || attrs[String.to_atom(key)]}
+          end)
+
+        Ash.update!(tag, updates, authorize?: false)
+    end
   end
 end
