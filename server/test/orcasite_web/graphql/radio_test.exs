@@ -72,6 +72,52 @@ defmodule OrcasiteWeb.RadioTest do
     assert "det_" <> _ = id
   end
 
+  test "submitting a detection without a category is a validation error", %{
+    conn: conn,
+    feed: feed
+  } do
+    conn =
+      conn
+      |> post("/graphql", %{
+        "query" => """
+          mutation submitDetection($feedId: String!, $playlistTimestamp: Int!) {
+            submitDetection(
+              input: {
+                feedId: $feedId
+                playlistTimestamp: $playlistTimestamp
+                playerOffset: 5.54
+                description: "No category"
+                sendNotifications: false
+              }
+            ) {
+              result {
+                id
+              }
+              errors {
+                message
+              }
+            }
+          }
+        """,
+        "variables" => %{
+          "feedId" => feed.id,
+          "playlistTimestamp" => DateTime.to_unix(DateTime.utc_now())
+        }
+      })
+
+    assert %{"errors" => [%{"message" => message}]} = json_response(conn, 200)
+    assert message =~ ~s(field "category")
+
+    assert {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Changes.Required{field: :category}]}} =
+             Orcasite.Radio.Detection.submit_detection(%{
+               feed_id: feed.id,
+               playlist_timestamp: DateTime.to_unix(DateTime.utc_now()),
+               player_offset: 5.54,
+               description: "No category",
+               send_notifications: false
+             })
+  end
+
   describe "feeds query" do
     test "succeeds for public fields", %{conn: conn, feed: %{id: feed_id, slug: feed_slug}} do
       assert %{
