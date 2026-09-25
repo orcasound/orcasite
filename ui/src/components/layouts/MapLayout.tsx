@@ -49,17 +49,30 @@ function MapLayout({ children }: { children: ReactNode }) {
   const feeds = useFeedsQuery().data?.feeds ?? [];
   const firstOnlineFeed = feeds.filter(({ online }) => online)[0];
 
+  // A hidden feed should still show its location to anyone viewing it directly.
+  const mapFeeds =
+    currentFeed && !feeds.some(({ slug }) => slug === currentFeed.slug)
+      ? [...feeds, currentFeed]
+      : feeds;
+
   // update the currentFeed only if there's a new feed
   useEffect(() => {
     if (feed && feed.slug !== currentFeed?.slug) {
       setCurrentFeed(feed);
-      map?.setZoom(9);
-      map?.panTo(feed.latLng);
     }
     if (!feed && !currentFeed && firstOnlineFeed) {
       setCurrentFeed(firstOnlineFeed);
     }
-  }, [feed, map, currentFeed, firstOnlineFeed]);
+  }, [feed, currentFeed, firstOnlineFeed]);
+
+  // The map is an ssr: false dynamic import, so it mounts after the feed data.
+  // Panning keys off the map becoming available, not off the feed changing.
+  useEffect(() => {
+    if (map && currentFeed) {
+      map.setZoom(9);
+      map.panTo(currentFeed.latLng);
+    }
+  }, [map, currentFeed]);
 
   const invalidateSize = () => {
     if (map) {
@@ -112,7 +125,7 @@ function MapLayout({ children }: { children: ReactNode }) {
             <MapWithNoSSR
               setMap={setMap}
               currentFeed={currentFeed}
-              feeds={feeds}
+              feeds={mapFeeds}
             />
           </Box>
           <ToggleDrawerButton
