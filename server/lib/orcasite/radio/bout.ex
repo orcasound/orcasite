@@ -212,7 +212,9 @@ defmodule Orcasite.Radio.Bout do
   json_api do
     type "bout"
 
-    includes [:feed, :tags]
+    # `tags` is the vocabulary a bout cites; `item_tags` is each application of it, with
+    # the moderator's certainty. A consumer that wants the hedge asks for `item_tags.tag`.
+    includes [:feed, :tags, item_tags: [:tag]]
 
     routes do
       base "/bouts"

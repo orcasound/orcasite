@@ -7,7 +7,7 @@ defmodule Orcasite.Radio.ItemTag do
     authorizers: [Ash.Policy.Authorizer]
 
   resource do
-    description "Tag applied by a user to an item: currently just bouts"
+    description "Tag applied by a user to an item (currently just bouts), and how sure they were"
   end
 
   postgres do
@@ -27,6 +27,20 @@ defmodule Orcasite.Radio.ItemTag do
 
   attributes do
     uuid_primary_key :id
+
+    attribute :certainty, :atom do
+      public? true
+      constraints one_of: [:certain, :probable, :possible]
+
+      description """
+      How sure the moderator was that this tag belongs on this bout. On the application,
+      not the tag, because `L` is certain on one bout and a hedge on the next; a `?` in
+      the bout's name is where that hedge went before this column existed. Three words
+      rather than a number: a listening moderator has no probability, and a numeric field
+      invites a UI to invent one. Nil means nobody was asked, which is every application
+      made before the column existed, and is deliberately distinct from `certain`.
+      """
+    end
 
     timestamps()
   end
@@ -98,6 +112,8 @@ defmodule Orcasite.Radio.ItemTag do
     end
 
     create :bout_tag do
+      accept [:certainty]
+
       argument :tag, :map do
         allow_nil? false
 
@@ -133,8 +149,12 @@ defmodule Orcasite.Radio.ItemTag do
   end
 
   json_api do
-    # No routes -- item tags are only ever reached as an include.
+    # No routes -- item tags are only ever reached as an include on a bout
+    # (`include=item_tags.tag`), which is how a consumer sees each application's certainty
+    # beside the tag it applies.
     type "item_tag"
+
+    includes [:tag]
   end
 
   graphql do
