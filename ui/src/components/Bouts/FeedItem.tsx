@@ -23,7 +23,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { VegaLite } from "react-vega";
+import { VegaEmbed } from "react-vega";
 
 import {
   DetectionCategory,
@@ -122,12 +122,19 @@ export default function FeedItem({
     <Card sx={{ width: "100%", p: 2, overflowX: "auto" }} elevation={1}>
       {/* Feed Summary */}
       <Box
-        display="flex"
-        alignItems={{ sm: "center" }}
-        flexWrap={"wrap"}
-        flexDirection={{ xs: "column", sm: "row" }}
+        sx={{
+          display: "flex",
+          alignItems: { sm: "center" },
+          flexWrap: "wrap",
+          flexDirection: { xs: "column", sm: "row" },
+        }}
       >
-        <Box display="flex" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <Tooltip title={feed.online ? "online" : "offline"}>
             <Circle
               sx={{
@@ -147,9 +154,9 @@ export default function FeedItem({
           </IconButton>
         </Box>
         <Box
-          display="flex"
-          flexDirection="column"
           sx={{
+            display: "flex",
+            flexDirection: "column",
             ml: { sm: "auto" },
             mt: { xs: 2, sm: 0 },
             mb: { xs: 3, sm: 0 },
@@ -164,48 +171,79 @@ export default function FeedItem({
             </Button>
           </Link>
           <Box
-            display="flex"
-            flexDirection={{ xs: "column", sm: "row" }}
-            alignSelf={"flex-start"}
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignSelf: "flex-start",
+            }}
           >
             <Box>
-              <Typography component="div" mr={3} variant="overline">
+              <Typography
+                component="div"
+                variant="overline"
+                sx={{
+                  mr: 3,
+                }}
+              >
                 Detections
               </Typography>
               <Box
-                alignItems="center"
-                display="flex"
-                justifyContent="space-between"
+                sx={{
+                  alignItems: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
-                <Typography component="div" mr={3}>
+                <Typography
+                  component="div"
+                  sx={{
+                    mr: 3,
+                  }}
+                >
                   {detsCount5MinAgo}{" "}
                   <Typography
-                    fontSize="small"
                     noWrap
-                    fontWeight="bold"
                     color="accent2"
+                    sx={{
+                      fontSize: "small",
+                      fontWeight: "bold",
+                    }}
                   >
                     5 min
                   </Typography>
                 </Typography>
-                <Typography component="div" mr={3}>
+                <Typography
+                  component="div"
+                  sx={{
+                    mr: 3,
+                  }}
+                >
                   {detsCount15MinAgo}
                   <Typography
-                    fontSize="small"
                     noWrap
                     color="accent2"
-                    fontWeight="bold"
+                    sx={{
+                      fontSize: "small",
+                      fontWeight: "bold",
+                    }}
                   >
                     15 min
                   </Typography>
                 </Typography>
-                <Typography component="div" mr={5}>
+                <Typography
+                  component="div"
+                  sx={{
+                    mr: 5,
+                  }}
+                >
                   {detsCount}{" "}
                   <Typography
-                    fontSize="small"
                     noWrap
                     color="accent2"
-                    fontWeight="bold"
+                    sx={{
+                      fontSize: "small",
+                      fontWeight: "bold",
+                    }}
                   >
                     1 hr
                   </Typography>
@@ -214,26 +252,42 @@ export default function FeedItem({
             </Box>
 
             <Box sx={{ my: { xs: 2, sm: 0 } }}>
-              <Typography component="div" mr={3} variant="overline">
+              <Typography
+                component="div"
+                variant="overline"
+                sx={{
+                  mr: 3,
+                }}
+              >
                 Categories
               </Typography>
               <Box
-                alignItems="center"
-                display="flex"
-                justifyContent="space-between"
+                sx={{
+                  alignItems: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
                 {categories.map((cat) => (
-                  <Typography key={cat} component="div" mr={3}>
+                  <Typography
+                    key={cat}
+                    component="div"
+                    sx={{
+                      mr: 3,
+                    }}
+                  >
                     {
                       recentDetections.filter(
                         ({ category }) => cat === category,
                       ).length
                     }{" "}
                     <Typography
-                      fontSize="small"
                       noWrap
                       color="accent2"
-                      fontWeight="bold"
+                      sx={{
+                        fontSize: "small",
+                        fontWeight: "bold",
+                      }}
                     >
                       {cat}
                     </Typography>
@@ -242,11 +296,28 @@ export default function FeedItem({
               </Box>
             </Box>
 
-            <Box alignSelf={"stretch"} sx={{ my: { xs: 2, sm: 0 } }}>
-              <Typography component="div" mr={3} variant="overline">
+            <Box
+              sx={{
+                alignSelf: "stretch",
+                my: { xs: 2, sm: 0 },
+              }}
+            >
+              <Typography
+                component="div"
+                variant="overline"
+                sx={{
+                  mr: 3,
+                }}
+              >
                 Listeners
               </Typography>
-              <Typography display="flex" alignItems="center" fontSize={14}>
+              <Typography
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: 14,
+                }}
+              >
                 <Person sx={{ mr: 1, color: "accent2.main" }} />
                 {listenerCount ?? "-"}
               </Typography>
@@ -259,33 +330,39 @@ export default function FeedItem({
       {detsCount > 0 && (
         <Box sx={{ mb: 3 }}>
           <Box
-            display="flex"
-            flexDirection={{ xs: "column", md: "row" }}
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
           >
             {categories.map((category) => (
               <Box
                 key={category}
-                m={3}
-                flexGrow={1}
-                width={"100%"}
-                display="flex"
-                alignItems="center"
-                flexDirection="column"
+                sx={{
+                  m: 3,
+                  flexGrow: 1,
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                }}
               >
                 <Typography
-                  fontSize="small"
-                  fontWeight="bold"
-                  textAlign={{ xs: "center", sm: "left" }}
+                  sx={{
+                    fontSize: "small",
+                    fontWeight: "bold",
+                    textAlign: { xs: "center", sm: "left" },
+                  }}
                 >
                   {category}
                 </Typography>
-                <VegaLite
-                  actions={false}
+                <VegaEmbed
+                  options={{ actions: false }}
                   spec={{
-                    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+                    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
                     description: `Bar chart of recent ${category.toLowerCase()} detections`,
                     mark: "bar",
                     data: {
@@ -318,7 +395,11 @@ export default function FeedItem({
 
       {/* Detections table */}
       <Box>
-        <Box display="flex">
+        <Box
+          sx={{
+            display: "flex",
+          }}
+        >
           <Button
             variant={detsCount === 0 ? "text" : "outlined"}
             onClick={() => setShowTable(!showTable)}
@@ -332,7 +413,12 @@ export default function FeedItem({
           </Button>
 
           {showTable && (
-            <Box display="flex" ml={2}>
+            <Box
+              sx={{
+                display: "flex",
+                ml: 2,
+              }}
+            >
               {categories.map((category, i) => (
                 <Button
                   key={i}

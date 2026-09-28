@@ -26,7 +26,12 @@ const SignOutPage: NextPageWithLayout = () => {
       </Head>
 
       <main>
-        <Typography variant="body1" textAlign="center">
+        <Typography
+          variant="body1"
+          sx={{
+            textAlign: "center",
+          }}
+        >
           Signing out...
         </Typography>
       </main>

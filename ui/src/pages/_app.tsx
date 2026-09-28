@@ -1,6 +1,6 @@
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
-import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
+import { AppCacheProvider } from "@mui/material-nextjs/v16-pagesRouter";
 import {
   HydrationBoundary,
   QueryClient,
@@ -11,6 +11,7 @@ import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { Socket } from "phoenix";
+import React from "react";
 import {
   createContext,
   MutableRefObject,
@@ -19,7 +20,6 @@ import {
   useRef,
   useState,
 } from "react";
-import React from "react";
 
 import theme from "@/styles/theme";
 import { initializeAnalytics } from "@/utils/analytics";
@@ -50,7 +50,7 @@ export const SocketContext = createContext<{
 // https://github.com/mui/material-ui/blob/master/examples/material-ui-nextjs-pages-router-ts/pages/_app.tsx
 export default function OrcasiteApp(props: AppPropsWithLayout) {
   const { Component, pageProps } = props;
-  const socket = useRef<Socket>();
+  const socket = useRef<Socket>(undefined);
   const setSocket = (sock: Socket) => (socket.current = sock);
 
   // Allow pages to define custom per-page layout

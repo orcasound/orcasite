@@ -87,10 +87,11 @@ export function FrequencyAxisLayer({
         }}
       >
         <Typography
-          fontSize={10}
           sx={{
+            fontSize: 10,
             position: "absolute",
             top: 0,
+
             ...(scaling === "linear"
               ? { right: "3px" }
               : { marginLeft: "5px" }),
@@ -120,11 +121,18 @@ function Label({ frequency, bottom }: { frequency: number; bottom: string }) {
   const value = frequency >= 1000 ? frequency / 1000 : frequency;
   const label = frequency >= 1000 ? "k" : "";
   return (
-    <Box width="45%" sx={{ left: 0, bottom, position: "absolute" }}>
+    <Box
+      sx={{
+        width: "45%",
+        left: 0,
+        bottom,
+        position: "absolute",
+      }}
+    >
       <Box sx={{ position: "relative" }}>
         <Typography
-          fontSize={12}
           sx={{
+            fontSize: 12,
             marginLeft: "5px",
             position: "absolute",
             bottom: frequency === 1 ? "-3px" : "-8px",
@@ -150,8 +158,8 @@ function Tick({
   return (
     <Box
       data-frequency={frequency}
-      width={`${100 * MAX_TICK_WIDTH * widthFactor}%`}
       sx={{
+        width: `${100 * MAX_TICK_WIDTH * widthFactor}%`,
         bottom,
         position: "absolute",
         right: 0,

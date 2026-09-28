@@ -102,12 +102,12 @@ export default function BoutPage({
     (time: Date) => (playerTime.current = time),
     [],
   );
-  const playerControls = useRef<PlayerControls>();
+  const playerControls = useRef<PlayerControls>(undefined);
   const setPlayerControls = useCallback(
     (controls: PlayerControls) => (playerControls.current = controls),
     [],
   );
-  const spectrogramControls = useRef<SpectrogramControls>();
+  const spectrogramControls = useRef<SpectrogramControls>(undefined);
 
   const [cachedPlayerTime, setCachedPlayerTime] = useState<Date>(targetTime);
   useEffect(() => {
@@ -337,10 +337,12 @@ export default function BoutPage({
   return (
     <>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        my={2}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          my: 2,
+        }}
       >
         <Box>
           <Typography variant="overline" sx={{ fontSize: 18 }}>
@@ -366,8 +368,8 @@ export default function BoutPage({
           />
         </Box>
         <Box
-          display="flex"
           sx={{
+            display: "flex",
             flexDirection: isDesktop ? "row" : "column",
             marginTop: "auto",
             marginLeft: "auto",
@@ -392,7 +394,12 @@ export default function BoutPage({
           )}
         </Box>
       </Box>
-      <Box display="flex" flexDirection="column">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {Object.entries(boutForm.errors).map(([key, msg], idx) => (
           <Alert
             key={idx}
@@ -413,8 +420,19 @@ export default function BoutPage({
           </Alert>
         ))}
       </Box>
-      <Box display="flex" flexDirection="column" gap={2}>
-        <Box display="flex" justifyContent="space-between">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
           <Box>
             <Button
               startIcon={<KeyboardDoubleArrowLeft />}
@@ -430,7 +448,12 @@ export default function BoutPage({
             {format(playableLimits.min, "h:mm:ss a")}
           </Box>
 
-          <Box flexGrow={1} sx={{ mx: 2 }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              mx: 2,
+            }}
+          >
             {feedStream?.startTime && (
               <BoutScrubBar
                 feedStreamStartTimeNum={feedStream.startTime.valueOf()}
@@ -473,14 +496,18 @@ export default function BoutPage({
         />
 
         <Box
-          display="flex"
           sx={{
+            display: "flex",
+            flexWrap: "wrap",
             gap: 2,
             justifyContent: "center",
           }}
-          flexWrap="wrap"
         >
-          <Box minWidth={130}>
+          <Box
+            sx={{
+              minWidth: 130,
+            }}
+          >
             {feedStream && (
               <BoutPlayer
                 feed={feed}
@@ -493,7 +520,13 @@ export default function BoutPage({
               />
             )}
           </Box>
-          <Box display="flex" flexDirection="column" alignItems="center">
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <Box>
               <Typography variant="overline">Zoom</Typography>
             </Box>
@@ -508,10 +541,12 @@ export default function BoutPage({
           </Box>
 
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            minWidth={90}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              minWidth: 90,
+            }}
           >
             <Box>
               <Typography variant="overline">Skip backward</Typography>
@@ -529,18 +564,20 @@ export default function BoutPage({
           </Box>
 
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            minWidth={90}
-            sx={
+            sx={[
+              {
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                minWidth: 90,
+              },
               boutForm.errors.startTime
                 ? {
                     border: (theme) => `1px solid ${theme.palette.error.main}`,
                     borderRadius: 1,
                   }
-                : {}
-            }
+                : {},
+            ]}
           >
             <Box>
               <Typography variant="overline">Bout start</Typography>
@@ -583,10 +620,12 @@ export default function BoutPage({
             )}
           </Box>
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            minWidth={90}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              minWidth: 90,
+            }}
           >
             <Box>
               <Typography variant="overline">Bout end</Typography>
@@ -629,10 +668,12 @@ export default function BoutPage({
             )}
           </Box>
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            minWidth={90}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              minWidth: 90,
+            }}
           >
             <Box>
               <Typography variant="overline">Skip forward</Typography>
@@ -649,10 +690,12 @@ export default function BoutPage({
             </Box>
           </Box>
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            minWidth={90}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              minWidth: 90,
+            }}
           >
             <Box>
               <Typography variant="overline">Share bout</Typography>
@@ -663,10 +706,12 @@ export default function BoutPage({
           </Box>
           {currentUser?.moderator && (
             <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              minWidth={90}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                minWidth: 90,
+              }}
             >
               <Box>
                 <Typography variant="overline">Create spectrograms</Typography>
@@ -695,7 +740,13 @@ export default function BoutPage({
           {bout?.startTime && bout.endTime && <BoutExport boutId={bout.id} />}
 
           {currentUser?.moderator && (
-            <Box display="flex" alignItems="center" ml={{ sm: 0, md: "auto" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                ml: { sm: 0, md: "auto" },
+              }}
+            >
               <FormControl
                 sx={{ width: "100%" }}
                 {...(boutForm.errors.audioCategory ? { error: true } : {})}
@@ -742,14 +793,26 @@ export default function BoutPage({
           )}
           {!currentUser?.moderator && bout?.category && (
             <Box
-              display="flex"
-              ml={{ sm: 0, md: "auto" }}
-              flexDirection="column"
+              sx={{
+                display: "flex",
+                ml: { sm: 0, md: "auto" },
+                flexDirection: "column",
+              }}
             >
-              <Typography variant="overline" textAlign="center">
+              <Typography
+                variant="overline"
+                sx={{
+                  textAlign: "center",
+                }}
+              >
                 Category
               </Typography>
-              <Box display="flex" gap={1}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                }}
+              >
                 <CategoryIcon audioCategory={bout.category} size={25} />
                 <Typography>{_.startCase(_.toLower(bout.category))}</Typography>
               </Box>
@@ -839,7 +902,12 @@ function BoutName({
   return (
     <Box>
       {!moderator && (
-        <Typography variant="h4" my={1}>
+        <Typography
+          variant="h4"
+          sx={{
+            my: 1,
+          }}
+        >
           {boutName ?? feedName}
         </Typography>
       )}

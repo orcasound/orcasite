@@ -18,7 +18,6 @@ import { useEffect, useState } from "react";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {
-  FeedQuery,
   SeedFeedsResult,
   SeedResource,
   SeedResourceResult,
@@ -150,11 +149,13 @@ const SeedPage: NextPageWithLayout = () => {
           <h1>Seed resources from production</h1>
           <p>Pull data from production</p>
           <Box
-            my={2}
-            display="flex"
-            flexDirection="row"
-            gap={2}
-            alignItems={"center"}
+            sx={{
+              my: 2,
+              display: "flex",
+              flexDirection: "row",
+              gap: 2,
+              alignItems: "center",
+            }}
           >
             <FormControl sx={{ minWidth: "100px" }}>
               <InputLabel>Resource</InputLabel>
@@ -190,7 +191,7 @@ const SeedPage: NextPageWithLayout = () => {
                         setSelectedFeed(event.target.value)
                       }
                     >
-                      {feeds.map((feed: FeedQuery["feed"]) => (
+                      {feeds.map((feed) => (
                         <MenuItem value={feed.id} key={feed.id}>
                           {feed.name}
                         </MenuItem>
@@ -199,7 +200,13 @@ const SeedPage: NextPageWithLayout = () => {
                   </FormControl>
                 )}
                 <Box>
-                  <Typography fontSize={12}>Starting</Typography>
+                  <Typography
+                    sx={{
+                      fontSize: 12,
+                    }}
+                  >
+                    Starting
+                  </Typography>
                   <input
                     type="datetime-local"
                     name="startTime"
@@ -241,7 +248,7 @@ const SeedPage: NextPageWithLayout = () => {
               variant="contained"
               disabled={seedForm.isSaving}
               {...(seedForm.isSaving
-                ? { startIcon: <LoadingSpinner fontSize={8} /> }
+                ? { startIcon: <LoadingSpinner sx={{ fontSize: 8 }} /> }
                 : {})}
               onClick={handleSubmit}
             >
@@ -256,7 +263,13 @@ const SeedPage: NextPageWithLayout = () => {
               autoHideDuration={5000}
             />
           )}
-          <Box display="flex" flexDirection="column" gap={3}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+            }}
+          >
             {resources.map((resource) => (
               <Card key={resource} sx={{ p: 4 }}>
                 <Typography variant="subtitle1">

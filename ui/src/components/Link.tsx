@@ -2,17 +2,14 @@
 // From https://github.com/mui/material-ui/blob/master/examples/material-ui-nextjs-pages-router-ts/src/Link.tsx
 
 import MuiLink, { LinkProps as MuiLinkProps } from "@mui/material/Link";
-import { styled } from "@mui/material/styles";
 import clsx from "clsx";
 import NextLink, { LinkProps as NextLinkProps } from "next/link";
 import { useRouter } from "next/router";
 import * as React from "react";
 
-// Add support for the sx prop for consistency with the other branches.
-const Anchor = styled("a")({});
-
 interface NextLinkComposedProps
-  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">,
+  extends
+    Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">,
     Omit<
       NextLinkProps,
       "href" | "as" | "passHref" | "onMouseEnter" | "onClick" | "onTouchStart"
@@ -26,33 +23,9 @@ export const NextLinkComposed = React.forwardRef<
   HTMLAnchorElement,
   NextLinkComposedProps
 >(function NextLinkComposed(props, ref) {
-  const {
-    to,
-    linkAs,
-    replace,
-    scroll,
-    shallow,
-    prefetch,
-    legacyBehavior = true,
-    locale,
-    ...other
-  } = props;
+  const { to, linkAs, ...other } = props;
 
-  return (
-    <NextLink
-      href={to}
-      prefetch={prefetch}
-      as={linkAs}
-      replace={replace}
-      scroll={scroll}
-      shallow={shallow}
-      passHref
-      locale={locale}
-      legacyBehavior={legacyBehavior}
-    >
-      <Anchor ref={ref} {...other} />
-    </NextLink>
-  );
+  return <NextLink href={to} as={linkAs} ref={ref} {...other} />;
 });
 
 // eslint-disable-next-line import/no-unused-modules
@@ -74,7 +47,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
       as,
       className: classNameProps,
       href,
-      legacyBehavior,
       linkAs: linkAsProp,
       locale,
       noLinkStyle,
@@ -100,7 +72,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
       scroll,
       shallow,
       prefetch,
-      legacyBehavior,
       locale,
     };
 

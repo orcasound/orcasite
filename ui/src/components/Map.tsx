@@ -2,8 +2,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 
-import { Map as LeafletMap } from "leaflet";
 import L from "leaflet";
+import { Map as LeafletMap } from "leaflet";
 import { useRouter } from "next/router";
 import { MapContainer, Marker, TileLayer, ZoomControl } from "react-leaflet";
 

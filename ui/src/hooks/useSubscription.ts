@@ -1,15 +1,17 @@
 import { Channel } from "phoenix";
 import { useEffect } from "react";
 
+import type { GraphQLDocumentString } from "@/graphql/client";
+
 import useSocket from "./useSocket";
 
-export function useSubscription({
+export function useSubscription<TData>({
   query,
   onData,
 }: {
-  query: { query: string; variables: object };
+  query: { query: GraphQLDocumentString; variables: object };
   onData: (payload: {
-    result: { data: { __typename?: "RootSubscriptionType" } };
+    result: { data: TData };
     subscriptionId: string;
   }) => void;
 }) {
@@ -30,7 +32,10 @@ export function useSubscription({
           !subscribing
         ) {
           subscribing = true;
-          channel?.push("doc", query);
+          channel?.push("doc", {
+            query: query.query.toString(),
+            variables: query.variables,
+          });
         }
 
         // Subscribed to doc

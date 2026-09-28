@@ -127,18 +127,23 @@ export function TimelineTickerLayer({
           return (
             <Box
               key={idx}
-              zIndex={zIndex}
-              bgcolor={"#efefef"}
-              display="flex"
-              borderBottom="1px solid #aaa"
               sx={{
+                zIndex: zIndex,
+                bgcolor: "#efefef",
+                display: "flex",
+                borderBottom: "1px solid #aaa",
                 minWidth: pixelsPerTick,
                 height: TICKER_HEIGHT,
                 position: "absolute",
                 left: tickStartOffset + idx * pixelsPerTick,
               }}
             >
-              <Box position="relative" width="100%">
+              <Box
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                }}
+              >
                 <Tick left="0" height={"35%"} />
               </Box>
             </Box>
@@ -171,12 +176,14 @@ function Tick({
 }) {
   return (
     <Box
-      position="absolute"
-      left={left}
-      bottom="0"
-      height={height}
-      borderLeft="1px solid #666"
-      borderRight="1px solid #aaa"
+      sx={{
+        position: "absolute",
+        left: left,
+        bottom: "0",
+        height: height,
+        borderLeft: "1px solid #666",
+        borderRight: "1px solid #aaa",
+      }}
     />
   );
 }
@@ -196,27 +203,31 @@ function Label({
 }) {
   return (
     <Box
-      zIndex={zIndex}
-      position="absolute"
-      left={left}
-      width={width}
-      display="flex"
-      justifyContent="center"
-      height={TICKER_HEIGHT / 2}
-      top={0}
+      sx={{
+        zIndex: zIndex,
+        position: "absolute",
+        left: left,
+        width: width,
+        display: "flex",
+        justifyContent: "center",
+        height: TICKER_HEIGHT / 2,
+        top: 0,
+      }}
     >
       <Typography
-        fontSize={14}
-        fontWeight="semibold"
-        width="100%"
-        position="relative"
-        textAlign="center"
-        lineHeight={1}
-        left="-50%"
-        p={0}
-        mx={0}
-        mb={0}
-        mt={"2px"}
+        sx={{
+          fontSize: 14,
+          fontWeight: "semibold",
+          width: "100%",
+          position: "relative",
+          textAlign: "center",
+          lineHeight: 1,
+          left: "-50%",
+          p: 0,
+          mx: 0,
+          mb: 0,
+          mt: "2px",
+        }}
       >
         {format(time, scale < 1 ? "hh:mm:ss.SS" : "hh:mm:ss")}
       </Typography>

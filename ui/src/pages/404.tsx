@@ -40,8 +40,11 @@ const Custom404: NextPageWithLayout = () => {
 
             <Typography
               variant="body1"
-              color="text.secondary"
-              sx={{ mb: 2, textWrap: "balance" }}
+              sx={{
+                color: "text.secondary",
+                mb: 2,
+                textWrap: "balance",
+              }}
             >
               {"The page you're looking for doesn't exist."}
             </Typography>

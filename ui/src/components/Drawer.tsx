@@ -63,8 +63,8 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
       onOpen={onOpen}
       swipeAreaWidth={80}
       disableSwipeToOpen={false}
-      SwipeAreaProps={{
-        sx: displayMobileOnly,
+      slotProps={{
+        swipeArea: { sx: displayMobileOnly },
       }}
       ModalProps={{
         keepMounted: true,

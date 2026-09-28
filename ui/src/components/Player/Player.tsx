@@ -58,8 +58,8 @@ export default function Player({
     ? currentFeed.name
     : "Select a location to start listening live";
 
-  const playerTextContainerRef = useRef<HTMLElement>();
-  const playerTextRef = useRef<HTMLElement>();
+  const playerTextContainerRef = useRef<HTMLElement>(undefined);
+  const playerTextRef = useRef<HTMLElement>(undefined);
   const playerTextOverflowing = useIsRelativeOverflow(
     playerTextContainerRef,
     playerTextRef,
@@ -125,16 +125,16 @@ export default function Player({
 
       player.on("playing", () => {
         setPlayerStatus("playing");
-        currentFeed?.slug && analytics.stream.started(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.started(currentFeed.slug);
       });
       player.on("pause", () => {
         setPlayerStatus("paused");
-        currentFeed?.slug && analytics.stream.paused(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.paused(currentFeed.slug);
       });
       player.on("waiting", () => setPlayerStatus("loading"));
       player.on("error", () => {
         setPlayerStatus("error");
-        currentFeed?.slug && analytics.stream.error(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.error(currentFeed.slug);
       });
     },
     [currentFeed?.slug],
@@ -156,10 +156,10 @@ export default function Player({
     try {
       if (playerStatus === "loading" || playerStatus === "playing") {
         await player.pause();
-        currentFeed?.slug && analytics.stream.userPaused(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.userPaused(currentFeed.slug);
       } else {
         await player.play();
-        currentFeed?.slug && analytics.stream.userStarted(currentFeed.slug);
+        if (currentFeed?.slug) analytics.stream.userStarted(currentFeed.slug);
       }
     } catch (e) {
       console.error(e);
@@ -201,7 +201,11 @@ export default function Player({
         zIndex: theme.zIndex.drawer + 1,
       })}
     >
-      <Box display="none">
+      <Box
+        sx={{
+          display: "none",
+        }}
+      >
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
       {(playerStatus === "playing" || playerStatus === "loading") &&
@@ -216,14 +220,24 @@ export default function Player({
             <DetectionButton />
           </DetectionDialog>
         )}
-      <Box mx={1}>
+      <Box
+        sx={{
+          mx: 1,
+        }}
+      >
         <PlayPauseButton
           playerStatus={playerStatus}
           onClick={handlePlayPauseClick}
           disabled={!currentFeed}
         />
       </Box>
-      <Box mx={1}>{currentFeed && <ListenerCount count={listenerCount} />}</Box>
+      <Box
+        sx={{
+          mx: 1,
+        }}
+      >
+        {currentFeed && <ListenerCount count={listenerCount} />}
+      </Box>
       <Box
         sx={{
           overflow: "hidden",

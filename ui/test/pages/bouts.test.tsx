@@ -131,7 +131,8 @@ describe("BoutsPage", () => {
     const seen = await collectBoutsAcrossPages(user);
 
     expect(seen).toEqual(bouts.map((bout) => bout.name));
-  });
+    // renders and pages through 300 rows, which takes ~5s on a slow machine
+  }, 15_000);
 
   it("keeps the pagination controls and retries after a failed load", async () => {
     serveBouts(buildEndedBouts(60), { failures: 1 });

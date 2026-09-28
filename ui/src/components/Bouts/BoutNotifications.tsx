@@ -53,7 +53,13 @@ export function BoutNotifications({ bout }: { bout: Pick<Bout, "id"> }) {
   return (
     <>
       <Box sx={{ marginTop: 1 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <h3>Notifications</h3>
           <Box>
             <NotificationModal
@@ -87,9 +93,11 @@ export function BoutNotifications({ bout }: { bout: Pick<Bout, "id"> }) {
                   </TableCell>
                   <TableCell>
                     <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
                     >
                       <Box sx={{ mr: 3 }}>
                         {notification.notifiedCount} /{" "}
@@ -181,9 +189,11 @@ function NotificationModal({
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
             Notify subscribers
             <IconButton onClick={handleClose}>
@@ -205,10 +215,12 @@ function NotificationModal({
         <DialogActions>
           {confirming ? (
             <Box
-              display="flex"
-              alignItems="center"
-              sx={{ width: "100%" }}
-              px={2}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                px: 2,
+                width: "100%",
+              }}
             >
               <Button onClick={() => setConfirming(false)} color="primary">
                 Cancel

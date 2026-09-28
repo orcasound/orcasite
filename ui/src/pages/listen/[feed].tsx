@@ -2,7 +2,7 @@ import { NavigateNext } from "@mui/icons-material";
 import { Box, Breadcrumbs, Container, Typography } from "@mui/material";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import Head from "next/head";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { useRouter } from "next/router";
 
 import {
@@ -50,10 +50,10 @@ const FeedPage: NextPageWithLayout = () => {
               {feed.imageUrl && (
                 <Image
                   src={feed.imageUrl}
-                  layout="fill"
+                  fill
+                  sizes="100vw"
                   alt=""
-                  objectFit="contain"
-                  objectPosition="left"
+                  style={{ objectFit: "contain", objectPosition: "left" }}
                 />
               )}
             </div>
