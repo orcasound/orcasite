@@ -71,96 +71,159 @@ defmodule Orcasite.Radio.SeedTest do
     end
   end
 
-  # Only in a build that compiled the seed actions in (ENABLE_SEED_FROM_PROD=true at
-  # compile time, as review apps are built). CI builds without it, so this describe is
-  # absent there; run it locally with the flag set. No network: the inputs are shaped as
-  # Seed.Utils.prepare_results shapes production's GraphQL answer.
-  if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
-    describe "seeding a bout carries its tags" do
-      alias Orcasite.Radio.{Bout, ItemTag, Tag}
-      alias Orcasite.Radio.Seed.Utils
+  # No network: the inputs are shaped as Seed.Utils.prepare_results shapes
+  # production's GraphQL answer.
+  describe "seeding a bout carries its tags" do
+    alias Orcasite.Radio.{Bout, ItemTag, Tag}
+    alias Orcasite.Radio.Seed.Utils
 
-      setup do
-        set_seeding(true)
-        feed = Orcasite.Generators.Radio.create_feed!()
-        {:ok, feed: feed}
-      end
+    setup do
+      set_seeding(true)
+      feed = Orcasite.Generators.Radio.create_feed!()
+      {:ok, feed: feed}
+    end
 
-      @tag_id "2f514656-c30e-4456-8776-dd32e779e7db"
+    @tag_id "2f514656-c30e-4456-8776-dd32e779e7db"
 
-      defp prod_bout(feed, bout_id) do
-        %{
-          "id" => bout_id,
-          "category" => "BIOPHONY",
-          "startTime" => "2026-09-01T10:00:00.000000Z",
-          "endTime" => "2026-09-01T10:30:00.000000Z",
-          "name" => "Bigg's at the Lab",
-          "duration" => "1800.0",
-          "feed" => %{"id" => feed.id},
-          "tags" => [
-            %{
-              "id" => @tag_id,
-              "name" => "Bigg's",
-              "description" => "Bigg's killer whale",
-              "slug" => "biggs",
-              "kind" => "animal",
-              "iri" => "SSA:0000002"
-            }
-          ]
-        }
-      end
+    defp prod_bout(feed, bout_id) do
+      %{
+        "id" => bout_id,
+        "category" => "BIOPHONY",
+        "startTime" => "2026-09-01T10:00:00.000000Z",
+        "endTime" => "2026-09-01T10:30:00.000000Z",
+        "name" => "Bigg's at the Lab",
+        "duration" => "1800.0",
+        "feed" => %{"id" => feed.id},
+        "tags" => [
+          %{
+            "id" => @tag_id,
+            "name" => "Bigg's",
+            "description" => "Bigg's killer whale",
+            "slug" => "biggs",
+            "kind" => "animal",
+            "iri" => "SSA:0000002"
+          }
+        ]
+      }
+    end
 
-      defp seed!(feed, bout_id) do
-        [prod_bout(feed, bout_id)]
-        |> Utils.prepare_results(Bout)
-        |> Ash.bulk_create!(Bout, :seed, return_errors?: true, authorize?: false)
-      end
+    defp seed!(feed, bout_id) do
+      [prod_bout(feed, bout_id)]
+      |> Utils.prepare_results(Bout)
+      |> Ash.bulk_create!(Bout, :seed, return_errors?: true, authorize?: false)
+    end
 
-      test "creates the tag with production's id, kind and iri, joined without a user", %{
-        feed: feed
-      } do
-        %{status: :success} = seed!(feed, "bout_0306cqy89bUJPOhwzu8zUB")
+    test "creates the tag with production's id, kind and iri, joined without a user", %{
+      feed: feed
+    } do
+      %{status: :success} = seed!(feed, "bout_0306cqy89bUJPOhwzu8zUB")
 
-        tag = Ash.get!(Tag, @tag_id, authorize?: false)
-        assert tag.name == "Bigg's"
-        assert tag.kind == :animal
-        assert tag.iri == "SSA:0000002"
+      tag = Ash.get!(Tag, @tag_id, authorize?: false)
+      assert tag.name == "Bigg's"
+      assert tag.kind == :animal
+      assert tag.iri == "SSA:0000002"
 
-        [join] = Ash.read!(ItemTag, authorize?: false)
-        assert join.tag_id == @tag_id
-        assert join.bout_id == "bout_0306cqy89bUJPOhwzu8zUB"
-        assert is_nil(join.user_id)
-      end
+      [join] = Ash.read!(ItemTag, authorize?: false)
+      assert join.tag_id == @tag_id
+      assert join.bout_id == "bout_0306cqy89bUJPOhwzu8zUB"
+      assert is_nil(join.user_id)
+    end
 
-      test "seeding the same bout again adds no second tag or join row", %{feed: feed} do
-        %{status: :success} = seed!(feed, "bout_031YvAeJ4O13YgkbQlc8yJ")
-        %{status: :success} = seed!(feed, "bout_031YvAeJ4O13YgkbQlc8yJ")
+    test "seeding the same bout again adds no second tag or join row", %{feed: feed} do
+      %{status: :success} = seed!(feed, "bout_031YvAeJ4O13YgkbQlc8yJ")
+      %{status: :success} = seed!(feed, "bout_031YvAeJ4O13YgkbQlc8yJ")
 
-        assert Ash.count!(Tag, authorize?: false) == 1
-        assert Ash.count!(ItemTag, authorize?: false) == 1
-      end
+      assert Ash.count!(Tag, authorize?: false) == 1
+      assert Ash.count!(ItemTag, authorize?: false) == 1
+    end
 
-      test "a tag made here by hand, under its own id, is reused and classified", %{feed: feed} do
-        local = Ash.create!(Tag, %{name: "bigg's"}, authorize?: false)
-        assert local.id != @tag_id
+    test "a tag made here by hand, under its own id, is reused and classified", %{feed: feed} do
+      local = Ash.create!(Tag, %{name: "bigg's"}, authorize?: false)
+      assert local.id != @tag_id
 
-        %{status: :success} = seed!(feed, "bout_0306cqy89bUJPOhwzu8zUB")
+      %{status: :success} = seed!(feed, "bout_0306cqy89bUJPOhwzu8zUB")
 
-        assert Ash.count!(Tag, authorize?: false) == 1
-        tag = Ash.get!(Tag, local.id, authorize?: false)
-        assert tag.kind == :animal
-        assert tag.iri == "SSA:0000002"
-        [join] = Ash.read!(ItemTag, authorize?: false)
-        assert join.tag_id == local.id
-      end
+      assert Ash.count!(Tag, authorize?: false) == 1
+      tag = Ash.get!(Tag, local.id, authorize?: false)
+      assert tag.kind == :animal
+      assert tag.iri == "SSA:0000002"
+      [join] = Ash.read!(ItemTag, authorize?: false)
+      assert join.tag_id == local.id
+    end
 
-      test "a tag already here is related, not duplicated", %{feed: feed} do
-        %{status: :success} = seed!(feed, "bout_030FlcX4eVsufvH9R1xbHh")
-        %{status: :success} = seed!(feed, "bout_034OmhwjtcnA8JwRVVb5Av")
+    test "a tag already here is related, not duplicated", %{feed: feed} do
+      %{status: :success} = seed!(feed, "bout_030FlcX4eVsufvH9R1xbHh")
+      %{status: :success} = seed!(feed, "bout_034OmhwjtcnA8JwRVVb5Av")
 
-        assert Ash.count!(Tag, authorize?: false) == 1
-        assert Ash.count!(ItemTag, authorize?: false) == 2
-      end
+      assert Ash.count!(Tag, authorize?: false) == 1
+      assert Ash.count!(ItemTag, authorize?: false) == 2
+    end
+
+    test "with seeding off, production's id is refused", %{feed: feed} do
+      set_seeding(false)
+
+      assert %{status: :error, errors: [error]} =
+               [prod_bout(feed, "bout_0306cqy89bUJPOhwzu8zUB")]
+               |> Utils.prepare_results(Bout)
+               |> Ash.bulk_create(Bout, :seed, return_errors?: true, authorize?: false)
+
+      assert Exception.message(error) =~ "can only be set when seeding from prod"
+      assert Ash.count!(Bout, authorize?: false) == 0
+    end
+
+    test "an ordinary create cannot choose an id, seeding or not" do
+      assert {:error, error} =
+               Ash.create(Tag, %{id: @tag_id, name: "Bigg's"}, authorize?: false)
+
+      assert Exception.message(error) =~ "id"
+    end
+  end
+
+  describe "drop_disabled_schedules/1" do
+    alias Seed.AshOban.{DeleteOld, Latest, TimeRange}
+
+    setup do
+      originals =
+        for key <- [:auto_update_seeded_records, :auto_delete_seeded_records],
+            do: {key, Application.get_env(:orcasite, key)}
+
+      on_exit(fn ->
+        Enum.each(originals, fn {k, v} -> Application.put_env(:orcasite, k, v) end)
+      end)
+
+      :ok
+    end
+
+    defp scheduled_workers(seeding?, auto_update?, auto_delete?) do
+      set_seeding(seeding?)
+      Application.put_env(:orcasite, :auto_update_seeded_records, auto_update?)
+      Application.put_env(:orcasite, :auto_delete_seeded_records, auto_delete?)
+
+      crontab =
+        for(
+          worker <- [TimeRange.Worker, Latest.Worker, DeleteOld.Worker],
+          do: {"* * * * *", worker, []}
+        ) ++
+          [{"@daily", SomeOtherWorker}]
+
+      [plugins: [Oban.Plugins.Lifeline, {Oban.Plugins.Cron, crontab: crontab}]]
+      |> Seed.drop_disabled_schedules()
+      |> get_in([:plugins, Oban.Plugins.Cron, :crontab])
+      |> Enum.map(&elem(&1, 1))
+    end
+
+    test "keeps every seed schedule when all three flags are on" do
+      assert scheduled_workers(true, true, true) ==
+               [TimeRange.Worker, Latest.Worker, DeleteOld.Worker, SomeOtherWorker]
+    end
+
+    test "drops only the cleanup when auto-delete is off" do
+      assert scheduled_workers(true, true, false) ==
+               [TimeRange.Worker, Latest.Worker, SomeOtherWorker]
+    end
+
+    test "drops every seed schedule when seeding is off, whatever the other flags say" do
+      assert scheduled_workers(false, true, true) == [SomeOtherWorker]
     end
   end
 

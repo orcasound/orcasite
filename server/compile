@@ -13,3 +13,10 @@ cd $phoenix_dir
 mix assets.deploy
 
 echo "---- mix assets.deploy done"
+echo "---- Building release, running: mix release"
+
+# Last, so the release carries the digested assets built above. One-off dynos can
+# still use Mix; web and the release phase start from this.
+MIX_ENV=prod mix release --overwrite
+
+echo "---- mix release done"

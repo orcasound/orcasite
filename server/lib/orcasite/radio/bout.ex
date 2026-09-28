@@ -28,8 +28,7 @@ defmodule Orcasite.Radio.Bout do
   attributes do
     uuid_attribute :id,
       prefix: "bout",
-      public?: true,
-      writable?: Orcasite.Config.seeding_enabled?()
+      public?: true
 
     attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
@@ -168,21 +167,23 @@ defmodule Orcasite.Radio.Bout do
       end
     end
 
-    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
-      create :seed do
-        upsert? true
-        upsert_identity :id
-        skip_unknown_inputs :*
+    create :seed do
+      upsert? true
+      upsert_identity :id
+      skip_unknown_inputs :*
 
-        accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
-        upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
+      accept [:category, :start_time, :end_time, :name, :duration, :feed_id]
 
-        # Production's tags on the bout, ids included: upserted with production's kind
-        # and iri, and joined once, without a user (see Changes.SeedTags).
-        argument :tags, {:array, :map}, default: []
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
 
-        change {__MODULE__.Changes.SeedTags, []}
-      end
+      upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
+
+      # Production's tags on the bout, ids included: upserted with production's kind
+      # and iri, and joined once, without a user (see Changes.SeedTags).
+      argument :tags, {:array, :map}, default: []
+
+      change {__MODULE__.Changes.SeedTags, []}
     end
 
     update :update do

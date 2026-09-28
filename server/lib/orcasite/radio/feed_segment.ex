@@ -32,8 +32,7 @@ defmodule Orcasite.Radio.FeedSegment do
   attributes do
     uuid_attribute :id,
       prefix: "fdseg",
-      public?: true,
-      writable?: Orcasite.Config.seeding_enabled?()
+      public?: true
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
@@ -178,20 +177,21 @@ defmodule Orcasite.Radio.FeedSegment do
       ]
 
       accept [
-               :start_time,
-               :end_time,
-               :duration,
-               :program_date_time,
-               :bucket,
-               :bucket_region,
-               :cloudfront_url,
-               :playlist_timestamp,
-               :playlist_m3u8_path,
-               :playlist_path,
-               :file_name,
-               if(Orcasite.Config.seeding_enabled?(), do: :id)
-             ]
-             |> Enum.reject(&is_nil/1)
+        :start_time,
+        :end_time,
+        :duration,
+        :program_date_time,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :playlist_timestamp,
+        :playlist_m3u8_path,
+        :playlist_path,
+        :file_name
+      ]
+
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
 
       argument :feed, :map, allow_nil?: false
       argument :feed_stream, :map

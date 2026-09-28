@@ -92,12 +92,10 @@ defmodule Orcasite.Radio.ItemTag do
   actions do
     defaults [:read, :destroy, update: :*]
 
-    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
-      # The join row a seeded bout's tags are attached through (Bout.Changes.SeedTags).
-      # No user: production's moderator does not exist locally, and the column allows it.
-      create :seed do
-        accept [:bout_id, :tag_id]
-      end
+    # The join row a seeded bout's tags are attached through (Bout.Changes.SeedTags).
+    # No user: production's moderator does not exist locally, and the column allows it.
+    create :seed do
+      accept [:bout_id, :tag_id]
     end
 
     read :for_bout do
