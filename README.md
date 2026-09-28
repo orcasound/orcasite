@@ -143,13 +143,13 @@ mix test test/path/to_test.exs:42  # one test, by line
 
 ## Deployment
 
-For the moment, this app is running in a Heroku instance with `mix phx.server`. A single prebuilt artifact is promoted through the pipeline — dev to staging to production — rather than each environment building its own.
+For the moment, this app is running on Heroku. The server runs as an OTP release, built alongside the UI at the end of the slug build ([`server/compile`](server/compile)) and started by [`server/Procfile`](server/Procfile). A single prebuilt artifact is promoted through the pipeline — dev to staging to production — rather than each environment building its own.
 
 ### Configuration is resolved at runtime, not at build time
 
 Because one artifact serves every environment, anything captured while it is built describes the environment it was built in rather than the one serving the request. Environment-specific values must therefore be read at runtime:
 
-- **Server.** [`config/runtime.exs`](server/config/runtime.exs) and [`config/prod.exs`](server/config/prod.exs) are evaluated at boot, so they see each app's own config vars. Values reached through `Application.compile_env/2` are the exception: they are captured when the artifact is compiled, so they cannot express per-app configuration, and Elixir validates them against the runtime value at startup. Avoid `compile_env` for anything that differs between environments.
+- **Server.** Only [`config/runtime.exs`](server/config/runtime.exs) is evaluated at boot, so it is the only config that sees each app's own config vars; `config.exs` and `prod.exs` are frozen into the release when it is built. Anything that differs between environments belongs in `runtime.exs`, and must not be read at compile time: not through `Application.compile_env/2` (the release refuses to boot when the value has changed) and not inside a resource definition (Ash evaluates its DSL when the code is compiled).
 - **UI.** Next inlines `NEXT_PUBLIC_*` into the client bundle at build time, so [`ui/.env.production`](ui/.env.production) deliberately defines none. The GraphQL and socket endpoints resolve same-origin in the browser ([`client.ts`](ui/src/graphql/client.ts), [`useSocket.ts`](ui/src/hooks/useSocket.ts)); remaining per-environment values are injected per request by [`runtime-config.ts`](ui/src/pages/api/runtime-config.ts) and read through [`runtimeConfig.ts`](ui/src/utils/runtimeConfig.ts).
 - **Pages.** `getStaticProps` and `getStaticPaths` run during the build, so pages showing environment-specific data must not rely on them. [`listen/index.tsx`](ui/src/pages/listen/index.tsx) uses `getServerSideProps` and renders on every request; [`listen/[feed].tsx`](ui/src/pages/listen/[feed].tsx) prerenders no paths, generating each page on first request and revalidating it after 60 seconds.
 
@@ -186,7 +186,7 @@ events, which slug promotions no longer produce.
 ### Console
 
 ```shell
-heroku run -a <app_name> FEED_STREAM_QUEUE_URL="" POOL_SIZE=1 iex -- -S mix
+heroku run -a <app_name> --env "POOL_SIZE=1;FEED_STREAM_QUEUE_URL=" -- _build/prod/rel/orcasite/bin/orcasite start_iex
 ```
 
 The `POOL_SIZE` config var is necessary due to the current Postgres db having 20 connections. You can read more [about it here](https://hexdocs.pm/phoenix/heroku.html#creating-environment-variables-in-heroku).

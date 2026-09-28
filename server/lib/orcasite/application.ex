@@ -13,7 +13,8 @@ defmodule Orcasite.Application do
          AshOban.config(
            Application.fetch_env!(:orcasite, :ash_domains),
            Application.fetch_env!(:orcasite, Oban)
-         )},
+         )
+         |> Orcasite.Radio.Seed.drop_disabled_schedules()},
         {Phoenix.PubSub, name: Orcasite.PubSub},
         OrcasiteWeb.Presence,
         {Finch, name: Orcasite.Finch},

@@ -29,9 +29,9 @@ defmodule Orcasite.Radio.Seed do
   # be gated, and without it the seed mutations are reachable by anyone.
   #
   # Checked at request time so the answer follows the app serving the request
-  # rather than the app the artifact was built in. The compile-time flags
-  # elsewhere decide whether the seed actions exist at all; this decides whether
-  # they may be invoked here and now.
+  # rather than the app the artifact was built in. The seed actions on the target
+  # resources exist in every build; this decides whether they may be invoked here
+  # and now.
   policies do
     policy always() do
       authorize_if Orcasite.Radio.Checks.SeedFromProdEnabled
@@ -210,30 +210,27 @@ defmodule Orcasite.Radio.Seed do
     end
   end
 
+  # Always defined, so one build serves every app. Whether each schedule runs is
+  # decided at boot from runtime config; see scheduled_workers/0.
   oban do
-    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) and
-         Application.compile_env(:orcasite, :auto_update_seeded_records, false) do
-      scheduled_actions do
-        # Every minute, pull the last 2 minutes of data
-        schedule :time_range, "* * * * *" do
-          action :time_range
-          queue :seed
-          worker_module_name __MODULE__.AshOban.TimeRange.Worker
-        end
+    scheduled_actions do
+      # Every minute, pull the last 2 minutes of data
+      schedule :time_range, "* * * * *" do
+        action :time_range
+        queue :seed
+        worker_module_name __MODULE__.AshOban.TimeRange.Worker
+      end
 
-        schedule :latest, "@hourly" do
-          action :latest
-          queue :seed
-          worker_module_name __MODULE__.AshOban.Latest.Worker
-        end
+      schedule :latest, "@hourly" do
+        action :latest
+        queue :seed
+        worker_module_name __MODULE__.AshOban.Latest.Worker
+      end
 
-        if Application.compile_env(:orcasite, :auto_delete_seeded_records, false) do
-          schedule :delete_old, "@hourly" do
-            action :delete_old
-            queue :seed
-            worker_module_name __MODULE__.AshOban.DeleteOld.Worker
-          end
-        end
+      schedule :delete_old, "@hourly" do
+        action :delete_old
+        queue :seed
+        worker_module_name __MODULE__.AshOban.DeleteOld.Worker
       end
     end
   end
@@ -247,6 +244,36 @@ defmodule Orcasite.Radio.Seed do
       create :seed_latest_resource, :latest_resource
       action :seed_all, :time_range
     end
+  end
+
+  @doc """
+  Removes from an Oban config the seed schedules this app has not turned on.
+
+  AshOban adds every scheduled action to the crontab, and the schedules above
+  are compiled into every build, so the per-app choice is made here at boot.
+  """
+  def drop_disabled_schedules(oban_config) do
+    disabled =
+      [
+        {__MODULE__.AshOban.TimeRange.Worker, Orcasite.Config.auto_update_seeded_records?()},
+        {__MODULE__.AshOban.Latest.Worker, Orcasite.Config.auto_update_seeded_records?()},
+        {__MODULE__.AshOban.DeleteOld.Worker, Orcasite.Config.auto_delete_seeded_records?()}
+      ]
+      |> Enum.reject(fn {_worker, enabled?} -> enabled? end)
+      |> Enum.map(fn {worker, _enabled?} -> worker end)
+
+    Keyword.update(oban_config, :plugins, [], fn plugins ->
+      Enum.map(plugins, fn
+        {Oban.Plugins.Cron, opts} ->
+          {Oban.Plugins.Cron,
+           Keyword.update(opts, :crontab, [], fn crontab ->
+             Enum.reject(crontab, fn {_expression, worker, _opts} -> worker in disabled end)
+           end)}
+
+        plugin ->
+          plugin
+      end)
+    end)
   end
 
   defp to_resource(name) do
