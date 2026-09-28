@@ -267,7 +267,8 @@ defmodule Orcasite.Radio.Seed do
         {Oban.Plugins.Cron, opts} ->
           {Oban.Plugins.Cron,
            Keyword.update(opts, :crontab, [], fn crontab ->
-             Enum.reject(crontab, fn {_expression, worker, _opts} -> worker in disabled end)
+             # Entries are {expression, worker} or {expression, worker, opts}
+             Enum.reject(crontab, &(elem(&1, 1) in disabled))
            end)}
 
         plugin ->

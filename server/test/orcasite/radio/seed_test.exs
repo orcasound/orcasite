@@ -200,13 +200,16 @@ defmodule Orcasite.Radio.SeedTest do
       Application.put_env(:orcasite, :auto_delete_seeded_records, auto_delete?)
 
       crontab =
-        for worker <- [TimeRange.Worker, Latest.Worker, DeleteOld.Worker, SomeOtherWorker],
-            do: {"* * * * *", worker, []}
+        for(
+          worker <- [TimeRange.Worker, Latest.Worker, DeleteOld.Worker],
+          do: {"* * * * *", worker, []}
+        ) ++
+          [{"@daily", SomeOtherWorker}]
 
       [plugins: [Oban.Plugins.Lifeline, {Oban.Plugins.Cron, crontab: crontab}]]
       |> Seed.drop_disabled_schedules()
       |> get_in([:plugins, Oban.Plugins.Cron, :crontab])
-      |> Enum.map(fn {_expression, worker, _opts} -> worker end)
+      |> Enum.map(&elem(&1, 1))
     end
 
     test "keeps every seed schedule when all three flags are on" do
