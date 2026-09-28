@@ -52,7 +52,9 @@ defmodule Orcasite.Radio.Bout.Relationships.BoutFeedSegments do
         |> update_in([bout_id], &[segment | &1])
       end)
       # Sort segments by time
-      |> Enum.map(fn {bout_id, segments} -> {bout_id, Enum.sort_by(segments, & &1.start_time)} end)
+      |> Enum.map(fn {bout_id, segments} ->
+        {bout_id, Enum.sort_by(segments, & &1.start_time)}
+      end)
       |> Enum.into(%{})
       |> then(&{:ok, &1})
     else
