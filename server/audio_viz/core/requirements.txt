@@ -1,5 +1,0 @@
-boto3
-librosa
-matplotlib
-numpy
-opencv-python-headless
