@@ -38,6 +38,12 @@ The first command will build a docker image from a Dockerfile and then copy the 
 
 You can find your API Gateway Endpoint URL in the output values displayed after deployment.
 
+## Cold starts
+
+A new Lambda container starts with an empty `/tmp`, where numba, librosa and matplotlib keep their caches, so the first render in a container recompiles librosa's numba functions and rebuilds the font list. The Dockerfile runs [`warm.py`](core/warm.py) once at build time and keeps the caches it leaves in the image; [`app.py`](core/app.py) copies them into `/tmp` before importing those libraries. If you add a library that caches on first use, give it a directory under `/tmp` in the Dockerfile and add it to the same `mv`.
+
+To check a deployed function, compare CloudWatch `Duration` for invocations with and without `initDurationMs` in their `platform.report` log record; the two should be close.
+
 ## Use the SAM CLI to build and test locally
 
 Build your application with the `sam build` command.

@@ -20,7 +20,9 @@ Resources:
       PackageType: Image
       Architectures:
       - x86_64
-      MemorySize: 512
+      # CPU scales with memory (a full vCPU at 1769 MB). A cold render at 512 MB
+      # peaked at 500 MB and did not finish inside the 60 s timeout.
+      MemorySize: 1024
       Policies:
       - AWSLambdaExecute # Managed Policy
       - Version: '2012-10-17' # Policy Document
