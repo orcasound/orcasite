@@ -17,6 +17,7 @@ defmodule Orcasite.Radio.AwsClient do
   }
 
   def generate_spectrogram(%{
+        image_id: image_id,
         audio_bucket: audio_bucket,
         audio_key: audio_key,
         audio_region: audio_region,
@@ -39,7 +40,9 @@ defmodule Orcasite.Radio.AwsClient do
 
       _ ->
         # Doesn't exist, make spectrogram. The renderer reads and writes only
-        # the URLs it is given, so presign both sides here.
+        # the URLs it is given, so presign both sides here. The bucket and key
+        # fields are what the renderer took before it accepted URLs; they keep
+        # this working against that version and go once it is retired.
         with {:ok, function} <- spectrogram_function(),
              {:ok, audio_url} <- presigned_url(:get, audio_bucket, audio_key, audio_region),
              {:ok, image_url} <- presigned_url(:put, image_bucket, image_key, image_region) do
@@ -48,7 +51,12 @@ defmodule Orcasite.Radio.AwsClient do
             %{
               "audio_url" => audio_url,
               "image_url" => image_url,
-              "parameters" => @spectrogram_parameters
+              "parameters" => @spectrogram_parameters,
+              "id" => image_id,
+              "audio_bucket" => audio_bucket,
+              "audio_key" => String.trim_leading(audio_key, "/"),
+              "image_bucket" => image_bucket,
+              "image_key" => String.trim_leading(image_key, "/")
             },
             %{},
             invocation_type: :request_response

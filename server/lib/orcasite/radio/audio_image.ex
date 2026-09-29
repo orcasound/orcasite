@@ -270,6 +270,7 @@ defmodule Orcasite.Radio.AudioImage do
                [feed_segment] = image |> Ash.load!(:feed_segments) |> Map.get(:feed_segments)
 
                %{
+                 image_id: image.id,
                  audio_bucket: feed_segment.bucket,
                  audio_key: feed_segment.segment_path,
                  audio_region: feed_segment.bucket_region,
