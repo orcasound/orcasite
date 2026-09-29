@@ -20,34 +20,33 @@ Resources:
       PackageType: Image
       Architectures:
       - x86_64
-      MemorySize: 512
+      # CPU scales with memory (a full vCPU at 1769 MB). A cold render at 512 MB
+      # peaked at 500 MB and did not finish inside the 60 s timeout.
+      MemorySize: 1024
+      # The function reads one segment and writes one image. The buckets are
+      # those orcasite's environments use: production and staging read from
+      # audio-orcasound-net and write to audio-deriv-orcasound-net; dev also
+      # reads dev-streaming-orcasound-net and writes dev-audio-viz.
       Policies:
-      - AWSLambdaExecute # Managed Policy
-      - Version: '2012-10-17' # Policy Document
+      - AWSLambdaBasicExecutionRole # CloudWatch logs
+      - Version: '2012-10-17'
         Statement:
           - Effect: Allow
-            Action:
-              - s3:*
-            Resource: '*'
-
-      Events:
-        AudioViz:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /invoke
-            Method: post
+            Action: s3:GetObject
+            Resource:
+              - arn:aws:s3:::audio-orcasound-net/*
+              - arn:aws:s3:::dev-streaming-orcasound-net/*
+          - Effect: Allow
+            Action: s3:PutObject
+            Resource:
+              - arn:aws:s3:::audio-deriv-orcasound-net/*
+              - arn:aws:s3:::dev-audio-viz/*
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./core
-      DockerTag: python3.12-v1
+      DockerTag: python3.14-v1
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  # AudioVizApi:
-  #   Description: API Gateway endpoint URL for Prod stage for Hello World function
-  #   Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/invoke/"
   AudioVizFunction:
     Description: AudioViz Lambda Function ARN
     Value: !GetAtt AudioVizFunction.Arn

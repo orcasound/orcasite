@@ -1,3 +1,15 @@
+import os
+import shutil
+
+# Every new Lambda container starts with an empty /tmp, where numba, librosa
+# and matplotlib keep their caches. Without them the first render recompiles
+# librosa's numba functions and rebuilds the font list, which at 512 MB took
+# longer than the function's timeout. The Dockerfile builds the caches into
+# the image; restore them before those libraries load and look for them.
+_cache_seed = os.environ.get("CACHE_SEED")
+if _cache_seed and os.path.isdir(_cache_seed):
+    shutil.copytree(_cache_seed, "/tmp", dirs_exist_ok=True)
+
 from matplotlib.pyplot import imshow
 from spectrogram_generator import SpectrogramGenerator
 from subprocess import check_output
@@ -7,7 +19,6 @@ import io
 import json
 import librosa
 import matplotlib
-import os.path
 import sys
 
 SpectrogramJob = TypedDict(
@@ -67,7 +78,7 @@ def make_spectrogram(
         metadata = get_audio_metadata(local_path)
         sample_rate = int(metadata["streams"][0]["sample_rate"])
 
-    audio, sr = librosa.load(local_path, sr=sample_rate)
+    audio, sr = load_audio(local_path, sample_rate)
 
     params = {"linear": True, "fmin": 1, "fmax": 15000, "cmap": "viridis"}
 
@@ -104,6 +115,18 @@ def make_spectrogram(
         "freq_max": params["fmax"],
         "color_map": params["cmap"],
     }
+
+
+def load_audio(local_path, sample_rate):
+    """Decodes the segment with ffmpeg and hands librosa a WAV.
+
+    The hydrophones stream AAC in MPEG-TS, which libsndfile does not read, and
+    librosa 1.0 dropped the ffmpeg fallback that used to cover it.
+    """
+    wav = check_output(
+        ["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", local_path, "-f", "wav", "-"]
+    )
+    return librosa.load(io.BytesIO(wav), sr=sample_rate)
 
 
 def get_audio_metadata(local_path):
