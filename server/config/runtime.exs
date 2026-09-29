@@ -105,5 +105,7 @@ if config_env() == :prod do
   config :orcasite,
     audio_image_bucket:
       System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "audio-deriv-orcasound-net"),
-    audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
+    audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2"),
+    # The Lambda from https://github.com/orcasound/spectrogram-renderer
+    spectrogram_function_name: System.get_env("SPECTROGRAM_FUNCTION_NAME")
 end

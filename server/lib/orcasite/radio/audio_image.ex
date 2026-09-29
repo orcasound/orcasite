@@ -273,8 +273,10 @@ defmodule Orcasite.Radio.AudioImage do
                  image_id: image.id,
                  audio_bucket: feed_segment.bucket,
                  audio_key: feed_segment.segment_path,
+                 audio_region: feed_segment.bucket_region,
                  image_bucket: image.bucket,
-                 image_key: image.object_path
+                 image_key: image.object_path,
+                 image_region: image.bucket_region
                }
                |> Orcasite.Radio.AwsClient.generate_spectrogram()
                |> case do
