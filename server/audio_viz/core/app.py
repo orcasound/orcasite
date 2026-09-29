@@ -6,9 +6,21 @@ import shutil
 # librosa's numba functions and rebuilds the font list, which at 512 MB took
 # longer than the function's timeout. The Dockerfile builds the caches into
 # the image; restore them before those libraries load and look for them.
+#
+# Copy each cache directory separately: copying onto /tmp itself makes
+# copytree set /tmp's permissions, which Lambda refuses. A failure here only
+# costs a slow first render, so it must never fail the invocation.
 _cache_seed = os.environ.get("CACHE_SEED")
 if _cache_seed and os.path.isdir(_cache_seed):
-    shutil.copytree(_cache_seed, "/tmp", dirs_exist_ok=True)
+    for _name in os.listdir(_cache_seed):
+        try:
+            shutil.copytree(
+                os.path.join(_cache_seed, _name),
+                os.path.join("/tmp", _name),
+                dirs_exist_ok=True,
+            )
+        except OSError as e:
+            print(f"Could not restore cache {_name}: {e}")
 
 from matplotlib.pyplot import imshow
 from spectrogram_generator import SpectrogramGenerator
