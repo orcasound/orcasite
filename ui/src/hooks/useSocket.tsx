@@ -118,6 +118,9 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     return () => {
       newSocket.disconnect();
+      // Unless a newer socket has already replaced it, don't leave consumers
+      // holding one that is closed.
+      setSocket((current) => (current === newSocket ? undefined : current));
     };
   }, [requested, isPending, userId]);
 

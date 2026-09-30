@@ -135,6 +135,18 @@ describe("SocketProvider", () => {
     expect(sockets[1].params()).toEqual({ token: "token-c" });
   });
 
+  it("stops handing out a socket it has disconnected", () => {
+    const { result, rerender } = renderHook(() => useSocket(), { wrapper });
+    const [socket] = sockets;
+
+    // The current user is unknown again (e.g. the query was reset)
+    currentUser = { isPending: true };
+    rerender();
+
+    expect(socket.disconnect).toHaveBeenCalledTimes(1);
+    expect(result.current).toBeUndefined();
+  });
+
   it("shares one socket between consumers", () => {
     const { result } = renderHook(() => [useSocket(), useSocket()], {
       wrapper,
