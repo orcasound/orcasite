@@ -36,7 +36,7 @@ const FALLBACK_S3_BUCKET = "";
  * stray NEXT_PUBLIC_* config var on the build app from pinning every promoted
  * environment to the one the bundle was built in.
  *
- * NOTE: this constant is duplicated in graphql/client.ts and hooks/useSocket.ts
+ * NOTE: this constant is duplicated in graphql/client.ts and hooks/useSocket.tsx
  * rather than shared. Next replaces process.env.* with literals per module, and
  * the minifier can only drop the guarded NEXT_PUBLIC_* reads when the condition
  * folds to false in the same module. Imported from elsewhere it is an opaque
