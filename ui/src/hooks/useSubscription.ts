@@ -31,6 +31,7 @@ export function useSubscription({
 
     let subscriptionChannel: Channel | undefined;
     let joins = 0;
+    let cancelled = false;
 
     const subscribe = () => {
       // Any subscription from before a reconnect went down with the old
@@ -41,6 +42,11 @@ export function useSubscription({
       control
         .push("doc", query)
         .receive("ok", ({ subscriptionId }: { subscriptionId: string }) => {
+          // A reply can land after this effect was cleaned up, or after a
+          // later rejoin already asked again; neither may leave a channel
+          // behind that nothing will close.
+          if (cancelled) return;
+          subscriptionChannel?.leave();
           subscriptionChannel = socket.channel(subscriptionId);
           subscriptionChannel.on("subscription:data", onData);
           // NOTE: You don't need to join the subscriptionChannel to start
@@ -56,6 +62,7 @@ export function useSubscription({
     });
 
     return () => {
+      cancelled = true;
       control.leave();
       subscriptionChannel?.leave();
     };

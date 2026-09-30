@@ -129,4 +129,38 @@ describe("useSubscription", () => {
     expect(control.leave).toHaveBeenCalledTimes(1);
     expect(socket.channels[1].leave).toHaveBeenCalledTimes(1);
   });
+
+  it("ignores a document reply that lands after unmount", () => {
+    const { unmount } = renderHook(() =>
+      useSubscription({ query, onData: vi.fn() }),
+    );
+    const [control] = socket.channels;
+    control.joinPush.reply("ok");
+
+    unmount();
+    control.pushes[0].push.reply("ok", {
+      subscriptionId: "__absinthe__:doc:1",
+    });
+
+    expect(socket.channels).toHaveLength(1);
+  });
+
+  it("keeps only the newest subscription when replies overlap a rejoin", () => {
+    renderHook(() => useSubscription({ query, onData: vi.fn() }));
+    const [control] = socket.channels;
+
+    // Two joins before either document reply has come back
+    control.joinPush.reply("ok");
+    control.joinPush.reply("ok");
+    control.pushes[0].push.reply("ok", {
+      subscriptionId: "__absinthe__:doc:1",
+    });
+    control.pushes[1].push.reply("ok", {
+      subscriptionId: "__absinthe__:doc:2",
+    });
+
+    const [, first, second] = socket.channels;
+    expect(first.leave).toHaveBeenCalledTimes(1);
+    expect(second.leave).not.toHaveBeenCalled();
+  });
 });
