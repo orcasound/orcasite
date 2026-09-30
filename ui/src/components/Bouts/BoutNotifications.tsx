@@ -37,7 +37,10 @@ export function BoutNotifications({ bout }: { bout: Pick<Bout, "id"> }) {
   const initialNotifications =
     notificationsQuery.data?.notificationsForBout ?? [];
 
-  const updatedNotifications = useBoutNotificationSentSubscription(bout.id);
+  const updatedNotifications = useBoutNotificationSentSubscription(
+    bout.id,
+    notificationsQuery.refetch,
+  );
   const notifications = _.uniqBy(
     [...updatedNotifications, ...initialNotifications],
     ({ id }) => id,

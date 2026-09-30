@@ -85,8 +85,20 @@ if config_env() == :prod do
     secret_key_base: secret_key_base,
     check_origin: (System.get_env("URLS") || "") |> String.split(" "),
     # Runs the Next.js server alongside Phoenix, which proxies to it. The slug
-    # keeps the UI in ui/ under the directory the dyno starts in.
-    watchers: [npm: ["run", "start", cd: Path.expand("ui")]]
+    # keeps the UI in ui/ under the directory the dyno starts in. Next is
+    # started directly rather than through `npm run start`, which would leave
+    # an npm process idling in front of it for the dyno's life (about 67 MB
+    # on a dyno that was already over its quota, see #1069). The port matches
+    # what the router forwards to.
+    watchers: [
+      node: [
+        Path.expand("ui/node_modules/next/dist/bin/next"),
+        "start",
+        "-p",
+        System.get_env("UI_PORT") || "3000",
+        cd: Path.expand("ui")
+      ]
+    ]
 
   config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
 
@@ -105,5 +117,7 @@ if config_env() == :prod do
   config :orcasite,
     audio_image_bucket:
       System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "audio-deriv-orcasound-net"),
-    audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
+    audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2"),
+    # The Lambda from https://github.com/orcasound/spectrogram-renderer
+    spectrogram_function_name: System.get_env("SPECTROGRAM_FUNCTION_NAME")
 end

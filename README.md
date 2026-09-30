@@ -145,6 +145,10 @@ mix test test/path/to_test.exs:42  # one test, by line
 
 For the moment, this app is running on Heroku. The server runs as an OTP release, built alongside the UI at the end of the slug build ([`server/compile`](server/compile)) and started by [`server/Procfile`](server/Procfile). A single prebuilt artifact is promoted through the pipeline — dev to staging to production — rather than each environment building its own.
 
+### Spectrograms
+
+Spectrogram images are rendered by a Lambda function that lives in its own repository, [orcasound/spectrogram-renderer](https://github.com/orcasound/spectrogram-renderer), and is deployed from there, not with this app. `SPECTROGRAM_FUNCTION_NAME` names the function; [`Orcasite.Radio.AwsClient`](server/lib/orcasite/radio/aws_client.ex) presigns a URL to read the segment and one to write the image and passes the render parameters, so the renderer knows nothing about where audio and images are kept.
+
 ### Configuration is resolved at runtime, not at build time
 
 Because one artifact serves every environment, anything captured while it is built describes the environment it was built in rather than the one serving the request. Environment-specific values must therefore be read at runtime:

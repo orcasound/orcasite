@@ -219,17 +219,20 @@ export default function BoutPage({
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
 
-  const updatedAudioImages = useAudioImageUpdatedSubscription(
-    feed.id,
-    timelineStartTime,
-    timelineEndTime,
-  );
-
   const audioImagesQueryResult = useAudioImagesQuery({
     feedId: feed.id,
     startTime: timelineStartTime,
     endTime: timelineEndTime,
   });
+  // Images that finished while the socket was down were never pushed, so a
+  // reconnect refetches the lot.
+  const { refetch: refetchAudioImages } = audioImagesQueryResult;
+  const updatedAudioImages = useAudioImageUpdatedSubscription(
+    feed.id,
+    timelineStartTime,
+    timelineEndTime,
+    refetchAudioImages,
+  );
   const initialAudioImages =
     audioImagesQueryResult.data?.audioImages?.results ?? [];
   const audioImages = _.uniqBy(

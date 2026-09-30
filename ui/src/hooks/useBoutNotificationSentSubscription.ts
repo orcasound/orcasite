@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import {
   BoutNotificationSentDocument,
@@ -11,17 +11,27 @@ type BoutNotificationUpdatedType = NonNullable<
   BoutNotificationSentSubscription["boutNotificationSent"]
 >["updated"];
 /**
- * Listens for audio image updates for a given feed (e.g. spectrogram generation)
+ * Listens for notifications sent for a bout.
+ *
+ * `onReconnect` is called when the socket has reconnected and the subscription
+ * has been registered again; notifications sent in between were lost, so what
+ * this hook had accumulated is cleared and the caller should refetch.
  */
-export function useBoutNotificationSentSubscription(boutId: string) {
+export function useBoutNotificationSentSubscription(
+  boutId: string,
+  onReconnect?: () => void,
+) {
   const [notifications, setNotifications] = useState<
     Record<string, NonNullable<BoutNotificationUpdatedType>>
   >({});
 
-  const query = {
-    query: BoutNotificationSentDocument,
-    variables: { boutId },
-  };
+  const query = useMemo(
+    () => ({
+      query: BoutNotificationSentDocument,
+      variables: { boutId },
+    }),
+    [boutId],
+  );
 
   const onData = useCallback(
     (payload: {
@@ -37,7 +47,12 @@ export function useBoutNotificationSentSubscription(boutId: string) {
     [],
   );
 
-  useSubscription({ query, onData });
+  const onRejoin = useCallback(() => {
+    setNotifications({});
+    onReconnect?.();
+  }, [onReconnect]);
+
+  useSubscription({ query, onData, onRejoin });
 
   return Object.values(notifications);
 }
