@@ -220,6 +220,7 @@ defmodule Orcasite.Radio.Bout do
     routes do
       base "/bouts"
       index :index
+      post :create
     end
   end
 

@@ -122,4 +122,101 @@ defmodule OrcasiteWeb.JsonApi.BoutsTest do
                Enum.filter(response["included"], &(&1["type"] == "tag"))
     end
   end
+
+  describe "POST /api/json/bouts" do
+    setup %{feed: feed} do
+      [
+        params: %{
+          feed_id: feed.id,
+          category: "biophony",
+          name: "Seagulls",
+          start_time: "2026-09-30T18:00:00Z",
+          end_time: "2026-09-30T18:15:30Z"
+        }
+      ]
+    end
+
+    test "a moderator's API key creates a bout on the feed, attributed to them", %{
+      conn: conn,
+      feed: feed,
+      params: params
+    } do
+      moderator = Orcasite.Generators.Accounts.create_user!(moderator: true)
+      feed_id = feed.id
+
+      response = conn |> post_bout(params, api_key_for(moderator)) |> json_response(201)
+
+      assert %{
+               "type" => "bout",
+               "id" => "bout_" <> _ = bout_id,
+               "attributes" => %{
+                 "category" => "biophony",
+                 "name" => "Seagulls",
+                 "start_time" => "2026-09-30T18:00:00.000000Z",
+                 "end_time" => "2026-09-30T18:15:30.000000Z",
+                 "duration" => duration
+               }
+             } = response["data"]
+
+      assert Decimal.equal?(Decimal.new("930"), Decimal.new(to_string(duration)))
+
+      bout =
+        Orcasite.Radio.Bout
+        |> Ash.get!(bout_id, authorize?: false)
+        |> Ash.load!(:created_by_user, authorize?: false)
+
+      assert bout.feed_id == feed_id
+      assert bout.created_by_user.id == moderator.id
+    end
+
+    test "a non-moderator's API key is forbidden", %{conn: conn, params: params} do
+      user = Orcasite.Generators.Accounts.create_user!()
+
+      capture_log(fn ->
+        assert %{"errors" => [%{"code" => "forbidden"}]} =
+                 conn |> post_bout(params, api_key_for(user)) |> json_response(403)
+      end)
+    end
+
+    test "a request without an API key is forbidden", %{conn: conn, params: params} do
+      capture_log(fn ->
+        assert %{"errors" => [%{"code" => "forbidden"}]} =
+                 conn |> post_bout(params) |> json_response(403)
+      end)
+    end
+
+    test "is listed in the OpenAPI spec that Swagger UI renders", %{conn: conn} do
+      # Served without a content-type, so json_response/2 won't take it
+      spec = conn |> get("/api/json/open_api") |> response(200) |> Jason.decode!()
+
+      assert %{"post" => _, "get" => _} = spec["paths"]["/api/json/bouts"]
+    end
+
+    test "a bout without a feed is rejected", %{conn: conn, params: params} do
+      moderator = Orcasite.Generators.Accounts.create_user!(moderator: true)
+
+      capture_log(fn ->
+        assert %{"errors" => [_ | _]} =
+                 conn
+                 |> post_bout(Map.delete(params, :feed_id), api_key_for(moderator))
+                 |> json_response(400)
+      end)
+    end
+  end
+
+  defp api_key_for(user) do
+    Orcasite.Accounts.ApiKey.create!(%{user_id: user.id}, authorize?: false).__metadata__.plaintext_api_key
+  end
+
+  defp post_bout(conn, params, api_key \\ nil) do
+    conn =
+      conn
+      |> put_req_header("content-type", "application/vnd.api+json")
+      |> put_req_header("accept", "application/vnd.api+json")
+
+    conn =
+      if api_key, do: put_req_header(conn, "authorization", "Bearer #{api_key}"), else: conn
+
+    post(conn, "/api/json/bouts", %{data: %{type: "bout", attributes: params}})
+  end
 end
