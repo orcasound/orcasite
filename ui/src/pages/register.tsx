@@ -24,9 +24,7 @@ const RegisterPage: NextPageWithLayout = () => {
         const { result: user, errors } = registerWithPassword;
 
         if (errors) {
-          setErrors(
-            errors.filter((error): error is MutationError => error !== null),
-          );
+          setErrors(errors.filter((error) => error !== null));
         }
 
         if (user) {

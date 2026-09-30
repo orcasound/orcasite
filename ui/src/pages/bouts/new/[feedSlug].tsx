@@ -30,7 +30,8 @@ const NewBoutPage: NextPageWithLayout = () => {
   );
   const feed = feedQueryResult.data?.feed;
 
-  if (!feedSlug || feedQueryResult.isLoading) return <LoadingSpinner mt={5} />;
+  if (!feedSlug || feedQueryResult.isLoading)
+    return <LoadingSpinner sx={{ mt: 5 }} />;
   if (!feed) return <p>Feed not found</p>;
 
   return (

@@ -76,10 +76,12 @@ export default function BoutExport({ boutId }: { boutId: string }) {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      minWidth={120}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        minWidth: 120,
+      }}
     >
       <Box>
         <Typography variant="overline">Export bout</Typography>

@@ -95,7 +95,11 @@ export default function BoutScrubBar({
     [spectrogramControls, minTimeNum, playerControls],
   );
   return (
-    <Box zIndex={10}>
+    <Box
+      sx={{
+        zIndex: 10,
+      }}
+    >
       {minTime && maxTime && (
         <Slider
           valueLabelDisplay="auto"

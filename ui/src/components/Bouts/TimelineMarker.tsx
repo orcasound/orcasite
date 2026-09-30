@@ -25,15 +25,15 @@ export function TimelineMarker({
   const offset = timeToOffset(time, timelineStartTime, pixelsPerMinute);
   return (
     <Box
-      height={1}
       title={time.toLocaleTimeString(undefined, { timeZoneName: "short" })}
+      onClick={onClick}
       sx={{
+        height: 1,
         position: "absolute",
         left: `${offset}px`,
         zIndex: zIndex,
         cursor: "pointer",
       }}
-      onClick={onClick}
     >
       <Icon
         sx={{

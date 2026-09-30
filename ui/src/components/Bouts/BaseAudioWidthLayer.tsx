@@ -23,13 +23,13 @@ export function BaseAudioWidthLayer({
   const width = minutes * pixelsPerMinute;
   return (
     <Box
-      zIndex={zIndex}
-      bgcolor={"#bbb"}
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      borderRight="1px solid #999"
       sx={{
+        zIndex: zIndex,
+        bgcolor: "#bbb",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRight: "1px solid #999",
         minWidth: width,
         minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
         position: "absolute",

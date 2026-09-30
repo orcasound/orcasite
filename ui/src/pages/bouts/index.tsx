@@ -105,10 +105,12 @@ const BoutsPage: NextPageWithLayout = () => {
 
       <main>
         <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-          m={{ md: 2 }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            m: { md: 2 },
+          }}
         >
           <h2>Current Bouts</h2>
           <Box>
@@ -121,7 +123,13 @@ const BoutsPage: NextPageWithLayout = () => {
             </List>
           </Box>
         </Box>
-        <Box display="flex" justifyContent="space-between" m={2}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            m: 2,
+          }}
+        >
           <h2>Feeds</h2>
           <Box>
             <InputLabel sx={{ textTransform: "uppercase", fontSize: 14 }}>
@@ -149,10 +157,12 @@ const BoutsPage: NextPageWithLayout = () => {
         </List>
 
         <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-          m={2}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            m: 2,
+          }}
         >
           <h2>Bouts</h2>
           <Box>
@@ -167,7 +177,14 @@ const BoutsPage: NextPageWithLayout = () => {
               />
             )}
             {pastBoutsQuery.isError && (
-              <Box display="flex" alignItems="center" gap={1} my={1}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  my: 1,
+                }}
+              >
                 <Typography color="error">
                   The bouts list failed to load.
                 </Typography>
@@ -175,7 +192,7 @@ const BoutsPage: NextPageWithLayout = () => {
               </Box>
             )}
             {pastBoutsQuery.isPending && !pastBoutsReady.current && (
-              <LoadingSpinner my={4} />
+              <LoadingSpinner sx={{ my: 4 }} />
             )}
             <List sx={{ opacity: pastBoutsQuery.isPlaceholderData ? 0.5 : 1 }}>
               {pastBouts.map((bout) => (

@@ -66,7 +66,7 @@ export function BoutPlayer({
     [playlistDatetime, playerOffset],
   );
 
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout>(undefined);
   useEffect(() => {
     return () => {
       clearInterval(intervalRef.current);
@@ -132,7 +132,7 @@ export function BoutPlayer({
             const offset = differenceInSeconds(time, playlistDatetime);
             player.currentTime(offset);
             setPlayerOffset(offset);
-            setPlayerTimeRef && setPlayerTimeRef(time);
+            setPlayerTimeRef?.(time);
           },
         });
       }
@@ -223,28 +223,54 @@ export function BoutPlayer({
   };
   return (
     <div>
-      <Box display="none">
+      <Box
+        sx={{
+          display: "none",
+        }}
+      >
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      <Box mx={2} display="flex" justifyContent="center">
+      <Box
+        sx={{
+          mx: 2,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          <Box mb={1}>
+          <Box
+            sx={{
+              mb: 1,
+            }}
+          >
             <PlayPauseButton
               playerStatus={playerStatus}
               onClick={handlePlayPauseClick}
               disabled={false}
             />
           </Box>
-          <Typography variant="body1" fontWeight={"bold"}>
+          <Typography
+            variant="body1"
+            sx={{
+              fontWeight: "bold",
+            }}
+          >
             {playerDateTime !== undefined &&
               format(playerDateTime, "h:mm:ss a")}
           </Typography>
-          <Typography variant="subtitle2" textAlign="center">
+          <Typography
+            variant="subtitle2"
+            sx={{
+              textAlign: "center",
+            }}
+          >
             {playerDateTime !== undefined && format(playerDateTime, "O")}
           </Typography>
           <Typography variant="subtitle1">

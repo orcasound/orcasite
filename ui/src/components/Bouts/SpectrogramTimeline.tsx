@@ -177,7 +177,7 @@ export default function SpectrogramTimeline({
   const windowStartX = useRef<number>(0);
   // X position of how far it's scrolled from the beginning
   const windowScrollX = useRef<number>(0);
-  const windowLockInterval = useRef<NodeJS.Timeout>();
+  const windowLockInterval = useRef<NodeJS.Timeout>(undefined);
 
   const pixelsPerMinute = PIXEL_ZOOM_FACTOR * zoomLevel;
   const timelineWidth =
@@ -438,12 +438,18 @@ export default function SpectrogramTimeline({
     <>
       <Box
         ref={spectrogramWindow}
-        position="relative"
-        minHeight={SPECTROGRAM_HEIGHT}
-        bgcolor="#efefef"
-        width={"100%"}
-        display="flex"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         sx={{
+          position: "relative",
+          minHeight: SPECTROGRAM_HEIGHT,
+          bgcolor: "#efefef",
+          width: "100%",
+          display: "flex",
           overflow: "hidden",
           msOverflowStyle: "none",
           "&::-webkit-scrollbar": { display: "none", height: 0 },
@@ -454,20 +460,16 @@ export default function SpectrogramTimeline({
           borderRadius: 2,
           boxShadow: 1,
         }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
       >
         <Box
-          borderLeft="2px solid #eee"
-          position="sticky"
-          left="50%"
-          width={"1px"}
-          zIndex={5}
-          sx={{ transform: `translateY(${TICKER_HEIGHT}px)` }}
+          sx={{
+            borderLeft: "2px solid #eee",
+            position: "sticky",
+            left: "50%",
+            width: "1px",
+            zIndex: 5,
+            transform: `translateY(${TICKER_HEIGHT}px)`,
+          }}
         ></Box>
 
         {boutStartTime && (

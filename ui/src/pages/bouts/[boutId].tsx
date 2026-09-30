@@ -18,7 +18,8 @@ const BoutShowPage: NextPageWithLayout = () => {
 
   const bout = boutQueryResult.data?.bout;
 
-  if (!boutId || boutQueryResult.isLoading) return <LoadingSpinner mt={5} />;
+  if (!boutId || boutQueryResult.isLoading)
+    return <LoadingSpinner sx={{ mt: 5 }} />;
   if (!bout) return <p>Bout not found</p>;
 
   const feed = bout.feed;

@@ -5,16 +5,17 @@ defmodule Orcasite.Mixfile do
     [
       app: :orcasite,
       version: "0.0.1",
-      elixir: "~> 1.17",
+      elixir: "~> 1.20",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),
-      preferred_cli_env: [
-        "test.watch": :test
-      ]
+      deps: deps()
     ]
+  end
+
+  def cli do
+    [preferred_envs: ["test.watch": :test]]
   end
 
   # Configuration for the OTP application.
@@ -56,7 +57,7 @@ defmodule Orcasite.Mixfile do
       {:swoosh, "~> 1.16"},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 1.0"},
       {:plug_cowboy, "~> 2.7"},
       {:plug, "~> 1.7"},
       {:absinthe, "~> 1.7"},
@@ -76,14 +77,14 @@ defmodule Orcasite.Mixfile do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:ash, "~> 3.33"},
-      {:ash_admin, "~> 0.13.4"},
+      {:ash_admin, "~> 1.3"},
       {:ash_postgres, "~> 2.2"},
       {:picosat_elixir, "~> 0.2.3"},
       {:heroicons, "~> 0.5"},
       {:oban, "~> 2.14"},
       {:gen_smtp, "~> 1.0"},
       {:ash_authentication, "~> 4.2"},
-      {:ash_authentication_phoenix, "~> 2.10.5"},
+      {:ash_authentication_phoenix, "~> 2.17"},
       {:syn, "~> 3.3"},
       {:mjml, "~> 5.0"},
       {:zappa, github: "skanderm/zappa", branch: "master"},
@@ -111,7 +112,7 @@ defmodule Orcasite.Mixfile do
       {:sourceror, "~> 1.7", only: [:dev, :test]},
       {:recase, "~> 0.5"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
-      {:ash_oban, "~> 0.4.9"},
+      {:ash_oban, "~> 0.8"},
       {:faker, "~> 0.19.0-alpha.1", only: :test}
     ]
   end

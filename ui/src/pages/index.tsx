@@ -16,10 +16,20 @@ const HomePage: NextPageWithLayout = () => {
 
       <main>
         <Container maxWidth="sm">
-          <Typography variant="h4" mt={4}>
+          <Typography
+            variant="h4"
+            sx={{
+              mt: 4,
+            }}
+          >
             Listen for Whales!
           </Typography>
-          <Typography variant="body1" my={2}>
+          <Typography
+            variant="body1"
+            sx={{
+              my: 2,
+            }}
+          >
             Learn what orcas sound like. Then listen live for them on underwater
             microphones (hydrophones).
           </Typography>
@@ -33,7 +43,7 @@ const HomePage: NextPageWithLayout = () => {
               gap: 4,
             }}
           >
-            <Link href={"/learn"} underline="none" width={0.9}>
+            <Link href={"/learn"} underline="none" sx={{ width: 0.9 }}>
               <Button
                 variant="outlined"
                 color="secondary"
@@ -46,7 +56,7 @@ const HomePage: NextPageWithLayout = () => {
                 Learn the sounds
               </Button>
             </Link>
-            <Link href={"/listen"} underline="none" width={0.9}>
+            <Link href={"/listen"} underline="none" sx={{ width: 0.9 }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -61,12 +71,22 @@ const HomePage: NextPageWithLayout = () => {
             </Link>
           </Box>
 
-          <Typography variant="body1" my={2}>
+          <Typography
+            variant="body1"
+            sx={{
+              my: 2,
+            }}
+          >
             Let us know when you hear them, or any sound you think is
             interesting! That will help researchers and stewards protect the
             orcas and study their acoustic environment.
           </Typography>
-          <Typography variant="body1" my={2}>
+          <Typography
+            variant="body1"
+            sx={{
+              my: 2,
+            }}
+          >
             You can also get notified when our listeners or AI detect whales at
             any of our hydrophone locations.
           </Typography>

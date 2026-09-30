@@ -80,26 +80,27 @@ export function AudioImagesLayer({
           return [
             <Box
               key={audioImage.id}
-              zIndex={zIndex}
+              data-starttime={startTime.toLocaleTimeString()}
+              data-endtime={endTime.toLocaleTimeString()}
+              data-duration={duration}
+              data-status={audioImage.status}
               sx={{
+                zIndex: zIndex,
+                display: "flex",
+                alignItems: "stretch",
+                justifyContent: "center",
                 minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
                 position: "absolute",
                 left: offset,
                 top: TICKER_HEIGHT,
                 width: width,
                 backgroundColor: (theme) => theme.palette.accent2.main,
+
                 ...(audioImage.status === "complete" && {
                   backgroundImage: `url('${audioImageUrl}')`,
                   backgroundSize: "100% 100%",
                 }),
               }}
-              display="flex"
-              alignItems="stretch"
-              justifyContent="center"
-              data-starttime={startTime.toLocaleTimeString()}
-              data-endtime={endTime.toLocaleTimeString()}
-              data-duration={duration}
-              data-status={audioImage.status}
             ></Box>,
           ];
         }

@@ -13,7 +13,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import type { StaticImageData } from "next/legacy/image";
+import type { StaticImageData } from "next/image";
 import { useState } from "react";
 
 import type { DetectionCategory, Feed } from "@/graphql/generated";
@@ -147,15 +147,22 @@ export default function DetectionDialog({
             <DialogTitle
               id="form-dialog-title"
               variant="h4"
-              mt={8}
               align="center"
               sx={{
+                mt: 8,
                 color: (theme) => theme.palette.primary.main,
               }}
             >
               Thank you for reporting
             </DialogTitle>
-            <Typography variant="body1" mb={2} mx={8} align="center">
+            <Typography
+              variant="body1"
+              align="center"
+              sx={{
+                mb: 2,
+                mx: 8,
+              }}
+            >
               Check out our reports to see how your support contributed to our
               mission for marine conservation.
             </Typography>

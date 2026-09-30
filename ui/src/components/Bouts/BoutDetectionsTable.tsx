@@ -112,7 +112,11 @@ export function BoutDetectionsTable({
           {detections.length < 1 && (
             <TableRow>
               <TableCell colSpan={5}>
-                <Typography textAlign="center">
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                  }}
+                >
                   No detections submitted from{" "}
                   {format(minDetectionsTime, "h:mm a O")} to{" "}
                   {format(maxDetectionsTime, "h:mm a O")}

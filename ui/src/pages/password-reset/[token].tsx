@@ -22,9 +22,7 @@ const PasswordResetPage: NextPageWithLayout = () => {
         const { errors, user } = resetPassword;
 
         if (errors && errors?.length > 0) {
-          setErrors(
-            errors.filter((error): error is MutationError => error !== null),
-          );
+          setErrors(errors.filter((error) => error !== null));
         }
 
         if (user) {

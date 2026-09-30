@@ -1,6 +1,8 @@
 import { Channel } from "phoenix";
 import { useEffect } from "react";
 
+import type { GraphQLDocumentString } from "@/graphql/client";
+
 import useSocket from "./useSocket";
 
 /**
@@ -12,14 +14,14 @@ import useSocket from "./useSocket";
  * anew. Whatever was published while the connection was down was never sent,
  * so callers that keep state from the stream should refetch on `onRejoin`.
  */
-export function useSubscription({
+export function useSubscription<TData>({
   query,
   onData,
   onRejoin,
 }: {
-  query: { query: string; variables: object };
+  query: { query: GraphQLDocumentString; variables: object };
   onData: (payload: {
-    result: { data: { __typename?: "RootSubscriptionType" } };
+    result: { data: TData };
     subscriptionId: string;
   }) => void;
   onRejoin?: () => void;
@@ -40,7 +42,10 @@ export function useSubscription({
       subscriptionChannel = undefined;
 
       control
-        .push("doc", query)
+        .push("doc", {
+          query: query.query.toString(),
+          variables: query.variables,
+        })
         .receive("ok", ({ subscriptionId }: { subscriptionId: string }) => {
           // A reply can land after this effect was cleaned up, or after a
           // later rejoin already asked again; neither may leave a channel

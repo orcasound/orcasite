@@ -88,7 +88,16 @@ function Mobile({
   ];
 
   return (
-    <Box sx={displayMobileOnly} width={1}>
+    <Box
+      sx={[
+        {
+          width: 1,
+        },
+        ...(Array.isArray(displayMobileOnly)
+          ? displayMobileOnly
+          : [displayMobileOnly]),
+      ]}
+    >
       <Box
         sx={{
           flexGrow: 1,
@@ -115,8 +124,10 @@ function Mobile({
           onClose={handleMenuToggle}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
-            BackdropProps: {
-              style: { backgroundColor: "transparent" },
+            slotProps: {
+              backdrop: {
+                style: { backgroundColor: "transparent" },
+              },
             },
           }}
           sx={{
@@ -132,10 +143,13 @@ function Mobile({
         >
           <Box
             onClick={handleMenuToggle}
-            sx={{ textAlign: "center", height: "100%" }}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              height: "100%",
+            }}
           >
             <Divider color="base.contrastText" />
             <List sx={{ maxWidth: (theme) => theme.breakpoints.values.sm }}>
@@ -258,7 +272,13 @@ function Desktop() {
 
 function Brand({ onClick }: { onClick?: () => void }) {
   return (
-    <Typography variant="h6" noWrap overflow="visible">
+    <Typography
+      variant="h6"
+      noWrap
+      sx={{
+        overflow: "visible",
+      }}
+    >
       <Link
         href="/"
         color="inherit"

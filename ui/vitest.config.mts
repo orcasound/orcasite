@@ -1,11 +1,10 @@
-import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [
-    // Reads `paths` straight from tsconfig.json so they don't drift
-    tsconfigPaths(),
+  // Reads `paths` straight from tsconfig.json so they don't drift
+  resolve: { tsconfigPaths: true },
 
+  plugins: [
     // Next turns an image import into { src, height, width } and Vite into a URL
     // string; this gives tests Next's shape, so components reading `.src` work
     {
@@ -18,10 +17,6 @@ export default defineConfig({
       },
     },
   ],
-
-  // tsconfig.json sets `jsx: "preserve"` for Next's compiler, which would otherwise
-  // leave raw JSX behind
-  esbuild: { jsx: "automatic" },
 
   test: {
     environment: "jsdom",

@@ -102,7 +102,13 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
       <Box>
         {moderator && (
           <>
-            <Box mb={4} display="flex" gap={2}>
+            <Box
+              sx={{
+                mb: 4,
+                display: "flex",
+                gap: 2,
+              }}
+            >
               <Autocomplete
                 autoComplete={true}
                 value={value}
@@ -177,7 +183,13 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                   <DialogContent
                     sx={{ width: (theme) => theme.breakpoints.values.sm }}
                   >
-                    <Box display="flex" flexDirection={"column"} gap={3}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 3,
+                      }}
+                    >
                       <TextField
                         autoFocus
                         margin="dense"
@@ -217,7 +229,12 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
           </>
         )}
 
-        <Box display="flex" gap={1}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+          }}
+        >
           {Object.entries(groupedBoutTags).map(([tagSlug, boutTags]) => {
             const tag = boutTags[0].tag;
             const tagCount = boutTags.length;
@@ -290,7 +307,14 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                   }}
                 >
                   <Box>
-                    <Box p={2} display="flex" flexDirection="column" gap={2}>
+                    <Box
+                      sx={{
+                        p: 2,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                      }}
+                    >
                       <Typography variant="body1">{tag?.name}</Typography>
                       {tag?.description && (
                         <Typography variant="body2">
@@ -299,7 +323,13 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                       )}
                     </Box>
                     <Divider />
-                    <Box display="flex" gap={1} p={2}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        p: 2,
+                      }}
+                    >
                       {boutTags.map((boutTag) => (
                         <Chip
                           key={boutTag.id}
@@ -314,7 +344,12 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
           })}
 
           {boutTags.length === 0 && (
-            <Typography width={"100%"} textAlign="center">
+            <Typography
+              sx={{
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
               No bout tags
             </Typography>
           )}
