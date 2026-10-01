@@ -274,6 +274,21 @@ defmodule OrcasiteWeb.JsonApi.BoutsTest do
       assert Decimal.equal?(Decimal.new("630"), Decimal.new(to_string(duration)))
     end
 
+    test "clearing the end time clears the duration with it", %{conn: conn, bout: bout} do
+      moderator = Orcasite.Generators.Accounts.create_user!(moderator: true)
+
+      response =
+        conn
+        |> patch_bout(bout, %{end_time: nil}, api_key_for(moderator))
+        |> json_response(200)
+
+      assert %{"end_time" => nil, "duration" => nil} = response["data"]["attributes"]
+
+      bout = Ash.get!(Orcasite.Radio.Bout, bout.id, authorize?: false)
+      assert is_nil(bout.end_time)
+      assert is_nil(bout.duration)
+    end
+
     test "a non-moderator's API key is forbidden and the bout is unchanged", %{
       conn: conn,
       bout: bout
