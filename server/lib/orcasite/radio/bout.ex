@@ -221,6 +221,7 @@ defmodule Orcasite.Radio.Bout do
       base "/bouts"
       index :index
       post :create
+      patch :update
     end
   end
 
