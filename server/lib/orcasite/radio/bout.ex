@@ -204,7 +204,8 @@ defmodule Orcasite.Radio.Bout do
             DateTime.diff(end_time, start_time, :millisecond) / 1000
           )
         else
-          changeset
+          # An open-ended bout has no duration; don't keep the one its old end time gave
+          Ash.Changeset.change_attribute(changeset, :duration, nil)
         end
       end
     end
@@ -220,6 +221,8 @@ defmodule Orcasite.Radio.Bout do
     routes do
       base "/bouts"
       index :index
+      post :create
+      patch :update
     end
   end
 
