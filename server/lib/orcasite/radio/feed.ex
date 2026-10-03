@@ -32,7 +32,7 @@ defmodule Orcasite.Radio.Feed do
   end
 
   attributes do
-    uuid_attribute :id, public?: true, writable?: Orcasite.Config.seeding_enabled?()
+    uuid_attribute :id, public?: true
 
     attribute :name, :string, allow_nil?: false, public?: true
     attribute :node_name, :string, allow_nil?: false, public?: true
@@ -214,21 +214,22 @@ defmodule Orcasite.Radio.Feed do
       upsert_identity :unique_slug
 
       accept [
-               :name,
-               :node_name,
-               :slug,
-               :intro_html,
-               :image_url,
-               :visible,
-               :bucket,
-               :bucket_region,
-               :cloudfront_url,
-               :dataplicity_id,
-               :orcahello_id,
-               :location_point,
-               if(Orcasite.Config.seeding_enabled?(), do: :id)
-             ]
-             |> Enum.reject(&is_nil/1)
+        :name,
+        :node_name,
+        :slug,
+        :intro_html,
+        :image_url,
+        :visible,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :dataplicity_id,
+        :orcahello_id,
+        :location_point
+      ]
+
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
 
       upsert_fields [
         :name,

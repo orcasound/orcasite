@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
-import type { StaticImageData } from "next/legacy/image";
-import Image from "next/legacy/image";
+import type { StaticImageData } from "next/image";
+import Image from "next/image";
 
 export default function DetectionCategoryButton({
   icon,

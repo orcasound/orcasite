@@ -121,7 +121,7 @@ defmodule OrcasiteWeb.Router do
 
     auth_routes_for Orcasite.Accounts.User, to: OrcasiteWeb.AuthController, path: "/admin"
 
-    sign_out_route OrcasiteWeb.SubscriberAuthController
+    sign_out_route OrcasiteWeb.SubscriberAuthController, "/sign-out", as: :auth
     post "/sign-out", OrcasiteWeb.SubscriberAuthController, :sign_out
   end
 
@@ -138,7 +138,7 @@ defmodule OrcasiteWeb.Router do
       overrides: [OrcasiteWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
     )
 
-    sign_out_route OrcasiteWeb.AuthController, "/admin/sign-out", as: :admin
+    sign_out_route OrcasiteWeb.AuthController, "/admin/sign-out", as: :admin_auth
     post "/admin/sign-out", OrcasiteWeb.AuthController, :sign_out
     ash_admin "/admin"
   end
@@ -146,11 +146,14 @@ defmodule OrcasiteWeb.Router do
   scope "/s" do
     # Subscription routes
     pipe_through :browser
-    sign_out_route OrcasiteWeb.SubscriberAuthController, "/subscriber/sign-out", as: :subscriber
+
+    sign_out_route OrcasiteWeb.SubscriberAuthController, "/subscriber/sign-out",
+      as: :subscriber_auth
+
     post "/subscriber/sign-out", OrcasiteWeb.SubscriberAuthController, :sign_out
 
     sign_out_route OrcasiteWeb.SubscriptionAuthController, "/subscription/sign-out",
-      as: :subscription
+      as: :subscription_auth
 
     post "/subscription/sign-out", OrcasiteWeb.SubscriptionAuthController, :sign_out
 

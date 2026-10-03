@@ -28,8 +28,7 @@ defmodule Orcasite.Radio.Bout do
   attributes do
     uuid_attribute :id,
       prefix: "bout",
-      public?: true,
-      writable?: Orcasite.Config.seeding_enabled?()
+      public?: true
 
     attribute :name, :string, public?: true
     attribute :start_time, :utc_datetime_usec, public?: true, allow_nil?: false
@@ -168,15 +167,23 @@ defmodule Orcasite.Radio.Bout do
       end
     end
 
-    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
-      create :seed do
-        upsert? true
-        upsert_identity :id
-        skip_unknown_inputs :*
+    create :seed do
+      upsert? true
+      upsert_identity :id
+      skip_unknown_inputs :*
 
-        accept [:id, :category, :start_time, :end_time, :name, :duration, :feed_id]
-        upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
-      end
+      accept [:category, :start_time, :end_time, :name, :duration, :feed_id]
+
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
+
+      upsert_fields [:category, :start_time, :end_time, :name, :duration, :feed_id]
+
+      # Production's tags on the bout, ids included: upserted with production's kind
+      # and iri, and joined once, without a user (see Changes.SeedTags).
+      argument :tags, {:array, :map}, default: []
+
+      change {__MODULE__.Changes.SeedTags, []}
     end
 
     update :update do
@@ -197,7 +204,8 @@ defmodule Orcasite.Radio.Bout do
             DateTime.diff(end_time, start_time, :millisecond) / 1000
           )
         else
-          changeset
+          # An open-ended bout has no duration; don't keep the one its old end time gave
+          Ash.Changeset.change_attribute(changeset, :duration, nil)
         end
       end
     end
@@ -206,11 +214,15 @@ defmodule Orcasite.Radio.Bout do
   json_api do
     type "bout"
 
-    includes [:feed, :tags]
+    # `tags` is the vocabulary a bout cites; `item_tags` is each application of it, with
+    # the moderator's certainty. A consumer that wants the hedge asks for `item_tags.tag`.
+    includes [:feed, :tags, item_tags: [:tag]]
 
     routes do
       base "/bouts"
       index :index
+      post :create
+      patch :update
     end
   end
 

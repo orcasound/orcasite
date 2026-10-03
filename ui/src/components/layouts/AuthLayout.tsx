@@ -16,10 +16,12 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
     >
       <Header />
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        sx={{ flexGrow: 1 }}
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexGrow: 1,
+        }}
       >
         <Container maxWidth="sm">
           <Paper
@@ -29,10 +31,10 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
             }}
           >
             <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
               sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
                 marginBottom: 4,
                 marginLeft: "auto",
                 marginRight: "auto",

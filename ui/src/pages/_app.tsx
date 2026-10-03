@@ -1,6 +1,6 @@
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
-import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
+import { AppCacheProvider } from "@mui/material-nextjs/v16-pagesRouter";
 import {
   HydrationBoundary,
   QueryClient,
@@ -10,17 +10,10 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { Socket } from "phoenix";
-import {
-  createContext,
-  MutableRefObject,
-  ReactElement,
-  ReactNode,
-  useRef,
-  useState,
-} from "react";
 import React from "react";
+import { ReactElement, ReactNode, useState } from "react";
 
+import { SocketProvider } from "@/hooks/useSocket";
 import theme from "@/styles/theme";
 import { initializeAnalytics } from "@/utils/analytics";
 
@@ -39,20 +32,11 @@ const ReactQueryDevtoolsProd = React.lazy(() =>
   })),
 );
 
-type SetSocket = (sock: Socket) => void;
-export const SocketContext = createContext<{
-  socket?: MutableRefObject<Socket | undefined>;
-  setSocket?: SetSocket;
-}>({});
-
 // App needs to be customized in order to make MUI work with SSR
 // https://mui.com/material-ui/integrations/nextjs/#pages-router
 // https://github.com/mui/material-ui/blob/master/examples/material-ui-nextjs-pages-router-ts/pages/_app.tsx
 export default function OrcasiteApp(props: AppPropsWithLayout) {
   const { Component, pageProps } = props;
-  const socket = useRef<Socket>();
-  const setSocket = (sock: Socket) => (socket.current = sock);
-
   // Allow pages to define custom per-page layout
   // Based on https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#with-typescript
   const getLayout = Component.getLayout ?? ((page) => page);
@@ -89,7 +73,7 @@ export default function OrcasiteApp(props: AppPropsWithLayout) {
   return (
     <QueryClientProvider client={queryClient}>
       <HydrationBoundary state={pageProps.dehydratedState}>
-        <SocketContext.Provider value={{ socket, setSocket }}>
+        <SocketProvider>
           <AppCacheProvider {...props}>
             <Head>
               <title>Orcasound</title>
@@ -103,7 +87,7 @@ export default function OrcasiteApp(props: AppPropsWithLayout) {
               {getLayout(<Component {...pageProps} />)}
             </ThemeProvider>
           </AppCacheProvider>
-        </SocketContext.Provider>
+        </SocketProvider>
       </HydrationBoundary>
       {showReactQueryDevtoolsProd && (
         <React.Suspense fallback={null}>

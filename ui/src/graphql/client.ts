@@ -96,8 +96,15 @@ export const fetchParams = () => {
   };
 };
 
+/**
+ * A GraphQL document as codegen emits it: a plain string, or a
+ * `TypedDocumentString` (a `String` subclass carrying the result and variable
+ * types) from @graphql-codegen/typescript-react-query 7 onwards.
+ */
+export type GraphQLDocumentString = string | { toString(): string };
+
 export function fetcher<TData, TVariables>(
-  query: string,
+  query: GraphQLDocumentString,
   variables?: TVariables,
   options?: RequestInit["headers"],
 ) {
@@ -106,7 +113,7 @@ export function fetcher<TData, TVariables>(
       method: "POST",
       ...fetchParams(),
       ...options,
-      body: JSON.stringify({ query, variables }),
+      body: JSON.stringify({ query: query.toString(), variables }),
     });
 
     const json = await res.json();

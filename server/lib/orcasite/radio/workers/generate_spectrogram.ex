@@ -1,4 +1,6 @@
 defmodule Orcasite.Radio.Workers.GenerateSpectrogram do
+  @max_attempts 3
+
   use Oban.Worker,
     queue: :audio_images,
     unique: [
@@ -6,7 +8,7 @@ defmodule Orcasite.Radio.Workers.GenerateSpectrogram do
       period: :infinity,
       states: [:available, :scheduled, :executing]
     ],
-    max_attempts: 3
+    max_attempts: @max_attempts
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"audio_image_id" => audio_image_id}, attempt: attempt}) do
@@ -28,15 +30,32 @@ defmodule Orcasite.Radio.Workers.GenerateSpectrogram do
         :ok
 
       error ->
-        if attempt >= 3 do
-          audio_image
-          |> Ash.reload!()
-          |> Ash.Changeset.for_update(:set_failed)
-          |> Ash.update(authorize?: false)
-        end
-
+        if attempt >= @max_attempts, do: set_failed(audio_image)
         error
     end
+  catch
+    # A crash (rather than a returned error) used to leave the image
+    # `processing` for ever once Oban gave up on the job; the page then shows
+    # a placeholder that never resolves. Exits count too: a missing AWS
+    # credential surfaces as ExAws's credential cache crashing under us.
+    kind, reason ->
+      if attempt >= @max_attempts do
+        Orcasite.Radio.AudioImage
+        |> Ash.get(audio_image_id, authorize?: false)
+        |> case do
+          {:ok, audio_image} -> set_failed(audio_image)
+          _ -> :ok
+        end
+      end
+
+      :erlang.raise(kind, reason, __STACKTRACE__)
+  end
+
+  defp set_failed(audio_image) do
+    audio_image
+    |> Ash.reload!()
+    |> Ash.Changeset.for_update(:set_failed)
+    |> Ash.update(authorize?: false)
   end
 
   @impl Oban.Worker

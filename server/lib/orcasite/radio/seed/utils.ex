@@ -39,7 +39,9 @@ defmodule Orcasite.Radio.Seed.Utils do
     |> Map.new()
   end
 
-  defp input?(resource, nil, key), do: writable_attr?(resource, key)
+  # Ids are not writable, but seeded records keep production's: the seed actions
+  # take them as an argument (see Seed.Changes.KeepProductionId).
+  defp input?(resource, nil, key), do: key == "id" or writable_attr?(resource, key)
 
   defp input?(resource, action, key) do
     %{accept: accept, arguments: arguments} = Ash.Resource.Info.action(resource, action)

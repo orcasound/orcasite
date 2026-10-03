@@ -37,6 +37,8 @@ defmodule Orcasite.Radio.Tag do
   end
 
   attributes do
+    # Not writable; a seeded tag still keeps its production id (see
+    # Seed.Changes.KeepProductionId), so the item_tags that reference it line up.
     uuid_primary_key :id
     attribute :name, :string, public?: true, allow_nil?: false
     attribute :description, :string, public?: true
@@ -129,6 +131,21 @@ defmodule Orcasite.Radio.Tag do
       upsert_fields [:name, :description]
 
       accept [:name, :description]
+
+      change slugify(:name, into: :slug)
+    end
+
+    # A tag as production has it, id included, so the vocabulary and its classification
+    # (kind, iri) reach review apps with the bouts that carry it.
+    create :seed do
+      upsert? true
+      upsert_fields [:name, :description, :slug, :kind, :iri]
+      skip_unknown_inputs :*
+
+      accept [:name, :description, :kind, :iri]
+
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
 
       change slugify(:name, into: :slug)
     end

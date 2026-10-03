@@ -52,11 +52,33 @@ const CandidatePage: NextPageWithLayout = () => {
         </Breadcrumbs>
 
         <Paper sx={{ marginTop: 4, overflow: "auto" }}>
-          <Box p={5}>
-            <Box display="flex" justifyContent="space-between" mb={5}>
-              <Box display="flex" flexDirection="column" gap={1}>
+          <Box
+            sx={{
+              p: 5,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mb: 5,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
+              >
                 <Typography variant="h4">Detections</Typography>
-                <Box display="flex" gap={1} alignItems="center">
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    alignItems: "center",
+                  }}
+                >
                   {currentUser?.moderator && (
                     <Chip
                       variant="outlined"
@@ -66,7 +88,12 @@ const CandidatePage: NextPageWithLayout = () => {
                   <Typography variant="body2">{candidate?.id}</Typography>
                 </Box>
               </Box>
-              <Box display="flex" gap={1}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                }}
+              >
                 {candidate && currentUser?.moderator && (
                   <Link
                     href={`/bouts/new/${candidate.feed.slug}?time=${time}&category=${category}`}

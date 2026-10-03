@@ -70,21 +70,38 @@ export default function BoutItem({
       sx={{ width: "100%", textDecoration: "none" }}
     >
       <Card sx={{ width: "100%", p: 3 }} elevation={1}>
-        <Box display="flex" width="100%" gap={3} flexWrap="wrap">
-          <Box display="flex" flexDirection={"column"} gap={1} width={80}>
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            gap: 3,
+            flexWrap: "wrap",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              width: 80,
+            }}
+          >
             <Box
-              position="relative"
-              flexGrow={1}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
+              sx={{
+                position: "relative",
+                flexGrow: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
               <CategoryIcon audioCategory={bout.category} />
             </Box>
             <Typography
-              textAlign="center"
               variant="subtitle1"
               sx={{
+                textAlign: "center",
+
                 fontSize:
                   bout.category === "ANTHROPHONY" ? "0.75rem" : "inherit",
               }}
@@ -92,7 +109,12 @@ export default function BoutItem({
               {bout.category}
             </Typography>
           </Box>
-          <Box display="flex" flexDirection={"column"}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <Typography variant="h5">{bout.name ?? bout.feed?.name}</Typography>
             <Typography variant="subtitle1" sx={{ fontWeight: "normal" }}>
               {format(startTime, "h:mm:ss a O")}
@@ -105,9 +127,9 @@ export default function BoutItem({
           </Box>
 
           <Box
-            display="flex"
-            flexDirection={{ sm: "column" }}
             sx={{
+              display: "flex",
+              flexDirection: { sm: "column" },
               justifyContent: "flex-start",
               alignItems: { xs: "center", sm: "flex-end" },
               ml: { sm: "auto" },
@@ -124,7 +146,12 @@ export default function BoutItem({
               />
             )}
 
-            <Typography variant="overline" textAlign="right">
+            <Typography
+              variant="overline"
+              sx={{
+                textAlign: "right",
+              }}
+            >
               {detectionsCount} detection{detectionsCount === 1 ? "" : "s"}
             </Typography>
             {duration && (
@@ -134,7 +161,12 @@ export default function BoutItem({
                   intervalToDuration({ start: 0, end: duration }),
                 )}
               >
-                <Typography variant="monospace" textAlign="right">
+                <Typography
+                  variant="monospace"
+                  sx={{
+                    textAlign: "right",
+                  }}
+                >
                   {durationString(duration)}
                 </Typography>
               </Box>

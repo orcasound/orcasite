@@ -1,2 +1,2 @@
-web: source load_env.sh && MIX_ENV=prod mix phx.server
-release: POOL_SIZE=2 mix ecto.migrate
+web: source load_env.sh && PHX_SERVER=true _build/prod/rel/orcasite/bin/orcasite start
+release: POOL_SIZE=2 _build/prod/rel/orcasite/bin/orcasite eval "Orcasite.Release.migrate()"

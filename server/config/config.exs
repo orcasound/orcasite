@@ -135,20 +135,6 @@ config :spark, :formatter,
 config :ex_aws,
   region: "us-west-2"
 
-# Enables seeding the database from the prod server
-config :orcasite,
-  enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "false") == "true"
-
-# Automates fetching of seeds from the prod server (every minute by default)
-# Only applies if `ENABLE_SEED_FROM_PROD` is enabled
-config :orcasite,
-  auto_update_seeded_records: System.get_env("AUTO_UPDATE_SEEDED_RECORDS", "false") == "true"
-
-# Automatically delete seeded records, excluding feeds (older than 7 days by default, runs hourly)
-# Only applies if both `ENABLE_SEED_FROM_PROD` and `AUTO_UPDATE_SEEDED_RECORDS` are enabled
-config :orcasite,
-  auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", "false") == "true"
-
 config :hammer,
   backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 

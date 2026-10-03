@@ -174,10 +174,19 @@ export function DetectionsPlayer({
         zIndex: theme.zIndex.drawer + 1,
       })}
     >
-      <Box display="none">
+      <Box
+        sx={{
+          display: "none",
+        }}
+      >
         <VideoJS options={playerOptions} onReady={handleReady} />
       </Box>
-      <Box ml={2} mr={6}>
+      <Box
+        sx={{
+          ml: 2,
+          mr: 6,
+        }}
+      >
         <PlayPauseButton
           playerStatus={playerStatus}
           onClick={handlePlayPauseClick}
@@ -185,7 +194,11 @@ export function DetectionsPlayer({
         />
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", width: 1 }}>
-        <Box width={"100%"}>
+        <Box
+          sx={{
+            width: "100%",
+          }}
+        >
           <Slider
             valueLabelDisplay="auto"
             valueLabelFormat={(v) => `${(v + startOffset).toFixed(2)} s`}

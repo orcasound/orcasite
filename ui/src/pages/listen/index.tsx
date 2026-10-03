@@ -28,13 +28,23 @@ const FeedsPage: NextPageWithLayout = () => {
 
       <main>
         <Container maxWidth="sm">
-          <Typography variant="h4" mt={4}>
+          <Typography
+            variant="h4"
+            sx={{
+              mt: 4,
+            }}
+          >
             Listen live
           </Typography>
           <Typography variant="body1">
             Select a location to start listening live
           </Typography>
-          <Stack spacing={4} mt={4}>
+          <Stack
+            spacing={4}
+            sx={{
+              mt: 4,
+            }}
+          >
             {sortedFeeds.map((feed) => (
               <FeedCard key={feed.id} feed={feed} />
             ))}

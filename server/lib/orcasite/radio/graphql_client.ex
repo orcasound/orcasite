@@ -465,6 +465,7 @@ defmodule Orcasite.Radio.GraphqlClient do
         prev_results \\ []
       ) do
     bout_attrs = camelized_public_attrs(Orcasite.Radio.Bout)
+    tag_attrs = camelized_public_attrs(Orcasite.Radio.Tag)
 
     ~s|
       {
@@ -482,6 +483,9 @@ defmodule Orcasite.Radio.GraphqlClient do
             #{bout_attrs |> Enum.join(", ")}
             feed {
               id
+            }
+            tags {
+              #{tag_attrs |> Enum.join(", ")}
             }
           }
         }
@@ -511,6 +515,7 @@ defmodule Orcasite.Radio.GraphqlClient do
         prev_results \\ []
       ) do
     bout_attrs = camelized_public_attrs(Orcasite.Radio.Bout)
+    tag_attrs = camelized_public_attrs(Orcasite.Radio.Tag)
 
     ~s|
       {
@@ -525,6 +530,9 @@ defmodule Orcasite.Radio.GraphqlClient do
             #{bout_attrs |> Enum.join(", ")}
             feed {
               id
+            }
+            tags {
+              #{tag_attrs |> Enum.join(", ")}
             }
           }
         }

@@ -23,15 +23,19 @@ end
 
 config :orcasite, :prod_host, System.get_env("PROD_HOST_URL", "live.orcasound.net")
 
-# Also set in config.exs, which Application.compile_env/3 reads to decide whether
-# the seed actions are compiled in at all. Repeating it here is redundant while
-# the server runs under Mix, since config.exs is re-evaluated at boot -- but it
-# would not be under a release, where config.exs is frozen into the artifact and
-# only runtime.exs runs at startup. Orcasite.Radio.Checks.SeedFromProdEnabled and
-# the validation in Orcasite.Radio.Seed authorize on this value, so it has to
-# describe the app serving the request under either model.
+# Seeding from prod. These differ between apps that run the same build, so they
+# are read here at boot and never at compile time (see Orcasite.Config).
+# On by default in dev; set any of them to "false" in your env to turn it off.
+seed_default = if config_env() == :dev, do: "true", else: "false"
+
 config :orcasite,
-  enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", "false") == "true"
+  # Allows copying records from the prod server
+  enable_seed_from_prod: System.get_env("ENABLE_SEED_FROM_PROD", seed_default) == "true",
+  # Pulls new records from prod every minute; needs ENABLE_SEED_FROM_PROD
+  auto_update_seeded_records:
+    System.get_env("AUTO_UPDATE_SEEDED_RECORDS", seed_default) == "true",
+  # Hourly, deletes seeded records (other than feeds) older than 7 days; needs both of the above
+  auto_delete_seeded_records: System.get_env("AUTO_DELETE_SEEDED_RECORDS", seed_default) == "true"
 
 if config_env() == :prod do
   database_url =
@@ -78,12 +82,42 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base
+    secret_key_base: secret_key_base,
+    check_origin: (System.get_env("URLS") || "") |> String.split(" "),
+    # Runs the Next.js server alongside Phoenix, which proxies to it. The slug
+    # keeps the UI in ui/ under the directory the dyno starts in. Next is
+    # started directly rather than through `npm run start`, which would leave
+    # an npm process idling in front of it for the dyno's life (about 67 MB
+    # on a dyno that was already over its quota, see #1069). The port matches
+    # what the router forwards to.
+    watchers: [
+      node: [
+        Path.expand("ui/node_modules/next/dist/bin/next"),
+        "start",
+        "-p",
+        System.get_env("UI_PORT") || "3000",
+        cd: Path.expand("ui")
+      ]
+    ]
+
+  config :orcasite, :orcasite_s3_url, System.get_env("ORCASITE_S3_URL")
+
+  config :orcasite, Orcasite.Mailer,
+    access_key: System.get_env("AWS_ACCESS_KEY_ID"),
+    secret: System.get_env("AWS_SECRET_ACCESS_KEY")
+
+  config :orcasite, OrcasiteWeb.Guardian, secret_key: System.get_env("GUARDIAN_SECRET_KEY")
+
+  config :orcasite, OrcasiteWeb.BasicAuth,
+    username: System.get_env("ADMIN_USER"),
+    password: System.get_env("ADMIN_PASSWORD")
 
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
 
   config :orcasite,
     audio_image_bucket:
       System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET", "audio-deriv-orcasound-net"),
-    audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2")
+    audio_image_bucket_region: System.get_env("ORCASITE_AUDIO_IMAGE_BUCKET_REGION", "us-west-2"),
+    # The Lambda from https://github.com/orcasound/spectrogram-renderer
+    spectrogram_function_name: System.get_env("SPECTROGRAM_FUNCTION_NAME")
 end

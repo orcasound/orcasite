@@ -35,8 +35,7 @@ defmodule Orcasite.Radio.FeedStream do
   attributes do
     uuid_attribute :id,
       prefix: "fdstrm",
-      public?: true,
-      writable?: Orcasite.Config.seeding_enabled?()
+      public?: true
 
     attribute :start_time, :utc_datetime_usec, public?: true
     attribute :end_time, :utc_datetime_usec, public?: true
@@ -337,34 +336,34 @@ defmodule Orcasite.Radio.FeedStream do
       skip_unknown_inputs :*
 
       accept [
-               :start_time,
-               :end_time,
-               :duration,
-               :bucket,
-               :bucket_region,
-               :cloudfront_url,
-               :playlist_path,
-               :playlist_timestamp,
-               :playlist_m3u8_path,
-               if(Orcasite.Config.seeding_enabled?(), do: :id),
-               if(Orcasite.Config.seeding_enabled?(), do: :feed_id)
-             ]
-             |> Enum.reject(&is_nil/1)
+        :start_time,
+        :end_time,
+        :duration,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :playlist_path,
+        :playlist_timestamp,
+        :playlist_m3u8_path,
+        :feed_id
+      ]
+
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
 
       upsert_fields [
-                      :start_time,
-                      :end_time,
-                      :duration,
-                      :bucket,
-                      :bucket_region,
-                      :cloudfront_url,
-                      :playlist_path,
-                      :playlist_timestamp,
-                      :playlist_m3u8_path,
-                      :updated_at,
-                      if(Orcasite.Config.seeding_enabled?(), do: :feed_id)
-                    ]
-                    |> Enum.reject(&is_nil/1)
+        :start_time,
+        :end_time,
+        :duration,
+        :bucket,
+        :bucket_region,
+        :cloudfront_url,
+        :playlist_path,
+        :playlist_timestamp,
+        :playlist_m3u8_path,
+        :updated_at,
+        :feed_id
+      ]
 
       argument :feed_segments, {:array, :map}
       argument :feed, :map

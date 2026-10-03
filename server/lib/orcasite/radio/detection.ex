@@ -35,8 +35,7 @@ defmodule Orcasite.Radio.Detection do
   attributes do
     uuid_attribute :id,
       prefix: "det",
-      public?: true,
-      writable?: Orcasite.Config.seeding_enabled?()
+      public?: true
 
     attribute :source_ip, :string, public?: true
     attribute :playlist_timestamp, :integer, allow_nil?: false, public?: true
@@ -206,44 +205,44 @@ defmodule Orcasite.Radio.Detection do
       change manage_relationship(:feed, type: :append)
     end
 
-    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
-      create :seed do
-        upsert? true
-        upsert_identity :id
+    create :seed do
+      upsert? true
+      upsert_identity :id
 
-        skip_unknown_inputs :*
+      skip_unknown_inputs :*
 
-        accept [
-          :id,
-          :source_ip,
-          :source,
-          :playlist_timestamp,
-          :player_offset,
-          :listener_count,
-          :timestamp,
-          :description,
-          :visible,
-          :category
-        ]
+      accept [
+        :source_ip,
+        :source,
+        :playlist_timestamp,
+        :player_offset,
+        :listener_count,
+        :timestamp,
+        :description,
+        :visible,
+        :category
+      ]
 
-        upsert_fields [
-          :source_ip,
-          :source,
-          :playlist_timestamp,
-          :player_offset,
-          :listener_count,
-          :timestamp,
-          :description,
-          :visible,
-          :category
-        ]
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
 
-        argument :feed, :map
-        argument :candidate, :map
+      upsert_fields [
+        :source_ip,
+        :source,
+        :playlist_timestamp,
+        :player_offset,
+        :listener_count,
+        :timestamp,
+        :description,
+        :visible,
+        :category
+      ]
 
-        change manage_relationship(:feed, type: :append)
-        change manage_relationship(:candidate, on_lookup: :relate, on_no_match: {:create, :seed})
-      end
+      argument :feed, :map
+      argument :candidate, :map
+
+      change manage_relationship(:feed, type: :append)
+      change manage_relationship(:candidate, on_lookup: :relate, on_no_match: {:create, :seed})
     end
 
     create :submit_detection do

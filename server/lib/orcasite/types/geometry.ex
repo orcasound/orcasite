@@ -57,3 +57,29 @@ if Code.ensure_loaded?(Ecto.DevLogger) do
     end
   end
 end
+
+# geo only implements Jason.Encoder when Elixir's built-in JSON is missing, but
+# Phoenix and AshJsonApi encode with Jason, so rendering a point (e.g. a feed's
+# location_point) would raise Protocol.UndefinedError.
+defimpl Jason.Encoder,
+  for: [
+    Geo.Point,
+    Geo.PointZ,
+    Geo.PointM,
+    Geo.PointZM,
+    Geo.LineString,
+    Geo.LineStringM,
+    Geo.LineStringZ,
+    Geo.LineStringZM,
+    Geo.Polygon,
+    Geo.PolygonZ,
+    Geo.MultiPoint,
+    Geo.MultiPointZ,
+    Geo.MultiLineString,
+    Geo.MultiLineStringZ,
+    Geo.MultiPolygon,
+    Geo.MultiPolygonZ,
+    Geo.GeometryCollection
+  ] do
+  def encode(value, opts), do: Jason.Encode.map(Geo.JSON.encode!(value), opts)
+end

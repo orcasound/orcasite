@@ -39,7 +39,14 @@ const LearnPage: NextPageWithLayout = () => {
 
       <main>
         <Container maxWidth="sm">
-          <Box display="flex" alignItems="center" sx={{ ml: -2, mt: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              ml: -2,
+              mt: 2,
+            }}
+          >
             <Link href={"/"} underline="none" color="inherit">
               <IconButton>
                 <ArrowBack />
@@ -52,18 +59,37 @@ const LearnPage: NextPageWithLayout = () => {
               <Typography color="textPrimary">Learn</Typography>
             </Breadcrumbs>
           </Box>
-          <Typography variant="h5" mt={4}>
+          <Typography
+            variant="h5"
+            sx={{
+              mt: 4,
+            }}
+          >
             What do orcas sound like?
           </Typography>
-          <Typography variant="body1" my={2}>
+          <Typography
+            variant="body1"
+            sx={{
+              my: 2,
+            }}
+          >
             Here are some samples of calls, echolocation clicks, and whistles
             that are made by southern salmon-seeking killer whales:
           </Typography>
           <Box>
             {examples.map((example) => (
-              <Box key={example.title} my={2}>
+              <Box
+                key={example.title}
+                sx={{
+                  my: 2,
+                }}
+              >
                 <Typography variant="h6">{example.title}</Typography>
-                <Box mt={1}>
+                <Box
+                  sx={{
+                    mt: 1,
+                  }}
+                >
                   <audio
                     controls
                     src={example.audio}

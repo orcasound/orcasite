@@ -30,7 +30,7 @@ defmodule Orcasite.Radio.AudioImage do
   end
 
   attributes do
-    uuid_primary_key :id, writable?: Orcasite.Config.seeding_enabled?()
+    uuid_primary_key :id
     attribute :image_type, Orcasite.Types.ImageType, public?: true
 
     attribute :status, Orcasite.Types.AudioImageStatus do
@@ -221,44 +221,44 @@ defmodule Orcasite.Radio.AudioImage do
              end)
     end
 
-    if Application.compile_env(:orcasite, :enable_seed_from_prod, false) do
-      create :seed do
-        upsert? true
-        upsert_identity :id
+    create :seed do
+      upsert? true
+      upsert_identity :id
 
-        skip_unknown_inputs :*
+      skip_unknown_inputs :*
 
-        accept [
-          :id,
-          :image_type,
-          :status,
-          :start_time,
-          :end_time,
-          :parameters,
-          :image_size,
-          :bucket,
-          :bucket_region,
-          :object_path,
-          :last_error
-        ]
+      accept [
+        :image_type,
+        :status,
+        :start_time,
+        :end_time,
+        :parameters,
+        :image_size,
+        :bucket,
+        :bucket_region,
+        :object_path,
+        :last_error
+      ]
 
-        upsert_fields [
-          :image_type,
-          :status,
-          :start_time,
-          :end_time,
-          :parameters,
-          :image_size,
-          :bucket,
-          :bucket_region,
-          :object_path,
-          :last_error
-        ]
+      argument :id, :string
+      change Orcasite.Radio.Seed.Changes.KeepProductionId
 
-        argument :feed, :map
+      upsert_fields [
+        :image_type,
+        :status,
+        :start_time,
+        :end_time,
+        :parameters,
+        :image_size,
+        :bucket,
+        :bucket_region,
+        :object_path,
+        :last_error
+      ]
 
-        change manage_relationship(:feed, type: :append)
-      end
+      argument :feed, :map
+
+      change manage_relationship(:feed, type: :append)
     end
 
     update :generate_spectrogram do
@@ -273,8 +273,10 @@ defmodule Orcasite.Radio.AudioImage do
                  image_id: image.id,
                  audio_bucket: feed_segment.bucket,
                  audio_key: feed_segment.segment_path,
+                 audio_region: feed_segment.bucket_region,
                  image_bucket: image.bucket,
-                 image_key: image.object_path
+                 image_key: image.object_path,
+                 image_region: image.bucket_region
                }
                |> Orcasite.Radio.AwsClient.generate_spectrogram()
                |> case do
