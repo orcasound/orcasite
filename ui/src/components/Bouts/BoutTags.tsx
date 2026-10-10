@@ -135,8 +135,10 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     Promise.all([boutTagsQuery.refetch(), tagsQuery.refetch()]);
   // Nothing else is applied until the tags it would be checked against are fresh: a
   // second pick against the old list would re-apply the chain's shared ancestors.
-  const refreshThenRelease = async () => {
+  // `then` runs with the fresh tags, so what it changes lands in the same render as they do
+  const refreshThenRelease = async (then?: () => void) => {
     await refetch().catch(() => undefined);
+    then?.();
     setBusy(false);
   };
   const createBoutTag = useCreateBoutTagMutation();
@@ -183,6 +185,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
   const applyChoice = async (choice: TagChoice) => {
     setError(null);
     setBusy(true);
+    let applied = false;
     try {
       const chain: TagChoice[] = [
         ...chainAbove(choice).map((b) => ({
@@ -201,11 +204,15 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
         });
         if (showErrors(data.createBoutTag?.errors)) return;
       }
-      setRecent(remember(choice));
+      applied = true;
     } catch (e) {
       setError(String(e));
     } finally {
-      await refreshThenRelease();
+      // Recent updates only once the bout's tags have been fetched again. Before that,
+      // the row would briefly offer the tag just applied, then drop it.
+      await refreshThenRelease(
+        applied ? () => setRecent(remember(choice)) : undefined,
+      );
     }
   };
 
@@ -255,6 +262,11 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     return [...fromRegister, ...fromTags];
   }, [input, existingTags]);
 
+  // While busy, a chip keeps its delete icon, dimmed and inert, so it doesn't change width
+  const deleteIconSx = {
+    "& .MuiChip-deleteIcon": busy ? { opacity: 0.38, cursor: "default" } : {},
+  };
+
   const recentToOffer = recent.filter(
     (r) => !mineApplied.some((tag) => isTag(r, tag)),
   );
@@ -288,12 +300,15 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                 aria-describedby={open ? tagSlug : undefined}
                 onClick={(event) => setAnchor(event.currentTarget)}
                 variant={isHedge(myTag?.certainty) ? "outlined" : "filled"}
-                sx={
-                  isHedge(myTag?.certainty)
-                    ? { borderStyle: "dashed" }
-                    : undefined
-                }
-                {...(myTag && !busy && { onDelete: () => removeTag(tag) })}
+                sx={{
+                  ...(isHedge(myTag?.certainty) && { borderStyle: "dashed" }),
+                  ...deleteIconSx,
+                }}
+                {...(myTag && {
+                  onDelete: () => {
+                    if (!busy) removeTag(tag);
+                  },
+                })}
                 color={myTag ? "primary" : "default"}
                 label={myWord ? `${tagLabel(tag)} (${myWord})` : tagLabel(tag)}
                 icon={
@@ -380,10 +395,12 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                                     ? `${tagLabel(above)} (${word})`
                                     : tagLabel(above)
                                 }
-                                {...(mineAbove &&
-                                  !busy && {
-                                    onDelete: () => removeTag(above),
-                                  })}
+                                sx={deleteIconSx}
+                                {...(mineAbove && {
+                                  onDelete: () => {
+                                    if (!busy) removeTag(above);
+                                  },
+                                })}
                               />
                               {mineAbove && (
                                 <Button
