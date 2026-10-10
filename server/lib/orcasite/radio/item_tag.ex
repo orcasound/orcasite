@@ -37,8 +37,10 @@ defmodule Orcasite.Radio.ItemTag do
       not the tag, because `L` is certain on one bout and a hedge on the next; a `?` in
       the bout's name is where that hedge went before this column existed. Three words
       rather than a number: a listening moderator has no probability, and a numeric field
-      invites a UI to invent one. Nil means nobody was asked, which is every application
-      made before the column existed, and is deliberately distinct from `certain`.
+      invites a UI to invent one. Nil means the moderator said nothing about it: every
+      application made before the column existed, and one applied in the picker without
+      touching its `?`. It is deliberately distinct from `certain`, which a moderator
+      chose.
       """
     end
 
@@ -69,6 +71,12 @@ defmodule Orcasite.Radio.ItemTag do
   policies do
     bypass actor_attribute_equals(:admin, true) do
       authorize_if always()
+    end
+
+    # Before the moderators' bypass, which would otherwise let one moderator rewrite how
+    # sure another was.
+    policy action(:set_certainty) do
+      authorize_if relates_to_actor_via(:user)
     end
 
     bypass actor_attribute_equals(:moderator, true) do
@@ -118,7 +126,12 @@ defmodule Orcasite.Radio.ItemTag do
         constraints fields: [
                       id: [type: :string],
                       name: [type: :string, allow_nil?: false],
-                      description: [type: :string]
+                      description: [type: :string],
+                      # What the picker knows about the tag it offered (#1015): a button
+                      # or a register name sends both, free text neither. ResolveTag
+                      # uses them to find the tag, and to fill them in where it lacks them.
+                      kind: [type: :string],
+                      iri: [type: :string]
                     ]
       end
 
@@ -131,6 +144,8 @@ defmodule Orcasite.Radio.ItemTag do
       end
 
       change manage_relationship(:bout, type: :append)
+
+      change Orcasite.Radio.ItemTag.Changes.ResolveTag
 
       change manage_relationship(:tag,
                on_lookup: :relate_and_update,
@@ -147,6 +162,15 @@ defmodule Orcasite.Radio.ItemTag do
       # The UI asks for these in its response (ItemTagParts). If they aren't loaded,
       # AshGraphql raises after the row is saved: the tag is applied, but the UI is told
       # the request failed.
+      change load([:tag, :user])
+    end
+
+    # The `?` on a tag in the picker, which steps the moderator's own application through
+    # the three words and back to saying nothing (#1015). Only how sure they are: which
+    # tag, and on which bout, is removing the application and making another.
+    update :set_certainty do
+      accept [:certainty]
+      # read back like a create (ItemTagParts)
       change load([:tag, :user])
     end
   end
@@ -171,6 +195,7 @@ defmodule Orcasite.Radio.ItemTag do
 
     mutations do
       create :create_bout_tag, :bout_tag
+      update :set_bout_tag_certainty, :set_certainty
       destroy :delete_bout_tag, :destroy
     end
   end
