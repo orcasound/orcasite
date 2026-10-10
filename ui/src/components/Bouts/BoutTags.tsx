@@ -278,8 +278,18 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
 
   return (
     <Box>
-      {/* what is on the bout first, where a tap's result shows */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 3 }}>
+      {/* what is on the bout first, where a tap's result shows. At least one chip tall, so
+          the first tag to arrive, or the last to go, doesn't move everything below. */}
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: 1,
+          mb: 3,
+          minHeight: 32,
+        }}
+      >
         {groups.map((group) => {
           const tag = group[0].tag;
           if (!tag || !shown.includes(tag)) return null;
