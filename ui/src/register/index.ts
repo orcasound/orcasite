@@ -50,6 +50,15 @@ export function displayName(iri: string): string | undefined {
   return (found.kind === "taxon" && commonNames.get(iri)) || found.label;
 }
 
+/**
+ * The register's label for an entity, which is what a tag created from it is called.
+ * Not its display name: two entities can share a common name (Humpback whale is the
+ * species and its genus), never a label.
+ */
+export function labelOf(iri: string): string | undefined {
+  return entities.get(iri)?.label;
+}
+
 /** What kind of thing an entity is, in words a moderator uses */
 export function describe(found: Entity): string {
   if (found.kind === "taxon") return "species or group of species";
