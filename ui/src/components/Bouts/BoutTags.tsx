@@ -192,7 +192,8 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     setBusy(true);
     try {
       for (const bt of mine) {
-        if (bt.tag && (bt.tag === tag || isAbove(tag, bt.tag)))
+        // by identity, not by object: each application carries its own copy of the tag
+        if (bt.tag && (isTag(bt.tag, tag) || isAbove(tag, bt.tag)))
           await deleteBoutTag.mutateAsync({ boutTagId: bt.id });
       }
     } catch (e) {
