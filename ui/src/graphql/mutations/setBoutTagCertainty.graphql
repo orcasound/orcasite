@@ -1,0 +1,10 @@
+mutation setBoutTagCertainty($boutTagId: ID!, $certainty: String) {
+  setBoutTagCertainty(id: $boutTagId, input: { certainty: $certainty }) {
+    result {
+      ...ItemTagParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}

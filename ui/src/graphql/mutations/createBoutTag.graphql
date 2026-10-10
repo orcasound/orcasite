@@ -2,12 +2,22 @@ mutation createBoutTag(
   $tagId: ID
   $tagName: String!
   $tagDescription: String
+  $tagKind: String
+  $tagIri: String
+  $certainty: String
   $boutId: ID!
 ) {
   createBoutTag(
     input: {
       bout: { id: $boutId }
-      tag: { id: $tagId, name: $tagName, description: $tagDescription }
+      tag: {
+        id: $tagId
+        name: $tagName
+        description: $tagDescription
+        kind: $tagKind
+        iri: $tagIri
+      }
+      certainty: $certainty
     }
   ) {
     result {

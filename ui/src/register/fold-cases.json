@@ -1,0 +1,57 @@
+{
+  "edition": "2026.10.1",
+  "cases": [
+    [
+      "T090",
+      "t90"
+    ],
+    [
+      "T090s",
+      "t90s"
+    ],
+    [
+      "T065A5",
+      "t65a5"
+    ],
+    [
+      "T65A5",
+      "t65a5"
+    ],
+    [
+      "T000",
+      "t0"
+    ],
+    [
+      "J-35",
+      "j35"
+    ],
+    [
+      "J35",
+      "j35"
+    ],
+    [
+      "J17s",
+      "j17s"
+    ],
+    [
+      "Bigg's",
+      "biggs"
+    ],
+    [
+      "Bigg’s",
+      "biggs"
+    ],
+    [
+      "Biggs",
+      "biggs"
+    ],
+    [
+      "SRKW",
+      "srkw"
+    ],
+    [
+      "  Southern   Resident ",
+      "southern resident"
+    ]
+  ]
+}

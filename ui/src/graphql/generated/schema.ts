@@ -735,6 +735,21 @@ export type CreateBoutTagResult = {
 
 export type CreateTagInput = {
   description?: InputMaybe<Scalars["String"]["input"]>;
+  /**
+   * The identifier this tag cites in an external catalogue, as a CURIE or a full IRI.
+   * An `animal` tag cites the salish-sea/animals register: `SSA:0000020` is J pod.
+   * Unlike the name and the slug, it survives the tag being renamed. Nil is normal:
+   * free-text tags stay legal, and an `animal` tag with no iri is how a gap in the
+   * register shows up.
+   */
+  iri?: InputMaybe<Scalars["String"]["input"]>;
+  /**
+   * What the tag names: an `animal` (a species, ecotype, pod, matriline or individual),
+   * a `signal` (a call type such as S01), or `other` (vessels, recording quality,
+   * project markers). `other` is an answer, not a fallback -- it tells a consumer the
+   * tag is safe to skip. Nil means nobody has classified the tag yet.
+   */
+  kind?: InputMaybe<Scalars["String"]["input"]>;
   name: Scalars["String"]["input"];
 };
 
@@ -1960,6 +1975,21 @@ export type ItemTagBoutTagBoutInput = {
 export type ItemTagBoutTagTagInput = {
   description?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["ID"]["input"]>;
+  /**
+   * The identifier this tag cites in an external catalogue, as a CURIE or a full IRI.
+   * An `animal` tag cites the salish-sea/animals register: `SSA:0000020` is J pod.
+   * Unlike the name and the slug, it survives the tag being renamed. Nil is normal:
+   * free-text tags stay legal, and an `animal` tag with no iri is how a gap in the
+   * register shows up.
+   */
+  iri?: InputMaybe<Scalars["String"]["input"]>;
+  /**
+   * What the tag names: an `animal` (a species, ecotype, pod, matriline or individual),
+   * a `signal` (a call type such as S01), or `other` (vessels, recording quality,
+   * project markers). `other` is an answer, not a fallback -- it tells a consumer the
+   * tag is safe to skip. Nil means nobody has classified the tag yet.
+   */
+  kind?: InputMaybe<Scalars["String"]["input"]>;
   name?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -2607,6 +2637,7 @@ export type RootMutationType = {
   seedFeeds: SeedFeedsResult;
   seedLatestResource: SeedLatestResourceResult;
   seedResource: SeedResourceResult;
+  setBoutTagCertainty: SetBoutTagCertaintyResult;
   setDetectionVisible: SetDetectionVisibleResult;
   signInWithPassword?: Maybe<SignInWithPasswordResult>;
   signOut?: Maybe<Scalars["Boolean"]["output"]>;
@@ -2674,6 +2705,11 @@ export type RootMutationTypeSeedLatestResourceArgs = {
 
 export type RootMutationTypeSeedResourceArgs = {
   input: SeedResourceInput;
+};
+
+export type RootMutationTypeSetBoutTagCertaintyArgs = {
+  id: Scalars["ID"]["input"];
+  input?: InputMaybe<SetBoutTagCertaintyInput>;
 };
 
 export type RootMutationTypeSetDetectionVisibleArgs = {
@@ -2929,6 +2965,27 @@ export type SeedResourceResult = {
   errors: Array<MutationError>;
   /** The successful result of the mutation */
   result?: Maybe<Seed>;
+};
+
+export type SetBoutTagCertaintyInput = {
+  /**
+   * How sure the moderator was that this tag belongs on this bout. On the application,
+   * not the tag, because `L` is certain on one bout and a hedge on the next; a `?` in
+   * the bout's name is where that hedge went before this column existed. Three words
+   * rather than a number: a listening moderator has no probability, and a numeric field
+   * invites a UI to invent one. Nil means nobody was asked, which is every application
+   * made before the column existed, and is deliberately distinct from `certain`.
+   */
+  certainty?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** The result of the :set_bout_tag_certainty mutation */
+export type SetBoutTagCertaintyResult = {
+  __typename?: "SetBoutTagCertaintyResult";
+  /** Any errors generated, if the mutation failed */
+  errors: Array<MutationError>;
+  /** The successful result of the mutation */
+  result?: Maybe<ItemTag>;
 };
 
 export type SetDetectionVisibleInput = {
