@@ -141,8 +141,19 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
   };
   const createBoutTag = useCreateBoutTagMutation();
   const deleteBoutTag = useDeleteBoutTagMutation();
+  // A refusal (forbidden, invalid) answers 200 with errors, which onError never sees
+  const showErrors = (
+    errors: ({ message?: string | null } | null)[] | null | undefined,
+  ) => {
+    if (errors && errors.length > 0)
+      setError(errors.map((e) => e?.message).join("; "));
+    return !!errors && errors.length > 0;
+  };
   const setCertainty = useSetBoutTagCertaintyMutation({
-    onSuccess: refetch,
+    onSuccess: (data) => {
+      showErrors(data.setBoutTagCertainty?.errors);
+      return refetch();
+    },
     onError: (e) => setError(String(e)),
   });
 
@@ -188,11 +199,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
           tagKind: c.kind ?? undefined,
           tagIri: c.iri ?? undefined,
         });
-        const errors = data.createBoutTag?.errors ?? [];
-        if (errors.length > 0) {
-          setError(errors.map((e) => e?.message).join("; "));
-          return;
-        }
+        if (showErrors(data.createBoutTag?.errors)) return;
       }
       setRecent(remember(choice));
     } catch (e) {
@@ -209,8 +216,10 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     try {
       for (const bt of mine) {
         // by identity, not by object: each application carries its own copy of the tag
-        if (bt.tag && (isTag(bt.tag, tag) || isAbove(tag, bt.tag)))
-          await deleteBoutTag.mutateAsync({ boutTagId: bt.id });
+        if (bt.tag && (isTag(bt.tag, tag) || isAbove(tag, bt.tag))) {
+          const data = await deleteBoutTag.mutateAsync({ boutTagId: bt.id });
+          if (showErrors(data.deleteBoutTag?.errors)) return;
+        }
       }
     } catch (e) {
       setError(String(e));
