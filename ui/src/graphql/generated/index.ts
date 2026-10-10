@@ -113,12 +113,16 @@ export type FeedStreamPartsFragment = {
 
 export type ItemTagPartsFragment = {
   id: string;
+  certainty: string | null;
+  userId: string | null;
   user: { username: string | null } | null;
   tag: {
     id: string;
     name: string;
     slug: string;
     description: string | null;
+    kind: string | null;
+    iri: string | null;
   } | null;
 };
 
@@ -147,6 +151,8 @@ export type TagPartsFragment = {
   name: string;
   description: string | null;
   slug: string;
+  kind: string | null;
+  iri: string | null;
 };
 
 export type CancelCandidateNotificationsMutationVariables = Exact<{
@@ -224,6 +230,9 @@ export type CreateBoutTagMutationVariables = Exact<{
   tagId?: string | number | null | undefined;
   tagName: string;
   tagDescription?: string | null | undefined;
+  tagKind?: string | null | undefined;
+  tagIri?: string | null | undefined;
+  certainty?: string | null | undefined;
   boutId: string | number;
 }>;
 
@@ -231,12 +240,16 @@ export type CreateBoutTagMutation = {
   createBoutTag: {
     result: {
       id: string;
+      certainty: string | null;
+      userId: string | null;
       user: { username: string | null } | null;
       tag: {
         id: string;
         name: string;
         slug: string;
         description: string | null;
+        kind: string | null;
+        iri: string | null;
       } | null;
     } | null;
     errors: Array<{
@@ -463,6 +476,37 @@ export type SeedResourceMutation = {
       startTime: Date | null;
       endTime: Date | null;
       seededCount: number | null;
+    } | null;
+    errors: Array<{
+      code: string | null;
+      fields: Array<string> | null;
+      message: string | null;
+      shortMessage: string | null;
+      vars: { [key: string]: any } | null;
+    }>;
+  };
+};
+
+export type SetBoutTagCertaintyMutationVariables = Exact<{
+  boutTagId: string | number;
+  certainty?: string | null | undefined;
+}>;
+
+export type SetBoutTagCertaintyMutation = {
+  setBoutTagCertainty: {
+    result: {
+      id: string;
+      certainty: string | null;
+      userId: string | null;
+      user: { username: string | null } | null;
+      tag: {
+        id: string;
+        name: string;
+        slug: string;
+        description: string | null;
+        kind: string | null;
+        iri: string | null;
+      } | null;
     } | null;
     errors: Array<{
       code: string | null;
@@ -724,12 +768,16 @@ export type BoutTagsQuery = {
     count: number | null;
     results: Array<{
       id: string;
+      certainty: string | null;
+      userId: string | null;
       user: { username: string | null } | null;
       tag: {
         id: string;
         name: string;
         slug: string;
         description: string | null;
+        kind: string | null;
+        iri: string | null;
       } | null;
     }> | null;
   } | null;
@@ -967,6 +1015,8 @@ export type TagsQuery = {
       name: string;
       description: string | null;
       slug: string;
+      kind: string | null;
+      iri: string | null;
     }> | null;
   } | null;
 };
@@ -981,6 +1031,8 @@ export type SearchTagsQuery = {
     name: string;
     description: string | null;
     slug: string;
+    kind: string | null;
+    iri: string | null;
   }>;
 };
 
@@ -1192,6 +1244,8 @@ export const ItemTagPartsFragmentDoc = new TypedDocumentString(
   `
     fragment ItemTagParts on ItemTag {
   id
+  certainty
+  userId
   user {
     username
   }
@@ -1200,6 +1254,8 @@ export const ItemTagPartsFragmentDoc = new TypedDocumentString(
     name
     slug
     description
+    kind
+    iri
   }
 }
     `,
@@ -1240,6 +1296,8 @@ export const TagPartsFragmentDoc = new TypedDocumentString(
   name
   description
   slug
+  kind
+  iri
 }
     `,
   { fragmentName: "TagParts" },
@@ -1430,9 +1488,9 @@ useCreateBoutMutation.fetcher = (
   );
 
 export const CreateBoutTagDocument = new TypedDocumentString(`
-    mutation createBoutTag($tagId: ID, $tagName: String!, $tagDescription: String, $boutId: ID!) {
+    mutation createBoutTag($tagId: ID, $tagName: String!, $tagDescription: String, $tagKind: String, $tagIri: String, $certainty: String, $boutId: ID!) {
   createBoutTag(
-    input: {bout: {id: $boutId}, tag: {id: $tagId, name: $tagName, description: $tagDescription}}
+    input: {bout: {id: $boutId}, tag: {id: $tagId, name: $tagName, description: $tagDescription, kind: $tagKind, iri: $tagIri}, certainty: $certainty}
   ) {
     result {
       ...ItemTagParts
@@ -1451,6 +1509,8 @@ export const CreateBoutTagDocument = new TypedDocumentString(`
 }
 fragment ItemTagParts on ItemTag {
   id
+  certainty
+  userId
   user {
     username
   }
@@ -1459,6 +1519,8 @@ fragment ItemTagParts on ItemTag {
     name
     slug
     description
+    kind
+    iri
   }
 }`);
 
@@ -2089,6 +2151,80 @@ useSeedResourceMutation.fetcher = (
 ) =>
   fetcher<SeedResourceMutation, SeedResourceMutationVariables>(
     SeedResourceDocument,
+    variables,
+    options,
+  );
+
+export const SetBoutTagCertaintyDocument = new TypedDocumentString(`
+    mutation setBoutTagCertainty($boutTagId: ID!, $certainty: String) {
+  setBoutTagCertainty(id: $boutTagId, input: {certainty: $certainty}) {
+    result {
+      ...ItemTagParts
+    }
+    errors {
+      ...ErrorParts
+    }
+  }
+}
+    fragment ErrorParts on MutationError {
+  code
+  fields
+  message
+  shortMessage
+  vars
+}
+fragment ItemTagParts on ItemTag {
+  id
+  certainty
+  userId
+  user {
+    username
+  }
+  tag {
+    id
+    name
+    slug
+    description
+    kind
+    iri
+  }
+}`);
+
+export const useSetBoutTagCertaintyMutation = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: UseMutationOptions<
+    SetBoutTagCertaintyMutation,
+    TError,
+    SetBoutTagCertaintyMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    SetBoutTagCertaintyMutation,
+    TError,
+    SetBoutTagCertaintyMutationVariables,
+    TContext
+  >({
+    mutationKey: ["setBoutTagCertainty"],
+    mutationFn: (variables?: SetBoutTagCertaintyMutationVariables) =>
+      fetcher<
+        SetBoutTagCertaintyMutation,
+        SetBoutTagCertaintyMutationVariables
+      >(SetBoutTagCertaintyDocument, variables)(),
+    ...options,
+  });
+};
+
+useSetBoutTagCertaintyMutation.getKey = () => ["setBoutTagCertainty"];
+
+useSetBoutTagCertaintyMutation.fetcher = (
+  variables: SetBoutTagCertaintyMutationVariables,
+  options?: RequestInit["headers"],
+) =>
+  fetcher<SetBoutTagCertaintyMutation, SetBoutTagCertaintyMutationVariables>(
+    SetBoutTagCertaintyDocument,
     variables,
     options,
   );
@@ -2772,6 +2908,8 @@ export const BoutTagsDocument = new TypedDocumentString(`
 }
     fragment ItemTagParts on ItemTag {
   id
+  certainty
+  userId
   user {
     username
   }
@@ -2780,6 +2918,8 @@ export const BoutTagsDocument = new TypedDocumentString(`
     name
     slug
     description
+    kind
+    iri
   }
 }`);
 
@@ -3287,6 +3427,8 @@ export const TagsDocument = new TypedDocumentString(`
   name
   description
   slug
+  kind
+  iri
 }`);
 
 export const useTagsQuery = <TData = TagsQuery, TError = unknown>(
@@ -3323,6 +3465,8 @@ export const SearchTagsDocument = new TypedDocumentString(`
   name
   description
   slug
+  kind
+  iri
 }`);
 
 export const useSearchTagsQuery = <TData = SearchTagsQuery, TError = unknown>(

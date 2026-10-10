@@ -5,3 +5,5 @@ node_modules
 yarn.lock
 package-lock.json
 public
+# copied from a register release by scripts/vendor-register.mjs
+src/register/*.json
