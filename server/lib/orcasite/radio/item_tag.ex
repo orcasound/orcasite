@@ -143,6 +143,11 @@ defmodule Orcasite.Radio.ItemTag do
         change
         |> Ash.Changeset.manage_relationship(:user, current_user, type: :append)
       end
+
+      # The UI asks for these in its response (ItemTagParts). If they aren't loaded,
+      # AshGraphql raises after the row is saved: the tag is applied, but the UI is told
+      # the request failed.
+      change load([:tag, :user])
     end
   end
 

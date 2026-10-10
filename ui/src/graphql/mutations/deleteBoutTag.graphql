@@ -1,7 +1,8 @@
 mutation deleteBoutTag($boutTagId: ID!) {
   deleteBoutTag(id: $boutTagId) {
+    # only the id: a destroyed row has no relationships left to load
     result {
-      ...ItemTagParts
+      id
     }
     errors {
       ...ErrorParts
