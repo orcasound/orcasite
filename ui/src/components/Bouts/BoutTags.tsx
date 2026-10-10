@@ -24,7 +24,7 @@ import {
   useSetBoutTagCertaintyMutation,
   useTagsQuery,
 } from "@/graphql/generated";
-import { describe, displayName, search } from "@/register";
+import { describe, displayName, exactly, search } from "@/register";
 import { fold } from "@/register/fold";
 
 import {
@@ -400,7 +400,28 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
             value={null}
             onChange={(_event, value) => {
               if (!value) return;
-              applyChoice(typeof value === "string" ? { name: value } : value);
+              if (typeof value !== "string") {
+                applyChoice(value);
+              } else {
+                // typed and entered rather than picked: a name the register has is that
+                // entity, so `J pod` applies J pod rather than an unclassified tag
+                const [only, ...more] = exactly(value);
+                if (more.length > 0) {
+                  setError(
+                    `${value} names more than one animal: pick one from the list`,
+                  );
+                  return;
+                }
+                applyChoice(
+                  only
+                    ? {
+                        name: displayName(only.iri) ?? only.label,
+                        kind: "animal",
+                        iri: only.iri,
+                      }
+                    : { name: value },
+                );
+              }
               setInput("");
             }}
             getOptionLabel={(option) =>
