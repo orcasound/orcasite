@@ -57,6 +57,19 @@ export function describe(found: Entity): string {
 }
 
 /**
+ * The entities a name is exactly, by the fold: one, none, or (for a bare designation
+ * like `T37`, both the matriline and the animal) several.
+ */
+export function exactly(name: string): Entity[] {
+  const q = fold(name);
+  const found = new Map<string, Entity>();
+  rows.forEach((row, i) => {
+    if (q && folded[i] === q) found.set(row[0], entities.get(row[0])!);
+  });
+  return [...found.values()];
+}
+
+/**
  * The entities a typed name could mean, best first: every name that folds to exactly
  * what was typed (bare `T37` is both a matriline and an animal, and both are offered),
  * then names that begin with it, then names with a word that does. One entry per

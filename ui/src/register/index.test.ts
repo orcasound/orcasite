@@ -1,4 +1,4 @@
-import { displayName, search } from ".";
+import { displayName, exactly, search } from ".";
 
 describe("search", () => {
   it("finds an entity by a name it is never shown by", () => {
@@ -35,5 +35,17 @@ describe("displayName", () => {
 
   it("uses an English common name, not the first one listed", () => {
     expect(displayName("SSA:0000901")).toBe("Humpback whale");
+  });
+});
+
+describe("exactly", () => {
+  it("is the one entity a name folds to, hidden names included", () => {
+    expect(exactly("j  POD").map((e) => e.iri)).toEqual(["SSA:0000020"]);
+    expect(exactly("SRKW").map((e) => e.iri)).toEqual(["SSA:0000010"]);
+  });
+
+  it("is both entities a bare designation names, and nothing for a near miss", () => {
+    expect(exactly("T37")).toHaveLength(2);
+    expect(exactly("J po")).toEqual([]);
   });
 });
