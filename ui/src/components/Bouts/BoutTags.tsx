@@ -293,7 +293,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                     ? { borderStyle: "dashed" }
                     : undefined
                 }
-                {...(myTag && { onDelete: () => removeTag(tag) })}
+                {...(myTag && !busy && { onDelete: () => removeTag(tag) })}
                 color={myTag ? "primary" : "default"}
                 label={myWord ? `${tagLabel(tag)} (${myWord})` : tagLabel(tag)}
                 icon={
@@ -309,7 +309,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                   <Button
                     size="small"
                     sx={{ minWidth: 0, px: 1 }}
-                    disabled={setCertainty.isPending}
+                    disabled={busy || setCertainty.isPending}
                     aria-label={`How sure you are of ${tagLabel(tag)}`}
                     onClick={() =>
                       setCertainty.mutate({
@@ -380,15 +380,16 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                                     ? `${tagLabel(above)} (${word})`
                                     : tagLabel(above)
                                 }
-                                {...(mineAbove && {
-                                  onDelete: () => removeTag(above),
-                                })}
+                                {...(mineAbove &&
+                                  !busy && {
+                                    onDelete: () => removeTag(above),
+                                  })}
                               />
                               {mineAbove && (
                                 <Button
                                   size="small"
                                   sx={{ minWidth: 0, px: 1 }}
-                                  disabled={setCertainty.isPending}
+                                  disabled={busy || setCertainty.isPending}
                                   aria-label={`How sure you are of ${tagLabel(above)}`}
                                   onClick={() =>
                                     setCertainty.mutate({
