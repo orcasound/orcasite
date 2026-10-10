@@ -1,4 +1,4 @@
-import { displayName, exactly, search } from ".";
+import { displayName, exactly, labelOf, search } from ".";
 
 describe("search", () => {
   it("finds an entity by a name it is never shown by", () => {
@@ -47,5 +47,12 @@ describe("exactly", () => {
   it("is both entities a bare designation names, and nothing for a near miss", () => {
     expect(exactly("T37")).toHaveLength(2);
     expect(exactly("J po")).toEqual([]);
+  });
+});
+
+describe("labelOf", () => {
+  it("tells apart two entities that share a common name", () => {
+    expect(displayName("SSA:0000901")).toBe(displayName("SSA:0000946"));
+    expect(labelOf("SSA:0000901")).not.toBe(labelOf("SSA:0000946"));
   });
 });

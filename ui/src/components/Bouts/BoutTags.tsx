@@ -24,7 +24,7 @@ import {
   useSetBoutTagCertaintyMutation,
   useTagsQuery,
 } from "@/graphql/generated";
-import { describe, displayName, exactly, search } from "@/register";
+import { describe, displayName, exactly, labelOf, search } from "@/register";
 import { fold } from "@/register/fold";
 
 import {
@@ -43,7 +43,13 @@ type BoutTag = NonNullable<
 >[number];
 
 /** What applying a tag sends: a button, a register name, an existing tag or free text */
-type TagChoice = { name: string; kind?: TagKind | null; iri?: string | null };
+type TagChoice = {
+  name: string;
+  kind?: TagKind | null;
+  iri?: string | null;
+  /** An existing tag picked from the list, applied as that tag and no other */
+  id?: string | null;
+};
 
 type Option = TagChoice & { detail?: string };
 
@@ -125,9 +131,13 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     Record<string, HTMLDivElement | null>
   >({});
 
-  const refetch = () => {
-    boutTagsQuery.refetch();
-    tagsQuery.refetch();
+  const refetch = () =>
+    Promise.all([boutTagsQuery.refetch(), tagsQuery.refetch()]);
+  // Nothing else is applied until the tags it would be checked against are fresh: a
+  // second pick against the old list would re-apply the chain's shared ancestors.
+  const refreshThenRelease = async () => {
+    await refetch().catch(() => undefined);
+    setBusy(false);
   };
   const createBoutTag = useCreateBoutTagMutation();
   const deleteBoutTag = useDeleteBoutTagMutation();
@@ -137,16 +147,23 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
   });
 
   /**
-   * The name to send for a choice: an existing tag's own, when it is the same name by
-   * the register's fold (`T036` and production's unclassified `T36`), so the server
-   * finds that tag rather than making a second one for the same animal.
+   * What to send for a choice. An existing tag picked from the list goes by its id. An
+   * animal goes by the register's label, not the name a button shows (two entities can
+   * share a common name), or by an existing tag's own name when that is the same name
+   * by the register's fold (`T036` and production's unclassified `T36`), so the server
+   * finds that tag rather than making a second one. Anything else by exactly its name:
+   * the fold would make `S1` and `S01` one tag.
    */
-  const nameFor = (choice: TagChoice) =>
-    existingTags.find(
+  const toSend = (choice: TagChoice) => {
+    if (choice.id) return { tagId: choice.id, tagName: choice.name };
+    if (!choice.iri) return { tagName: choice.name };
+    const label = labelOf(choice.iri) ?? choice.name;
+    const same = existingTags.find(
       (tag) =>
-        fold(tag.name) === fold(choice.name) &&
-        (!tag.iri || !choice.iri || tag.iri === choice.iri),
-    )?.name ?? choice.name;
+        fold(tag.name) === fold(label) && (!tag.iri || tag.iri === choice.iri),
+    );
+    return { tagName: same?.name ?? label };
+  };
 
   /**
    * Apply a tag with everything above it that this moderator hasn't already applied,
@@ -167,7 +184,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
       for (const c of chain) {
         const data = await createBoutTag.mutateAsync({
           boutId: bout.id,
-          tagName: nameFor(c),
+          ...toSend(c),
           tagKind: c.kind ?? undefined,
           tagIri: c.iri ?? undefined,
         });
@@ -181,8 +198,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     } catch (e) {
       setError(String(e));
     } finally {
-      setBusy(false);
-      refetch();
+      await refreshThenRelease();
     }
   };
 
@@ -199,8 +215,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     } catch (e) {
       setError(String(e));
     } finally {
-      setBusy(false);
-      refetch();
+      await refreshThenRelease();
     }
   };
 
@@ -222,6 +237,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
       .filter((tag) => fold(tag.name).includes(q))
       .slice(0, 10)
       .map((tag) => ({
+        id: tag.id,
         name: tag.name,
         kind: tag.kind as TagKind | null,
         iri: tag.iri,
@@ -320,9 +336,68 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                     </Typography>
                   )}
                   {implied.length > 0 && (
-                    <Typography variant="caption" color="text.secondary">
-                      Also on the bout: {implied.map(tagLabel).join(", ")}
-                    </Typography>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">
+                        Also on the bout, implied by it:
+                      </Typography>
+                      {/* your own applications of these keep their controls here, even
+                          when someone else's deeper tag is what hides their chips */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 1,
+                          mt: 1,
+                        }}
+                      >
+                        {implied.map((above) => {
+                          const mineAbove = mine.find(
+                            (bt) => bt.tag && isTag(bt.tag, above),
+                          );
+                          const word =
+                            mineAbove?.certainty &&
+                            certaintyWord[mineAbove.certainty];
+                          return (
+                            <Box
+                              key={above.slug}
+                              sx={{ display: "flex", alignItems: "center" }}
+                            >
+                              <Chip
+                                size="small"
+                                variant="outlined"
+                                color={mineAbove ? "primary" : "default"}
+                                label={
+                                  word
+                                    ? `${tagLabel(above)} (${word})`
+                                    : tagLabel(above)
+                                }
+                                {...(mineAbove && {
+                                  onDelete: () => removeTag(above),
+                                })}
+                              />
+                              {mineAbove && (
+                                <Button
+                                  size="small"
+                                  sx={{ minWidth: 0, px: 1 }}
+                                  disabled={setCertainty.isPending}
+                                  aria-label={`How sure you are of ${tagLabel(above)}`}
+                                  onClick={() =>
+                                    setCertainty.mutate({
+                                      boutTagId: mineAbove.id,
+                                      certainty: nextCertainty(
+                                        mineAbove.certainty,
+                                      ),
+                                    })
+                                  }
+                                >
+                                  ?
+                                </Button>
+                              )}
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
                   )}
                   {tag.description && (
                     <Typography variant="body2">{tag.description}</Typography>
@@ -394,6 +469,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
           ))}
           <Autocomplete<Option, false, false, true>
             freeSolo
+            disabled={busy}
             options={options}
             filterOptions={(o) => o}
             inputValue={input}
