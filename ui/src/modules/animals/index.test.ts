@@ -8,7 +8,7 @@ describe("search", () => {
     });
   });
 
-  it("forgives padding, hyphens and apostrophes, as the register's fold does", () => {
+  it("forgives padding, hyphens and apostrophes, as the register's name comparison does", () => {
     expect(search("T34s")[0].iri).toBe("SSA:0002014");
     expect(search("Biggs")[0].iri).toBe("SSA:0000002");
     expect(search("J-35")[0].iri).toBe("SSA:0000101");
@@ -39,7 +39,7 @@ describe("displayName", () => {
 });
 
 describe("exactly", () => {
-  it("is the one entity a name folds to, hidden names included", () => {
+  it("is the one entity a name matches exactly, hidden names included", () => {
     expect(exactly("j  POD").map((e) => e.iri)).toEqual(["SSA:0000020"]);
     expect(exactly("SRKW").map((e) => e.iri)).toEqual(["SSA:0000010"]);
   });

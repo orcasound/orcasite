@@ -24,8 +24,14 @@ import {
   useSetBoutTagCertaintyMutation,
   useTagsQuery,
 } from "@/graphql/generated";
-import { describe, displayName, exactly, labelOf, search } from "@/register";
-import { fold } from "@/register/fold";
+import {
+  describe,
+  displayName,
+  exactly,
+  labelOf,
+  search,
+} from "@/modules/animals";
+import { normalizeName } from "@/modules/animals/normalizeName";
 
 import {
   type AppliedTag,
@@ -55,11 +61,12 @@ type Option = TagChoice & { detail?: string };
 
 /**
  * How sure the moderator is, one tap at a time. A tag is applied saying nothing about
- * it, which is what the column's nil means; the `?` steps it through probable,
- * possible and certain and back to nothing, so `certain` is something a moderator chose
- * rather than what every tap wrote. Hedging has to cost no more than not hedging (#1015).
+ * it, which is what the column's nil means. Each tap of `?` makes it surer: possible,
+ * then probable, then certain, then back to saying nothing. So `certain` is something a
+ * moderator chose rather than what every tap wrote, and saying you're unsure costs no
+ * more than not saying (#1015).
  */
-const certainties = [null, "probable", "possible", "certain"] as const;
+const certainties = [null, "possible", "probable", "certain"] as const;
 const nextCertainty = (certainty: string | null) =>
   certainties[
     (certainties.indexOf((certainty ?? null) as never) + 1) % certainties.length
@@ -163,9 +170,9 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
    * What to send for a choice. An existing tag picked from the list goes by its id. An
    * animal goes by the register's label, not the name a button shows (two entities can
    * share a common name), or by an existing tag's own name when that is the same name
-   * by the register's fold (`T036` and production's unclassified `T36`), so the server
+   * by the register's name comparison (`T036` and production's unclassified `T36`), so the server
    * finds that tag rather than making a second one. Anything else by exactly its name:
-   * the fold would make `S1` and `S01` one tag.
+   * that comparison would make `S1` and `S01` one tag.
    */
   const toSend = (choice: TagChoice) => {
     if (choice.id) return { tagId: choice.id, tagName: choice.name };
@@ -173,7 +180,8 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     const label = labelOf(choice.iri) ?? choice.name;
     const same = existingTags.find(
       (tag) =>
-        fold(tag.name) === fold(label) && (!tag.iri || tag.iri === choice.iri),
+        normalizeName(tag.name) === normalizeName(label) &&
+        (!tag.iri || tag.iri === choice.iri),
     );
     return { tagName: same?.name ?? label };
   };
@@ -238,7 +246,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
   // Typing reaches what the buttons don't: every name the register publishes, hidden
   // ones included (SRKW, T34s), then the tags moderators have already made
   const options: Option[] = useMemo(() => {
-    const q = fold(input);
+    const q = normalizeName(input);
     if (!q) return [];
     const fromRegister: Option[] = search(input, 15).map((entity) => ({
       // as a button would name it, so the stored name doesn't depend on the path taken
@@ -250,7 +258,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     const cited = new Set(fromRegister.map((o) => o.iri));
     const fromTags: Option[] = existingTags
       .filter((tag) => !(tag.iri && cited.has(tag.iri)))
-      .filter((tag) => fold(tag.name).includes(q))
+      .filter((tag) => normalizeName(tag.name).includes(q))
       .slice(0, 10)
       .map((tag) => ({
         id: tag.id,
@@ -330,7 +338,7 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
                 }
               />
               {myTag && (
-                <Tooltip title="How sure: probably → possibly → certainly → unsaid">
+                <Tooltip title="How sure: possibly → probably → certainly → not saying">
                   <Button
                     size="small"
                     sx={{ minWidth: 0, px: 1 }}

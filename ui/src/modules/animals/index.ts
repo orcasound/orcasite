@@ -1,5 +1,5 @@
 import ancestry from "./ancestors.json";
-import { fold } from "./fold";
+import { normalizeName } from "./normalizeName";
 import register from "./searchable-names.json";
 
 /**
@@ -29,7 +29,7 @@ type Entity = {
 };
 
 const rows = register.names as Row[];
-const folded = rows.map((row) => fold(row[1]));
+const normalized = rows.map((row) => normalizeName(row[1]));
 
 const entities = new Map<string, Entity>();
 const commonNames = new Map<string, string>();
@@ -66,31 +66,31 @@ export function describe(found: Entity): string {
 }
 
 /**
- * The entities a name is exactly, by the fold: one, none, or (for a bare designation
+ * The entities a name is exactly, once both are normalized: one, none, or (for a bare designation
  * like `T37`, both the matriline and the animal) several.
  */
 export function exactly(name: string): Entity[] {
-  const q = fold(name);
+  const q = normalizeName(name);
   const found = new Map<string, Entity>();
   rows.forEach((row, i) => {
-    if (q && folded[i] === q) found.set(row[0], entities.get(row[0])!);
+    if (q && normalized[i] === q) found.set(row[0], entities.get(row[0])!);
   });
   return [...found.values()];
 }
 
 /**
- * The entities a typed name could mean, best first: every name that folds to exactly
- * what was typed (bare `T37` is both a matriline and an animal, and both are offered),
+ * The entities a typed name could mean, best first: every name that normalizes to
+ * exactly what was typed (bare `T37` is both a matriline and an animal, and both are offered),
  * then names that begin with it, then names with a word that does. One entry per
  * entity, however many of its names match.
  */
 export function search(query: string, limit = 20): Entity[] {
-  const q = fold(query);
+  const q = normalizeName(query);
   if (!q) return [];
   const tiers: Entity[][] = [[], [], []];
   const seen = new Set<string>();
   rows.forEach((row, i) => {
-    const name = folded[i];
+    const name = normalized[i];
     const tier =
       name === q ? 0 : name.startsWith(q) ? 1 : name.includes(` ${q}`) ? 2 : -1;
     if (tier < 0) return;

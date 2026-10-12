@@ -4,10 +4,10 @@
 //
 //   node scripts/vendor-register.mjs 2026.10.1
 //
-// Writes src/register/searchable-names.json, every published name of every current
-// entity; src/register/ancestors.json, each entity's groups and species, nearest first;
-// and src/register/fold-cases.json, the register's test cases for its comparison
-// rule (ADR-0019), which src/register/fold.test.ts holds fold() to.
+// Writes, in src/modules/animals: searchable-names.json, every published name of every
+// current entity; ancestors.json, each entity's groups and species, nearest first; and
+// normalize-name-cases.json, the register's test cases for its rule for comparing names
+// (ADR-0019), which normalizeName.test.ts checks normalizeName() against.
 
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
@@ -55,7 +55,7 @@ const names = tsv("searchable_name.tsv")
     row.entity_rank,
   ]);
 
-const out = path.join(import.meta.dirname, "..", "src", "register");
+const out = path.join(import.meta.dirname, "..", "src", "modules", "animals");
 writeFileSync(
   path.join(out, "searchable-names.json"),
   JSON.stringify({
@@ -73,7 +73,7 @@ writeFileSync(
   JSON.stringify({ edition, ancestors }) + "\n",
 );
 writeFileSync(
-  path.join(out, "fold-cases.json"),
+  path.join(out, "normalize-name-cases.json"),
   JSON.stringify(
     { edition, cases: tsv("fold_test.tsv").map((c) => [c.input, c.folded]) },
     null,

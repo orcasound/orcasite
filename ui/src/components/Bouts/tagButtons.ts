@@ -1,4 +1,7 @@
-import { ancestorsOf as registerAncestorsOf, displayName } from "@/register";
+import {
+  ancestorsOf as registerAncestorsOf,
+  displayName,
+} from "@/modules/animals";
 
 /**
  * The buttons a moderator tags a bout with (#1015), after the OrcaHello moderator
