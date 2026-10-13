@@ -159,6 +159,8 @@ export function BoutTags({ bout }: { bout: Pick<Bout, "id"> }) {
     return !!errors && errors.length > 0;
   };
   const setCertainty = useSetBoutTagCertaintyMutation({
+    // as adding and removing do, so an earlier error doesn't outlive a success
+    onMutate: () => setError(null),
     onSuccess: (data) => {
       showErrors(data.setBoutTagCertainty?.errors);
       return refetch();
