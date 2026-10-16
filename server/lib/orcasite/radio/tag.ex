@@ -133,7 +133,9 @@ defmodule Orcasite.Radio.Tag do
       # the name, typing `Biggs` renamed production's `Bigg's` tag to `Biggs`.
       upsert_fields [:updated_at]
 
-      accept [:name, :description]
+      # kind and iri only on a new tag: an upsert onto an existing one leaves them alone,
+      # since ItemTag.Changes.ResolveTag has already decided whether to fill them.
+      accept [:name, :description, :kind, :iri]
 
       change slugify(:name, into: :slug)
     end

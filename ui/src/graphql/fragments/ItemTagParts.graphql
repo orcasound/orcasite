@@ -1,5 +1,8 @@
 fragment ItemTagParts on ItemTag {
   id
+  certainty
+  # the attribute, not user { id }: a mutation's result has no user loaded
+  userId
   user {
     username
   }
@@ -8,5 +11,7 @@ fragment ItemTagParts on ItemTag {
     name
     slug
     description
+    kind
+    iri
   }
 }

@@ -3,4 +3,6 @@ fragment TagParts on Tag {
   name
   description
   slug
+  kind
+  iri
 }
