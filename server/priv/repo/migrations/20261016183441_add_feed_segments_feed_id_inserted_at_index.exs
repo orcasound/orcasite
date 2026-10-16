@@ -15,6 +15,6 @@ defmodule Orcasite.Repo.Migrations.AddFeedSegmentsFeedIdInsertedAtIndex do
   end
 
   def down do
-    drop_if_exists index(:feed_segments, [:feed_id, :inserted_at])
+    drop_if_exists index(:feed_segments, [:feed_id, :inserted_at], concurrently: true)
   end
 end
