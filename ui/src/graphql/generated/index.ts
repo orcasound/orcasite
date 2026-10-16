@@ -255,16 +255,7 @@ export type DeleteBoutTagMutationVariables = Exact<{
 
 export type DeleteBoutTagMutation = {
   deleteBoutTag: {
-    result: {
-      id: string;
-      user: { username: string | null } | null;
-      tag: {
-        id: string;
-        name: string;
-        slug: string;
-        description: string | null;
-      } | null;
-    } | null;
+    result: { id: string } | null;
     errors: Array<{
       code: string | null;
       fields: Array<string> | null;
@@ -1511,7 +1502,7 @@ export const DeleteBoutTagDocument = new TypedDocumentString(`
     mutation deleteBoutTag($boutTagId: ID!) {
   deleteBoutTag(id: $boutTagId) {
     result {
-      ...ItemTagParts
+      id
     }
     errors {
       ...ErrorParts
@@ -1524,18 +1515,6 @@ export const DeleteBoutTagDocument = new TypedDocumentString(`
   message
   shortMessage
   vars
-}
-fragment ItemTagParts on ItemTag {
-  id
-  user {
-    username
-  }
-  tag {
-    id
-    name
-    slug
-    description
-  }
 }`);
 
 export const useDeleteBoutTagMutation = <TError = unknown, TContext = unknown>(

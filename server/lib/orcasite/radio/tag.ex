@@ -128,7 +128,10 @@ defmodule Orcasite.Radio.Tag do
       primary? true
       upsert? true
       upsert_identity :unique_slug
-      upsert_fields [:name, :description]
+      # If the slug is already taken, reuse that tag without changing its name or
+      # description. Slugs ignore capitals and punctuation, so when this also upserted
+      # the name, typing `Biggs` renamed production's `Bigg's` tag to `Biggs`.
+      upsert_fields [:updated_at]
 
       accept [:name, :description]
 
