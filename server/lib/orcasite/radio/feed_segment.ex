@@ -18,6 +18,10 @@ defmodule Orcasite.Radio.FeedSegment do
       index [:start_time]
       index [:end_time]
       index [:feed_id]
+      # The feed list's `online` flag asks for a segment of this feed inserted in the
+      # last five minutes. Built concurrently: the table has tens of millions of rows
+      # and a plain CREATE INDEX would block segment ingestion while it runs.
+      index [:feed_id, :inserted_at], concurrently: true
       index [:feed_stream_id]
       index [:bucket]
       index [:inserted_at]
