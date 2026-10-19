@@ -74,7 +74,12 @@ export function AudioImagesLayer({
           pixelsPerMinute,
         );
         const duration = differenceInMilliseconds(endTime, startTime);
-        const width = (pixelsPerMinute * duration) / (60 * 1000);
+        const exactWidth = (pixelsPerMinute * duration) / (60 * 1000);
+        // Snap both edges to whole pixels. A tile that starts or ends mid-pixel
+        // is anti-aliased, so while the timeline scrolls a hairline of the
+        // background colour flickers between neighbouring tiles.
+        const left = Math.round(offset);
+        const width = Math.round(offset + exactWidth) - left;
         const audioImageUrl = audioImageToUrl(audioImage);
         if (audioImage.status === "complete") {
           return [
@@ -91,7 +96,7 @@ export function AudioImagesLayer({
                 justifyContent: "center",
                 minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
                 position: "absolute",
-                left: offset,
+                left,
                 top: TICKER_HEIGHT,
                 width: width,
                 backgroundColor: (theme) => theme.palette.accent2.main,
@@ -113,7 +118,7 @@ export function AudioImagesLayer({
               borderRadius: 0,
               minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
               position: "absolute",
-              left: offset,
+              left,
               top: TICKER_HEIGHT,
               width: width,
               transformOrigin: 0,
