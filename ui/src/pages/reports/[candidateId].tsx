@@ -105,6 +105,7 @@ const CandidatePage: NextPageWithLayout = () => {
                 )}
               </Box>
             </Box>
+
             {candidate && (
               <DetectionsTable
                 detections={candidate.detections}

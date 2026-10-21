@@ -1,3 +1,5 @@
+import { intervalToDuration } from "date-fns";
+
 export const formatTimestamp = (timestamp: string | Date) => {
   const date = new Date(timestamp);
 
@@ -34,3 +36,16 @@ export const roundToNearest = (
 
   return new Date(roundedTimestamp);
 };
+
+export function durationString(durationMs: number | null | undefined) {
+  if (typeof durationMs !== "number") return "";
+  const duration = intervalToDuration({ start: 0, end: durationMs });
+  const hours = Math.floor(durationMs / 1000 / 60 / 60);
+
+  const zeroPad = (num: number) => String(num).padStart(2, "0");
+  const formatted = [hours, duration.minutes ?? 0, duration.seconds ?? 0]
+    .map(zeroPad)
+    .join(":");
+
+  return formatted;
+}
