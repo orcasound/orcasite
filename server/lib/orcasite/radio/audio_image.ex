@@ -177,21 +177,29 @@ defmodule Orcasite.Radio.AudioImage do
                end
              end)
 
+      # Name the image's object once, when the image is new. This action is an
+      # upsert, and asking again for a range the archive already covers must
+      # leave each existing image pointing at the object it has, whatever
+      # format that was rendered in.
       change after_action(
-               fn _change, record, _context ->
-                 feed = record |> Ash.load!(:feed) |> Map.get(:feed)
+               fn
+                 _change, %{object_path: nil} = record, _context ->
+                   feed = record |> Ash.load!(:feed) |> Map.get(:feed)
 
-                 record
-                 |> Ash.Changeset.for_update(:update, %{
-                   object_path:
-                     Orcasite.Radio.AwsClient.spectrogram_object_path(
-                       feed.node_name,
-                       record.start_time,
-                       record.end_time,
-                       record.id
-                     )
-                 })
-                 |> Ash.update(authorize?: false)
+                   record
+                   |> Ash.Changeset.for_update(:update, %{
+                     object_path:
+                       Orcasite.Radio.AwsClient.spectrogram_object_path(
+                         feed.node_name,
+                         record.start_time,
+                         record.end_time,
+                         record.id
+                       )
+                   })
+                   |> Ash.update(authorize?: false)
+
+                 _change, record, _context ->
+                   {:ok, record}
                end,
                prepend?: true
              )
