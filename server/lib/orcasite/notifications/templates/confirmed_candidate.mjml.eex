@@ -1,0 +1,64 @@
+<mjml>
+  <mj-body>
+    <!-- header -->
+    <mj-section padding="0" full-width="" background-color="#c4cdd3">
+      <mj-column padding="0">
+        <mj-image src="https://orcasite.s3.us-west-2.amazonaws.com/email_assets/orcasound_email_header.jpg" alt="Orcasound" align="center" container-background-color="#c4cdd3"></mj-image>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column background-color="#404040" padding="18px">
+        <mj-text font-size="18px" color="#F2F2F2" font-family="Helvetica" line-height="150%">
+          {{ meta["message"] }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column>
+        <mj-image src="https://orcasite.s3.us-west-2.amazonaws.com/email_assets/orcasound_dont_miss.jpg"></mj-image>
+
+        <mj-button href="https://live.orcasound.net/listen/{{ node }}?utm_source=email&utm_medium=email&utm_campaign=notifications" background-color="#0F0F0F" border-radius="31px" font-size="18px" padding="18px" font-weight="bold">LISTEN NOW!</mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section>
+      <mj-column background-color="#404040">
+        <mj-text color="#F2F2F2" font-size="16px" align="center" line-height="150%" font-family="Helvetica">
+          If you miss the concert, <br /> watch the <a href="https://orcasound.net/blog?ecm&utm_source=email&utm_medium=email&utm_campaign=notifications" style="color: #007C89;">Orcasound blog</a> for recordings & bioacoustic analysis!
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- footer -->
+    <mj-section background-color="#5d5b72" full-width="">
+      <mj-column>
+        <mj-text font-weight="bold" font-family="Helvetica" color="#ffffff" align="center" line-height="150%">
+          If you encounter whales at sea, <a href="https://www.bewhalewise.org/" style="font-weight: normal; color: #ffffff">Be Whale Wise</a>.<br />
+          Know the laws and best practices in both the U.S. and Canada.
+        </mj-text>
+
+        <mj-divider border-color="#404040" border-width="1px"></mj-divider>
+
+        <mj-text color="#ffffff" font-size="12px" font-style="italic" align="center" line-height="150%">
+          Copyright © 2023 Orcasound, All rights reserved. <br />
+          You are receiving this email because you opted in via our website.
+        </mj-text>
+        <mj-text color="#ffffff" font-size="12px" align="center" line-height="150%">
+          <strong>Our mailing address is:</strong><br />
+          Orcasound<br />
+          7044 17th Ave NE<br />
+          Seattle, WA 98115-5739
+        </mj-text>
+        {{#if unsubscribe_token }}
+          <mj-text color="#ffffff" font-size="12px" align="center" line-height="150%">
+            If you no longer wish to receive these emails,<br />
+            you can <a href="{{ unsubscribe_url }}" style="color: #ffffff;">unsubscribe</a>.
+          </mj-text>
+        {{/if}}
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>
