@@ -24,8 +24,26 @@ defmodule Orcasite.Radio.AwsClient do
     "quality" => 80
   }
 
-  @doc "The parameters every spectrogram is rendered with."
+  # The formats the renderer can write, by file extension.
+  @content_types %{"png" => "image/png", "webp" => "image/webp"}
+
+  @doc "The parameters every new spectrogram is rendered with."
   def spectrogram_parameters, do: @spectrogram_parameters
+
+  @doc """
+  The parameters to render the image stored at `image_key` with. The format
+  follows the key's extension rather than the current default, so an image
+  named before the default changed is rendered in the format its name says.
+  """
+  def spectrogram_parameters(image_key) do
+    case Path.extname(image_key) do
+      "." <> extension when is_map_key(@content_types, extension) ->
+        Map.put(@spectrogram_parameters, "format", extension)
+
+      _ ->
+        @spectrogram_parameters
+    end
+  end
 
   @doc """
   Where a spectrogram of one segment is stored in the image bucket, such as
@@ -84,7 +102,7 @@ defmodule Orcasite.Radio.AwsClient do
             %{
               "audio_url" => audio_url,
               "image_url" => image_url,
-              "parameters" => @spectrogram_parameters,
+              "parameters" => spectrogram_parameters(image_key),
               "id" => image_id,
               "audio_bucket" => audio_bucket,
               "audio_key" => String.trim_leading(audio_key, "/"),

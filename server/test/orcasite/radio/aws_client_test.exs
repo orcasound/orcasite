@@ -3,6 +3,32 @@ defmodule Orcasite.Radio.AwsClientTest do
 
   alias Orcasite.Radio.AwsClient
 
+  describe "spectrogram_parameters/1" do
+    test "renders a new image in the default format" do
+      key =
+        AwsClient.spectrogram_object_path(
+          "node",
+          ~U[2026-01-01 00:00:00Z],
+          ~U[2026-01-01 00:00:10Z],
+          "id"
+        )
+
+      assert AwsClient.spectrogram_parameters(key)["format"] == "webp"
+    end
+
+    test "renders an image named before the default changed in the format its name says" do
+      params = AwsClient.spectrogram_parameters("/node/spectrograms/2025-01-01/archive.png")
+      assert params["format"] == "png"
+
+      assert Map.delete(params, "format") ==
+               Map.delete(AwsClient.spectrogram_parameters(), "format")
+    end
+
+    test "falls back to the default for a key without a known extension" do
+      assert AwsClient.spectrogram_parameters("/node/spectrograms/odd")["format"] == "webp"
+    end
+  end
+
   describe "spectrogram_object_path/4" do
     test "names the file by node, day, second-resolution times, id and the requested format" do
       path =
