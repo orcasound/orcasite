@@ -79,7 +79,9 @@ export function AudioImagesLayer({
         // is anti-aliased, so while the timeline scrolls a hairline of the
         // background colour flickers between neighbouring tiles.
         const left = Math.round(offset);
-        const width = Math.round(offset + exactWidth) - left;
+        // A tile narrower than half a pixel would round to nothing and leave a
+        // one-pixel gap between its neighbours, so give it one whole pixel.
+        const width = Math.max(1, Math.round(offset + exactWidth) - left);
         const audioImageUrl = audioImageToUrl(audioImage);
         if (audioImage.status === "complete") {
           return [
