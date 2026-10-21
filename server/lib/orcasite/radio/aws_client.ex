@@ -4,7 +4,13 @@ defmodule Orcasite.Radio.AwsClient do
   @default_timestamp_results %{count: 0, timestamps: []}
 
   # The renderer's own defaults, spelled out so that what an image was drawn
-  # with is decided here and recorded with it, not implied by a deploy.
+  # with is decided here and recorded with it, not implied by a deploy. The
+  # one departure is the file format: the renderer defaults to PNG, the
+  # archive's format, and we ask for WebP, which at this quality is about a
+  # fifth of the size and looks the same at the size the timeline draws a
+  # tile. The timeline loads every tile it scrolls past, so the bytes matter
+  # more than the pixels. Quality 100 would make it lossless at about three
+  # fifths of the PNG.
   @spectrogram_parameters %{
     "n_fft" => 1024,
     "hop_length" => 256,
@@ -13,8 +19,35 @@ defmodule Orcasite.Radio.AwsClient do
     "db_min" => 10,
     "db_max" => 80,
     "cmap" => "viridis",
-    "frequency_scale" => "linear"
+    "frequency_scale" => "linear",
+    "format" => "webp",
+    "quality" => 80
   }
+
+  @doc "The parameters every spectrogram is rendered with."
+  def spectrogram_parameters, do: @spectrogram_parameters
+
+  @doc """
+  Where a spectrogram of one segment is stored in the image bucket, such as
+  `/rpi_north_sjc/spectrograms/2026-10-18/2026-10-18_01-34-58Z__2026-10-18_01-35-08Z__<id>.webp`.
+  The renderer writes to whatever key it is given, so the extension follows
+  the format it is asked for.
+  """
+  def spectrogram_object_path(node_name, start_time, end_time, image_id) do
+    date = start_time |> DateTime.to_date() |> to_string()
+    extension = Map.fetch!(@spectrogram_parameters, "format")
+
+    "/#{node_name}/spectrograms/#{date}/#{file_time(start_time)}__#{file_time(end_time)}__#{image_id}.#{extension}"
+  end
+
+  # The time to the second, as in "2024-09-10_17-41-53Z", which S3 keys can carry.
+  defp file_time(time) do
+    time
+    |> DateTime.truncate(:second)
+    |> to_string()
+    |> String.replace(":", "-")
+    |> String.replace(" ", "_")
+  end
 
   def generate_spectrogram(%{
         image_id: image_id,

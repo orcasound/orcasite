@@ -181,27 +181,15 @@ defmodule Orcasite.Radio.AudioImage do
                fn _change, record, _context ->
                  feed = record |> Ash.load!(:feed) |> Map.get(:feed)
 
-                 date_string = record.start_time |> DateTime.to_date() |> to_string()
-
-                 # Convert to string like: "2024-09-10_17-41-53Z"
-                 start_time_string =
-                   record.start_time
-                   |> DateTime.truncate(:second)
-                   |> to_string()
-                   |> String.replace(":", "-")
-                   |> String.replace(" ", "_")
-
-                 end_time_string =
-                   record.end_time
-                   |> DateTime.truncate(:second)
-                   |> to_string()
-                   |> String.replace(":", "-")
-                   |> String.replace(" ", "_")
-
                  record
                  |> Ash.Changeset.for_update(:update, %{
                    object_path:
-                     "/#{feed.node_name}/spectrograms/#{date_string}/#{start_time_string}__#{end_time_string}__#{record.id}.png"
+                     Orcasite.Radio.AwsClient.spectrogram_object_path(
+                       feed.node_name,
+                       record.start_time,
+                       record.end_time,
+                       record.id
+                     )
                  })
                  |> Ash.update(authorize?: false)
                end,
