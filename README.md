@@ -147,7 +147,7 @@ For the moment, this app is running on Heroku. The server runs as an OTP release
 
 ### Spectrograms
 
-Spectrogram images are rendered by a Lambda function that lives in its own repository, [orcasound/spectrogram-renderer](https://github.com/orcasound/spectrogram-renderer), and is deployed from there, not with this app. `SPECTROGRAM_FUNCTION_NAME` names the function; [`Orcasite.Radio.AwsClient`](server/lib/orcasite/radio/aws_client.ex) presigns a URL to read the segment and one to write the image and passes the render parameters, so the renderer knows nothing about where audio and images are kept.
+Spectrogram images are rendered by a Lambda function that lives in its own repository, [orcasound/spectrogram-renderer](https://github.com/orcasound/spectrogram-renderer), and is deployed from there, not with this app. `SPECTROGRAM_FUNCTION_NAME` names the function; [`Orcasite.Radio.AwsClient`](server/lib/orcasite/radio/aws_client.ex) presigns a URL to read the segment and one to write the image and passes the render parameters, so the renderer knows nothing about where audio and images are kept. Those parameters, including the image format, are decided in that module and recorded on each `AudioImage`; the file extension of a new image's object path follows the format.
 
 ### Configuration is resolved at runtime, not at build time
 

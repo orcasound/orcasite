@@ -27,6 +27,12 @@ config :orcasite, Orcasite.Repo,
 config :orcasite, Orcasite.Mailer, adapter: Swoosh.Adapters.Test
 config :orcasite, Oban, testing: :inline
 
+# Where new spectrograms would be stored; set for production in runtime.exs.
+# Nothing is written to it from the test suite, but creating an image records it.
+config :orcasite,
+  audio_image_bucket: "test-audio-deriv-orcasound-net",
+  audio_image_bucket_region: "us-west-2"
+
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
