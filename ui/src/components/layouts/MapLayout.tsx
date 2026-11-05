@@ -1,5 +1,5 @@
 import { ExpandLess, Fullscreen, List, Map } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import type { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
@@ -172,11 +172,19 @@ function ToggleDrawerButton({
                 ? { background: theme.palette.primary.main, opacity: 0.8 }
                 : { background: "white", opacity: 0.8 },
           }}
+          aria-label={drawerOpen ? "Show map" : "Expand details"}
           title={drawerOpen ? "Show map" : "Expand details"}
           onClick={onClick}
         >
           {!drawerOpen && <ExpandLess />}
-          {drawerOpen && <Map />}
+          {drawerOpen && (
+            <>
+              <Map />
+              <Typography component="span" sx={{ ml: 0.5, mr: 0.5 }}>
+                Map
+              </Typography>
+            </>
+          )}
         </IconButton>
       </Box>
 
