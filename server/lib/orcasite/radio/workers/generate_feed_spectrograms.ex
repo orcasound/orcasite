@@ -82,14 +82,13 @@ defmodule Orcasite.Radio.Workers.GenerateFeedSpectrograms do
   end
 
   # Oban's basic engine ignores a worker's uniqueness in insert_all, so leave
-  # out the images whose render is already waiting or running, as inserting
-  # them one at a time would have.
+  # out the images whose render is already waiting, running or due to retry.
   defp queued_renders(image_ids) do
     worker = Oban.Worker.to_string(GenerateSpectrogram)
 
     from(job in Oban.Job,
       where: job.worker == ^worker,
-      where: job.state in ["available", "scheduled", "executing"],
+      where: job.state in ["available", "scheduled", "executing", "retryable"],
       where: fragment("? ->> 'audio_image_id'", job.args) in ^image_ids,
       select: fragment("? ->> 'audio_image_id'", job.args)
     )
