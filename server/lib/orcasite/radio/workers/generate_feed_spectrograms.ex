@@ -12,15 +12,22 @@ defmodule Orcasite.Radio.Workers.GenerateFeedSpectrograms do
   use Oban.Worker,
     queue: :audio_images,
     max_attempts: 3,
-    # The button is pressed again when nothing seems to happen.
-    unique: [period: 60, keys: [:feed_id, :start_time, :end_time]]
+    # The button is pressed again when nothing seems to happen. A job that has
+    # finished doesn't count, so pressing it again then picks up segments that
+    # have arrived since.
+    unique: [period: 60, keys: [:feed_id, :start_time, :end_time], states: :incomplete]
 
   import Ecto.Query, only: [from: 2]
 
   alias Orcasite.Radio.{AudioImage, AudioImageFeedSegment, Feed, FeedSegment}
+  alias Orcasite.Radio.AwsClient
   alias Orcasite.Radio.Workers.GenerateSpectrogram
+  alias Orcasite.Repo
 
   @batch_size 200
+
+  # Any constant will do, so long as nothing else locks on it.
+  @render_queue_lock :erlang.phash2({__MODULE__, :queue_renders})
 
   @impl Oban.Worker
   def perform(%Oban.Job{
@@ -58,6 +65,7 @@ defmodule Orcasite.Radio.Workers.GenerateFeedSpectrograms do
         notify?: true
       )
 
+    images = Enum.map(images, &name_unnamed(&1, feed))
     segments_by_span = Map.new(segments_by_span)
 
     %Ash.BulkResult{status: :success} =
@@ -72,17 +80,48 @@ defmodule Orcasite.Radio.Workers.GenerateFeedSpectrograms do
         stop_on_error?: true
       )
 
-    unrendered = images |> Enum.reject(&(&1.status == :complete)) |> Enum.map(& &1.id)
-    queued = queued_renders(unrendered)
-
-    unrendered
-    |> Enum.reject(&MapSet.member?(queued, &1))
-    |> Enum.map(&GenerateSpectrogram.new(%{audio_image_id: &1}))
-    |> Oban.insert_all()
+    images
+    |> Enum.reject(&(&1.status == :complete))
+    |> Enum.map(& &1.id)
+    |> queue_renders()
   end
+
+  # An image made before its path was chosen at insert time could have been
+  # left without one, and rendering it would fail. Name it now, as asking for
+  # it again always has.
+  defp name_unnamed(%{object_path: nil} = image, feed) do
+    image
+    |> Ash.Changeset.for_update(:update, %{
+      object_path:
+        AwsClient.spectrogram_object_path(
+          feed.node_name,
+          image.start_time,
+          image.end_time,
+          image.id
+        )
+    })
+    |> Ash.update!(authorize?: false)
+  end
+
+  defp name_unnamed(image, _feed), do: image
 
   # Oban's basic engine ignores a worker's uniqueness in insert_all, so leave
   # out the images whose render is already waiting, running or due to retry.
+  # The lock keeps two range jobs that overlap from both finding an image
+  # unqueued and both queueing it.
+  defp queue_renders(image_ids) do
+    {:ok, _jobs} =
+      Repo.transaction(fn ->
+        Repo.query!("SELECT pg_advisory_xact_lock($1)", [@render_queue_lock])
+        queued = queued_renders(image_ids)
+
+        image_ids
+        |> Enum.reject(&MapSet.member?(queued, &1))
+        |> Enum.map(&GenerateSpectrogram.new(%{audio_image_id: &1}))
+        |> Oban.insert_all()
+      end)
+  end
+
   defp queued_renders(image_ids) do
     worker = Oban.Worker.to_string(GenerateSpectrogram)
 
@@ -92,7 +131,7 @@ defmodule Orcasite.Radio.Workers.GenerateFeedSpectrograms do
       where: fragment("? ->> 'audio_image_id'", job.args) in ^image_ids,
       select: fragment("? ->> 'audio_image_id'", job.args)
     )
-    |> Orcasite.Repo.all()
+    |> Repo.all()
     |> MapSet.new()
   end
 

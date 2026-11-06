@@ -15,6 +15,7 @@ defmodule Orcasite.Radio.AudioImageTest do
   import Orcasite.Generators.Radio
 
   require Ash.Query
+  import Ecto.Query, only: [from: 2]
 
   alias Orcasite.Radio.{AudioImage, AudioImageFeedSegment, FeedSegment}
   alias Orcasite.Radio.Workers.{GenerateFeedSpectrograms, GenerateSpectrogram}
@@ -140,6 +141,74 @@ defmodule Orcasite.Radio.AudioImageTest do
 
     assert [image] = images(feed)
     assert [_] = all_enqueued(worker: GenerateSpectrogram, args: %{audio_image_id: image.id})
+  end
+
+  test "an image whose render is waiting to retry isn't queued again",
+       %{feed: feed, start_time: start_time} do
+    [segment] = seed_segments!(feed, start_time, 1)
+    request_spectrograms(feed, start_time, segment.end_time)
+    [image] = images(feed)
+
+    worker = Oban.Worker.to_string(GenerateSpectrogram)
+
+    {1, _} =
+      Orcasite.Repo.update_all(from(job in Oban.Job, where: job.worker == ^worker),
+        set: [state: "retryable"]
+      )
+
+    request_spectrograms(feed, start_time, segment.end_time)
+
+    assert [] = all_enqueued(worker: GenerateSpectrogram, args: %{audio_image_id: image.id})
+  end
+
+  test "an existing image with no object path is given one before it's rendered",
+       %{feed: feed, start_time: start_time} do
+    [segment] = seed_segments!(feed, start_time, 1)
+
+    existing =
+      Ash.Seed.seed!(%AudioImage{
+        feed_id: feed.id,
+        image_type: :spectrogram,
+        status: :new,
+        start_time: segment.start_time,
+        end_time: segment.end_time,
+        bucket: "test-audio-deriv-orcasound-net",
+        bucket_region: "us-west-2"
+      })
+
+    request_spectrograms(feed, start_time, segment.end_time)
+
+    assert [image] = images(feed)
+    assert image.id == existing.id
+    assert String.ends_with?(image.object_path, "__#{image.id}.webp")
+    assert_enqueued(worker: GenerateSpectrogram, args: %{audio_image_id: image.id})
+  end
+
+  test "asking again after the range's job has finished queues it again",
+       %{feed: feed} = context do
+    end_time = DateTime.add(context.start_time, 1, :hour)
+
+    ask = fn ->
+      feed
+      |> Ash.Changeset.for_update(:generate_spectrogram, %{
+        start_time: context.start_time,
+        end_time: end_time
+      })
+      |> Ash.update!(authorize?: false)
+    end
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      ask.()
+      worker = Oban.Worker.to_string(GenerateFeedSpectrograms)
+
+      {1, _} =
+        Orcasite.Repo.update_all(from(job in Oban.Job, where: job.worker == ^worker),
+          set: [state: "completed"]
+        )
+
+      ask.()
+      assert [_] = all_enqueued(worker: GenerateFeedSpectrograms)
+    end)
   end
 
   test "a range longer than one batch gets an image for every segment",
