@@ -129,92 +129,44 @@ defmodule Orcasite.Radio.AudioImage do
              )
     end
 
-    create :for_feed_segment do
+    # A spectrogram covering one span of a feed's audio. Workers.
+    # GenerateFeedSpectrograms calls this in bulk, so it runs no queries of its
+    # own: the caller passes the feed's node name, and links the image to its
+    # segments and queues its render afterwards.
+    #
+    # It is an upsert, and asking again for a span that already has an image
+    # returns that image untouched. In particular the image keeps the object
+    # path it has, whatever format the archive was rendered in, because only
+    # `updated_at` is written on a conflict.
+    create :for_span do
       upsert? true
       upsert_identity :unique_audio_image
+      upsert_fields [:updated_at]
 
-      argument :feed_segment_id, :string, allow_nil?: false
+      accept [:feed_id, :start_time, :end_time]
+      argument :node_name, :string, allow_nil?: false
 
-      argument :image_type, Orcasite.Types.ImageType do
-        default :spectrogram
-      end
-
-      change set_attribute(:image_type, arg(:image_type))
+      change set_attribute(:image_type, :spectrogram)
 
       change fn change, _context ->
+        # Choose the id here rather than in the database, because the object
+        # path is named for it.
+        id = Ash.UUID.generate()
+
         change
-        |> Ash.Changeset.change_attribute(
-          :bucket,
-          Application.fetch_env!(:orcasite, :audio_image_bucket)
-        )
-        |> Ash.Changeset.change_attribute(
-          :bucket_region,
-          Application.fetch_env!(:orcasite, :audio_image_bucket_region)
-        )
+        |> Ash.Changeset.force_change_attributes(%{
+          id: id,
+          bucket: Application.fetch_env!(:orcasite, :audio_image_bucket),
+          bucket_region: Application.fetch_env!(:orcasite, :audio_image_bucket_region),
+          object_path:
+            Orcasite.Radio.AwsClient.spectrogram_object_path(
+              Ash.Changeset.get_argument(change, :node_name),
+              Ash.Changeset.get_attribute(change, :start_time),
+              Ash.Changeset.get_attribute(change, :end_time),
+              id
+            )
+        })
       end
-
-      change before_action(fn change, _context ->
-               feed_segment_id = Ash.Changeset.get_argument(change, :feed_segment_id)
-
-               Orcasite.Radio.FeedSegment
-               |> Ash.get(feed_segment_id, authorize?: false)
-               |> case do
-                 {:ok, feed_segment} ->
-                   change
-                   |> Ash.Changeset.force_change_attributes(%{
-                     start_time: feed_segment.start_time,
-                     end_time: feed_segment.end_time
-                   })
-                   |> Ash.Changeset.manage_relationship(:feed_segments, [feed_segment],
-                     type: :append
-                   )
-                   |> Ash.Changeset.manage_relationship(:feed, feed_segment.feed_id,
-                     type: :append
-                   )
-
-                 error ->
-                   error
-               end
-             end)
-
-      # Name the image's object once, when the image is new. This action is an
-      # upsert, and asking again for a range the archive already covers must
-      # leave each existing image pointing at the object it has, whatever
-      # format that was rendered in.
-      change after_action(
-               fn
-                 _change, %{object_path: nil} = record, _context ->
-                   feed = record |> Ash.load!(:feed) |> Map.get(:feed)
-
-                   record
-                   |> Ash.Changeset.for_update(:update, %{
-                     object_path:
-                       Orcasite.Radio.AwsClient.spectrogram_object_path(
-                         feed.node_name,
-                         record.start_time,
-                         record.end_time,
-                         record.id
-                       )
-                   })
-                   |> Ash.update(authorize?: false)
-
-                 _change, record, _context ->
-                   {:ok, record}
-               end,
-               prepend?: true
-             )
-
-      change after_action(fn
-               _change, %{status: :complete} = record, _context ->
-                 {:ok, record}
-
-               _change, record, _context ->
-                 %{audio_image_id: record.id}
-                 |> Orcasite.Radio.Workers.GenerateSpectrogram.new()
-                 |> Oban.insert()
-
-                 {:ok, record}
-             end)
     end
 
     create :seed do
@@ -315,7 +267,7 @@ defmodule Orcasite.Radio.AudioImage do
 
       subscribe :audio_image_updated do
         read_action :for_feed_subscription
-        actions [:for_feed_segment, :update]
+        actions [:for_span, :update]
       end
     end
   end
