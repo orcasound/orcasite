@@ -11,18 +11,21 @@ import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 import { PlayerSpacer } from "./Player";
 
+/** Responsive drawer with an optional mobile footer outside the scrolling content. */
 export default function Drawer({
   children,
   open,
   setOpen,
   onOpen,
   onClose,
+  mobileFooter,
 }: {
   children: ReactNode;
   open: boolean;
   setOpen: (open: boolean) => void;
   onOpen?: () => void;
   onClose?: () => void;
+  mobileFooter?: ReactNode;
 }) {
   const isMobile = useIsMobile();
 
@@ -36,7 +39,12 @@ export default function Drawer({
   };
   return (
     <>
-      <Mobile open={open && isMobile} onOpen={handleOpen} onClose={handleClose}>
+      <Mobile
+        open={open && isMobile}
+        onOpen={handleOpen}
+        onClose={handleClose}
+        footer={mobileFooter}
+      >
         {children}
       </Mobile>
 
@@ -54,7 +62,14 @@ type DrawerProps = {
   onClose: () => void;
 };
 
-function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
+/** Keeps the footer and player space visible while the drawer content scrolls. */
+function Mobile({
+  children,
+  open,
+  onOpen,
+  onClose,
+  footer,
+}: DrawerProps & { footer?: ReactNode }) {
   return (
     <SwipeableDrawer
       anchor="bottom"
@@ -77,11 +92,12 @@ function Mobile({ children, open, onOpen, onClose }: DrawerProps) {
         },
       }}
     >
-      <Box sx={{ overflow: "auto" }}>
+      <Box sx={{ overflow: "auto", flexGrow: 1, minHeight: 0 }}>
         <ToolbarSpacer />
         {children}
-        <PlayerSpacer />
       </Box>
+      {footer}
+      <PlayerSpacer sx={{ flexShrink: 0 }} />
     </SwipeableDrawer>
   );
 }

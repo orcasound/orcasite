@@ -31,6 +31,7 @@ const feedFromSlug = (feedSlug: string) => ({
   latLng: { lat: 47.6, lng: -122.3 },
 });
 
+/** Coordinates the feed drawer, map, and player across mobile and desktop layouts. */
 function MapLayout({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const router = useRouter();
@@ -83,6 +84,11 @@ function MapLayout({ children }: { children: ReactNode }) {
     }
   };
 
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+    invalidateSize();
+  };
+
   return (
     <Box
       sx={{
@@ -108,6 +114,22 @@ function MapLayout({ children }: { children: ReactNode }) {
           open={drawerOpen}
           onClose={invalidateSize}
           onOpen={invalidateSize}
+          mobileFooter={
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                flexShrink: 0,
+                px: 2,
+                py: 1,
+              }}
+            >
+              <MobileDrawerToggle
+                drawerOpen={drawerOpen}
+                onClick={toggleDrawer}
+              />
+            </Box>
+          }
         >
           {children}
         </Drawer>
@@ -127,13 +149,7 @@ function MapLayout({ children }: { children: ReactNode }) {
               feeds={mapFeeds}
             />
           </Box>
-          <ToggleDrawerButton
-            drawerOpen={drawerOpen}
-            onClick={() => {
-              setDrawerOpen(!drawerOpen);
-              invalidateSize();
-            }}
-          />
+          <ToggleDrawerButton drawerOpen={drawerOpen} onClick={toggleDrawer} />
           <PlayerSpacer sx={displayMobileOnly} />
           <Player currentFeed={currentFeed} />
         </Box>
@@ -142,6 +158,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   );
 }
 
+/** Renders the floating map controls; the open mobile drawer owns its footer toggle. */
 function ToggleDrawerButton({
   drawerOpen,
   onClick,
@@ -154,38 +171,14 @@ function ToggleDrawerButton({
       {/* Mobile */}
       <Box
         sx={{
-          ...displayMobileOnly,
+          display: { xs: drawerOpen ? "none" : "block", sm: "none" },
           position: { xs: "absolute" },
           right: { xs: 15 },
           bottom: { xs: 103 },
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
-        <IconButton
-          sx={{
-            backgroundColor: (theme) =>
-              drawerOpen ? theme.palette.primary.main : "white",
-            color: (theme) =>
-              drawerOpen ? "white" : theme.palette.primary.main,
-            "&:hover": (theme) =>
-              drawerOpen
-                ? { background: theme.palette.primary.main, opacity: 0.8 }
-                : { background: "white", opacity: 0.8 },
-          }}
-          aria-label={drawerOpen ? "Show map" : "Expand details"}
-          title={drawerOpen ? "Show map" : "Expand details"}
-          onClick={onClick}
-        >
-          {!drawerOpen && <ExpandLess />}
-          {drawerOpen && (
-            <>
-              <Map />
-              <Typography component="span" sx={{ ml: 0.5, mr: 0.5 }}>
-                Map
-              </Typography>
-            </>
-          )}
-        </IconButton>
+        <MobileDrawerToggle drawerOpen={drawerOpen} onClick={onClick} />
       </Box>
 
       {/* Desktop */}
@@ -211,6 +204,42 @@ function ToggleDrawerButton({
         </IconButton>
       </Box>
     </>
+  );
+}
+
+/** Switches between the map and drawer, with a visible Map label in the drawer. */
+function MobileDrawerToggle({
+  drawerOpen,
+  onClick,
+}: {
+  drawerOpen: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <IconButton
+      sx={{
+        backgroundColor: (theme) =>
+          drawerOpen ? theme.palette.primary.main : "white",
+        color: (theme) => (drawerOpen ? "white" : theme.palette.primary.main),
+        "&:hover": (theme) =>
+          drawerOpen
+            ? { background: theme.palette.primary.main, opacity: 0.8 }
+            : { background: "white", opacity: 0.8 },
+      }}
+      aria-label={drawerOpen ? "Show map" : "Expand details"}
+      title={drawerOpen ? "Show map" : "Expand details"}
+      onClick={onClick}
+    >
+      {!drawerOpen && <ExpandLess />}
+      {drawerOpen && (
+        <>
+          <Map />
+          <Typography component="span" sx={{ ml: 0.5, mr: 0.5 }}>
+            Map
+          </Typography>
+        </>
+      )}
+    </IconButton>
   );
 }
 
