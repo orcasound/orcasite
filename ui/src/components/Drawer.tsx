@@ -11,21 +11,21 @@ import { displayDesktopOnly, displayMobileOnly } from "@/styles/responsive";
 
 import { PlayerSpacer } from "./Player";
 
-/** Responsive drawer with an optional mobile footer outside the scrolling content. */
+/** Responsive drawer with an optional floating control over the mobile content. */
 export default function Drawer({
   children,
   open,
   setOpen,
   onOpen,
   onClose,
-  mobileFooter,
+  mobileOverlay,
 }: {
   children: ReactNode;
   open: boolean;
   setOpen: (open: boolean) => void;
   onOpen?: () => void;
   onClose?: () => void;
-  mobileFooter?: ReactNode;
+  mobileOverlay?: ReactNode;
 }) {
   const isMobile = useIsMobile();
 
@@ -43,7 +43,7 @@ export default function Drawer({
         open={open && isMobile}
         onOpen={handleOpen}
         onClose={handleClose}
-        footer={mobileFooter}
+        overlay={mobileOverlay}
       >
         {children}
       </Mobile>
@@ -62,14 +62,14 @@ type DrawerProps = {
   onClose: () => void;
 };
 
-/** Keeps the footer and player space visible while the drawer content scrolls. */
+/** Lets content scroll behind the floating control and clear it at the end. */
 function Mobile({
   children,
   open,
   onOpen,
   onClose,
-  footer,
-}: DrawerProps & { footer?: ReactNode }) {
+  overlay,
+}: DrawerProps & { overlay?: ReactNode }) {
   return (
     <SwipeableDrawer
       anchor="bottom"
@@ -95,9 +95,12 @@ function Mobile({
       <Box sx={{ overflow: "auto", flexGrow: 1, minHeight: 0 }}>
         <ToolbarSpacer />
         {children}
+        {/* End space lets the last card scroll above the floating map control. */}
+        <Box sx={{ pb: 10 }}>
+          <PlayerSpacer />
+        </Box>
       </Box>
-      {footer}
-      <PlayerSpacer sx={{ flexShrink: 0 }} />
+      {overlay}
     </SwipeableDrawer>
   );
 }

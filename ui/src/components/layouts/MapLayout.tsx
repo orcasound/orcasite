@@ -114,14 +114,12 @@ function MapLayout({ children }: { children: ReactNode }) {
           open={drawerOpen}
           onClose={invalidateSize}
           onOpen={invalidateSize}
-          mobileFooter={
+          mobileOverlay={
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                flexShrink: 0,
-                px: 2,
-                py: 1,
+                position: "absolute",
+                right: 15,
+                bottom: 103,
               }}
             >
               <MobileDrawerToggle
@@ -158,7 +156,7 @@ function MapLayout({ children }: { children: ReactNode }) {
   );
 }
 
-/** Renders the floating map controls; the open mobile drawer owns its footer toggle. */
+/** Renders the map controls; the open mobile drawer owns its floating toggle. */
 function ToggleDrawerButton({
   drawerOpen,
   onClick,
