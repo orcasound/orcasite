@@ -79,7 +79,11 @@ const HomePage: NextPageWithLayout = () => {
           >
             Let us know when you hear them, or any sound you think is
             interesting! That will help researchers and stewards protect the
-            orcas and study their acoustic environment.
+            orcas and study their acoustic environment.{" "}
+            <Link href="/reports" color="primary">
+              Browse recent reports
+            </Link>{" "}
+            from our community.
           </Typography>
           <Typography
             variant="body1"
