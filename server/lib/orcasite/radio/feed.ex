@@ -286,30 +286,22 @@ defmodule Orcasite.Radio.Feed do
 
       validate {Orcasite.Validations.Compare, [lt: [:start_time, :end_time]]}
 
-      change before_action(fn change, _context ->
-               # Get feed_segments between the start time and end time, and, for now
-               # create a single spectrogram per segment. Once we can create an
-               # audio image for multiple segments (with concatenation in the lambda),
-               # we can change this to a single spectrogram with all those audio segments
-
-               feed_segments =
-                 Orcasite.Radio.FeedSegment.for_feed_range!(
-                   %{
-                     feed_id: change.data.id,
-                     start_time: change.arguments.start_time,
-                     end_time: change.arguments.end_time
-                   },
-                   authorize?: false
-                 )
-
-               audio_image_inputs = feed_segments |> Enum.map(&%{feed_segment_id: &1.id})
-
-               change
-               |> Ash.Changeset.manage_relationship(:audio_images, audio_image_inputs,
-                 on_lookup: :ignore,
-                 on_no_match: {:create, :for_feed_segment},
-                 on_match: :ignore
-               )
+      # Making an image for every segment in a range of a couple of hours took
+      # longer than a request may hold a database connection, so the whole
+      # request was rolled back. Queue the work instead; the page learns of
+      # each image through the audio_image_updated subscription.
+      change after_action(fn change, feed, _context ->
+               %{
+                 feed_id: feed.id,
+                 start_time: change.arguments.start_time,
+                 end_time: change.arguments.end_time
+               }
+               |> Orcasite.Radio.Workers.GenerateFeedSpectrograms.new()
+               |> Oban.insert()
+               |> case do
+                 {:ok, _job} -> {:ok, feed}
+                 {:error, error} -> {:error, error}
+               end
              end)
     end
 
