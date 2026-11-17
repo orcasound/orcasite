@@ -172,6 +172,22 @@ defmodule Orcasite.Radio.FeedStreamTest do
                FeedStream.parse_manifest(@skipping_manifest, @feed_stream)
     end
 
+    test "refuses a playlist whose first segment is not number 0" do
+      manifest = """
+      #EXTM3U
+      #EXT-X-VERSION:3
+      #EXT-X-TARGETDURATION:10
+      #EXT-X-MEDIA-SEQUENCE:0
+      #EXTINF:10.005311,
+      live004.ts
+      #EXTINF:10.005311,
+      live005.ts
+      """
+
+      assert {:error, {:skipped_segments, %{count: 1, first: {nil, "live004.ts"}}}} =
+               FeedStream.parse_manifest(manifest, @feed_stream)
+    end
+
     test "does not check file names that are not numbered like the nodes' segments" do
       manifest = String.replace(@skipping_manifest, "live", "clip_")
 

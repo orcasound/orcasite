@@ -589,7 +589,7 @@ defmodule Orcasite.Radio.FeedStream do
   They are also right only if no segment is missing from the middle. Some
   `archive.m3u8` files skip segments (`live2734.ts` followed by
   `live2751.ts`), which would place every later segment too early. A playlist
-  whose `liveN.ts` numbers are not consecutive returns
+  whose `liveN.ts` numbers are not consecutive, or do not start at 0, returns
   `{:error, {:skipped_segments, details}}`.
   """
   @spec parse_manifest(String.t(), t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
@@ -658,11 +658,14 @@ defmodule Orcasite.Radio.FeedStream do
         |> Enum.reject(fn {{number, _}, {next, _}} -> next == number + 1 end)
       end
 
-    case skips do
-      [] ->
+    case {numbered, skips} do
+      {[{first, file_name} | _], _} when first > 0 ->
+        {:error, {:skipped_segments, %{count: 1, first: {nil, file_name}}}}
+
+      {_, []} ->
         :ok
 
-      [{{_, file_name}, {_, next_file_name}} | _] ->
+      {_, [{{_, file_name}, {_, next_file_name}} | _]} ->
         {:error, {:skipped_segments, %{count: length(skips), first: {file_name, next_file_name}}}}
     end
   end
