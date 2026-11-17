@@ -659,7 +659,8 @@ defmodule Orcasite.Radio.FeedStream do
 
   # The end time and duration are first computed when the next stream is
   # linked, which can be before this stream's last playlist upload has been
-  # read. Once a stream has ended, each later read of its playlist corrects them.
+  # read. Once a stream has ended, each later read of its playlist corrects
+  # them, but only ever lengthens the stream.
   defp correct_end_time_and_duration(%{next_feed_stream_id: nil} = feed_stream, _segments),
     do: {:ok, feed_stream}
 
@@ -668,12 +669,16 @@ defmodule Orcasite.Radio.FeedStream do
   defp correct_end_time_and_duration(feed_stream, feed_segments) do
     {end_time, duration} = end_time_and_duration(feed_stream, feed_segments)
 
-    feed_stream
-    |> Ash.Changeset.for_update(:set_end_time_and_duration, %{
-      end_time: end_time,
-      duration: duration
-    })
-    |> Ash.update(authorize?: false)
+    if is_nil(feed_stream.duration) or Decimal.gt?(duration, feed_stream.duration) do
+      feed_stream
+      |> Ash.Changeset.for_update(:set_end_time_and_duration, %{
+        end_time: end_time,
+        duration: duration
+      })
+      |> Ash.update(authorize?: false)
+    else
+      {:ok, feed_stream}
+    end
   end
 
   defp check_starts_at_first_segment(%{media_sequence: media_sequence})
