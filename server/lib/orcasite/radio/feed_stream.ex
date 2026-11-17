@@ -162,7 +162,7 @@ defmodule Orcasite.Radio.FeedStream do
         with {:path, %{"node_name" => node_name, "timestamp" => playlist_timestamp}} <-
                {:path,
                 Regex.named_captures(
-                  ~r|(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/live.m3u8|,
+                  ~r{(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/(?:live|archive)\.m3u8$},
                   path
                 )},
              {:feed, _, {:ok, feed}} <-
@@ -179,7 +179,7 @@ defmodule Orcasite.Radio.FeedStream do
           {:path, _error} ->
             changeset
             |> Ash.Changeset.add_error(
-              "Path #{path} does not match the hls object path format (<node_name>/hls/<timestamp>/live.m3u8)"
+              "Path #{path} does not match the hls object path format (<node_name>/hls/<timestamp>/live.m3u8 or archive.m3u8)"
             )
         end
       end
@@ -521,13 +521,39 @@ defmodule Orcasite.Radio.FeedStream do
   @doc """
   Fetches the stream's HLS manifest from S3 and parses it into FeedSegment
   attribute maps, ordered by segment start time.
+
+  Nodes running orcanode's `node_2026` code since October 2026 write a
+  `live.m3u8` that lists only the most recent segments, for the live player,
+  and an `archive.m3u8` beside it that lists every segment since the folder
+  started (#1092). When `live.m3u8` turns out to list only recent segments,
+  this reads `archive.m3u8` instead. The node uploads the archive about every
+  five minutes, so segments from the last few minutes appear on a later run.
+
+  `get_body` fetches a stream's manifest body; tests replace it.
   """
-  @spec request_and_parse_manifest(t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
-  def request_and_parse_manifest(feed_stream, feed \\ nil) do
-    with {:ok, body} <- Orcasite.Radio.AwsClient.get_stream_manifest_body(feed_stream) do
-      parse_manifest(body, feed_stream, feed)
+  @spec request_and_parse_manifest(t(), map() | nil, (t() -> {:ok, String.t()} | {:error, term()})) ::
+          {:ok, [map()]} | {:error, term()}
+  def request_and_parse_manifest(
+        feed_stream,
+        feed \\ nil,
+        get_body \\ &Orcasite.Radio.AwsClient.get_stream_manifest_body/1
+      ) do
+    with {:ok, body} <- get_body.(feed_stream) do
+      case parse_manifest(body, feed_stream, feed) do
+        {:error, {:rolling_playlist, _media_sequence}} ->
+          archive_stream = %{feed_stream | playlist_m3u8_path: archive_m3u8_path(feed_stream)}
+
+          with {:ok, archive_body} <- get_body.(archive_stream) do
+            parse_manifest(archive_body, feed_stream, feed)
+          end
+
+        result ->
+          result
+      end
     end
   end
+
+  defp archive_m3u8_path(%{playlist_path: playlist_path}), do: playlist_path <> "archive.m3u8"
 
   @doc """
   Parses an HLS media playlist body into FeedSegment attribute maps.
@@ -536,11 +562,17 @@ defmodule Orcasite.Radio.FeedStream do
   stream's `start_time`, which comes from the S3 folder name. When a segment
   is preceded by an `#EXT-X-PROGRAM-DATE-TIME` tag, its timestamp is carried
   as `program_date_time` but does not affect the computed times (see #1041).
+
+  Those times are right only if the playlist starts with the folder's first
+  segment. A playlist whose `#EXT-X-MEDIA-SEQUENCE` is above 0 has dropped
+  its earliest segments, so it returns `{:error, {:rolling_playlist, n}}`
+  rather than placing its segments at the start of the folder.
   """
   @spec parse_manifest(String.t(), t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
   def parse_manifest(body, feed_stream, feed \\ nil) do
-    with {:ok, %ExM3U8.MediaPlaylist{timeline: timeline}} <-
-           ExM3U8.deserialize_media_playlist(body, []) do
+    with {:ok, %ExM3U8.MediaPlaylist{timeline: timeline, info: info}} <-
+           ExM3U8.deserialize_media_playlist(body, []),
+         :ok <- check_starts_at_first_segment(info) do
       {segments, _offset_ms, _program_date_time} =
         Enum.reduce(timeline, {[], Decimal.new(0), nil}, fn
           %ExM3U8.Tags.ProgramDateTime{date: date}, {acc, offset_ms, _} ->
@@ -578,6 +610,12 @@ defmodule Orcasite.Radio.FeedStream do
       {:ok, Enum.reverse(segments)}
     end
   end
+
+  defp check_starts_at_first_segment(%{media_sequence: media_sequence})
+       when is_integer(media_sequence) and media_sequence > 0,
+       do: {:error, {:rolling_playlist, media_sequence}}
+
+  defp check_starts_at_first_segment(_info), do: :ok
 
   defp offset_time(start_time, offset_ms) do
     DateTime.add(start_time, offset_ms |> Decimal.round() |> Decimal.to_integer(), :millisecond)

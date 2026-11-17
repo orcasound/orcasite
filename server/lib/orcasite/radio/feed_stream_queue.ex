@@ -82,7 +82,7 @@ defmodule Orcasite.Radio.FeedStreamQueue do
     with {:path, %{"timestamp" => timestamp}} <-
            {:path,
             Regex.named_captures(
-              ~r|(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/live.m3u8|,
+              ~r{(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/(?:live|archive)\.m3u8$},
               object_path
             )},
          timestamp_time =
