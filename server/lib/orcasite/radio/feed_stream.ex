@@ -4,6 +4,8 @@ defmodule Orcasite.Radio.FeedStream do
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
+  require Logger
+
   resource do
     description """
       Represents an m3u8 file in S3 (audio segment manifest, lists .ts files in order with their length).
@@ -384,7 +386,13 @@ defmodule Orcasite.Radio.FeedStream do
                %{feed: feed, feed_segments: existing_feed_segments} =
                  feed_stream |> Ash.load!([:feed, feed_segments: file_name_query])
 
-               with {:ok, feed_segments} <- request_and_parse_manifest(feed_stream, feed) do
+               # Tests pass their own fetch in the changeset's context.
+               get_body =
+                 change.context[:get_manifest_body] ||
+                   (&Orcasite.Radio.AwsClient.get_stream_manifest_body/1)
+
+               with {:ok, feed_segments} <-
+                      request_and_parse_manifest(feed_stream, feed, get_body) do
                  existing_file_names =
                    existing_feed_segments |> MapSet.new(& &1.file_name)
 
@@ -406,6 +414,17 @@ defmodule Orcasite.Radio.FeedStream do
                    %{errors: error} ->
                      {:error, error}
                  end
+               else
+                 # A playlist that is refused stays refused until the node
+                 # uploads a different one, so failing here would only make
+                 # the job retry. Nothing is ingested, and it is logged.
+                 {:error, {reason, _details} = refusal}
+                 when reason in [:rolling_playlist, :skipped_segments] ->
+                   log_refusal_once(feed_stream, refusal)
+                   {:ok, feed_stream}
+
+                 other ->
+                   other
                end
              end)
     end
@@ -645,6 +664,19 @@ defmodule Orcasite.Radio.FeedStream do
 
       [{{_, file_name}, {_, next_file_name}} | _] ->
         {:error, {:skipped_segments, %{count: length(skips), first: {file_name, next_file_name}}}}
+    end
+  end
+
+  # A playlist is read every time the node uploads one, about every ten
+  # seconds, so a refusal is logged once a day for each stream and reason.
+  defp log_refusal_once(feed_stream, {reason, _details} = refusal) do
+    if Orcasite.Cache.put_new({:refused_playlist, feed_stream.id, reason}, true,
+         ttl: :timer.hours(24)
+       ) do
+      Logger.error(
+        "Not ingesting segments for #{feed_stream.playlist_path}: " <>
+          "its playlist was refused (#{inspect(refusal)}). See orcasite#1092."
+      )
     end
   end
 
