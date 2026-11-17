@@ -98,6 +98,7 @@ export default function BoutPage({
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
   const playerTime = useRef<Date>(targetTime);
+  const getPlayerTime = useCallback(() => playerTime.current, []);
   const setPlayerTime = useCallback(
     (time: Date) => (playerTime.current = time),
     [],
@@ -514,6 +515,7 @@ export default function BoutPage({
               <BoutPlayer
                 feed={feed}
                 targetTime={targetTime}
+                getStartTime={getPlayerTime}
                 feedStream={feedStream}
                 maxTimeNum={playableLimits.max.valueOf()}
                 onPlayerTimeUpdate={setPlayerTime}
