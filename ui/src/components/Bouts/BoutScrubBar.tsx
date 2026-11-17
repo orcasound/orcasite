@@ -1,6 +1,12 @@
 import { Box, Slider } from "@mui/material";
 import { addMilliseconds, differenceInMilliseconds, format } from "date-fns";
-import { MutableRefObject, useCallback, useEffect, useState } from "react";
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { Detection } from "@/graphql/generated";
 
@@ -70,8 +76,15 @@ export default function BoutScrubBar({
     return () => clearInterval(interval);
   }, [playerTimeRef]);
 
+  // Whether audio was playing when the slider was grabbed. Undefined when
+  // the slider is not being dragged.
+  const wasPlaying = useRef<boolean | undefined>(undefined);
+
   const handleSliderChange = useCallback(
     (_e: Event, v: number | number[], _activeThumb: number) => {
+      if (wasPlaying.current === undefined) {
+        wasPlaying.current = playerControls?.current?.paused() === false;
+      }
       playerControls?.current?.pause();
       if (typeof v !== "number") return;
       spectrogramControls.current?.goToTime(
@@ -86,11 +99,14 @@ export default function BoutScrubBar({
       _e: Event | React.SyntheticEvent<Element, Event>,
       v: number | number[],
     ) => {
+      const resume = wasPlaying.current;
+      wasPlaying.current = undefined;
       if (typeof v !== "number") return;
       spectrogramControls.current?.goToTime(
         addMilliseconds(new Date(minTimeNum), 1000 * v),
       );
-      playerControls?.current?.play();
+      // Moving the slider doesn't start playback; it only resumes it.
+      if (resume) playerControls?.current?.play();
     },
     [spectrogramControls, minTimeNum, playerControls],
   );
