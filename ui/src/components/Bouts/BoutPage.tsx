@@ -53,7 +53,6 @@ import {
   AudioCategory,
   BoutQuery,
   FeedQuery,
-  useAudioImagesQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
   useGenerateFeedSpectrogramsMutation,
@@ -61,6 +60,7 @@ import {
   useListFeedStreamsQuery,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
+import { useAllAudioImages } from "@/hooks/useAllAudioImages";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
 import { roundToNearest } from "@/utils/time";
 
@@ -219,7 +219,7 @@ export default function BoutPage({
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
 
-  const audioImagesQueryResult = useAudioImagesQuery({
+  const audioImagesQueryResult = useAllAudioImages({
     feedId: feed.id,
     startTime: timelineStartTime,
     endTime: timelineEndTime,
@@ -233,8 +233,7 @@ export default function BoutPage({
     timelineEndTime,
     refetchAudioImages,
   );
-  const initialAudioImages =
-    audioImagesQueryResult.data?.audioImages?.results ?? [];
+  const initialAudioImages = audioImagesQueryResult.data ?? [];
   const audioImages = _.uniqBy(
     [...updatedAudioImages, ...initialAudioImages].filter(
       (audioImage) => audioImage !== undefined && audioImage !== null,

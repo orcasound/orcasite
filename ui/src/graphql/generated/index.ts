@@ -2839,6 +2839,7 @@ export const AudioImagesDocument = new TypedDocumentString(`
     startTime: $startTime
     endTime: $endTime
     filter: {status: {notEq: "FAILED"}}
+    sort: [{field: START_TIME, order: ASC}, {field: ID, order: ASC}]
     limit: $limit
     offset: $offset
   ) {
