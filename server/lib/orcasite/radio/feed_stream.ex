@@ -400,11 +400,19 @@ defmodule Orcasite.Radio.FeedStream do
                    stop_on_error?: true
                  )
                  |> case do
-                   %{status: :success} -> {:ok, feed_stream}
-                   %{errors: error} -> {:error, error}
+                   %{status: :success} ->
+                     correct_end_time_and_duration(feed_stream, feed_segments)
+
+                   %{errors: error} ->
+                     {:error, error}
                  end
                end
              end)
+    end
+
+    update :set_end_time_and_duration do
+      description "Stores an end time and duration computed from the stream's playlist"
+      accept [:end_time, :duration]
     end
 
     update :link_next_stream do
@@ -470,20 +478,7 @@ defmodule Orcasite.Radio.FeedStream do
                |> request_and_parse_manifest()
                |> case do
                  {:ok, [_ | _] = feed_segments} ->
-                   duration =
-                     feed_segments
-                     |> Enum.map(&Map.get(&1, :duration))
-                     |> Enum.reduce(&Decimal.add/2)
-
-                   end_time =
-                     DateTime.add(
-                       feed_stream.start_time,
-                       duration
-                       |> Decimal.mult(1000)
-                       |> Decimal.round()
-                       |> Decimal.to_integer(),
-                       :millisecond
-                     )
+                   {end_time, duration} = end_time_and_duration(feed_stream, feed_segments)
 
                    change
                    |> Ash.Changeset.change_attribute(:end_time, end_time)
@@ -528,6 +523,8 @@ defmodule Orcasite.Radio.FeedStream do
   started (#1092). When `live.m3u8` turns out to list only recent segments,
   this reads `archive.m3u8` instead. The node uploads the archive about every
   five minutes, so segments from the last few minutes appear on a later run.
+  For the first minutes of a folder there is no archive yet; that returns
+  `{:ok, []}`, because there is nothing new to read, not an error.
 
   `get_body` fetches a stream's manifest body; tests replace it.
   """
@@ -543,8 +540,10 @@ defmodule Orcasite.Radio.FeedStream do
         {:error, {:rolling_playlist, _media_sequence}} ->
           archive_stream = %{feed_stream | playlist_m3u8_path: archive_m3u8_path(feed_stream)}
 
-          with {:ok, archive_body} <- get_body.(archive_stream) do
-            parse_manifest(archive_body, feed_stream, feed)
+          case get_body.(archive_stream) do
+            {:ok, archive_body} -> parse_manifest(archive_body, feed_stream, feed)
+            {:error, {:http_error, 404, _response}} -> {:ok, []}
+            {:error, error} -> {:error, error}
           end
 
         result ->
@@ -567,6 +566,12 @@ defmodule Orcasite.Radio.FeedStream do
   segment. A playlist whose `#EXT-X-MEDIA-SEQUENCE` is above 0 has dropped
   its earliest segments, so it returns `{:error, {:rolling_playlist, n}}`
   rather than placing its segments at the start of the folder.
+
+  They are also right only if no segment is missing from the middle. Some
+  `archive.m3u8` files skip segments (`live2734.ts` followed by
+  `live2751.ts`), which would place every later segment too early. A playlist
+  whose `liveN.ts` numbers are not consecutive returns
+  `{:error, {:skipped_segments, details}}`.
   """
   @spec parse_manifest(String.t(), t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
   def parse_manifest(body, feed_stream, feed \\ nil) do
@@ -607,8 +612,68 @@ defmodule Orcasite.Radio.FeedStream do
             state
         end)
 
-      {:ok, Enum.reverse(segments)}
+      segments = Enum.reverse(segments)
+
+      with :ok <- check_no_skipped_segments(segments) do
+        {:ok, segments}
+      end
     end
+  end
+
+  # File names that don't follow the nodes' `live<number>.ts` pattern are not checked.
+  defp check_no_skipped_segments(segments) do
+    numbered =
+      Enum.map(segments, fn %{file_name: file_name} ->
+        case Regex.run(~r/^live(\d+)\.ts$/, file_name) do
+          [_, number] -> {String.to_integer(number), file_name}
+          nil -> nil
+        end
+      end)
+
+    skips =
+      if Enum.any?(numbered, &is_nil/1) do
+        []
+      else
+        numbered
+        |> Enum.zip(Enum.drop(numbered, 1))
+        |> Enum.reject(fn {{number, _}, {next, _}} -> next == number + 1 end)
+      end
+
+    case skips do
+      [] ->
+        :ok
+
+      [{{_, file_name}, {_, next_file_name}} | _] ->
+        {:error, {:skipped_segments, %{count: length(skips), first: {file_name, next_file_name}}}}
+    end
+  end
+
+  defp end_time_and_duration(feed_stream, [_ | _] = feed_segments) do
+    duration =
+      feed_segments
+      |> Enum.map(&Map.get(&1, :duration))
+      |> Enum.reduce(&Decimal.add/2)
+
+    {offset_time(feed_stream.start_time, Decimal.mult(duration, 1000)), duration}
+  end
+
+  # The end time and duration are first computed when the next stream is
+  # linked, which can be before this stream's last playlist upload has been
+  # read. Once a stream has ended, each later read of its playlist corrects them.
+  defp correct_end_time_and_duration(%{next_feed_stream_id: nil} = feed_stream, _segments),
+    do: {:ok, feed_stream}
+
+  defp correct_end_time_and_duration(feed_stream, []), do: {:ok, feed_stream}
+
+  defp correct_end_time_and_duration(feed_stream, feed_segments) do
+    {end_time, duration} = end_time_and_duration(feed_stream, feed_segments)
+
+    feed_stream
+    |> Ash.Changeset.for_update(:set_end_time_and_duration, %{
+      end_time: end_time,
+      duration: duration
+    })
+    |> Ash.update(authorize?: false)
   end
 
   defp check_starts_at_first_segment(%{media_sequence: media_sequence})

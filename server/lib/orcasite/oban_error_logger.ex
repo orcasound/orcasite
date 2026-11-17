@@ -22,8 +22,22 @@ defmodule Orcasite.ObanErrorLogger do
 
     Logger.error(
       "Oban job failed: #{job.worker} id=#{job.id} queue=#{job.queue} " <>
-        "attempt=#{job.attempt}/#{job.max_attempts} args=#{inspect(job.args)} " <>
+        "attempt=#{job.attempt}/#{job.max_attempts} ids=#{inspect(id_args(job.args))} " <>
         "#{kind}: #{inspect(reason, limit: 20, printable_limit: 500)}"
     )
+  rescue
+    # :telemetry detaches a handler for good the first time it raises.
+    error -> Logger.error("Orcasite.ObanErrorLogger failed: #{inspect(error)}")
   end
+
+  # Only record ids are logged, because other arguments can hold personal
+  # data such as an email address.
+  defp id_args(args) when is_map(args) do
+    Map.filter(args, fn {key, _value} ->
+      key = to_string(key)
+      key == "id" or String.ends_with?(key, "_id")
+    end)
+  end
+
+  defp id_args(_args), do: %{}
 end
