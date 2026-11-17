@@ -1,14 +1,18 @@
 import { Box } from "@mui/material";
 import { differenceInMilliseconds } from "date-fns";
 
-import { TICKER_HEIGHT } from "./SpectrogramTimeline";
+import { TICKER_HEIGHT, timeToOffset } from "./SpectrogramTimeline";
 
+/** The grey background behind the images, from the timeline's start to its end. */
 export function BaseAudioWidthLayer({
+  originTimeNum,
   startTimeNum,
   endTimeNum,
   pixelsPerMinute,
   zIndex,
 }: {
+  /** The time at the left edge of the scrolled content */
+  originTimeNum: number;
   startTimeNum: number;
   endTimeNum: number;
   pixelsPerMinute: number;
@@ -17,10 +21,14 @@ export function BaseAudioWidthLayer({
   const startTime = new Date(startTimeNum);
   const endTime = new Date(endTimeNum);
 
-  const minutes =
+  const left = timeToOffset(
+    startTime,
+    new Date(originTimeNum),
+    pixelsPerMinute,
+  );
+  const width =
     (pixelsPerMinute * differenceInMilliseconds(endTime, startTime)) /
     (60 * 1000);
-  const width = minutes * pixelsPerMinute;
   return (
     <Box
       sx={{
@@ -33,6 +41,7 @@ export function BaseAudioWidthLayer({
         minWidth: width,
         minHeight: `calc(100% - ${TICKER_HEIGHT}px)`,
         position: "absolute",
+        left,
         top: TICKER_HEIGHT,
       }}
     ></Box>

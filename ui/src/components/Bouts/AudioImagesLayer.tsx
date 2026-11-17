@@ -40,15 +40,22 @@ export function AudioImagesLayer({
   const timelineStartTime = new Date(timelineStartTimeNum);
   const windowStartTime = new Date(windowStartTimeNum);
   const windowEndTime = new Date(windowEndTimeNum);
-  const displayBuffer = 1500; // pixels
+  // Images this far beyond each edge of the window are drawn too, so that
+  // scrolling doesn't show a gap before the window's times catch up: 1500
+  // pixels' worth, but at most five minutes, because when zoomed out 1500
+  // pixels holds more images than the window does.
+  const displayBufferMs = Math.min(
+    1000 * 60 * (1500 / pixelsPerMinute),
+    5 * 60 * 1000,
+  );
 
   const windowStartTimeMinusBuffer = subMilliseconds(
     windowStartTime,
-    1000 * 60 * (displayBuffer / pixelsPerMinute),
+    displayBufferMs,
   );
   const windowEndTimePlusBuffer = addMilliseconds(
     windowEndTime,
-    1000 * 60 * (displayBuffer / pixelsPerMinute),
+    displayBufferMs,
   );
 
   return (
@@ -100,7 +107,8 @@ export function AudioImagesLayer({
                 position: "absolute",
                 left,
                 top: TICKER_HEIGHT,
-                width: width,
+                // A unit is needed: MUI reads a bare width of 1 as 100%.
+                width: `${width}px`,
                 backgroundColor: (theme) => theme.palette.accent2.main,
 
                 ...(audioImage.status === "complete" && {
@@ -122,7 +130,8 @@ export function AudioImagesLayer({
               position: "absolute",
               left,
               top: TICKER_HEIGHT,
-              width: width,
+              // A unit is needed: MUI reads a bare width of 1 as 100%.
+              width: `${width}px`,
               transformOrigin: 0,
               transform: "unset",
             }}

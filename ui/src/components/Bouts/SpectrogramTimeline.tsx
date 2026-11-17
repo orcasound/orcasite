@@ -1,14 +1,12 @@
 import { PlayCircleFilled } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import {
-  addMilliseconds,
   addMinutes,
   addSeconds,
   clamp,
   differenceInMilliseconds,
   min,
   subMilliseconds,
-  subSeconds,
 } from "date-fns";
 import _ from "lodash";
 import {
@@ -17,6 +15,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -45,17 +44,19 @@ export type SpectrogramControls = {
   skipBackward: () => void;
 };
 
+// `originTime` is the time at the left edge of the scrolled content, which is
+// half a window before the timeline starts (see `originTime` below).
 function centerWindow(
   spectrogramWindow: MutableRefObject<HTMLDivElement | null>,
   targetTime: Date,
-  timelineStartTime: Date,
+  originTime: Date,
   pixelsPerMinute: number,
   setWindowStartTime: (value: SetStateAction<Date | undefined>) => void,
   setWindowEndTime: (value: SetStateAction<Date | undefined>) => void,
   playerControls?: MutableRefObject<PlayerControls | undefined>,
 ) {
   if (spectrogramWindow.current) {
-    const offset = timeToOffset(targetTime, timelineStartTime, pixelsPerMinute);
+    const offset = timeToOffset(targetTime, originTime, pixelsPerMinute);
     spectrogramWindow.current.scrollLeft =
       offset - spectrogramWindow.current.clientWidth / 2;
 
@@ -63,7 +64,7 @@ function centerWindow(
       setWindowStartTime(
         offsetToTime(
           spectrogramWindow.current.scrollLeft,
-          timelineStartTime,
+          originTime,
           pixelsPerMinute,
         ),
       );
@@ -71,7 +72,7 @@ function centerWindow(
         offsetToTime(
           spectrogramWindow.current.scrollLeft +
             spectrogramWindow.current.clientWidth,
-          timelineStartTime,
+          originTime,
           pixelsPerMinute,
         ),
       );
@@ -179,17 +180,45 @@ export default function SpectrogramTimeline({
   const windowScrollX = useRef<number>(0);
   const windowLockInterval = useRef<NodeJS.Timeout>(undefined);
 
+  // Width of the visible window, kept up to date as the page is resized
+  const [windowWidth, setWindowWidth] = useState<number>(0);
+  useEffect(() => {
+    const element = spectrogramWindow.current;
+    if (!element) return;
+    setWindowWidth(element.clientWidth);
+    const observer = new ResizeObserver(() =>
+      setWindowWidth(element.clientWidth),
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   const pixelsPerMinute = PIXEL_ZOOM_FACTOR * zoomLevel;
-  const timelineWidth =
-    (differenceInMilliseconds(timelineEndTime, timelineStartTime) *
-      pixelsPerMinute) /
-    (60 * 1000);
+  const timelineMs = differenceInMilliseconds(
+    timelineEndTime,
+    timelineStartTime,
+  );
+  const timelineWidth = (timelineMs * pixelsPerMinute) / (60 * 1000);
+
+  // The play head is fixed at the centre of the window. For it to reach the
+  // start and the end of the timeline, the scrolled content has half a window
+  // of empty space before the start and after the end. Everything is laid out
+  // from `originTime`, the time at the content's left edge.
+  const timelineStartTimeNum = timelineStartTime.valueOf();
+  const originTime = useMemo(
+    () =>
+      subMilliseconds(
+        new Date(timelineStartTimeNum),
+        (windowWidth / 2 / pixelsPerMinute) * 60 * 1000,
+      ),
+    [timelineStartTimeNum, windowWidth, pixelsPerMinute],
+  );
   const goToTime = useCallback(
     (time: Date) => {
       centerWindow(
         spectrogramWindow,
         time,
-        timelineStartTime,
+        originTime,
         pixelsPerMinute,
         setWindowStartTime,
         setWindowEndTime,
@@ -198,7 +227,7 @@ export default function SpectrogramTimeline({
     },
     [
       spectrogramWindow,
-      timelineStartTime,
+      originTime,
       pixelsPerMinute,
       playerControls,
       setWindowStartTime,
@@ -225,7 +254,6 @@ export default function SpectrogramTimeline({
             timelineStartTime,
             timelineEndTime,
             playerTimeRef,
-            windowDurationSeconds: duration,
           });
         }
       },
@@ -241,7 +269,6 @@ export default function SpectrogramTimeline({
             timelineStartTime,
             timelineEndTime,
             playerTimeRef,
-            windowDurationSeconds: duration,
           });
         }
       },
@@ -253,7 +280,7 @@ export default function SpectrogramTimeline({
       setWindowStartTime(
         offsetToTime(
           spectrogramWindow.current.scrollLeft,
-          timelineStartTime,
+          originTime,
           pixelsPerMinute,
         ),
       );
@@ -261,7 +288,7 @@ export default function SpectrogramTimeline({
         offsetToTime(
           spectrogramWindow.current.scrollLeft +
             spectrogramWindow.current.clientWidth,
-          timelineStartTime,
+          originTime,
           pixelsPerMinute,
         ),
       );
@@ -270,7 +297,7 @@ export default function SpectrogramTimeline({
     spectrogramWindow,
     setWindowStartTime,
     setWindowEndTime,
-    timelineStartTime,
+    originTime,
     pixelsPerMinute,
   ]);
 
@@ -283,7 +310,7 @@ export default function SpectrogramTimeline({
           centerWindow(
             spectrogramWindow,
             playerTimeRef.current,
-            timelineStartTime,
+            originTime,
             pixelsPerMinute,
             setWindowStartTime,
             setWindowEndTime,
@@ -297,33 +324,19 @@ export default function SpectrogramTimeline({
     playerTimeRef,
     spectrogramWindow,
     pixelsPerMinute,
-    timelineStartTime,
+    originTime,
     setWindowStartTime,
     setWindowEndTime,
   ]);
 
-  // Calculate playable limits based on: current zoom level,
-  // timeline start/end, and spectrogram window width
+  // The play head can reach every moment of the timeline.
+  const timelineEndTimeNum = timelineEndTime.valueOf();
   useEffect(() => {
-    if (
-      spectrogramWindow.current &&
-      timelineStartTime &&
-      timelineEndTime &&
-      pixelsPerMinute
-    ) {
-      const endOffset = spectrogramWindow.current.clientWidth / 2;
-      const offsetMs = (endOffset / pixelsPerMinute) * 60 * 1000;
-      const min = addMilliseconds(timelineStartTime, offsetMs);
-      const max = subMilliseconds(timelineEndTime, offsetMs);
-      setPlayableLimits({ min, max });
-    }
-  }, [
-    pixelsPerMinute,
-    timelineStartTime,
-    timelineEndTime,
-    setPlayableLimits,
-    spectrogramWindow,
-  ]);
+    setPlayableLimits({
+      min: new Date(timelineStartTimeNum),
+      max: new Date(timelineEndTimeNum),
+    });
+  }, [timelineStartTimeNum, timelineEndTimeNum, setPlayableLimits]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -343,23 +356,17 @@ export default function SpectrogramTimeline({
     const offset = windowScrollX.current - move;
     const windowWidth = spectrogramWindow.current.offsetWidth;
     if (offset < 0) return;
-    if (offset + windowWidth > timelineWidth) return;
+    if (offset > timelineWidth) return;
     spectrogramWindow.current.scrollLeft = offset;
     const targetTime = offsetToTime(
       offset + windowWidth / 2,
-      timelineStartTime,
+      originTime,
       pixelsPerMinute,
     );
     setPlayerTime(targetTime);
-    setWindowStartTime(
-      offsetToTime(windowScrollX.current, timelineStartTime, pixelsPerMinute),
-    );
+    setWindowStartTime(offsetToTime(offset, originTime, pixelsPerMinute));
     setWindowEndTime(
-      offsetToTime(
-        windowScrollX.current + spectrogramWindow.current.offsetWidth,
-        timelineStartTime,
-        pixelsPerMinute,
-      ),
+      offsetToTime(offset + windowWidth, originTime, pixelsPerMinute),
     );
   };
 
@@ -398,27 +405,21 @@ export default function SpectrogramTimeline({
     const offset = windowScrollX.current - move;
     const windowWidth = spectrogramWindow.current.offsetWidth;
     if (offset < 0) return;
-    if (offset + windowWidth > timelineWidth) return;
+    if (offset > timelineWidth) return;
 
     spectrogramWindow.current.scrollLeft = offset;
     const targetTime = offsetToTime(
       offset + windowWidth / 2,
-      timelineStartTime,
+      originTime,
       pixelsPerMinute,
     );
     playerTimeRef.current = targetTime;
 
     setPlayerTime(targetTime);
 
-    setWindowStartTime(
-      offsetToTime(windowScrollX.current, timelineStartTime, pixelsPerMinute),
-    );
+    setWindowStartTime(offsetToTime(offset, originTime, pixelsPerMinute));
     setWindowEndTime(
-      offsetToTime(
-        windowScrollX.current + spectrogramWindow.current.offsetWidth,
-        timelineStartTime,
-        pixelsPerMinute,
-      ),
+      offsetToTime(offset + windowWidth, originTime, pixelsPerMinute),
     );
   };
 
@@ -476,7 +477,7 @@ export default function SpectrogramTimeline({
           <TimelineMarker
             time={boutStartTime}
             pixelsPerMinute={pixelsPerMinute}
-            timelineStartTimeNum={timelineStartTime.valueOf()}
+            timelineStartTimeNum={originTime.valueOf()}
             zIndex={5}
             Icon={PlayCircleFilled}
             onClick={() => {
@@ -488,7 +489,7 @@ export default function SpectrogramTimeline({
           <TimelineMarker
             time={boutEndTime}
             pixelsPerMinute={pixelsPerMinute}
-            timelineStartTimeNum={timelineStartTime.valueOf()}
+            timelineStartTimeNum={originTime.valueOf()}
             zIndex={5}
             Icon={PlayCircleFilled}
             iconProps={{ transform: "scaleX(-1)" }}
@@ -507,14 +508,27 @@ export default function SpectrogramTimeline({
 
         {windowStartTime && windowEndTime && (
           <TimelineTickerLayer
-            timelineStartTimeNum={timelineStartTime.valueOf()}
+            timelineStartTimeNum={originTime.valueOf()}
             windowStartTimeNum={windowStartTime.valueOf()}
             windowEndTimeNum={windowEndTime.valueOf()}
             pixelsPerMinute={pixelsPerMinute}
             zIndex={4}
           />
         )}
+        {/* Gives the scrolled content its full width: the timeline plus half
+            a window of empty space on each side. */}
+        <Box
+          sx={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            height: "1px",
+            width: timelineWidth + windowWidth,
+            pointerEvents: "none",
+          }}
+        />
         <BaseAudioWidthLayer
+          originTimeNum={originTime.valueOf()}
           startTimeNum={timelineStartTime.valueOf()}
           endTimeNum={timelineEndTime.valueOf()}
           pixelsPerMinute={pixelsPerMinute}
@@ -523,7 +537,7 @@ export default function SpectrogramTimeline({
         {windowStartTime && windowEndTime && (
           <AudioImagesLayer
             audioImages={audioImages}
-            timelineStartTimeNum={timelineStartTime.valueOf()}
+            timelineStartTimeNum={originTime.valueOf()}
             pixelsPerMinute={pixelsPerMinute}
             windowStartTimeNum={windowStartTime.valueOf()}
             windowEndTimeNum={windowEndTime.valueOf()}
@@ -591,24 +605,18 @@ function skipTime({
   timelineStartTime,
   timelineEndTime,
   playerTimeRef,
-  windowDurationSeconds,
 }: {
   goToTime: (time: Date) => void;
   duration: number;
   timelineStartTime: Date;
   timelineEndTime: Date;
   playerTimeRef: MutableRefObject<Date>;
-  windowDurationSeconds: number;
 }) {
   if (playerTimeRef.current) {
     const targetTime = addSeconds(playerTimeRef.current, duration);
     const clamped = clamp(targetTime, {
-      // Playhead should stop at 1/2 of window duration for both start and end
-      start: addSeconds(timelineStartTime, windowDurationSeconds / 2),
-      end: subSeconds(
-        min([timelineEndTime, new Date()]),
-        windowDurationSeconds / 2,
-      ),
+      start: timelineStartTime,
+      end: min([timelineEndTime, new Date()]),
     });
 
     return goToTime(clamped);
