@@ -128,6 +128,9 @@ export default function BoutScrubBar({
           marks={marks}
           onChange={handleSliderChange}
           onChangeCommitted={handleSliderChangeCommitted}
+          // A drag that is cancelled never reaches onChangeCommitted.
+          onPointerCancel={() => (wasPlaying.current = undefined)}
+          onTouchCancel={() => (wasPlaying.current = undefined)}
         />
       )}
     </Box>

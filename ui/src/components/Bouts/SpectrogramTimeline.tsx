@@ -143,14 +143,17 @@ export default function SpectrogramTimeline({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [windowStartTime, setWindowStartTimeUnthrottled] = useState<Date>();
   const [windowEndTime, setWindowEndTimeUnthrottled] = useState<Date>();
+  // The window's times decide which images are drawn. They are updated at most
+  // twice a second, and the last update is always applied, so that the images
+  // drawn match where a drag ended.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const setWindowStartTime = useCallback(
-    _.throttle(setWindowStartTimeUnthrottled, 500, { trailing: false }),
+    _.throttle(setWindowStartTimeUnthrottled, 500),
     [setWindowStartTimeUnthrottled],
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const setWindowEndTime = useCallback(
-    _.throttle(setWindowEndTimeUnthrottled, 500, { trailing: false }),
+    _.throttle(setWindowEndTimeUnthrottled, 500),
     [setWindowEndTimeUnthrottled],
   );
   const setPlayerTime = _.throttle(
@@ -354,7 +357,7 @@ export default function SpectrogramTimeline({
       e.touches[0].pageX - spectrogramWindow.current.offsetLeft;
     const move = containerCursorX - windowStartX.current;
     const offset = windowScrollX.current - move;
-    const windowWidth = spectrogramWindow.current.offsetWidth;
+    const windowWidth = spectrogramWindow.current.clientWidth;
     if (offset < 0) return;
     if (offset > timelineWidth) return;
     spectrogramWindow.current.scrollLeft = offset;
@@ -403,7 +406,7 @@ export default function SpectrogramTimeline({
     const containerCursorX = e.pageX - spectrogramWindow.current.offsetLeft;
     const move = containerCursorX - windowStartX.current;
     const offset = windowScrollX.current - move;
-    const windowWidth = spectrogramWindow.current.offsetWidth;
+    const windowWidth = spectrogramWindow.current.clientWidth;
     if (offset < 0) return;
     if (offset > timelineWidth) return;
 
