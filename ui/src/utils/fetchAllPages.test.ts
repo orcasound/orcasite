@@ -30,9 +30,25 @@ describe("fetchAllPages", () => {
     ]);
   });
 
-  it("stops at maxPages when the server always reports another page", async () => {
+  it("stops at maxPages, with a warning, when the server always reports another page", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const fetchPage = vi.fn(async () => ({ results: [1], hasNextPage: true }));
+
     expect(await fetchAllPages(fetchPage, { maxPages: 3 })).toHaveLength(3);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("stopped after 3 pages"),
+    );
+    warn.mockRestore();
+  });
+
+  it("does not warn when the last allowed page is also the last page", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    expect(await fetchAllPages(server(2000), { maxPages: 2 })).toHaveLength(
+      2000,
+    );
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 
   it("stops when a page comes back empty", async () => {

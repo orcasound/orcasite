@@ -5,7 +5,9 @@ type Page<T> = { results: T[]; hasNextPage: boolean };
  *
  * `fetchPage` must return its results in a fixed order, or pages can repeat
  * or skip items. `maxPages` stops a server that always reports another page
- * from being asked for ever.
+ * from being asked for ever. If it stops there with more pages left, it
+ * returns what it has and logs a warning, because a partial list is more use
+ * to the page than none.
  */
 export async function fetchAllPages<T>(
   fetchPage: (offset: number, limit: number) => Promise<Page<T>>,
@@ -15,7 +17,10 @@ export async function fetchAllPages<T>(
   for (let page = 0; page < maxPages; page++) {
     const { results, hasNextPage } = await fetchPage(all.length, pageSize);
     all.push(...results);
-    if (!hasNextPage || results.length === 0) break;
+    if (!hasNextPage || results.length === 0) return all;
   }
+  console.warn(
+    `fetchAllPages stopped after ${maxPages} pages (${all.length} items) with more remaining.`,
+  );
   return all;
 }
