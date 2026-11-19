@@ -27,6 +27,7 @@ export function BoutPlayer({
   feed,
   feedStream,
   targetTime,
+  getStartTime,
   maxTimeNum,
   onPlayerInit,
   onPlayerTimeUpdate,
@@ -35,6 +36,12 @@ export function BoutPlayer({
   feed: Pick<Feed, "bucket" | "nodeName">;
   feedStream: Pick<FeedStream, "bucket" | "playlistTimestamp">;
   targetTime: Date;
+  /**
+   * Where the play head is now. The audio's details load only when play is
+   * first pressed, and the player seeks to this time then, so that a play
+   * head moved beforehand stays where it was put. Defaults to `targetTime`.
+   */
+  getStartTime?: () => Date;
   maxTimeNum: number;
   onPlayerInit?: (playerControls: PlayerControls) => void;
   onPlayerTimeUpdate?: (time: Date) => void;
@@ -180,8 +187,13 @@ export function BoutPlayer({
       });
 
       player.on("loadedmetadata", () => {
-        // On initial load, set player time to target time
-        player.currentTime(targetOffset);
+        // On initial load, go to where the play head is
+        const startTime = getStartTime?.();
+        player.currentTime(
+          startTime
+            ? differenceInSeconds(startTime, playlistDatetime)
+            : targetOffset,
+        );
       });
     },
     [
@@ -189,6 +201,7 @@ export function BoutPlayer({
       onPlayerInit,
       playlistDatetime,
       targetOffset,
+      getStartTime,
       intervalRef,
       setPlayerTimeRef,
       maxTimeNum,

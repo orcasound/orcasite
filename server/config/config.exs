@@ -12,6 +12,14 @@ config :geo_postgis, json_library: Jason
 config :orcasite,
   ecto_repos: [Orcasite.Repo]
 
+# Plan every query with its real parameter values. Postgres normally switches a prepared
+# statement to a generic plan after five executions on a connection. For the feed list's
+# `online` check (does this feed have a segment from the last five minutes?) the generic
+# plan guesses that over a million segments match and reads the whole table, which takes
+# longer than the pool's 15-second timeout. See
+# https://github.com/orcasound/orcasite/issues/1081.
+config :orcasite, Orcasite.Repo, parameters: [plan_cache_mode: "force_custom_plan"]
+
 # Configures the endpoint
 config :orcasite, OrcasiteWeb.Endpoint,
   render_errors: [
