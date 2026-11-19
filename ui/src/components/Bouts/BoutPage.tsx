@@ -53,7 +53,6 @@ import {
   AudioCategory,
   BoutQuery,
   FeedQuery,
-  useAudioImagesQuery,
   useCreateBoutMutation,
   useDetectionsQuery,
   useGenerateFeedSpectrogramsMutation,
@@ -61,6 +60,7 @@ import {
   useListFeedStreamsQuery,
   useUpdateBoutMutation,
 } from "@/graphql/generated";
+import { useAllAudioImages } from "@/hooks/useAllAudioImages";
 import { useAudioImageUpdatedSubscription } from "@/hooks/useAudioImageUpdatedSubscription";
 import { roundToNearest } from "@/utils/time";
 
@@ -98,6 +98,7 @@ export default function BoutPage({
 
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
   const playerTime = useRef<Date>(targetTime);
+  const getPlayerTime = useCallback(() => playerTime.current, []);
   const setPlayerTime = useCallback(
     (time: Date) => (playerTime.current = time),
     [],
@@ -219,7 +220,7 @@ export default function BoutPage({
 
   const detections = detectionQueryResult.data?.detections?.results ?? [];
 
-  const audioImagesQueryResult = useAudioImagesQuery({
+  const audioImagesQueryResult = useAllAudioImages({
     feedId: feed.id,
     startTime: timelineStartTime,
     endTime: timelineEndTime,
@@ -233,8 +234,7 @@ export default function BoutPage({
     timelineEndTime,
     refetchAudioImages,
   );
-  const initialAudioImages =
-    audioImagesQueryResult.data?.audioImages?.results ?? [];
+  const initialAudioImages = audioImagesQueryResult.data ?? [];
   const audioImages = _.uniqBy(
     [...updatedAudioImages, ...initialAudioImages].filter(
       (audioImage) => audioImage !== undefined && audioImage !== null,
@@ -515,6 +515,7 @@ export default function BoutPage({
               <BoutPlayer
                 feed={feed}
                 targetTime={targetTime}
+                getStartTime={getPlayerTime}
                 feedStream={feedStream}
                 maxTimeNum={playableLimits.max.valueOf()}
                 onPlayerTimeUpdate={setPlayerTime}
