@@ -47,6 +47,53 @@ defmodule Orcasite.Radio.FeedStreamTest do
   live002.ts
   """
 
+  # ffmpeg `-f hls` muxer with `-hls_list_size 10`, as written by node_2026 since
+  # October 2026: live.m3u8 keeps only the most recent segments (#1092)
+  @rolling_manifest """
+  #EXTM3U
+  #EXT-X-VERSION:3
+  #EXT-X-TARGETDURATION:10
+  #EXT-X-MEDIA-SEQUENCE:6908
+  #EXTINF:10.005311,
+  #EXT-X-PROGRAM-DATE-TIME:2026-09-22T19:11:35.163-0700
+  live6908.ts
+  #EXTINF:10.005311,
+  #EXT-X-PROGRAM-DATE-TIME:2026-09-22T19:11:45.168-0700
+  live6909.ts
+  """
+
+  # archive.m3u8, written beside the rolling live.m3u8: every segment since the folder started
+  @archive_manifest """
+  #EXTM3U
+  #EXT-X-VERSION:3
+  #EXT-X-TARGETDURATION:10
+  #EXT-X-MEDIA-SEQUENCE:0
+  #EXTINF:10.005333,
+  #EXT-X-PROGRAM-DATE-TIME:2026-09-22T00:00:15.162-0700
+  live000.ts
+  #EXTINF:10.005289,
+  #EXT-X-PROGRAM-DATE-TIME:2026-09-22T00:00:25.167-0700
+  live001.ts
+  """
+
+  # an archive.m3u8 that skips from live001.ts to live004.ts, as Orcasound Lab's did on 2026-11-15
+  @skipping_manifest """
+  #EXTM3U
+  #EXT-X-VERSION:3
+  #EXT-X-TARGETDURATION:10
+  #EXT-X-MEDIA-SEQUENCE:0
+  #EXTINF:10.005333,
+  live000.ts
+  #EXTINF:10.005289,
+  live001.ts
+  #EXTINF:10.005311,
+  live004.ts
+  #EXTINF:10.005311,
+  live005.ts
+  #EXTINF:10.005311,
+  live009.ts
+  """
+
   describe "parse_manifest/3" do
     test "parses the legacy segment-muxer format" do
       assert {:ok, segments} = FeedStream.parse_manifest(@legacy_manifest, @feed_stream)
@@ -111,6 +158,117 @@ defmodule Orcasite.Radio.FeedStreamTest do
     test "returns an error for a body that is not a media playlist" do
       assert {:error, _} = FeedStream.parse_manifest("", @feed_stream)
       assert {:error, _} = FeedStream.parse_manifest("<html>Access Denied</html>", @feed_stream)
+    end
+
+    test "refuses a playlist that does not start with the folder's first segment" do
+      assert {:error, {:rolling_playlist, 6908}} =
+               FeedStream.parse_manifest(@rolling_manifest, @feed_stream)
+    end
+  end
+
+  describe "parse_manifest/3 with skipped segments" do
+    test "refuses a playlist that skips segment numbers" do
+      assert {:error, {:skipped_segments, %{count: 2, first: {"live001.ts", "live004.ts"}}}} =
+               FeedStream.parse_manifest(@skipping_manifest, @feed_stream)
+    end
+
+    test "refuses a playlist whose first segment is not number 0" do
+      manifest = """
+      #EXTM3U
+      #EXT-X-VERSION:3
+      #EXT-X-TARGETDURATION:10
+      #EXT-X-MEDIA-SEQUENCE:0
+      #EXTINF:10.005311,
+      live004.ts
+      #EXTINF:10.005311,
+      live005.ts
+      """
+
+      assert {:error, {:skipped_segments, %{count: 1, first: {nil, "live004.ts"}}}} =
+               FeedStream.parse_manifest(manifest, @feed_stream)
+    end
+
+    test "does not check file names that are not numbered like the nodes' segments" do
+      manifest = String.replace(@skipping_manifest, "live", "clip_")
+
+      assert {:ok, [_, _, _, _, _]} = FeedStream.parse_manifest(manifest, @feed_stream)
+    end
+  end
+
+  describe "request_and_parse_manifest/3" do
+    @live_path "/rpi_orcasound_lab/hls/1790060413/live.m3u8"
+    @archive_path "/rpi_orcasound_lab/hls/1790060413/archive.m3u8"
+
+    defp fake_s3(bodies) do
+      test_pid = self()
+
+      fn %FeedStream{playlist_m3u8_path: path} ->
+        send(test_pid, {:fetched, path})
+        Map.get(bodies, path, {:error, {:http_error, 404, %{status_code: 404}}})
+      end
+    end
+
+    test "parses live.m3u8 when it lists every segment, without fetching the archive" do
+      get_body = fake_s3(%{@live_path => {:ok, @legacy_manifest}})
+
+      assert {:ok, [_, _, _]} = FeedStream.request_and_parse_manifest(@feed_stream, nil, get_body)
+      assert_received {:fetched, @live_path}
+      refute_received {:fetched, @archive_path}
+    end
+
+    test "reads archive.m3u8 when live.m3u8 lists only recent segments" do
+      get_body =
+        fake_s3(%{
+          @live_path => {:ok, @rolling_manifest},
+          @archive_path => {:ok, @archive_manifest}
+        })
+
+      assert {:ok, [first, second]} =
+               FeedStream.request_and_parse_manifest(@feed_stream, nil, get_body)
+
+      assert first.file_name == "live000.ts"
+      assert first.start_time == @start_time
+      assert second.file_name == "live001.ts"
+      assert second.start_time == DateTime.add(@start_time, 10_005, :millisecond)
+    end
+
+    test "finds nothing new when live.m3u8 lists only recent segments and there is no archive yet" do
+      get_body = fake_s3(%{@live_path => {:ok, @rolling_manifest}})
+
+      assert {:ok, []} = FeedStream.request_and_parse_manifest(@feed_stream, nil, get_body)
+    end
+
+    test "returns the error when the archive cannot be fetched for another reason" do
+      get_body =
+        fake_s3(%{
+          @live_path => {:ok, @rolling_manifest},
+          @archive_path => {:error, {:http_error, 503, %{status_code: 503}}}
+        })
+
+      assert {:error, {:http_error, 503, _}} =
+               FeedStream.request_and_parse_manifest(@feed_stream, nil, get_body)
+    end
+
+    test "refuses an archive that skips segments" do
+      get_body =
+        fake_s3(%{
+          @live_path => {:ok, @rolling_manifest},
+          @archive_path => {:ok, @skipping_manifest}
+        })
+
+      assert {:error, {:skipped_segments, %{count: 2}}} =
+               FeedStream.request_and_parse_manifest(@feed_stream, nil, get_body)
+    end
+
+    test "refuses an archive that also lists only recent segments" do
+      get_body =
+        fake_s3(%{
+          @live_path => {:ok, @rolling_manifest},
+          @archive_path => {:ok, @rolling_manifest}
+        })
+
+      assert {:error, {:rolling_playlist, 6908}} =
+               FeedStream.request_and_parse_manifest(@feed_stream, nil, get_body)
     end
   end
 end
