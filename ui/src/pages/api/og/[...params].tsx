@@ -84,11 +84,16 @@ export default async function handler(
   const card = (preview ?? sitePreview()).card;
   const thumb = card.thumbUrl ? await imageDataUrl(card.thumbUrl) : undefined;
 
-  const image = new ImageResponse(<Card card={card} thumb={thumb} />, {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-  });
-  const body = Buffer.from(await image.arrayBuffer());
+  let body: Buffer;
+  try {
+    body = await renderCard(card, thumb);
+  } catch (error) {
+    // A photo that downloads but can't be decoded fails the whole render, so
+    // draw the card again without it.
+    if (!thumb) throw error;
+    console.warn(`Card drawn without the photo at ${card.thumbUrl}:`, error);
+    body = await renderCard(card, undefined);
+  }
 
   res.setHeader("Content-Type", "image/png");
   res.setHeader(
@@ -96,6 +101,17 @@ export default async function handler(
     found ? "public, max-age=86400" : "public, max-age=300",
   );
   res.status(200).send(body);
+}
+
+async function renderCard(
+  card: SharePreview["card"],
+  thumb: string | undefined,
+): Promise<Buffer> {
+  const image = new ImageResponse(<Card card={card} thumb={thumb} />, {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+  });
+  return Buffer.from(await image.arrayBuffer());
 }
 
 function Card({ card, thumb }: { card: SharePreview["card"]; thumb?: string }) {
