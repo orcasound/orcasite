@@ -10,14 +10,24 @@ import {
 } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 import DetectionsTable from "@/components/DetectionsTable";
 import { getSimpleLayout } from "@/components/layouts/SimpleLayout";
+import SharePreviewTags from "@/components/SharePreviewTags";
 import { useCandidateQuery, useGetCurrentUserQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
+import {
+  type SharePreview,
+  siteOrigin,
+  sitePreview,
+} from "@/utils/sharePreview";
+import { loadCandidatePreview, previewOrNull } from "@/utils/sharePreviewData";
 
-const CandidatePage: NextPageWithLayout = () => {
+type Props = { preview: SharePreview | null; origin: string };
+
+const CandidatePage: NextPageWithLayout<Props> = ({ preview, origin }) => {
   const router = useRouter();
   const { candidateId } = router.query;
 
@@ -27,9 +37,13 @@ const CandidatePage: NextPageWithLayout = () => {
   const candidate = candidateQuery.data?.candidate;
   const { currentUser } = useGetCurrentUserQuery().data ?? {};
 
-  if (candidateId && typeof candidateId === "string") {
-    analytics.reports.reportOpened(candidateId);
-  }
+  // In an effect so it runs once per report in the browser, not on every
+  // render, and not on the server, which now renders this page too.
+  useEffect(() => {
+    if (candidateId && typeof candidateId === "string") {
+      analytics.reports.reportOpened(candidateId);
+    }
+  }, [candidateId]);
 
   const time = candidate && new Date(candidate.minTime).toISOString();
   const categoryMap = {
@@ -41,7 +55,15 @@ const CandidatePage: NextPageWithLayout = () => {
 
   return (
     <div>
-      <Head>Report {candidateId} | Orcasound </Head>
+      <Head>
+        <title>{`${preview?.title ?? `Report ${candidateId}`} | Orcasound`}</title>
+      </Head>
+      <SharePreviewTags
+        preview={
+          preview ?? { ...sitePreview(), path: `/reports/${candidateId}` }
+        }
+        origin={origin}
+      />
 
       <main>
         <Breadcrumbs sx={{ paddingTop: 4 }}>
@@ -123,5 +145,32 @@ const CandidatePage: NextPageWithLayout = () => {
 };
 
 CandidatePage.getLayout = getSimpleLayout;
+
+// Rendered on the server only for the link preview. The page still loads the
+// report in the browser, with the visitor's sign-in, so moderators see hidden
+// detections; only the preview's few fields come from here.
+export function getStaticPaths() {
+  return { paths: [], fallback: "blocking" };
+}
+
+export async function getStaticProps({
+  params,
+}: {
+  params: { candidateId: string };
+}) {
+  // A missing or hidden report gets the site's preview. It is not a 404:
+  // moderators open hidden reports here.
+  const preview = await previewOrNull(
+    () => loadCandidatePreview(params.candidateId),
+    "candidate",
+    params.candidateId,
+  );
+
+  return {
+    props: { preview, origin: siteOrigin() } satisfies Props,
+    // Moderators can hide a report or change its category.
+    revalidate: 60,
+  };
+}
 
 export default CandidatePage;

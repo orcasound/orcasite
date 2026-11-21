@@ -16,6 +16,7 @@ import { ReactElement, ReactNode, useState } from "react";
 import { SocketProvider } from "@/hooks/useSocket";
 import theme from "@/styles/theme";
 import { initializeAnalytics } from "@/utils/analytics";
+import { sitePreview } from "@/utils/sharePreview";
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -81,6 +82,20 @@ export default function OrcasiteApp(props: AppPropsWithLayout) {
                 name="viewport"
                 content="initial-scale=1, width=device-width"
               />
+              {/* Defaults for link previews. Pages that can be shared replace
+                  the description and add the rest through SharePreviewTags,
+                  which uses the same keys. */}
+              <meta
+                key="description"
+                name="description"
+                content={sitePreview().description}
+              />
+              <meta
+                key="og:site_name"
+                property="og:site_name"
+                content="Orcasound"
+              />
+              <meta key="og:type" property="og:type" content="website" />
             </Head>
             <ThemeProvider theme={theme}>
               <CssBaseline />

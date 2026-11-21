@@ -37,8 +37,11 @@ defmodule OrcasiteWeb.Router do
     plug :check_admin_path
   end
 
+  # Everything Next serves passes through here: pages, but also images, scripts
+  # and fonts. So no `accepts` check: requiring HTML answered 406 to any client
+  # that asked only for an image, such as a site fetching a link preview's
+  # og:image with `Accept: image/*`.
   pipeline :nextjs do
-    plug :accepts, ["html"]
     plug :put_secure_browser_headers
   end
 

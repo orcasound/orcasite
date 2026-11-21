@@ -4,15 +4,18 @@ import Head from "next/head";
 
 import { getMapLayout } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
+import SharePreviewTags from "@/components/SharePreviewTags";
 import type { NextPageWithLayout } from "@/pages/_app";
 import { analytics } from "@/utils/analytics";
+import { siteOrigin, sitePreview } from "@/utils/sharePreview";
 
-const HomePage: NextPageWithLayout = () => {
+const HomePage: NextPageWithLayout<{ origin: string }> = ({ origin }) => {
   return (
     <div>
       <Head>
         <title>Orcasound</title>
       </Head>
+      <SharePreviewTags preview={sitePreview()} origin={origin} />
 
       <main>
         <Container maxWidth="sm">
@@ -101,5 +104,12 @@ const HomePage: NextPageWithLayout = () => {
 };
 
 HomePage.getLayout = getMapLayout;
+
+// Per request only to read the serving app's host for the link preview's
+// absolute URLs. Prerendered at build time, the page would carry the host of the
+// app it was built in to every app it is promoted to.
+export function getServerSideProps() {
+  return { props: { origin: siteOrigin() } };
+}
 
 export default HomePage;

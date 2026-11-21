@@ -5,10 +5,12 @@ import { useMemo } from "react";
 
 import FeedCard from "@/components/FeedCard";
 import { getMapLayout } from "@/components/layouts/MapLayout";
+import SharePreviewTags from "@/components/SharePreviewTags";
 import { useFeedsQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
+import { siteOrigin, sitePreview } from "@/utils/sharePreview";
 
-const FeedsPage: NextPageWithLayout = () => {
+const FeedsPage: NextPageWithLayout<{ origin: string }> = ({ origin }) => {
   const feedsQueryResult = useFeedsQuery();
 
   // Sort feeds by high latitude to low (to match the order on the map)
@@ -25,6 +27,10 @@ const FeedsPage: NextPageWithLayout = () => {
       <Head>
         <title>Orcasound</title>
       </Head>
+      <SharePreviewTags
+        preview={{ ...sitePreview(), path: "/listen" }}
+        origin={origin}
+      />
 
       <main>
         <Container maxWidth="sm">
@@ -73,6 +79,7 @@ export async function getServerSideProps() {
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
+      origin: siteOrigin(),
     },
   };
 }
