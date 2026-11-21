@@ -95,7 +95,7 @@ export function feedPreview(feed: FeedInput): SharePreview {
     description:
       firstSentence(feed.introHtml) ??
       `Listen live to the ${feed.name} hydrophone in the Salish Sea.`,
-    path: `/listen/${feed.slug}`,
+    path: `/listen/${encodeURIComponent(feed.slug)}`,
     imagePath: `/api/og/feed/${encodeURIComponent(feed.slug)}`,
     card: {
       eyebrow: "Listen live",
@@ -128,7 +128,7 @@ export function candidatePreview(
   return {
     title,
     description: `${reports}, ${when}.`,
-    path: `/reports/${candidate.id}`,
+    path: `/reports/${encodeURIComponent(candidate.id)}`,
     imagePath: `/api/og/report/${encodeURIComponent(candidate.id)}`,
     card: {
       eyebrow: "Listener report",
@@ -156,7 +156,7 @@ export function boutPreview(bout: BoutInput): SharePreview {
   return {
     title: heading,
     description: `${label} heard at ${bout.feed.name}, ${when}${length}.`,
-    path: `/bouts/${bout.id}`,
+    path: `/bouts/${encodeURIComponent(bout.id)}`,
     imagePath: `/api/og/bout/${encodeURIComponent(bout.id)}`,
     card: {
       eyebrow: `${label} · ${bout.feed.name}`,

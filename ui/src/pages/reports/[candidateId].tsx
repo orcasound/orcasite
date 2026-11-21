@@ -60,7 +60,10 @@ const CandidatePage: NextPageWithLayout<Props> = ({ preview, origin }) => {
       </Head>
       <SharePreviewTags
         preview={
-          preview ?? { ...sitePreview(), path: `/reports/${candidateId}` }
+          preview ?? {
+            ...sitePreview(),
+            path: `/reports/${encodeURIComponent(String(candidateId))}`,
+          }
         }
         origin={origin}
       />

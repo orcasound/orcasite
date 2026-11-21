@@ -108,6 +108,12 @@ describe("feedPreview", () => {
     expect(preview.card.thumbUrl).toBeNull();
   });
 
+  it("escapes the slug in both URLs", () => {
+    const preview = feedPreview({ slug: "north#1", name: "North" });
+    expect(preview.path).toBe("/listen/north%231");
+    expect(preview.imagePath).toBe("/api/og/feed/north%231");
+  });
+
   it("has a description when the feed has no intro", () => {
     expect(feedPreview({ slug: "x", name: "X" }).description).toBe(
       "Listen live to the X hydrophone in the Salish Sea.",

@@ -40,7 +40,10 @@ const BoutShowPage: NextPageWithLayout<Props> = (props) => {
       </Head>
       <SharePreviewTags
         preview={
-          preview ?? { ...sitePreview(), path: `/bouts/${props.boutId}` }
+          preview ?? {
+            ...sitePreview(),
+            path: `/bouts/${encodeURIComponent(props.boutId)}`,
+          }
         }
         origin={origin}
       />
