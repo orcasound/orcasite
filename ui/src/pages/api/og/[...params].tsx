@@ -70,7 +70,7 @@ export default async function handler(
   let preview: SharePreview | null = null;
   if (kind === "site" && !id) {
     preview = sitePreview();
-  } else if (kind && id && !rest.length && LOADERS[kind]) {
+  } else if (kind && id && !rest.length && Object.hasOwn(LOADERS, kind)) {
     const [field, load] = LOADERS[kind];
     preview = await previewOrNull(() => load(id), field, id);
   } else {
@@ -179,6 +179,13 @@ async function imageDataUrl(url: string): Promise<string | undefined> {
     const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
     const type = response.headers.get("content-type") ?? "";
     if (!response.ok || !/^image\/(png|jpeg)$/.test(type)) return undefined;
+    // The photos' URLs are set by admins, so a declared size is enough to turn
+    // away one that is far too large before downloading it.
+    const declared = Number(response.headers.get("content-length"));
+    if (declared > MAX_THUMB_BYTES) {
+      await response.body?.cancel();
+      return undefined;
+    }
     const bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length > MAX_THUMB_BYTES) return undefined;
     return `data:${type};base64,${bytes.toString("base64")}`;

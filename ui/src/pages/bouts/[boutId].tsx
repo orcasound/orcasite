@@ -15,9 +15,12 @@ import {
 } from "@/utils/sharePreview";
 import { loadBoutPreview, previewOrNull } from "@/utils/sharePreviewData";
 
-type Props = { preview: SharePreview | null; origin: string };
+// boutId comes from the route here because useParams() can be null while the
+// server renders, and the fallback preview's URL needs it.
+type Props = { preview: SharePreview | null; origin: string; boutId: string };
 
-const BoutShowPage: NextPageWithLayout<Props> = ({ preview, origin }) => {
+const BoutShowPage: NextPageWithLayout<Props> = (props) => {
+  const { preview, origin } = props;
   const params = useParams<{ boutId?: string }>();
   const boutId = params?.boutId;
 
@@ -36,7 +39,9 @@ const BoutShowPage: NextPageWithLayout<Props> = ({ preview, origin }) => {
         <title>{`${preview?.title ?? "Bout"} | Orcasound`}</title>
       </Head>
       <SharePreviewTags
-        preview={preview ?? { ...sitePreview(), path: `/bouts/${boutId}` }}
+        preview={
+          preview ?? { ...sitePreview(), path: `/bouts/${props.boutId}` }
+        }
         origin={origin}
       />
       {content}
@@ -79,7 +84,11 @@ export async function getStaticProps({
   );
 
   return {
-    props: { preview, origin: siteOrigin() } satisfies Props,
+    props: {
+      preview,
+      origin: siteOrigin(),
+      boutId: params.boutId,
+    } satisfies Props,
     // Moderators can rename a bout or change its times.
     revalidate: 60,
   };

@@ -35,7 +35,8 @@ export async function loadCandidatePreview(
   { withFeedImage = false } = {},
 ): Promise<SharePreview | null> {
   const { candidate } = await useCandidateQuery.fetcher({ id })();
-  if (!candidate || candidate.visible === false) return null;
+  // Null counts as hidden too, as in the candidate's policies.
+  if (!candidate || candidate.visible !== true) return null;
 
   let feedImageUrl: string | null | undefined;
   if (withFeedImage) {
