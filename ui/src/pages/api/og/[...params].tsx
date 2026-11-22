@@ -78,9 +78,13 @@ export default async function handler(
     return;
   }
 
-  // A record that couldn't be loaded (missing, hidden, or the API failing)
-  // gets the site's card, kept briefly so a passing failure doesn't stick.
-  const found = preview !== null;
+  // The site's and feeds' cards rarely change, so they are kept for a day.
+  // Report and bout cards follow their pages, which regenerate after a minute
+  // and change when a moderator hides a report or edits a bout, so they are
+  // kept briefly. So is the site's card standing in for a record that
+  // couldn't be loaded (missing, hidden, or the API failing), so that a
+  // passing failure doesn't stick.
+  const stable = preview !== null && (kind === "site" || kind === "feed");
   const card = (preview ?? sitePreview()).card;
   const thumb = card.thumbUrl ? await imageDataUrl(card.thumbUrl) : undefined;
 
@@ -91,14 +95,14 @@ export default async function handler(
     // A photo that downloads but can't be decoded fails the whole render, so
     // draw the card again without it.
     if (!thumb) throw error;
-    console.warn(`Card drawn without the photo at ${card.thumbUrl}:`, error);
+    console.warn("Card drawn without the photo at %s:", card.thumbUrl, error);
     body = await renderCard(card, undefined);
   }
 
   res.setHeader("Content-Type", "image/png");
   res.setHeader(
     "Cache-Control",
-    found ? "public, max-age=86400" : "public, max-age=300",
+    stable ? "public, max-age=86400" : "public, max-age=300",
   );
   res.status(200).send(body);
 }

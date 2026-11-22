@@ -70,7 +70,9 @@ export async function previewOrNull(
     return await load();
   } catch (error) {
     if (!isMissingRecordError(error, field)) {
-      console.warn(`No link preview for ${field} ${id}:`, error);
+      // The ID comes from the URL, so it goes after the format string, where
+      // a % in it is printed rather than read as a placeholder.
+      console.warn("No link preview for %s %s:", field, id, error);
     }
     return null;
   }
