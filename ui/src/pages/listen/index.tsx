@@ -20,10 +20,9 @@ const FeedsPage: NextPageWithLayout<{ origin: string }> = ({ origin }) => {
     [feedsQueryResult.data],
   );
 
-  if (!sortedFeeds) return null;
-
-  return (
-    <div>
+  // Written even when the feeds failed to load: the preview doesn't need them.
+  const head = (
+    <>
       <Head>
         <title>Orcasound</title>
       </Head>
@@ -31,6 +30,14 @@ const FeedsPage: NextPageWithLayout<{ origin: string }> = ({ origin }) => {
         preview={{ ...sitePreview(), path: "/listen" }}
         origin={origin}
       />
+    </>
+  );
+
+  if (!sortedFeeds) return head;
+
+  return (
+    <div>
+      {head}
 
       <main>
         <Container maxWidth="sm">
