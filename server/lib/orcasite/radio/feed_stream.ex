@@ -4,6 +4,8 @@ defmodule Orcasite.Radio.FeedStream do
     extensions: [AshAdmin.Resource, AshUUID, AshGraphql.Resource, AshJsonApi.Resource],
     data_layer: AshPostgres.DataLayer
 
+  require Logger
+
   resource do
     description """
       Represents an m3u8 file in S3 (audio segment manifest, lists .ts files in order with their length).
@@ -162,7 +164,7 @@ defmodule Orcasite.Radio.FeedStream do
         with {:path, %{"node_name" => node_name, "timestamp" => playlist_timestamp}} <-
                {:path,
                 Regex.named_captures(
-                  ~r|(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/live.m3u8|,
+                  ~r{(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/(?:live|archive)\.m3u8$},
                   path
                 )},
              {:feed, _, {:ok, feed}} <-
@@ -179,7 +181,7 @@ defmodule Orcasite.Radio.FeedStream do
           {:path, _error} ->
             changeset
             |> Ash.Changeset.add_error(
-              "Path #{path} does not match the hls object path format (<node_name>/hls/<timestamp>/live.m3u8)"
+              "Path #{path} does not match the hls object path format (<node_name>/hls/<timestamp>/live.m3u8 or archive.m3u8)"
             )
         end
       end
@@ -384,7 +386,13 @@ defmodule Orcasite.Radio.FeedStream do
                %{feed: feed, feed_segments: existing_feed_segments} =
                  feed_stream |> Ash.load!([:feed, feed_segments: file_name_query])
 
-               with {:ok, feed_segments} <- request_and_parse_manifest(feed_stream, feed) do
+               # Tests pass their own fetch in the changeset's context.
+               get_body =
+                 change.context[:get_manifest_body] ||
+                   (&Orcasite.Radio.AwsClient.get_stream_manifest_body/1)
+
+               with {:ok, feed_segments} <-
+                      request_and_parse_manifest(feed_stream, feed, get_body) do
                  existing_file_names =
                    existing_feed_segments |> MapSet.new(& &1.file_name)
 
@@ -400,11 +408,30 @@ defmodule Orcasite.Radio.FeedStream do
                    stop_on_error?: true
                  )
                  |> case do
-                   %{status: :success} -> {:ok, feed_stream}
-                   %{errors: error} -> {:error, error}
+                   %{status: :success} ->
+                     correct_end_time_and_duration(feed_stream, feed_segments)
+
+                   %{errors: error} ->
+                     {:error, error}
                  end
+               else
+                 # A playlist that is refused stays refused until the node
+                 # uploads a different one, so failing here would only make
+                 # the job retry. Nothing is ingested, and it is logged.
+                 {:error, {reason, _details} = refusal}
+                 when reason in [:rolling_playlist, :skipped_segments] ->
+                   log_refusal_once(feed_stream, refusal)
+                   {:ok, feed_stream}
+
+                 other ->
+                   other
                end
              end)
+    end
+
+    update :set_end_time_and_duration do
+      description "Stores an end time and duration computed from the stream's playlist"
+      accept [:end_time, :duration]
     end
 
     update :link_next_stream do
@@ -470,20 +497,7 @@ defmodule Orcasite.Radio.FeedStream do
                |> request_and_parse_manifest()
                |> case do
                  {:ok, [_ | _] = feed_segments} ->
-                   duration =
-                     feed_segments
-                     |> Enum.map(&Map.get(&1, :duration))
-                     |> Enum.reduce(&Decimal.add/2)
-
-                   end_time =
-                     DateTime.add(
-                       feed_stream.start_time,
-                       duration
-                       |> Decimal.mult(1000)
-                       |> Decimal.round()
-                       |> Decimal.to_integer(),
-                       :millisecond
-                     )
+                   {end_time, duration} = end_time_and_duration(feed_stream, feed_segments)
 
                    change
                    |> Ash.Changeset.change_attribute(:end_time, end_time)
@@ -521,13 +535,43 @@ defmodule Orcasite.Radio.FeedStream do
   @doc """
   Fetches the stream's HLS manifest from S3 and parses it into FeedSegment
   attribute maps, ordered by segment start time.
+
+  Nodes running orcanode's `node_2026` code since October 2026 write a
+  `live.m3u8` that lists only the most recent segments, for the live player,
+  and an `archive.m3u8` beside it that lists every segment since the folder
+  started (#1092). When `live.m3u8` turns out to list only recent segments,
+  this reads `archive.m3u8` instead. The node uploads the archive about every
+  five minutes, so segments from the last few minutes appear on a later run.
+  For the first minutes of a folder there is no archive yet; that returns
+  `{:ok, []}`, because there is nothing new to read, not an error.
+
+  `get_body` fetches a stream's manifest body; tests replace it.
   """
-  @spec request_and_parse_manifest(t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
-  def request_and_parse_manifest(feed_stream, feed \\ nil) do
-    with {:ok, body} <- Orcasite.Radio.AwsClient.get_stream_manifest_body(feed_stream) do
-      parse_manifest(body, feed_stream, feed)
+  @spec request_and_parse_manifest(t(), map() | nil, (t() -> {:ok, String.t()} | {:error, term()})) ::
+          {:ok, [map()]} | {:error, term()}
+  def request_and_parse_manifest(
+        feed_stream,
+        feed \\ nil,
+        get_body \\ &Orcasite.Radio.AwsClient.get_stream_manifest_body/1
+      ) do
+    with {:ok, body} <- get_body.(feed_stream) do
+      case parse_manifest(body, feed_stream, feed) do
+        {:error, {:rolling_playlist, _media_sequence}} ->
+          archive_stream = %{feed_stream | playlist_m3u8_path: archive_m3u8_path(feed_stream)}
+
+          case get_body.(archive_stream) do
+            {:ok, archive_body} -> parse_manifest(archive_body, feed_stream, feed)
+            {:error, {:http_error, 404, _response}} -> {:ok, []}
+            {:error, error} -> {:error, error}
+          end
+
+        result ->
+          result
+      end
     end
   end
+
+  defp archive_m3u8_path(%{playlist_path: playlist_path}), do: playlist_path <> "archive.m3u8"
 
   @doc """
   Parses an HLS media playlist body into FeedSegment attribute maps.
@@ -536,11 +580,23 @@ defmodule Orcasite.Radio.FeedStream do
   stream's `start_time`, which comes from the S3 folder name. When a segment
   is preceded by an `#EXT-X-PROGRAM-DATE-TIME` tag, its timestamp is carried
   as `program_date_time` but does not affect the computed times (see #1041).
+
+  Those times are right only if the playlist starts with the folder's first
+  segment. A playlist whose `#EXT-X-MEDIA-SEQUENCE` is above 0 has dropped
+  its earliest segments, so it returns `{:error, {:rolling_playlist, n}}`
+  rather than placing its segments at the start of the folder.
+
+  They are also right only if no segment is missing from the middle. Some
+  `archive.m3u8` files skip segments (`live2734.ts` followed by
+  `live2751.ts`), which would place every later segment too early. A playlist
+  whose `liveN.ts` numbers are not consecutive, or do not start at 0, returns
+  `{:error, {:skipped_segments, details}}`.
   """
   @spec parse_manifest(String.t(), t(), map() | nil) :: {:ok, [map()]} | {:error, term()}
   def parse_manifest(body, feed_stream, feed \\ nil) do
-    with {:ok, %ExM3U8.MediaPlaylist{timeline: timeline}} <-
-           ExM3U8.deserialize_media_playlist(body, []) do
+    with {:ok, %ExM3U8.MediaPlaylist{timeline: timeline, info: info}} <-
+           ExM3U8.deserialize_media_playlist(body, []),
+         :ok <- check_starts_at_first_segment(info) do
       {segments, _offset_ms, _program_date_time} =
         Enum.reduce(timeline, {[], Decimal.new(0), nil}, fn
           %ExM3U8.Tags.ProgramDateTime{date: date}, {acc, offset_ms, _} ->
@@ -575,9 +631,96 @@ defmodule Orcasite.Radio.FeedStream do
             state
         end)
 
-      {:ok, Enum.reverse(segments)}
+      segments = Enum.reverse(segments)
+
+      with :ok <- check_no_skipped_segments(segments) do
+        {:ok, segments}
+      end
     end
   end
+
+  # File names that don't follow the nodes' `live<number>.ts` pattern are not checked.
+  defp check_no_skipped_segments(segments) do
+    numbered =
+      Enum.map(segments, fn %{file_name: file_name} ->
+        case Regex.run(~r/^live(\d+)\.ts$/, file_name) do
+          [_, number] -> {String.to_integer(number), file_name}
+          nil -> nil
+        end
+      end)
+
+    skips =
+      if Enum.any?(numbered, &is_nil/1) do
+        []
+      else
+        numbered
+        |> Enum.zip(Enum.drop(numbered, 1))
+        |> Enum.reject(fn {{number, _}, {next, _}} -> next == number + 1 end)
+      end
+
+    case {numbered, skips} do
+      {[{first, file_name} | _], _} when first > 0 ->
+        {:error, {:skipped_segments, %{count: 1, first: {nil, file_name}}}}
+
+      {_, []} ->
+        :ok
+
+      {_, [{{_, file_name}, {_, next_file_name}} | _]} ->
+        {:error, {:skipped_segments, %{count: length(skips), first: {file_name, next_file_name}}}}
+    end
+  end
+
+  # A playlist is read every time the node uploads one, about every ten
+  # seconds, so a refusal is logged once a day for each stream and reason.
+  defp log_refusal_once(feed_stream, {reason, _details} = refusal) do
+    if Orcasite.Cache.put_new({:refused_playlist, feed_stream.id, reason}, true,
+         ttl: :timer.hours(24)
+       ) do
+      Logger.error(
+        "Not ingesting segments for #{feed_stream.playlist_path}: " <>
+          "its playlist was refused (#{inspect(refusal)}). See orcasite#1092."
+      )
+    end
+  end
+
+  defp end_time_and_duration(feed_stream, [_ | _] = feed_segments) do
+    duration =
+      feed_segments
+      |> Enum.map(&Map.get(&1, :duration))
+      |> Enum.reduce(&Decimal.add/2)
+
+    {offset_time(feed_stream.start_time, Decimal.mult(duration, 1000)), duration}
+  end
+
+  # The end time and duration are first computed when the next stream is
+  # linked, which can be before this stream's last playlist upload has been
+  # read. Once a stream has ended, each later read of its playlist corrects
+  # them, but only ever lengthens the stream.
+  defp correct_end_time_and_duration(%{next_feed_stream_id: nil} = feed_stream, _segments),
+    do: {:ok, feed_stream}
+
+  defp correct_end_time_and_duration(feed_stream, []), do: {:ok, feed_stream}
+
+  defp correct_end_time_and_duration(feed_stream, feed_segments) do
+    {end_time, duration} = end_time_and_duration(feed_stream, feed_segments)
+
+    if is_nil(feed_stream.duration) or Decimal.gt?(duration, feed_stream.duration) do
+      feed_stream
+      |> Ash.Changeset.for_update(:set_end_time_and_duration, %{
+        end_time: end_time,
+        duration: duration
+      })
+      |> Ash.update(authorize?: false)
+    else
+      {:ok, feed_stream}
+    end
+  end
+
+  defp check_starts_at_first_segment(%{media_sequence: media_sequence})
+       when is_integer(media_sequence) and media_sequence > 0,
+       do: {:error, {:rolling_playlist, media_sequence}}
+
+  defp check_starts_at_first_segment(_info), do: :ok
 
   defp offset_time(start_time, offset_ms) do
     DateTime.add(start_time, offset_ms |> Decimal.round() |> Decimal.to_integer(), :millisecond)

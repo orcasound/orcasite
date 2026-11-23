@@ -1,5 +1,6 @@
 defmodule Orcasite.Radio.FeedStreamQueue do
   use Broadway
+  require Logger
 
   def start_link(_opts) do
     Broadway.start_link(__MODULE__,
@@ -60,7 +61,7 @@ defmodule Orcasite.Radio.FeedStreamQueue do
           []
         end
       end)
-      |> Enum.uniq()
+      |> one_per_folder()
 
     Task.Supervisor.start_child(Orcasite.TaskSupervisor, fn ->
       paths
@@ -73,16 +74,36 @@ defmodule Orcasite.Radio.FeedStreamQueue do
         upsert?: true,
         upsert_identity: :feed_stream_timestamp
       )
+      |> case do
+        %{status: :success} ->
+          :ok
+
+        %{errors: errors} ->
+          Logger.error(
+            "FeedStreamQueue could not record streams for #{inspect(Enum.map(paths, & &1.m3u8_path))}: " <>
+              inspect(errors, limit: 20, printable_limit: 500)
+          )
+      end
     end)
 
     messages
+  end
+
+  @doc """
+  Keeps one playlist path for each folder.
+
+  `live.m3u8` and `archive.m3u8` in one folder belong to the same FeedStream,
+  and Postgres rejects a bulk upsert that names the same row twice.
+  """
+  def one_per_folder(paths) do
+    Enum.uniq_by(paths, fn %{m3u8_path: path, bucket: bucket} -> {bucket, Path.dirname(path)} end)
   end
 
   def select_recent_timestamp(object_path, after_date) do
     with {:path, %{"timestamp" => timestamp}} <-
            {:path,
             Regex.named_captures(
-              ~r|(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/live.m3u8|,
+              ~r{(?<node_name>[^/]+)/hls/(?<timestamp>[^/]+)/(?:live|archive)\.m3u8$},
               object_path
             )},
          timestamp_time =
