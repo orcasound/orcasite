@@ -10,11 +10,13 @@ import {
   getMapStaticProps,
 } from "@/components/layouts/MapLayout";
 import Link from "@/components/Link";
+import SharePreviewTags from "@/components/SharePreviewTags";
 import { isMissingRecordError } from "@/graphql/client";
 import { useFeedQuery } from "@/graphql/generated";
 import type { NextPageWithLayout } from "@/pages/_app";
+import { feedPreview, siteOrigin } from "@/utils/sharePreview";
 
-const FeedPage: NextPageWithLayout = () => {
+const FeedPage: NextPageWithLayout<{ origin: string }> = ({ origin }) => {
   const router = useRouter();
   const slug = router.query.feed as string;
   const feed = useFeedQuery({ slug: slug }).data?.feed;
@@ -26,6 +28,7 @@ const FeedPage: NextPageWithLayout = () => {
       <Head>
         <title>{`Orcasound - ${feed.name}`}</title>
       </Head>
+      <SharePreviewTags preview={feedPreview(feed)} origin={origin} />
 
       <main>
         <Container maxWidth="sm">
@@ -109,6 +112,9 @@ export async function getStaticProps({ params }: { params: { feed: string } }) {
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
+      // Read here, in the serving app, when the page is generated or
+      // revalidated. Nothing is prerendered at build time (see getStaticPaths).
+      origin: siteOrigin(),
     },
     revalidate: 60,
   };
