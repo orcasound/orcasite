@@ -118,6 +118,17 @@ defmodule OrcasiteWeb.JsonApi.DetectionChangesTest do
     assert length(returned) == length(detections) - 1
   end
 
+  test "a hidden detection comes back with visible false by default",
+       %{conn: conn, detections: [detection | _]} do
+    detection
+    |> Ash.Changeset.for_update(:set_visible, %{visible: false})
+    |> Ash.update!(authorize?: false)
+
+    %{"data" => data} = get_json(conn, "/api/json/detections/changes")
+
+    assert %{"attributes" => %{"visible" => false}} = Enum.find(data, &(&1["id"] == detection.id))
+  end
+
   test "hiding a detection and changing its category bump updated_at",
        %{detections: [detection | _]} do
     hidden =

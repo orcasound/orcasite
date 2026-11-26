@@ -421,7 +421,8 @@ defmodule Orcasite.Radio.Detection do
       :source,
       :category,
       :inserted_at,
-      :updated_at
+      :updated_at,
+      :visible
     ]
 
     includes [:feed, :candidate]
