@@ -22,6 +22,8 @@ defmodule Orcasite.Radio.Detection do
       index [:description]
       index [:inserted_at]
       index [:category]
+      # Readers that follow changes sort and page by these two columns.
+      index [:updated_at, :id]
     end
 
     migration_defaults id: "fragment(\"uuid_generate_v7()\")"
@@ -63,7 +65,12 @@ defmodule Orcasite.Radio.Detection do
       description: "Optional unique key for this detection"
 
     create_timestamp :inserted_at
-    update_timestamp :updated_at
+
+    # Public so that a reader can ask for the detections changed since its last read.
+    # Every change bumps it, upserts by submit_machine_detection included. A repair
+    # written in SQL must set it too, or readers that follow changes will miss the
+    # change.
+    update_timestamp :updated_at, public?: true
   end
 
   calculations do
@@ -134,6 +141,26 @@ defmodule Orcasite.Radio.Detection do
 
       filter expr(if not is_nil(^arg(:feed_id)), do: feed_id == ^arg(:feed_id), else: true)
       prepare build(load: [:uuid], sort: [inserted_at: :desc])
+    end
+
+    read :changes do
+      description """
+      Every detection, in order of when it last changed, for readers that keep a copy.
+      Paged by a cursor: follow each page's links.next, which carries page[after]. A
+      cursor never skips a row that exists for the whole read, as an offset can when
+      rows are added or removed between pages. Only cursor paging is allowed, because
+      with offset paging allowed too, the first page would be an offset page and its
+      links.next an offset.
+      """
+
+      pagination do
+        keyset? true
+        countable true
+        default_limit 100
+        max_page_size 1000
+      end
+
+      prepare build(load: [:uuid], sort: [updated_at: :asc, id: :asc])
     end
 
     read :by_category do
@@ -393,7 +420,9 @@ defmodule Orcasite.Radio.Detection do
       :description,
       :source,
       :category,
-      :inserted_at
+      :inserted_at,
+      :updated_at,
+      :visible
     ]
 
     includes [:feed, :candidate]
@@ -402,6 +431,7 @@ defmodule Orcasite.Radio.Detection do
       base "/detections"
 
       index :index
+      index :changes, route: "/changes"
       post :submit_machine_detection
     end
   end

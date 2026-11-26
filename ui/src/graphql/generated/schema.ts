@@ -717,8 +717,10 @@ export type CreateBoutTagInput = {
    * not the tag, because `L` is certain on one bout and a hedge on the next; a `?` in
    * the bout's name is where that hedge went before this column existed. Three words
    * rather than a number: a listening moderator has no probability, and a numeric field
-   * invites a UI to invent one. Nil means nobody was asked, which is every application
-   * made before the column existed, and is deliberately distinct from `certain`.
+   * invites a UI to invent one. Nil means the moderator said nothing about it: every
+   * application made before the column existed, and one applied in the picker without
+   * touching its `?`. It is deliberately distinct from `certain`, which a moderator
+   * chose.
    */
   certainty?: InputMaybe<Scalars["String"]["input"]>;
   tag?: InputMaybe<ItemTagBoutTagTagInput>;
@@ -789,6 +791,7 @@ export type Detection = {
   source: DetectionSource;
   sourceIp?: Maybe<Scalars["String"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
+  updatedAt: Scalars["DateTime"]["output"];
   visible?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
@@ -880,6 +883,7 @@ export type DetectionFilterInput = {
   source?: InputMaybe<DetectionFilterSource>;
   sourceIp?: InputMaybe<DetectionFilterSourceIp>;
   timestamp?: InputMaybe<DetectionFilterTimestamp>;
+  updatedAt?: InputMaybe<DetectionFilterUpdatedAt>;
   visible?: InputMaybe<DetectionFilterVisible>;
 };
 
@@ -966,6 +970,19 @@ export type DetectionFilterTimestamp = {
   notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
+export type DetectionFilterUpdatedAt = {
+  eq?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  greaterThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
+  isDistinctFrom?: InputMaybe<Scalars["DateTime"]["input"]>;
+  isNil?: InputMaybe<Scalars["Boolean"]["input"]>;
+  isNotDistinctFrom?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThan?: InputMaybe<Scalars["DateTime"]["input"]>;
+  lessThanOrEqual?: InputMaybe<Scalars["DateTime"]["input"]>;
+  notEq?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
 export type DetectionFilterVisible = {
   eq?: InputMaybe<Scalars["Boolean"]["input"]>;
   greaterThan?: InputMaybe<Scalars["Boolean"]["input"]>;
@@ -992,6 +1009,7 @@ export const DetectionSortField = {
   Source: "SOURCE",
   SourceIp: "SOURCE_IP",
   Timestamp: "TIMESTAMP",
+  UpdatedAt: "UPDATED_AT",
   Visible: "VISIBLE",
 } as const;
 
@@ -1957,8 +1975,10 @@ export type ItemTag = {
    * not the tag, because `L` is certain on one bout and a hedge on the next; a `?` in
    * the bout's name is where that hedge went before this column existed. Three words
    * rather than a number: a listening moderator has no probability, and a numeric field
-   * invites a UI to invent one. Nil means nobody was asked, which is every application
-   * made before the column existed, and is deliberately distinct from `certain`.
+   * invites a UI to invent one. Nil means the moderator said nothing about it: every
+   * application made before the column existed, and one applied in the picker without
+   * touching its `?`. It is deliberately distinct from `certain`, which a moderator
+   * chose.
    */
   certainty?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["ID"]["output"];
@@ -2032,8 +2052,10 @@ export type ItemTagFilterInput = {
    * not the tag, because `L` is certain on one bout and a hedge on the next; a `?` in
    * the bout's name is where that hedge went before this column existed. Three words
    * rather than a number: a listening moderator has no probability, and a numeric field
-   * invites a UI to invent one. Nil means nobody was asked, which is every application
-   * made before the column existed, and is deliberately distinct from `certain`.
+   * invites a UI to invent one. Nil means the moderator said nothing about it: every
+   * application made before the column existed, and one applied in the picker without
+   * touching its `?`. It is deliberately distinct from `certain`, which a moderator
+   * chose.
    */
   certainty?: InputMaybe<ItemTagFilterCertainty>;
   id?: InputMaybe<ItemTagFilterId>;
@@ -2973,8 +2995,10 @@ export type SetBoutTagCertaintyInput = {
    * not the tag, because `L` is certain on one bout and a hedge on the next; a `?` in
    * the bout's name is where that hedge went before this column existed. Three words
    * rather than a number: a listening moderator has no probability, and a numeric field
-   * invites a UI to invent one. Nil means nobody was asked, which is every application
-   * made before the column existed, and is deliberately distinct from `certain`.
+   * invites a UI to invent one. Nil means the moderator said nothing about it: every
+   * application made before the column existed, and one applied in the picker without
+   * touching its `?`. It is deliberately distinct from `certain`, which a moderator
+   * chose.
    */
   certainty?: InputMaybe<Scalars["String"]["input"]>;
 };
@@ -3023,7 +3047,7 @@ export const SortOrder = {
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 export type SubmitDetectionInput = {
-  category?: InputMaybe<DetectionCategory>;
+  category: DetectionCategory;
   description?: InputMaybe<Scalars["String"]["input"]>;
   feedId: Scalars["String"]["input"];
   listenerCount?: InputMaybe<Scalars["Int"]["input"]>;
